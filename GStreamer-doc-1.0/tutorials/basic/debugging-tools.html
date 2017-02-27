@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Basic tutorial 11: Debugging tools</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="tutorials/basic/debugging-tools.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="debugging-tools.md">
+<h1 id="basic-tutorial-11-debugging-tools">Basic tutorial 11: Debugging tools</h1>
+<h2 id="goal">Goal</h2>
+<p>Sometimes things won’t go as expected and the error messages retrieved
+from the bus (if any) just don’t provide enough information. Luckily,
+GStreamer ships with massive amounts of debug information, which usually
+hint what the problem might be. This tutorial shows:</p>
+<ul>
+<li>
+<p>How to get more debug information from GStreamer.</p>
+</li>
+<li>
+<p>How to print your own debug information into the GStreamer log.</p>
+</li>
+<li>
+<p>How to get pipeline graphs</p>
+</li>
+</ul>
+<h2 id="printing-debug-information">Printing debug information</h2>
+<h3 id="the-debug-log">The debug log</h3>
+<p>GStreamer and its plugins are full of debug traces, this is, places in
+the code where a particularly interesting piece of information is
+printed to the console, along with time stamping, process, category,
+source code file, function and element information.</p>
+<p>The debug output is controlled with the <code>GST_DEBUG</code> environment
+variable. Here’s an example with
+<code>GST_DEBUG=2</code>:</p>
+<pre><code>0:00:00.868050000  1592   09F62420 WARN                 filesrc gstfilesrc.c:1044:gst_file_src_start:&lt;filesrc0&gt; error: No such file "non-existing-file.webm"
+</code></pre>
+<p>As you can see, this is quite a bit of information. In fact, the
+GStreamer debug log is so verbose, that when fully enabled it can render
+applications unresponsive (due to the console scrolling) or fill up
+megabytes of text files (when redirected to a file). For this reason,
+the logs are categorized, and you seldom need to enable all categories
+at once.</p>
+<p>The first category is the Debug Level, which is a number specifying the
+amount of desired output:</p>
+<table>
+<thead>
+<tr>
+<th> #</th>
+<th> Name</th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 0</td>
+<td> none</td>
+<td> No debug information is output.</td>
+</tr>
+<tr>
+<td> 1</td>
+<td> ERROR</td>
+<td> Logs all fatal errors. These are errors that do not allow the core or elements to perform the requested action. The application can still recover if programmed to handle the conditions that triggered the error.</td>
+</tr>
+<tr>
+<td> 2</td>
+<td> WARNING</td>
+<td> Logs all warnings. Typically these are non-fatal, but user-visible problems are expected to happen.</td>
+</tr>
+<tr>
+<td> 3</td>
+<td> FIXME</td>
+<td> Logs all "fixme" messages. Those typically that a codepath that is known to be incomplete has been triggered. It may work in most cases, but mauy cause problems in specific instances.</td>
+</tr>
+<tr>
+<td> 4</td>
+<td> INFO</td>
+<td> Logs all informational messages. These are typically used for events in the system that only happen once, or are important and rare enough to be logged at this level.</td>
+</tr>
+<tr>
+<td> 5</td>
+<td> DEBUG</td>
+<td> Logs all debug messages. These are general debug messages for events that happen only a limited number of times during an object's lifetime; these include setup, teardown, change of parameters, ...</td>
+</tr>
+<tr>
+<td> 6</td>
+<td> LOG</td>
+<td> Logs all log messages. These are messages for events that happen repeatedly during an object's lifetime; these include streaming and steady-state conditions. This is used for log messages that happen on every buffer in an element for example.</td>
+</tr>
+<tr>
+<td> 7</td>
+<td> TRACE</td>
+<td> Logs all trace messages. Those are message that happen very very often. This is for example is each each time the reference count of a GstMiniObject, such as a GstBuffer or GstEvent, is modified.</td>
+</tr>
+<tr>
+<td> 8</td>
+<td> MEMDUMP</td>
+<td> Logs all memory dump messages. This is the heaviest logging and may include dumping the content of blocks of memory.</td>
+</tr></tbody></table>
+<p>To enable debug output, set the <code>GST_DEBUG</code> environment variable to the
+desired debug level. All levels below that will also be shown (i.e., if
+you set <code>GST_DEBUG=2</code>, you will get both <code>ERROR</code> and
+<code>WARNING</code> messages).</p>
+<p>Furthermore, each plugin or part of the GStreamer defines its own
+category, so you can specify a debug level for each individual category.
+For example, <code>GST_DEBUG=2,audiotestsrc:6</code>, will use Debug Level 6 for
+the <code>audiotestsrc</code> element, and 2 for all the others.</p>
+<p>The <code>GST_DEBUG</code> environment variable, then, is a comma-separated list of
+<em>category</em>:<em>level</em> pairs, with an optional <em>level</em> at the beginning,
+representing the default debug level for all categories.</p>
+<p>The <code>'*'</code> wildcard is also available. For example
+<code>GST_DEBUG=2,audio*:6</code> will use Debug Level 5 for all categories
+starting with the word <code>audio</code>. <code>GST_DEBUG=*:2</code> is equivalent to
+<code>GST_DEBUG=2</code>.</p>
+<p>Use <code>gst-launch-1.0 --gst-debug-help</code> to obtain the list of all
+registered categories. Bear in mind that each plugin registers its own
+categories, so, when installing or removing plugins, this list can
+change.</p>
+<p>Use <code>GST_DEBUG</code> when the error information posted on the GStreamer bus
+does not help you nail down a problem. It is common practice to redirect
+the output log to a file, and then examine it later, searching for
+specific messages.</p>
+<p>The content of each line in the debug output
+is:</p>
+<pre><code>0:00:00.868050000  1592   09F62420 WARN                 filesrc gstfilesrc.c:1044:gst_file_src_start:&lt;filesrc0&gt; error: No such file "non-existing-file.webm"
+</code></pre>
+<table>
+<thead>
+<tr>
+<th> Example</th>
+<th> Explained</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> <code>0:00:00.868050000</code></td>
+<td> Time stamp in HH:MM:SS.sssssssss format since the start of the program</td>
+</tr>
+<tr>
+<td> <code>1592</code></td>
+<td> Process ID from which the message was issued. Useful when your problem involves multiple processes</td>
+</tr>
+<tr>
+<td> <code>09F62420</code></td>
+<td> Thread ID from which the message was issued. Useful when your problem involves multiple threads</td>
+</tr>
+<tr>
+<td> <code>WARN</code></td>
+<td> Debug level of the message</td>
+</tr>
+<tr>
+<td> <code>filesrc</code></td>
+<td> Debug Category of the message</td>
+</tr>
+<tr>
+<td> <code>gstfilesrc.c:1044</code></td>
+<td> Source file and line in the GStreamer source code where this message is printed</td>
+</tr>
+<tr>
+<td> <code>gst_file_src_start</code></td>
+<td> Function from which the message was issued</td>
+</tr>
+<tr>
+<td> <code>&amp;lt;filesrc0&amp;gt;</code></td>
+<td> Name of the object that issued the message. It can be an element, a Pad, or something else. Useful when you have multiple elements of the same kind and need to distinguish among them. Naming your elements with the name property will make this debug output more readable (otherwise, GStreamer assigns each new element a unique name).</td>
+</tr>
+<tr>
+<td> <code>error: No such file &amp;quot;non-existing-file.webm&amp;quot;</code></td>
+<td> The actual message.</td>
+</tr></tbody></table>
+<h3 id="adding-your-own-debug-information">Adding your own debug information</h3>
+<p>In the parts of your code that interact with GStreamer, it is
+interesting to use GStreamer’s debugging facilities. In this way, you
+have all debug output in the same file and the temporal relationship
+between different messages is preserved.</p>
+<p>To do so, use the <code>GST_ERROR()</code>, <code>GST_WARNING()</code>, <code>GST_INFO()</code>,
+<code>GST_LOG()</code> and <code>GST_DEBUG()</code> macros. They accept the same parameters as
+<code>printf</code>, and they use the <code>default</code> category (<code>default</code> will be shown
+as the Debug category in the output log).</p>
+<p>To change the category to something more meaningful, add these two lines
+at the top of your code:</p>
+<pre><code class="language-c">GST_DEBUG_CATEGORY_STATIC (my_category);
+#define GST_CAT_DEFAULT my_category
+</code></pre>
+<p>And then this one after you have initialized GStreamer with
+<code>gst_init()</code>:</p>
+<pre><code class="language-c">GST_DEBUG_CATEGORY_INIT (my_category, "my category", 0, "This is my very own");
+</code></pre>
+<p>This registers a new category (this is, for the duration of your
+application: it is not stored in any file), and sets it as the default
+category for your code. See the documentation
+for <code>GST_DEBUG_CATEGORY_INIT()</code>.</p>
+<h3 id="getting-pipeline-graphs">Getting pipeline graphs</h3>
+<p>For those cases where your pipeline starts to grow too large and you
+lose track of what is connected with what, GStreamer has the capability
+to output graph files. These are <code>.dot</code> files, readable with free
+programs like <a href="http://www.graphviz.org">GraphViz</a>, that describe the
+topology of your pipeline, along with the caps negotiated in each link.</p>
+<p>This is also very handy when using all-in-one elements like <code>playbin</code>
+or <code>uridecodebin</code>, which instantiate several elements inside them. Use
+the <code>.dot</code> files to learn what pipeline they have created inside (and
+learn a bit of GStreamer along the way).</p>
+<p>To obtain <code>.dot</code> files, simply set
+the <code>GST_DEBUG_DUMP_DOT_DIR</code> environment variable to point to the
+folder where you want the files to be placed. <code>gst-launch-1.0</code> will create
+a <code>.dot</code> file at each state change, so you can see the evolution of the
+caps negotiation. Unset the variable to disable this facility. From
+within your application, you can use the
+<code>GST_DEBUG_BIN_TO_DOT_FILE()</code> and
+<code>GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS()</code> macros to generate <code>.dot</code> files
+at your convenience.</p>
+<p>Here you have an example of the kind of pipelines that playbin
+generates. It is very complex because <code>playbin</code> can handle many
+different cases: Your manual pipelines normally do not need to be this
+long. If your manual pipeline is starting to get very big, consider
+using <code>playbin</code>.</p>
+<p><img src="images/playbin.png" alt=""></p>
+<p>To download the full-size picture, use the attachments link at the top
+of this page (It's the paperclip icon).</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This tutorial has shown:</p>
+<ul>
+<li>How to get more debug information from GStreamer using the
+<code>GST_DEBUG</code> environment variable.</li>
+<li>How to print your own debug information into the GStreamer log with
+the <code>GST_ERROR()</code> macro and relatives.</li>
+<li>How to get pipeline graphs with the
+<code>GST_DEBUG_DUMP_DOT_DIR</code> environment variable.</li>
+</ul>
+<p>It has been a pleasure having you here, and see you soon!</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

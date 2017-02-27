@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>The query function</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="plugin-development/basics/queryfn.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="queryfn.md">
+<h1 id="the-query-function">The query function</h1>
+<p>Through the query function, your element will receive queries that it
+has to reply to. These are queries like position, duration but also
+about the supported formats and scheduling modes your element supports.
+Queries can travel both upstream and downstream, so you can receive them
+on sink pads as well as source pads.</p>
+<p>Below follows a very simple query function that we install on the source
+pad of our element.</p>
+<pre><code class="language-c">
+static gboolean gst_my_filter_src_query (GstPad    *pad,
+                                         GstObject *parent,
+                                         GstQuery  *query);
+
+[..]
+
+static void
+gst_my_filter_init (GstMyFilter * filter)
+{
+[..]
+  /* configure event function on the pad before adding
+   * the pad to the element */
+  gst_pad_set_query_function (filter-&gt;srcpad,
+      gst_my_filter_src_query);
+[..]
+}
+
+static gboolean
+gst_my_filter_src_query (GstPad    *pad,
+                 GstObject *parent,
+                 GstQuery  *query)
+{
+  gboolean ret;
+  GstMyFilter *filter = GST_MY_FILTER (parent);
+
+  switch (GST_QUERY_TYPE (query)) {
+    case GST_QUERY_POSITION:
+      /* we should report the current position */
+      [...]
+      break;
+    case GST_QUERY_DURATION:
+      /* we should report the duration here */
+      [...]
+      break;
+    case GST_QUERY_CAPS:
+      /* we should report the supported caps here */
+      [...]
+      break;
+    default:
+      /* just call the default handler */
+      ret = gst_pad_query_default (pad, parent, query);
+      break;
+  }
+  return ret;
+}
+
+
+</code></pre>
+<p>It is a good idea to call the default query handler
+<code>gst_pad_query_default ()</code> for unknown queries. Depending on the query
+type, the default handler will forward the query or simply unref it.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

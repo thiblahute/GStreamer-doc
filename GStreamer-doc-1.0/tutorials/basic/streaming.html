@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Basic tutorial 12: Streaming</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="tutorials/basic/streaming.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="streaming.md">
+<h1 id="basic-tutorial-12-streaming">Basic tutorial 12: Streaming</h1>
+<h2 id="goal">Goal</h2>
+<p>Playing media straight from the Internet without storing it locally is
+known as Streaming. We have been doing it throughout the tutorials
+whenever we used a URI starting with <code>http://</code>. This tutorial shows a
+couple of additional points to keep in mind when streaming. In
+particular:</p>
+<ul>
+<li>How to enable buffering (to alleviate network problems)</li>
+<li>How to recover from interruptions (lost clock)</li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p>When streaming, media chunks are decoded and queued for presentation as
+soon as they arrive form the network. This means that if a chunk is
+delayed (which is not an uncommon situation at all on the Internet) the
+presentation queue might run dry and media playback could stall.</p>
+<p>The universal solution is to build a “buffer”, this is, allow a certain
+number of media chunks to be queued before starting playback. In this
+way, playback start is delayed a bit, but, if some chunks are late,
+reproduction is not impacted as there are more chunks in the queue,
+waiting.</p>
+<p>As it turns out, this solution is already implemented in GStreamer, but
+the previous tutorials have not been benefiting from it. Some elements,
+like the <code>queue2</code> and <code>multiqueue</code> found inside <code>playbin</code>, are capable
+of building this buffer and post bus messages regarding the buffer level
+(the state of the queue). An application wanting to have more network
+resilience, then, should listen to these messages and pause playback if
+the buffer level is not high enough (usually, whenever it is below
+100%).</p>
+<p>To achieve synchronization among multiple sinks (for example and audio
+and a video sink) a global clock is used. This clock is selected by
+GStreamer among all elements which can provide one. Under some
+circumstances, for example, an RTP source switching streams or changing
+the output device, this clock can be lost and a new one needs to be
+selected. This happens mostly when dealing with streaming, so the
+process is explained in this tutorial.</p>
+<p>When the clock is lost, the application receives a message on the bus;
+to select a new one, the application just needs to set the pipeline to
+PAUSED and then to PLAYING again.</p>
+<h2 id="a-networkresilient-example">A network-resilient example</h2>
+<p>Copy this code into a text file named <code>basic-tutorial-12.c</code>.</p>
+<p><strong>basic-tutorial-12.c</strong></p>
+<pre><code class="language-c">#include &lt;gst/gst.h&gt;
+#include &lt;string.h&gt;
+
+typedef struct _CustomData {
+  gboolean is_live;
+  GstElement *pipeline;
+  GMainLoop *loop;
+} CustomData;
+
+static void cb_message (GstBus *bus, GstMessage *msg, CustomData *data) {
+
+  switch (GST_MESSAGE_TYPE (msg)) {
+    case GST_MESSAGE_ERROR: {
+      GError *err;
+      gchar *debug;
+
+      gst_message_parse_error (msg, &amp;err, &amp;debug);
+      g_print ("Error: %s\n", err-&gt;message);
+      g_error_free (err);
+      g_free (debug);
+
+      gst_element_set_state (data-&gt;pipeline, GST_STATE_READY);
+      g_main_loop_quit (data-&gt;loop);
+      break;
+    }
+    case GST_MESSAGE_EOS:
+      /* end-of-stream */
+      gst_element_set_state (data-&gt;pipeline, GST_STATE_READY);
+      g_main_loop_quit (data-&gt;loop);
+      break;
+    case GST_MESSAGE_BUFFERING: {
+      gint percent = 0;
+
+      /* If the stream is live, we do not care about buffering. */
+      if (data-&gt;is_live) break;
+
+      gst_message_parse_buffering (msg, &amp;percent);
+      g_print ("Buffering (%3d%%)\r", percent);
+      /* Wait until buffering is complete before start/resume playing */
+      if (percent &lt; 100)
+        gst_element_set_state (data-&gt;pipeline, GST_STATE_PAUSED);
+      else
+        gst_element_set_state (data-&gt;pipeline, GST_STATE_PLAYING);
+      break;
+    }
+    case GST_MESSAGE_CLOCK_LOST:
+      /* Get a new clock */
+      gst_element_set_state (data-&gt;pipeline, GST_STATE_PAUSED);
+      gst_element_set_state (data-&gt;pipeline, GST_STATE_PLAYING);
+      break;
+    default:
+      /* Unhandled message */
+      break;
+    }
+}
+
+int main(int argc, char *argv[]) {
+  GstElement *pipeline;
+  GstBus *bus;
+  GstStateChangeReturn ret;
+  GMainLoop *main_loop;
+  CustomData data;
+
+  /* Initialize GStreamer */
+  gst_init (&amp;argc, &amp;argv);
+
+  /* Initialize our data structure */
+  memset (&amp;data, 0, sizeof (data));
+
+  /* Build the pipeline */
+  pipeline = gst_parse_launch ("playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm", NULL);
+  bus = gst_element_get_bus (pipeline);
+
+  /* Start playing */
+  ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
+  if (ret == GST_STATE_CHANGE_FAILURE) {
+    g_printerr ("Unable to set the pipeline to the playing state.\n");
+    gst_object_unref (pipeline);
+    return -1;
+  } else if (ret == GST_STATE_CHANGE_NO_PREROLL) {
+    data.is_live = TRUE;
+  }
+
+  main_loop = g_main_loop_new (NULL, FALSE);
+  data.loop = main_loop;
+  data.pipeline = pipeline;
+
+  gst_bus_add_signal_watch (bus);
+  g_signal_connect (bus, "message", G_CALLBACK (cb_message), &amp;data);
+
+  g_main_loop_run (main_loop);
+
+  /* Free resources */
+  g_main_loop_unref (main_loop);
+  gst_object_unref (bus);
+  gst_element_set_state (pipeline, GST_STATE_NULL);
+  gst_object_unref (pipeline);
+  return 0;
+}
+</code></pre>
+<blockquote>
+<p><img src="images/icons/emoticons/information.png" alt="Information" id="information">
+Need help?</p>
+<p>If you need help to compile this code, refer to the <strong>Building the tutorials</strong>  section for your platform: <a href="../../installing/on-linux.html#InstallingonLinux-Build">Linux</a>, <a href="../../installing/on-mac-osx.html#InstallingonMacOSX-Build">Mac OS X</a> or <a href="../../installing/on-windows.html#InstallingonWindows-Build">Windows</a>, or use this specific command on Linux:</p>
+<p><code>gcc basic-tutorial-12.c -o basic-tutorial-12 `pkg-config --cflags --libs gstreamer-1.0`</code></p>
+<p>If you need help to run this code, refer to the <strong>Running the tutorials</strong> section for your platform: <a href="../../installing/on-linux.html#InstallingonLinux-Run">Linux</a>, <a href="../../installing/on-mac-osx.html#InstallingonMacOSX-Run">Mac OS X</a> or <a href="../../installing/on-windows.html#InstallingonWindows-Run">Windows</a>.</p>
+<p>This tutorial opens a window and displays a movie, with accompanying audio. The media is fetched from the Internet, so the window might take a few seconds to appear, depending on your connection speed. In the console window, you should see a buffering message, and playback should only start when the buffering reaches 100%. This percentage might not change at all if your connection is fast enough and buffering is not required.</p>
+<p>Required libraries: <code>gstreamer-1.0</code></p>
+</blockquote>
+<h2 id="walkthrough">Walkthrough</h2>
+<p>The only special thing this tutorial does is react to certain messages;
+therefore, the initialization code is very simple and should be
+self-explanative by now. The only new bit is the detection of live
+streams:</p>
+<pre><code class="language-c">/* Start playing */
+ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
+if (ret == GST_STATE_CHANGE_FAILURE) {
+  g_printerr ("Unable to set the pipeline to the playing state.\n");
+  gst_object_unref (pipeline);
+  return -1;
+} else if (ret == GST_STATE_CHANGE_NO_PREROLL) {
+  data.is_live = TRUE;
+}
+</code></pre>
+<p>Live streams cannot be paused, so they behave in PAUSED state as if they
+were in the PLAYING state. Setting live streams to PAUSED succeeds, but
+returns <code>GST_STATE_CHANGE_NO_PREROLL</code>, instead of
+<code>GST_STATE_CHANGE_SUCCESS</code> to indicate that this is a live stream. We
+are receiving the NO_PROROLL return code even though we are trying to
+set the pipeline to PLAYING, because state changes happen progressively
+(from NULL to READY, to PAUSED and then to PLAYING).</p>
+<p>We care about live streams because we want to disable buffering for
+them, so we take note of the result of <code>gst_element_set_state()</code> in the
+<code>is_live</code> variable.</p>
+<p>Let’s now review the interesting parts of the message parsing callback:</p>
+<pre><code class="language-c">case GST_MESSAGE_BUFFERING: {
+  gint percent = 0;
+
+  /* If the stream is live, we do not care about buffering. */
+  if (data-&gt;is_live) break;
+
+  gst_message_parse_buffering (msg, &amp;percent);
+  g_print ("Buffering (%3d%%)\r", percent);
+  /* Wait until buffering is complete before start/resume playing */
+  if (percent &lt; 100)
+    gst_element_set_state (data-&gt;pipeline, GST_STATE_PAUSED);
+  else
+    gst_element_set_state (data-&gt;pipeline, GST_STATE_PLAYING);
+  break;
+}
+</code></pre>
+<p>First, if this is a live source, ignore buffering messages.</p>
+<p>We parse the buffering message with <code>gst_message_parse_buffering()</code> to
+retrieve the buffering level.</p>
+<p>Then, we print the buffering level on the console and set the pipeline
+to PAUSED if it is below 100%. Otherwise, we set the pipeline to
+PLAYING.</p>
+<p>At startup, we will see the buffering level rise up to 100% before
+playback starts, which is what we wanted to achieve. If, later on, the
+network becomes slow or unresponsive and our buffer depletes, we will
+receive new buffering messages with levels below 100% so we will pause
+the pipeline again until enough buffer has been built up.</p>
+<pre><code class="language-c">case GST_MESSAGE_CLOCK_LOST:
+  /* Get a new clock */
+  gst_element_set_state (data-&gt;pipeline, GST_STATE_PAUSED);
+  gst_element_set_state (data-&gt;pipeline, GST_STATE_PLAYING);
+  break;
+</code></pre>
+<p>For the second network issue, the loss of clock, we simply set the
+pipeline to PAUSED and back to PLAYING, so a new clock is selected,
+waiting for new media chunks to be received if necessary.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This tutorial has described how to add network resilience to your
+application with two very simple precautions:</p>
+<ul>
+<li>Taking care of buffering messages sent by the pipeline</li>
+<li>Taking care of clock loss</li>
+</ul>
+<p>Handling these messages improves the application’s response to network
+problems, increasing the overall playback smoothness.</p>
+<p>It has been a pleasure having you here, and see you soon!</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

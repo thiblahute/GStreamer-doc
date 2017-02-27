@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Encoding and Muxing</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/encoding.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="encoding.md">
+<h1 id="encoding-and-muxing">Encoding and Muxing</h1>
+<h2 id="problems-this-proposal-attempts-to-solve">Problems this proposal attempts to solve</h2>
+<ul>
+<li>
+<p>Duplication of pipeline code for gstreamer-based applications
+wishing to encode and or mux streams, leading to subtle differences
+and inconsistencies across those applications.</p>
+</li>
+<li>
+<p>No unified system for describing encoding targets for applications
+in a user-friendly way.</p>
+</li>
+<li>
+<p>No unified system for creating encoding targets for applications,
+resulting in duplication of code across all applications,
+differences and inconsistencies that come with that duplication, and
+applications hardcoding element names and settings resulting in poor
+portability.</p>
+</li>
+</ul>
+<h2 id="goals">Goals</h2>
+<ol>
+<li>
+<p>Convenience encoding element</p>
+<p>Create a convenience <code>GstBin</code> for encoding and muxing several streams,
+hereafter called 'EncodeBin'.</p>
+<p>This element will only contain one single property, which is a profile.</p>
+</li>
+<li>
+<p>Define a encoding profile system</p>
+</li>
+<li>
+<p>Encoding profile helper library</p>
+</li>
+</ol>
+<p>Create a helper library to:</p>
+<ul>
+<li>
+<p>create EncodeBin instances based on profiles, and</p>
+</li>
+<li>
+<p>help applications to create/load/save/browse those profiles.</p>
+</li>
+</ul>
+<h2 id="encodebin">EncodeBin</h2>
+<h3 id="proposed-api">Proposed API</h3>
+<p>EncodeBin is a <code>GstBin</code> subclass.</p>
+<p>It implements the <code>GstTagSetter</code> interface, by which it will proxy the
+calls to the muxer.</p>
+<p>Only two introspectable property (i.e. usable without extra API):</p>
+<ul>
+<li>A <code>GstEncodingProfile</code></li>
+<li>The name of the profile to use</li>
+</ul>
+<p>When a profile is selected, encodebin will:</p>
+<ul>
+<li>Add REQUEST sinkpads for all the GstStreamProfile</li>
+<li>Create the muxer and expose the source pad</li>
+</ul>
+<p>Whenever a request pad is created, encodebin will:</p>
+<ul>
+<li>Create the chain of elements for that pad</li>
+<li>Ghost the sink pad</li>
+<li>Return that ghost pad</li>
+</ul>
+<p>This allows reducing the code to the minimum for applications wishing to
+encode a source for a given profile:</p>
+<pre><code>    encbin = gst_element_factory_make ("encodebin, NULL);
+    g_object_set (encbin, "profile", "N900/H264 HQ", NULL);
+    gst_element_link (encbin, filesink);
+
+    vsrcpad = gst_element_get_src_pad (source, "src1");
+    vsinkpad = gst_element_get_request\_pad (encbin, "video\_%u");
+    gst_pad_link (vsrcpad, vsinkpad);
+</code></pre>
+<h3 id="explanation-of-the-various-stages-in-encodebin">Explanation of the Various stages in EncodeBin</h3>
+<p>This describes the various stages which can happen in order to end up
+with a multiplexed stream that can then be stored or streamed.</p>
+<h4 id="incoming-streams">Incoming streams</h4>
+<p>The streams fed to EncodeBin can be of various types:</p>
+<ul>
+<li>Video</li>
+<li>Uncompressed (but maybe subsampled)</li>
+<li>Compressed</li>
+<li>Audio</li>
+<li>Uncompressed (audio/x-raw)</li>
+<li>Compressed</li>
+<li>Timed text</li>
+<li>Private streams</li>
+</ul>
+<h4 id="steps-involved-for-raw-video-encoding">Steps involved for raw video encoding</h4>
+<ol start="0">
+<li>
+<p>Incoming Stream</p>
+</li>
+<li>
+<p>Transform raw video feed (optional)</p>
+</li>
+</ol>
+<p>Here we modify the various fundamental properties of a raw video stream
+to be compatible with the intersection of: * The encoder <code>GstCaps</code> and *
+The specified "Stream Restriction" of the profile/target</p>
+<p>The fundamental properties that can be modified are: * width/height
+This is done with a video scaler. The DAR (Display Aspect Ratio) MUST be
+respected. If needed, black borders can be added to comply with the
+target DAR. * framerate * format/colorspace/depth All of this is done
+with a colorspace converter</p>
+<ol start="2">
+<li>Actual encoding (optional for raw streams)</li>
+</ol>
+<p>An encoder (with some optional settings) is used.</p>
+<ol start="3">
+<li>Muxing</li>
+</ol>
+<p>A muxer (with some optional settings) is used.</p>
+<ol start="4">
+<li>Outgoing encoded and muxed stream</li>
+</ol>
+<h4 id="steps-involved-for-raw-audio-encoding">Steps involved for raw audio encoding</h4>
+<p>This is roughly the same as for raw video, expect for (1)</p>
+<ol>
+<li>Transform raw audo feed (optional)</li>
+</ol>
+<p>We modify the various fundamental properties of a raw audio stream to be
+compatible with the intersection of: * The encoder <code>GstCaps</code> and * The
+specified "Stream Restriction" of the profile/target</p>
+<p>The fundamental properties that can be modifier are: * Number of
+channels * Type of raw audio (integer or floating point) * Depth
+(number of bits required to encode one sample)</p>
+<h4 id="steps-involved-for-encoded-audiovideo-streams">Steps involved for encoded audio/video streams</h4>
+<p>Steps (1) and (2) are replaced by a parser if a parser is available for
+the given format.</p>
+<h4 id="steps-involved-for-other-streams">Steps involved for other streams</h4>
+<p>Other streams will just be forwarded as-is to the muxer, provided the
+muxer accepts the stream type.</p>
+<h2 id="encoding-profile-system">Encoding Profile System</h2>
+<p>This work is based on:</p>
+<ul>
+<li>
+<p>The existing <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPreset.html">GstPreset API documentation</a> system for elements</p>
+</li>
+<li>
+<p>The gnome-media <a href="http://www.gnome.org/%7Ebmsmith/gconf-docs/C/gnome-media.html">GConf audio profile system</a></p>
+</li>
+<li>
+<p>The investigation done into device profiles by Arista and
+Transmageddon: <a href="http://gstreamer.freedesktop.org/wiki/DeviceProfile" title="FIXME: wiki is gone">Research on a Device Profile API</a>,
+and <a href="http://gstreamer.freedesktop.org/wiki/PresetDesign" title="FIXME: wiki is gone">Research on defining presets usage</a>.</p>
+</li>
+</ul>
+<h3 id="terminology">Terminology</h3>
+<ul>
+<li>Encoding Target Category A Target Category is a classification of
+devices/systems/use-cases for encoding.</li>
+</ul>
+<p>Such a classification is required in order for: * Applications with a
+very-specific use-case to limit the number of profiles they can offer
+the user. A screencasting application has no use with the online
+services targets for example. * Offering the user some initial
+classification in the case of a more generic encoding application (like
+a video editor or a transcoder).</p>
+<p>Ex: Consumer devices Online service Intermediate Editing Format
+Screencast Capture Computer</p>
+<ul>
+<li>
+<p>Encoding Profile Target A Profile Target describes a specific entity
+for which we wish to encode. A Profile Target must belong to at
+least one Target Category. It will define at least one Encoding
+Profile.</p>
+<p>Examples (with category): Nokia N900 (Consumer device) Sony PlayStation 3
+(Consumer device) Youtube (Online service) DNxHD (Intermediate editing
+format) HuffYUV (Screencast) Theora (Computer)</p>
+</li>
+<li>
+<p>Encoding Profile A specific combination of muxer, encoders, presets
+and limitations.</p>
+<p>Examples: Nokia N900/H264 HQ, Ipod/High Quality, DVD/Pal,
+Youtube/High Quality HTML5/Low Bandwith, DNxHD</p>
+</li>
+</ul>
+<h3 id="encoding-profile">Encoding Profile</h3>
+<p>An encoding profile requires the following information:</p>
+<ul>
+<li>Name This string is not translatable and must be unique. A
+recommendation to guarantee uniqueness of the naming could be:
+<target>/<name></name></target></li>
+<li>Description This is a translatable string describing the profile</li>
+<li>Muxing format This is a string containing the GStreamer media-type
+of the container format.</li>
+<li>Muxing preset This is an optional string describing the preset(s) to
+use on the muxer.</li>
+<li>Multipass setting This is a boolean describing whether the profile
+requires several passes.</li>
+<li>List of Stream Profile</li>
+</ul>
+<p>2.3.1 Stream Profiles</p>
+<p>A Stream Profile consists of:</p>
+<ul>
+<li>Type The type of stream profile (audio, video, text, private-data)</li>
+<li>Encoding Format This is a string containing the GStreamer media-type
+of the encoding format to be used. If encoding is not to be applied,
+the raw audio media type will be used.</li>
+<li>Encoding preset This is an optional string describing the preset(s)
+to use on the encoder.</li>
+<li>Restriction This is an optional GstCaps containing the restriction
+of the stream that can be fed to the encoder. This will generally
+containing restrictions in video width/heigh/framerate or audio
+depth.</li>
+<li>presence This is an integer specifying how many streams can be used
+in the containing profile. 0 means that any number of streams can be
+used.</li>
+<li>pass This is an integer which is only meaningful if the multipass
+flag has been set in the profile. If it has been set it indicates
+which pass this Stream Profile corresponds to.</li>
+</ul>
+<h3 id="24-example-profile">2.4 Example profile</h3>
+<p>The representation used here is XML only as an example. No decision is
+made as to which formatting to use for storing targets and profiles.</p>
+<pre><code>&lt;gst-encoding-target&gt;
+      &lt;name&gt;Nokia N900&lt;/name&gt;
+      &lt;category&gt;Consumer Device&lt;/category&gt;
+      &lt;profiles&gt;
+        &lt;profile&gt;Nokia N900/H264 HQ&lt;/profile&gt;
+        &lt;profile&gt;Nokia N900/MP3&lt;/profile&gt;
+        &lt;profile&gt;Nokia N900/AAC&lt;/profile&gt;
+      &lt;/profiles&gt;
+    &lt;/gst-encoding-target&gt;
+    
+    &lt;gst-encoding-profile&gt;
+      &lt;name&gt;Nokia N900/H264 HQ&lt;/name&gt;
+      &lt;description&gt;
+        High Quality H264/AAC for the Nokia N900
+      &lt;/description&gt;
+      &lt;format&gt;video/quicktime,variant=iso&lt;/format&gt;
+      &lt;streams&gt;
+        &lt;stream-profile&gt;
+          &lt;type&gt;audio&lt;/type&gt;
+          &lt;format&gt;audio/mpeg,mpegversion=4&lt;/format&gt;
+          &lt;preset&gt;Quality High/Main&lt;/preset&gt;
+          &lt;restriction&gt;audio/x-raw,channels=[1,2]&lt;/restriction&gt;
+          &lt;presence&gt;1&lt;/presence&gt;
+        &lt;/stream-profile&gt;
+        &lt;stream-profile&gt;
+          &lt;type&gt;video&lt;/type&gt;
+          &lt;format&gt;video/x-h264&lt;/format&gt;
+          &lt;preset&gt;Profile Baseline/Quality High&lt;/preset&gt;
+          &lt;restriction&gt;
+            video/x-raw,width=[16, 800],\
+	    height=[16, 480],framerate=[1/1, 30000/1001]
+          &lt;/restriction&gt;
+          &lt;presence&gt;1&lt;/presence&gt;
+        &lt;/stream-profile&gt;
+      &lt;/streams&gt;  
+    &lt;/gst-encoding-profile&gt;
+</code></pre>
+<h3 id="api">API</h3>
+<p>A proposed C API is contained in the gstprofile.h file in this
+directory.</p>
+<h3 id="modifications-required-in-the-existing-gstpreset-system">Modifications required in the existing GstPreset system</h3>
+<h4 id="temporary-preset">Temporary preset.</h4>
+<p>Currently a preset needs to be saved on disk in order to be used.</p>
+<p>This makes it impossible to have temporary presets (that exist only
+during the lifetime of a process), which might be required in the new
+proposed profile system</p>
+<h4 id="categorisation-of-presets">Categorisation of presets.</h4>
+<p>Currently presets are just aliases of a group of property/value without
+any meanings or explanation as to how they exclude each other.</p>
+<p>Take for example the H264 encoder. It can have presets for: * passes
+(1,2 or 3 passes) * profiles (Baseline, Main, ...) * quality (Low,
+medium, High)</p>
+<p>In order to programmatically know which presets exclude each other, we
+here propose the categorisation of these presets.</p>
+<p>This can be done in one of two ways 1. in the name (by making the name
+be [<category>:]<name>) This would give for example: "Quality:High",
+"Profile:Baseline" 2. by adding a new _meta key This would give for
+example: _meta/category:quality</name></category></p>
+<h4 id="aggregation-of-presets">Aggregation of presets.</h4>
+<p>There can be more than one choice of presets to be done for an element
+(quality, profile, pass).</p>
+<p>This means that one can not currently describe the full configuration of
+an element with a single string but with many.</p>
+<p>The proposal here is to extend the <code>GstPreset</code> API to be able to set all
+presets using one string and a well-known separator ('/').</p>
+<p>This change only requires changes in the core preset handling code.</p>
+<p>This would allow doing the following: <code>gst_preset_load_preset (h264enc, "pass:1/profile:baseline/quality:high")</code></p>
+<h3 id="points-to-be-determined">Points to be determined</h3>
+<p>This document hasn't determined yet how to solve the following problems:</p>
+<h4 id="storage-of-profiles">Storage of profiles</h4>
+<p>One proposal for storage would be to use a system wide directory (like
+$prefix/share/gstreamer-0.10/profiles) and store XML files for every
+individual profiles.</p>
+<p>Users could then add their own profiles in ~/.gstreamer-0.10/profiles</p>
+<p>This poses some limitations as to what to do if some applications want
+to have some profiles limited to their own usage.</p>
+<h2 id="helper-library-for-profiles">Helper library for profiles</h2>
+<p>These helper methods could also be added to existing libraries (like
+<code>GstPreset</code>, GstPbUtils, ..).</p>
+<p>The various API proposed are in the accompanying gstprofile.h file.</p>
+<h3 id="getting-userreadable-names-for-formats">Getting user-readable names for formats</h3>
+<p>This is already provided by GstPbUtils.</p>
+<h3 id="hierarchy-of-profiles">Hierarchy of profiles</h3>
+<p>The goal is for applications to be able to present to the user a list of
+combo-boxes for choosing their output profile:</p>
+<p>[ Category ] # optional, depends on the application [ Device/Site/..
+] # optional, depends on the application [ Profile ]</p>
+<p>Convenience methods are offered to easily get lists of categories,
+devices, and profiles.</p>
+<h3 id="creating-profiles">Creating Profiles</h3>
+<p>The goal is for applications to be able to easily create profiles.</p>
+<p>The applications needs to be able to have a fast/efficient way to: *
+select a container format and see all compatible streams he can use with
+it. * select a codec format and see which container formats he can use
+with it.</p>
+<p>The remaining parts concern the restrictions to encoder input.</p>
+<h3 id="ensuring-availability-of-plugins-for-profiles">Ensuring availability of plugins for Profiles</h3>
+<p>When an application wishes to use a Profile, it should be able to query
+whether it has all the needed plugins to use it.</p>
+<p>This part will use GstPbUtils to query, and if needed install the
+missing plugins through the installed distribution plugin installer.</p>
+<h2 id="usecases-researched">Use-cases researched</h2>
+<p>This is a list of various use-cases where encoding/muxing is being used.</p>
+<h3 id="transcoding">Transcoding</h3>
+<p>The goal is to convert with as minimal loss of quality any input file
+for a target use. A specific variant of this is transmuxing (see below).</p>
+<p>Example applications: Arista, Transmageddon</p>
+<h3 id="rendering-timelines">Rendering timelines</h3>
+<p>The incoming streams are a collection of various segments that need to
+be rendered. Those segments can vary in nature (i.e. the video
+width/height can change). This requires the use of identiy with the
+single-segment property activated to transform the incoming collection
+of segments to a single continuous segment.</p>
+<p>Example applications: PiTiVi, Jokosher</p>
+<h3 id="encoding-of-live-sources">Encoding of live sources</h3>
+<p>The major risk to take into account is the encoder not encoding the
+incoming stream fast enough. This is outside of the scope of encodebin,
+and should be solved by using queues between the sources and encodebin,
+as well as implementing QoS in encoders and sources (the encoders
+emitting QoS events, and the upstream elements adapting themselves
+accordingly).</p>
+<p>Example applications: camerabin, cheese</p>
+<h3 id="screencasting-applications">Screencasting applications</h3>
+<p>This is similar to encoding of live sources. The difference being that
+due to the nature of the source (size and amount/frequency of updates)
+one might want to do the encoding in two parts: * The actual live
+capture is encoded with a 'almost-lossless' codec (such as huffyuv) *
+Once the capture is done, the file created in the first step is then
+rendered to the desired target format.</p>
+<p>Fixing sources to only emit region-updates and having encoders capable
+of encoding those streams would fix the need for the first step but is
+outside of the scope of encodebin.</p>
+<p>Example applications: Istanbul, gnome-shell, recordmydesktop</p>
+<h3 id="live-transcoding">Live transcoding</h3>
+<p>This is the case of an incoming live stream which will be
+broadcasted/transmitted live. One issue to take into account is to
+reduce the encoding latency to a minimum. This should mostly be done by
+picking low-latency encoders.</p>
+<p>Example applications: Rygel, Coherence</p>
+<h3 id="transmuxing">Transmuxing</h3>
+<p>Given a certain file, the aim is to remux the contents WITHOUT decoding
+into either a different container format or the same container format.
+Remuxing into the same container format is useful when the file was not
+created properly (for example, the index is missing). Whenever
+available, parsers should be applied on the encoded streams to validate
+and/or fix the streams before muxing them.</p>
+<p>Metadata from the original file must be kept in the newly created file.</p>
+<p>Example applications: Arista, Transmaggedon</p>
+<h3 id="lossless-cutting">Loss-less cutting</h3>
+<p>Given a certain file, the aim is to extract a certain part of the file
+without going through the process of decoding and re-encoding that file.
+This is similar to the transmuxing use-case.</p>
+<p>Example applications: PiTiVi, Transmageddon, Arista, ...</p>
+<h3 id="multipass-encoding">Multi-pass encoding</h3>
+<p>Some encoders allow doing a multi-pass encoding. The initial pass(es)
+are only used to collect encoding estimates and are not actually muxed
+and outputted. The final pass uses previously collected information, and
+the output is then muxed and outputted.</p>
+<h3 id="archiving-and-intermediary-format">Archiving and intermediary format</h3>
+<p>The requirement is to have lossless</p>
+<h3 id="cd-ripping">CD ripping</h3>
+<p>Example applications: Sound-juicer</p>
+<h3 id="dvd-ripping">DVD ripping</h3>
+<p>Example application: Thoggen</p>
+<h3 id="research-links">Research links</h3>
+<p>Some of these are still active documents, some other not</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

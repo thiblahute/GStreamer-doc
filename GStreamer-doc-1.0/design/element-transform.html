@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Transform elements</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/element-transform.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="element-transform.md">
+<h1 id="transform-elements">Transform elements</h1>
+<p>Transform elements transform input buffers to output buffers based on
+the sink and source caps.</p>
+<p>An important requirement for a transform is that the output caps are
+completely defined by the input caps and vice versa. This means that a
+typical decoder element can NOT be implemented with a transform element,
+this is because the output caps like width and height of the
+decompressed video frame, for example, are encoded in the stream and
+thus not defined by the input caps.</p>
+<p>Typical transform elements include:</p>
+<ul>
+<li>
+<p>audio convertors (audioconvert, audioresample,…)</p>
+</li>
+<li>
+<p>video convertors (colorspace, videoscale, …)</p>
+</li>
+<li>
+<p>filters (capsfilter, volume, colorbalance, …)</p>
+</li>
+</ul>
+<p>The implementation of the transform element has to take care of the
+following things:</p>
+<ul>
+<li>
+<p>efficient negotiation both up and downstream</p>
+</li>
+<li>
+<p>efficient buffer alloc and other buffer management</p>
+</li>
+</ul>
+<p>Some transform elements can operate in different modes:</p>
+<ul>
+<li>
+<p>passthrough (no changes are done on the input buffers)</p>
+</li>
+<li>
+<p>in-place (changes made directly to the incoming buffers without
+requiring a copy or new buffer allocation)</p>
+</li>
+<li>
+<p>metadata changes only</p>
+</li>
+</ul>
+<p>Depending on the mode of operation the buffer allocation strategy might
+change.</p>
+<p>The transform element should at any point be able to renegotiate sink
+and src caps as well as change the operation mode.</p>
+<p>In addition, the transform element will typically take care of the
+following things as well:</p>
+<ul>
+<li>
+<p>flushing, seeking</p>
+</li>
+<li>
+<p>state changes</p>
+</li>
+<li>
+<p>timestamping, this is typically done by copying the input timestamps
+to the output buffers but subclasses should be able to override
+this.</p>
+</li>
+<li>
+<p>QoS, avoiding calls to the subclass transform function</p>
+</li>
+<li>
+<p>handle scheduling issues such as push and pull based operation.</p>
+</li>
+</ul>
+<p>In the next sections, we will describe the behaviour of the transform
+element in each of the above use cases. We focus mostly on the buffer
+allocation strategies and caps negotiation.</p>
+<h2 id="processing">Processing</h2>
+<p>A transform has 2 main processing functions:</p>
+<ul>
+<li>
+<p><strong><code>transform()</code></strong>: Transform the input buffer to the output buffer. The
+output buffer is guaranteed to be writable and different from the input buffer.</p>
+</li>
+<li>
+<p><strong><code>transform_ip()</code></strong>: Transform the input buffer in-place. The input buffer
+is writable and of bigger or equal size than the output buffer.</p>
+</li>
+</ul>
+<p>A transform can operate in the following modes:</p>
+<ul>
+<li>
+<p><em>passthrough</em>: The element will not make changes to the buffers, buffers are
+pushed straight through, caps on both sides need to be the same. The element
+can optionally implement a <code>transform_ip()</code> function to take a look at the data,
+the buffer does not have to be writable.</p>
+</li>
+<li>
+<p><em>in-place</em>: Changes can be made to the input buffer directly to obtain the
+output buffer. The transform must implement a <code>transform_ip()</code> function.</p>
+</li>
+<li>
+<p><em>copy-transform</em>: The transform is performed by copying and transforming the
+input buffer to a new output buffer. The transform must implement a <code>transform()</code> function.</p>
+</li>
+</ul>
+<p>When no <code>transform()</code> function is provided, only in-place and passthrough
+operation is allowed, this means that source and destination caps must
+be equal or that the source buffer size is bigger or equal than the
+destination buffer.</p>
+<p>When no <code>transform_ip()</code> function is provided, only passthrough and
+copy-transforms are supported. Providing this function is an
+optimisation that can avoid a buffer copy.</p>
+<p>When no functions are provided, we can only process in passthrough mode.</p>
+<h2 id="negotiation">Negotiation</h2>
+<p>Typical (re)negotiation of the transform element in push mode always
+goes from sink to src, this means triggers the following sequence:</p>
+<ul>
+<li>
+<p>the sinkpad receives a new caps event.</p>
+</li>
+<li>
+<p>the transform function figures out what it can convert these caps
+to.</p>
+</li>
+<li>
+<p>try to see if we can configure the caps unmodified on the peer. We
+need to do this because we prefer to not do anything.</p>
+</li>
+<li>
+<p>the transform configures itself to transform from the new sink caps
+to the target src caps</p>
+</li>
+<li>
+<p>the transform processes and sets the output caps on the src pad</p>
+</li>
+</ul>
+<p>We call this downstream negotiation (DN) and it goes roughly like this:</p>
+<pre><code>          sinkpad              transform               srcpad
+CAPS event   |                    |                      |
+------------&gt;|  find_transform()  |                      |
+             |-------------------&gt;|                      |
+             |                    |       CAPS event     |
+             |                    |---------------------&gt;|
+             | &lt;configure caps&gt; &lt;-|                      |
+</code></pre>
+<p>These steps configure the element for a transformation from the input
+caps to the output caps.</p>
+<p>The transform has 3 function to perform the negotiation:</p>
+<ul>
+<li>
+<p><strong><code>transform_caps()</code></strong>: Transform the caps on a certain pad to all the
+possible supported caps on the other pad. The input caps are guaranteed to be
+a simple caps with just one structure. The caps do not have to be fixed.</p>
+</li>
+<li>
+<p><strong><code>fixate_caps()</code></strong>: Given a caps on one pad, fixate the caps on the other
+pad. The target caps are writable.</p>
+</li>
+<li>
+<p><strong><code>set_caps()</code></strong>: Configure the transform for a transformation between src
+caps and dest caps. Both caps are guaranteed to be fixed caps.</p>
+</li>
+</ul>
+<p>If no <code>transform_caps()</code> is defined, we can only perform the identity
+transform, by default.</p>
+<p>If no <code>set_caps()</code> is defined, we don’t care about caps. In that case we
+also assume nothing is going to write to the buffer and we don’t enforce
+a writable buffer for the <code>transform_ip()</code> function, when present.</p>
+<p>One common function that we need for the transform element is to find
+the best transform from one format (src) to another (dest). Some
+requirements of this function are:</p>
+<ul>
+<li>
+<p>has a fixed src caps</p>
+</li>
+<li>
+<p>finds a fixed dest caps that the transform element can transform to</p>
+</li>
+<li>
+<p>the dest caps are compatible and can be accepted by peer elements</p>
+</li>
+<li>
+<p>the transform function prefers to make src caps == dest caps</p>
+</li>
+<li>
+<p>the transform function can optionally fixate dest caps.</p>
+</li>
+</ul>
+<p>The <code>find_transform()</code> function goes like this:</p>
+<ul>
+<li>
+<p>start from src aps, these caps are fixed.</p>
+</li>
+<li>
+<p>check if the caps are acceptable for us as src caps. This is usually
+enforced by the padtemplate of the element.</p>
+</li>
+<li>
+<p>calculate all caps we can transform too with <code>transform_caps()</code></p>
+</li>
+<li>
+<p>if the original caps are a subset of the transforms, try to see if
+the the caps are acceptable for the peer. If this is possible, we
+can perform passthrough and make src == dest. This is performed by
+simply calling <code>gst_pad_peer_query_accept_caps()</code>.</p>
+</li>
+<li>
+<p>if the caps are not fixed, we need to fixate it, start by taking the
+peer caps and intersect with them.</p>
+</li>
+<li>
+<p>for each of the transformed caps retrieved with <code>transform_caps()</code>:</p>
+</li>
+<li>
+<p>try to fixate the caps with <code>fixate_caps()</code></p>
+</li>
+<li>
+<p>if the caps are fixated, check if the peer accepts them with
+<code>_peer_query_accept_caps()</code>, if the peer accepts, we have found a dest caps.</p>
+</li>
+<li>
+<p>if we run out of caps, we fail to find a transform.</p>
+</li>
+<li>
+<p>if we found a destination caps, configure the transform with
+<code>set_caps()</code>.</p>
+</li>
+</ul>
+<p>After this negotiation process, the transform element is usually in a
+steady state. We can identify these steady states:</p>
+<ul>
+<li>
+<p>src and sink pads both have the same caps. Note that when the caps
+are equal on both pads, the input and output buffers automatically
+have the same size. The element can operate on the buffers in the
+following ways: (Same caps, SC)</p>
+</li>
+<li>
+<p>passthrough: buffers are inspected but no metadata or buffer data is
+changed. The input buffers don’t need to be writable. The input
+buffer is simply pushed out again without modifications. (SCP)</p>
+<pre><code>          sinkpad              transform               srcpad
+  chain()    |                    |                      |
+------------&gt;|   handle_buffer()  |                      |
+             |-------------------&gt;|      pad_push()      |
+             |                    |---------------------&gt;|
+             |                    |                      |
+</code></pre>
+</li>
+<li>
+<p>in-place: buffers are modified in-place, this means that the input
+buffer is modified to produce a new output buffer. This requires the
+input buffer to be writable. If the input buffer is not writable, a
+new buffer has to be allocated from the bufferpool. (SCI)</p>
+<pre><code>          sinkpad              transform               srcpad
+  chain()    |                    |                      |
+------------&gt;|   handle_buffer()  |                      |
+             |-------------------&gt;|                      |
+             |                    |   [!writable]        |
+             |                    |   alloc buffer       |
+             |                  .-|                      |
+             |  &lt;transform_ip&gt;  | |                      |
+             |                  '&gt;|                      |
+             |                    |      pad_push()      |
+             |                    |---------------------&gt;|
+             |                    |                      |
+</code></pre>
+</li>
+<li>
+<p>copy transform: a new output buffer is allocate from the bufferpool
+and data from the input buffer is transformed into the output
+buffer. (SCC)</p>
+<pre><code>          sinkpad              transform               srcpad
+  chain()    |                    |                      |
+------------&gt;|   handle_buffer()  |                      |
+             |-------------------&gt;|                      |
+             |                    |     alloc buffer     |
+             |                  .-|                      |
+             |     &lt;transform&gt;  | |                      |
+             |                  '&gt;|                      |
+             |                    |      pad_push()      |
+             |                    |---------------------&gt;|
+             |                    |                      |
+</code></pre>
+</li>
+<li>
+<p>src and sink pads have different caps. The element can operate on
+the buffers in the following way: (Different Caps, DC)</p>
+</li>
+<li>
+<p>in-place: input buffers are modified in-place. This means that the
+input buffer has a size that is larger or equal to the output size.
+The input buffer will be resized to the size of the output buffer.
+If the input buffer is not writable or the output size is bigger
+than the input size, we need to pad-alloc a new buffer. (DCI)</p>
+<pre><code>          sinkpad              transform               srcpad
+  chain()    |                    |                      |
+------------&gt;|   handle_buffer()  |                      |
+             |-------------------&gt;|                      |
+             |                    | [!writable || !size] |
+             |                    |     alloc buffer     |
+             |                  .-|                      |
+             |  &lt;transform_ip&gt;  | |                      |
+             |                  '&gt;|                      |
+             |                    |      pad_push()      |
+             |                    |---------------------&gt;|
+             |                    |                      |
+</code></pre>
+</li>
+<li>
+<p>copy transform: a new output buffer is allocated and the data from
+the input buffer is transformed into the output buffer. The flow is
+exactly the same as the case with the same-caps negotiation. (DCC)</p>
+</li>
+</ul>
+<p>We can immediately observe that the copy transform states will need to
+allocate a new buffer from the bufferpool. When the transform element is
+receiving a non-writable buffer in the in-place state, it will also need
+to perform an allocation. There is no reason why the passthrough state
+would perform an allocation.</p>
+<p>This steady state changes when one of the following actions occur:</p>
+<ul>
+<li>
+<p>the sink pad receives new caps, this triggers the above downstream
+renegotation process, see above for the flow.</p>
+</li>
+<li>
+<p>the transform element wants to renegotiate (because of changed
+properties, for example). This essentially clears the current steady
+state and triggers the downstream and upstream renegotiation
+process. This situation also happens when a RECONFIGURE event was
+received on the transform srcpad.</p>
+</li>
+</ul>
+<h2 id="allocation">Allocation</h2>
+<p>After the transform element is configured with caps, a bufferpool needs
+to be negotiated to perform the allocation of buffers. We have 2 cases:</p>
+<ul>
+<li>
+<p>The element is operating in passthrough we don’t need to allocate a
+buffer in the transform element.</p>
+</li>
+<li>
+<p>The element is not operating in passthrough and needs to allocation
+an output buffer.</p>
+</li>
+</ul>
+<p>In case 1, we don’t query and configure a pool. We let upstream decide
+if it wants to use a bufferpool and then we will proxy the bufferpool
+from downstream to upstream.</p>
+<p>In case 2, we query and set a bufferpool on the srcpad that will be used
+for doing the allocations.</p>
+<p>In order to perform allocation, we need to be able to get the size of
+the output buffer after the transform. We need additional function to
+retrieve the size. There are two functions:</p>
+<ul>
+<li>
+<p><code>transform_size()</code>: Given a caps and a size on one pad, and a caps on the
+other pad, calculate the size of the other buffer. This function is able to
+perform all size transforms and is the preferred method of transforming
+a size.</p>
+</li>
+<li>
+<p><code>get_unit_size()</code>: When the input size and output size are always
+a multiple of each other (audio conversion, ..) we can define a more simple
+<code>get_unit_size()</code> function. The transform will use this function to get the
+same amount of units in the source and destination buffers. For performance
+reasons, the mapping between caps and size is kept in a cache.</p>
+</li>
+</ul>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

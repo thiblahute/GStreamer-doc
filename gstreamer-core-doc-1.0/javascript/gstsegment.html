@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstSegment</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-project="gstreamer-core-doc-1.0" data-hotdoc-ref="gstsegment.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstsegment.h">
+<h1 id="gstsegment">GstSegment</h1><p>This helper structure holds the relevant values for tracking the region of
+interest in a media file, called a segment.</p>
+<p>The structure can be used for two purposes:</p>
+<ul>
+<li>performing seeks (handling seek events)</li>
+<li>tracking playback regions (handling newsegment events)</li>
+</ul>
+<p>The segment is usually configured by the application with a seek event which
+is propagated upstream and eventually handled by an element that performs the seek.</p>
+<p>The configured segment is then propagated back downstream with a newsegment event.
+This information is then used to clip media to the segment boundaries.</p>
+<p>A segment structure is initialized with <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_init">Gst.Segment.prototype.init</a>, which takes a <a href="../../gstreamer-core-doc-1.0/javascript/gstformat.html#GstFormat">Gst.Format</a>
+that will be used as the format of the segment values. The segment will be configured
+with a start value of 0 and a stop/duration of -1, which is undefined. The default
+rate and applied_rate is 1.0.</p>
+<p>The public duration field contains the duration of the segment. When using
+the segment for seeking, the start and time members should normally be left
+to their default 0 value. The stop position is left to -1 unless explicitly
+configured to a different value after a seek event.</p>
+<p>The current position in the segment should be set by changing the position
+member in the structure.</p>
+<p>For elements that perform seeks, the current segment should be updated with the
+<a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_do_seek">Gst.Segment.prototype.do_seek</a> and the values from the seek event. This method will update
+all the segment fields. The position field will contain the new playback position.
+If the start_type was different from GST_SEEK_TYPE_NONE, playback continues from
+the position position, possibly with updated flags or rate.</p>
+<p>For elements that want to use <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> to track the playback region,
+update the segment fields with the information from the newsegment event.
+The <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_clip">Gst.Segment.prototype.clip</a> method can be used to check and clip
+the media data to the segment boundaries.</p>
+<p>For elements that want to synchronize to the pipeline clock, <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_to_running_time">Gst.Segment.prototype.to_running_time</a>
+can be used to convert a timestamp to a value that can be used to synchronize
+to the clock. This function takes into account the base as well as
+any rate or applied_rate conversions.</p>
+<p>For elements that need to perform operations on media data in stream_time,
+<a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_to_stream_time">Gst.Segment.prototype.to_stream_time</a> can be used to convert a timestamp and the segment
+info to stream time (which is always between 0 and the duration of the stream).</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_segment_get_type">
+		<h3 id="gst_segment_get_type-not-introspectable">
+	<span><code>gst_segment_get_type (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+int 
+gst_segment_get_type (not introspectable) ()</pre>
+
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		int 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_segment_copy_into">
+		<h3 id="gstsegmentprototypecopy_into">
+	<span><code>Gst.Segment.prototype.copy_into</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.copy_into(dest: int ): {
+    // javascript wrapper for 'gst_segment_copy_into'
+}</pre>
+
+<p>Copy the contents of <em>src</em> into <em>dest</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a></p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dest:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a></p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_segment_free">
+		<h3 id="gstsegmentprototypefree">
+	<span><code>Gst.Segment.prototype.free</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.free(): {
+    // javascript wrapper for 'gst_segment_free'
+}</pre>
+
+<p>Free the allocated segment <em>segment</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a></p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_segment_init">
+		<h3 id="gstsegmentprototypeinit">
+	<span><code>Gst.Segment.prototype.init</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.init(format: int ): {
+    // javascript wrapper for 'gst_segment_init'
+}</pre>
+
+<p>The start/position fields are set to 0 and the stop/duration
+fields are set to -1 (unknown). The default rate of 1.0 and no
+flags are set.</p>
+<p>Initialize <em>segment</em> to its default values.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="gst_segment_to_stream_time_full">
+		<h3 id="gstsegmentprototypeto_stream_time_full">
+	<span><code>Gst.Segment.prototype.to_stream_time_full</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.to_stream_time_full(format: int , position: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, stream_time: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_to_stream_time_full'
+}</pre>
+
+<p>Translate <em>position</em> to the total stream time using the currently configured
+segment. Compared to <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_to_stream_time">Gst.Segment.prototype.to_stream_time</a> this function can return
+negative stream-time.</p>
+<p>This function is typically used by elements that need to synchronize buffers
+against the clock or eachother.</p>
+<p><em>position</em> can be any value and the result of this function for values outside
+of the segment is extrapolated.</p>
+<p>When 1 is returned, <em>position</em> resulted in a positive stream-time returned
+in <em>stream_time</em>.</p>
+<p>When this function returns -1, the returned <em>stream_time</em> should be negated
+to get the real negative stream time.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>position:</code></em></i>
+		</p>
+	</td>
+		<td><p>the position in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stream_time:</code></em></i>
+		</p>
+	</td>
+		<td><p>result stream-time</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a 1 or -1 on success, 0 on failure.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.8
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="gst_segment_to_stream_time">
+		<h3 id="gstsegmentprototypeto_stream_time">
+	<span><code>Gst.Segment.prototype.to_stream_time</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.to_stream_time(format: int , position: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_to_stream_time'
+}</pre>
+
+<p>Translate <em>position</em> to stream time using the currently configured
+segment. The <em>position</em> value must be between <em>segment</em> start and
+stop value.</p>
+<p>This function is typically used by elements that need to operate on
+the stream time of the buffers it receives, such as effect plugins.
+In those use cases, <em>position</em> is typically the buffer timestamp or
+clock time that one wants to convert to the stream time.
+The stream time is always between 0 and the total duration of the
+media stream.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>position:</code></em></i>
+		</p>
+	</td>
+		<td><p>the position in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the position in stream_time or -1 when an invalid position
+was given.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.8
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="gst_segment_position_from_stream_time_full">
+		<h3 id="gstsegmentprototypeposition_from_stream_time_full">
+	<span><code>Gst.Segment.prototype.position_from_stream_time_full</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.position_from_stream_time_full(format: int , stream_time: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, position: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_position_from_stream_time_full'
+}</pre>
+
+<p>Translate <em>stream_time</em> to the segment position using the currently configured
+segment. Compared to <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_position_from_stream_time">Gst.Segment.prototype.position_from_stream_time</a> this function can
+return negative segment position.</p>
+<p>This function is typically used by elements that need to synchronize buffers
+against the clock or each other.</p>
+<p><em>stream_time</em> can be any value and the result of this function for values outside
+of the segment is extrapolated.</p>
+<p>When 1 is returned, <em>stream_time</em> resulted in a positive position returned
+in <em>position</em>.</p>
+<p>When this function returns -1, the returned <em>position</em> should be negated
+to get the real negative segment position.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stream_time:</code></em></i>
+		</p>
+	</td>
+		<td><p>the stream-time</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>position:</code></em></i>
+		</p>
+	</td>
+		<td><p>the resulting position in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a 1 or -1 on success, 0 on failure.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.8
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="gst_segment_position_from_stream_time">
+		<h3 id="gstsegmentprototypeposition_from_stream_time">
+	<span><code>Gst.Segment.prototype.position_from_stream_time</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.position_from_stream_time(format: int , stream_time: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_position_from_stream_time'
+}</pre>
+
+<p>Convert <em>stream_time</em> into a position in the segment so that
+<a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_to_stream_time">Gst.Segment.prototype.to_stream_time</a> with that position returns <em>stream_time</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stream_time:</code></em></i>
+		</p>
+	</td>
+		<td><p>the stream_time in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the position in the segment for <em>stream_time</em>. This function returns
+-1 when <em>stream_time</em> is -1 or when it is not inside <em>segment</em>.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.8
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_segment_to_running_time">
+		<h3 id="gstsegmentprototypeto_running_time">
+	<span><code>Gst.Segment.prototype.to_running_time</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.to_running_time(format: int , position: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_to_running_time'
+}</pre>
+
+<p>Translate <em>position</em> to the total running time using the currently configured
+segment. Position is a value between <em>segment</em> start and stop time.</p>
+<p>This function is typically used by elements that need to synchronize to the
+global clock in a pipeline. The running time is a constantly increasing value
+starting from 0. When <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_init">Gst.Segment.prototype.init</a> is called, this value will reset to</p>
+<ol start="0">
+<li>
+</ol>
+<p>This function returns -1 if the position is outside of <em>segment</em> start and stop.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>position:</code></em></i>
+		</p>
+	</td>
+		<td><p>the position in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the position as the total running time or -1 when an invalid position
+was given.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_segment_to_running_time_full">
+		<h3 id="gstsegmentprototypeto_running_time_full">
+	<span><code>Gst.Segment.prototype.to_running_time_full</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.to_running_time_full(format: int , position: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, running_time: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_to_running_time_full'
+}</pre>
+
+<p>Translate <em>position</em> to the total running time using the currently configured
+segment. Compared to <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_to_running_time">Gst.Segment.prototype.to_running_time</a> this function can return
+negative running-time.</p>
+<p>This function is typically used by elements that need to synchronize buffers
+against the clock or eachother.</p>
+<p><em>position</em> can be any value and the result of this function for values outside
+of the segment is extrapolated.</p>
+<p>When 1 is returned, <em>position</em> resulted in a positive running-time returned
+in <em>running_time</em>.</p>
+<p>When this function returns -1, the returned <em>running_time</em> should be negated
+to get the real negative running time.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>position:</code></em></i>
+		</p>
+	</td>
+		<td><p>the position in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>running_time:</code></em></i>
+		</p>
+	</td>
+		<td><p>result running-time</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a 1 or -1 on success, 0 on failure.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_segment_to_position">
+		<h3 id="gstsegmentprototypeto_position">
+	<span><code>Gst.Segment.prototype.to_position</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.to_position(format: int , running_time: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_to_position'
+}</pre>
+
+<p>Convert <em>running_time</em> into a position in the segment so that
+<a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_to_running_time">Gst.Segment.prototype.to_running_time</a> with that position returns <em>running_time</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>running_time:</code></em></i>
+		</p>
+	</td>
+		<td><p>the running_time in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the position in the segment for <em>running_time</em>. This function returns
+-1 when <em>running_time</em> is -1 or when it is not inside <em>segment</em>.</p>
+<p>Deprecated. Use <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_position_from_running_time">Gst.Segment.prototype.position_from_running_time</a> instead.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="gst_segment_position_from_running_time_full">
+		<h3 id="gstsegmentprototypeposition_from_running_time_full">
+	<span><code>Gst.Segment.prototype.position_from_running_time_full</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.position_from_running_time_full(format: int , running_time: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, position: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_position_from_running_time_full'
+}</pre>
+
+<p>Translate <em>running_time</em> to the segment position using the currently configured
+segment. Compared to <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_position_from_running_time">Gst.Segment.prototype.position_from_running_time</a> this function can
+return negative segment position.</p>
+<p>This function is typically used by elements that need to synchronize buffers
+against the clock or each other.</p>
+<p><em>running_time</em> can be any value and the result of this function for values
+outside of the segment is extrapolated.</p>
+<p>When 1 is returned, <em>running_time</em> resulted in a positive position returned
+in <em>position</em>.</p>
+<p>When this function returns -1, the returned <em>position</em> should be negated
+to get the real negative segment position.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>running_time:</code></em></i>
+		</p>
+	</td>
+		<td><p>the running-time</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>position:</code></em></i>
+		</p>
+	</td>
+		<td><p>the resulting position in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a 1 or -1 on success, 0 on failure.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.8
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="gst_segment_position_from_running_time">
+		<h3 id="gstsegmentprototypeposition_from_running_time">
+	<span><code>Gst.Segment.prototype.position_from_running_time</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.position_from_running_time(format: int , running_time: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_position_from_running_time'
+}</pre>
+
+<p>Convert <em>running_time</em> into a position in the segment so that
+<a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#gst_segment_to_running_time">Gst.Segment.prototype.to_running_time</a> with that position returns <em>running_time</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>running_time:</code></em></i>
+		</p>
+	</td>
+		<td><p>the running_time in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the position in the segment for <em>running_time</em>. This function returns
+-1 when <em>running_time</em> is -1 or when it is not inside <em>segment</em>.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.8
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_segment_set_running_time">
+		<h3 id="gstsegmentprototypeset_running_time">
+	<span><code>Gst.Segment.prototype.set_running_time</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.set_running_time(format: int , running_time: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_set_running_time'
+}</pre>
+
+<p>Adjust the start/stop and base values of <em>segment</em> such that the next valid
+buffer will be one with <em>running_time</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>running_time:</code></em></i>
+		</p>
+	</td>
+		<td><p>the running_time in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the segment could be updated successfully. If <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> is
+returned, <em>running_time</em> is -1 or not in <em>segment</em>.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2.3;" id="gst_segment_offset_running_time">
+		<h3 id="gstsegmentprototypeoffset_running_time">
+	<span><code>Gst.Segment.prototype.offset_running_time</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.offset_running_time(format: int , offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_offset_running_time'
+}</pre>
+
+<p>Adjust the values in <em>segment</em> so that <em>offset</em> is applied to all
+future running-time calculations.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>offset:</code></em></i>
+		</p>
+	</td>
+		<td><p>the offset to apply in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the segment could be updated successfully. If <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> is
+returned, <em>offset</em> is not in <em>segment</em>.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2.3
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_segment_clip">
+		<h3 id="gstsegmentprototypeclip">
+	<span><code>Gst.Segment.prototype.clip</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.clip(format: int , start: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, stop: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_clip'
+}</pre>
+
+<p>Clip the given <em>start</em> and <em>stop</em> values to the segment boundaries given
+in <em>segment</em>. <em>start</em> and <em>stop</em> are compared and clipped to <em>segment</em>
+start and stop values.</p>
+<p>If the function returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a>, <em>start</em> and <em>stop</em> are known to fall
+outside of <em>segment</em> and <em>clip_start</em> and <em>clip_stop</em> are not updated.</p>
+<p>When the function returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>, <em>clip_start</em> and <em>clip_stop</em> will be
+updated. If <em>clip_start</em> or <em>clip_stop</em> are different from <em>start</em> or <em>stop</em>
+respectively, the region fell partially in the segment.</p>
+<p>Note that when <em>stop</em> is -1, <em>clip_stop</em> will be set to the end of the
+segment. Depending on the use case, this may or may not be what you want.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>start:</code></em></i>
+		</p>
+	</td>
+		<td><p>the start position in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stop:</code></em></i>
+		</p>
+	</td>
+		<td><p>the stop position in the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the given <em>start</em> and <em>stop</em> times fall partially or
+completely in <em>segment</em>, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> if the values are completely outside
+of the segment.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>clip_start:</i>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the given <em>start</em> and <em>stop</em> times fall partially or
+completely in <em>segment</em>, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> if the values are completely outside
+of the segment.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>clip_stop:</i>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the given <em>start</em> and <em>stop</em> times fall partially or
+completely in <em>segment</em>, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> if the values are completely outside
+of the segment.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_segment_do_seek">
+		<h3 id="gstsegmentprototypedo_seek">
+	<span><code>Gst.Segment.prototype.do_seek</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.do_seek(rate: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, format: int , flags: <a title="Gst.SeekFlags" href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GstSeekFlags">Gst.SeekFlags</a>, start_type: <a title="Gst.SeekType" href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GstSeekType">Gst.SeekType</a>, start: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, stop_type: <a title="Gst.SeekType" href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GstSeekType">Gst.SeekType</a>, stop: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, update: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_segment_do_seek'
+}</pre>
+
+<p>Update the segment structure with the field values of a seek event (see
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstEvent.html#gst-event-new-seek">Gst.Event.prototype.new_seek</a>).</p>
+<p>After calling this method, the segment field position and time will
+contain the requested new position in the segment. The new requested
+position in the segment depends on <em>rate</em> and <em>start_type</em> and <em>stop_type</em>.</p>
+<p>For positive <em>rate</em>, the new position in the segment is the new <em>segment</em>
+start field when it was updated with a <em>start_type</em> different from
+<a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_TYPE_NONE">Gst.SeekType.prototype.none</a>. If no update was performed on <em>segment</em> start position
+(#GST_SEEK_TYPE_NONE), <em>start</em> is ignored and <em>segment</em> position is
+unmodified.</p>
+<p>For negative <em>rate</em>, the new position in the segment is the new <em>segment</em>
+stop field when it was updated with a <em>stop_type</em> different from
+<a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_TYPE_NONE">Gst.SeekType.prototype.none</a>. If no stop was previously configured in the segment, the
+duration of the segment will be used to update the stop position.
+If no update was performed on <em>segment</em> stop position (#GST_SEEK_TYPE_NONE),
+<em>stop</em> is ignored and <em>segment</em> position is unmodified.</p>
+<p>The applied rate of the segment will be set to 1.0 by default.
+If the caller can apply a rate change, it should update <em>segment</em>
+rate and applied_rate after calling this function.</p>
+<p><em>update</em> will be set to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if a seek should be performed to the segment
+position field. This field can be <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> if, for example, only the <em>rate</em>
+has been changed but not the playback position.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>rate:</code></em></i>
+		</p>
+	</td>
+		<td><p>the rate of the segment.</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of the segment.</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>flags:</code></em></i>
+		</p>
+	</td>
+		<td><p>the segment flags for the segment</p>
+</td>
+<td>
+<a title="Gst.SeekFlags" href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GstSeekFlags">Gst.SeekFlags</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>start_type:</code></em></i>
+		</p>
+	</td>
+		<td><p>the seek method</p>
+</td>
+<td>
+<a title="Gst.SeekType" href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GstSeekType">Gst.SeekType</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>start:</code></em></i>
+		</p>
+	</td>
+		<td><p>the seek start value</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stop_type:</code></em></i>
+		</p>
+	</td>
+		<td><p>the seek method</p>
+</td>
+<td>
+<a title="Gst.SeekType" href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GstSeekType">Gst.SeekType</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stop:</code></em></i>
+		</p>
+	</td>
+		<td><p>the seek stop value</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>update:</code></em></i>
+		</p>
+	</td>
+		<td><p>boolean holding whether position was updated.</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the seek could be performed.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_segment_is_equal">
+		<h3 id="gstsegmentprototypeis_equal">
+	<span><code>Gst.Segment.prototype.is_equal</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Segment.prototype.is_equal(s1: const int ): {
+    // javascript wrapper for 'gst_segment_is_equal'
+}</pre>
+
+<p>Checks for two segments being equal. Equality here is defined
+as perfect equality, including floating point values.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>s0:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>s1:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> structure.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the segments are equal, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> otherwise.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+<div class="refsect2">
+	<a id="_GstSegment"></a>
+	<h3 id="_gstsegment-not-introspectable">
+		_GstSegment (not introspectable)
+	</h3>
+		
+<div class="member_details">
+	<h4 id="attributes">Attributes</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="_GstSegment.flags">
+		<td>
+		<p>
+		<i><em><code><a title="Gst.SegmentFlags" href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GstSegmentFlags">Gst.SegmentFlags</a> <em><code>flags</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstSegment.rate">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>rate</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstSegment.applied_rate">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>applied_rate</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstSegment.format">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>format</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstSegment.base">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>base</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstSegment.offset">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>offset</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstSegment.start">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>start</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstSegment.stop">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>stop</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstSegment.time">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>time</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstSegment.position">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>position</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstSegment.duration">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>duration</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSeekType">
+		<h3 id="gstseektype">
+		Gst.SeekType
+	</h3>
+
+		<pre class="raw_code">
+typedef enum {
+  /* one of these */
+  GST_SEEK_TYPE_NONE            = 0,
+  GST_SEEK_TYPE_SET             = 1,
+  GST_SEEK_TYPE_END             = 2
+} GstSeekType;
+</pre>
+
+<p>The different types of seek events. When constructing a seek event with
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstEvent.html#gst-event-new-seek">Gst.Event.prototype.new_seek</a> or when doing gst_segment_do_seek ().</p>
+
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_TYPE_NONE"></a>
+		Gst.SeekType.prototype.none
+		</p>
+	</td>
+	<td><p>no change in position is required</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_TYPE_SET"></a>
+		Gst.SeekType.prototype.set
+		</p>
+	</td>
+	<td><p>absolute position is requested</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_TYPE_END"></a>
+		Gst.SeekType.prototype.end
+		</p>
+	</td>
+	<td><p>relative position to duration is requested</p>
+</td>
+	<td>
+		<span class="value">Value: 2</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSeekFlags">
+		<h3 id="gstseekflags">
+		Gst.SeekFlags
+	</h3>
+
+		<pre class="raw_code">
+typedef enum {
+  GST_SEEK_FLAG_NONE            = 0,
+  GST_SEEK_FLAG_FLUSH           = (1 &lt;&lt; 0),
+  GST_SEEK_FLAG_ACCURATE        = (1 &lt;&lt; 1),
+  GST_SEEK_FLAG_KEY_UNIT        = (1 &lt;&lt; 2),
+  GST_SEEK_FLAG_SEGMENT         = (1 &lt;&lt; 3),
+  GST_SEEK_FLAG_TRICKMODE       = (1 &lt;&lt; 4),
+  /* FIXME 2.0: Remove _SKIP flag,
+   * which was kept for backward compat when _TRICKMODE was added */
+  GST_SEEK_FLAG_SKIP            = (1 &lt;&lt; 4),
+  GST_SEEK_FLAG_SNAP_BEFORE     = (1 &lt;&lt; 5),
+  GST_SEEK_FLAG_SNAP_AFTER      = (1 &lt;&lt; 6),
+  GST_SEEK_FLAG_SNAP_NEAREST    = GST_SEEK_FLAG_SNAP_BEFORE | GST_SEEK_FLAG_SNAP_AFTER,
+  /* Careful to restart next flag with 1&lt;&lt;7 here */
+  GST_SEEK_FLAG_TRICKMODE_KEY_UNITS = (1 &lt;&lt; 7),
+  GST_SEEK_FLAG_TRICKMODE_NO_AUDIO  = (1 &lt;&lt; 8),
+} GstSeekFlags;
+</pre>
+
+<p>Flags to be used with <a href="../../gstreamer-core-doc-1.0/javascript/gstelement.html#gst_element_seek">Gst.Element.prototype.seek</a> or <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstEvent.html#gst-event-new-seek">Gst.Event.prototype.new_seek</a>. All flags
+can be used together.</p>
+<p>A non flushing seek might take some time to perform as the currently
+playing data in the pipeline will not be cleared.</p>
+<p>An accurate seek might be slower for formats that don't have any indexes
+or timestamp markers in the stream. Specifying this flag might require a
+complete scan of the file in those cases.</p>
+<p>When performing a segment seek: after the playback of the segment completes,
+no EOS will be emitted by the element that performed the seek, but a
+<a href="../../gstreamer-core-doc-1.0/javascript/gstmessage.html#GST_MESSAGE_SEGMENT_DONE">Gst.MessageType.prototype.segment_done</a> message will be posted on the bus by the element.
+When this message is posted, it is possible to send a new seek event to
+continue playback. With this seek method it is possible to perform seamless
+looping or simple linear editing.</p>
+<p>When doing fast forward (rate &gt; 1.0) or fast reverse (rate &lt; -1.0) trickmode
+playback, the <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_FLAG_TRICKMODE">Gst.SeekFlags.prototype.trickmode</a> flag can be used to instruct decoders
+and demuxers to adjust the playback rate by skipping frames. This can improve
+performance and decrease CPU usage because not all frames need to be decoded.</p>
+<p>Beyond that, the <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_FLAG_TRICKMODE_KEY_UNITS">Gst.SeekFlags.prototype.trickmode_key_units</a> flag can be used to
+request that decoders skip all frames except key units, and
+<a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_FLAG_TRICKMODE_NO_AUDIO">Gst.SeekFlags.prototype.trickmode_no_audio</a> flags can be used to request that audio
+decoders do no decoding at all, and simple output silence.</p>
+<p>The <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_FLAG_SNAP_BEFORE">Gst.SeekFlags.prototype.snap_before</a> flag can be used to snap to the previous
+relevant location, and the <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_FLAG_SNAP_AFTER">Gst.SeekFlags.prototype.snap_after</a> flag can be used to
+select the next relevant location. If <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_FLAG_KEY_UNIT">Gst.SeekFlags.prototype.key_unit</a> is specified,
+the relevant location is a keyframe. If both flags are specified, the nearest
+of these locations will be selected. If none are specified, the implementation is
+free to select whichever it wants.</p>
+<p>The before and after here are in running time, so when playing backwards,
+the next location refers to the one that will played in next, and not the
+one that is located after in the actual source stream.</p>
+<p>Also see part-seeking.txt in the GStreamer design documentation for more
+details on the meaning of these flags and the behaviour expected of
+elements that handle them.</p>
+
+
+<div class="member_details">
+	<h4 id="members1">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_NONE"></a>
+		Gst.SeekFlags.prototype.none
+		</p>
+	</td>
+	<td><p>no flag</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_FLUSH"></a>
+		Gst.SeekFlags.prototype.flush
+		</p>
+	</td>
+	<td><p>flush pipeline</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_ACCURATE"></a>
+		Gst.SeekFlags.prototype.accurate
+		</p>
+	</td>
+	<td><p>accurate position is requested, this might
+be considerably slower for some formats.</p>
+</td>
+	<td>
+		<span class="value">Value: 2</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_KEY_UNIT"></a>
+		Gst.SeekFlags.prototype.key_unit
+		</p>
+	</td>
+	<td><p>seek to the nearest keyframe. This might be
+faster but less accurate.</p>
+</td>
+	<td>
+		<span class="value">Value: 4</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_SEGMENT"></a>
+		Gst.SeekFlags.prototype.segment
+		</p>
+	</td>
+	<td><p>perform a segment seek.</p>
+</td>
+	<td>
+		<span class="value">Value: 8</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_TRICKMODE"></a>
+		Gst.SeekFlags.prototype.trickmode
+		</p>
+	</td>
+	<td><p>when doing fast forward or fast reverse playback, allow
+elements to skip frames instead of generating all
+frames. (Since 1.6)</p>
+</td>
+	<td>
+		<span class="value">Value: 16</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_SKIP"></a>
+		Gst.SeekFlags.prototype.skip
+		</p>
+	</td>
+	<td><p>Deprecated backward compatibility flag, replaced
+by <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_FLAG_TRICKMODE">Gst.SeekFlags.prototype.trickmode</a></p>
+</td>
+	<td>
+		<span class="value">Value: 16</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_SNAP_BEFORE"></a>
+		Gst.SeekFlags.prototype.snap_before
+		</p>
+	</td>
+	<td><p>go to a location before the requested position,
+if <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_FLAG_KEY_UNIT">Gst.SeekFlags.prototype.key_unit</a> this means the keyframe at or before
+the requested position the one at or before the seek target.</p>
+</td>
+	<td>
+		<span class="value">Value: 32</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_SNAP_AFTER"></a>
+		Gst.SeekFlags.prototype.snap_after
+		</p>
+	</td>
+	<td><p>go to a location after the requested position,
+if <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_FLAG_KEY_UNIT">Gst.SeekFlags.prototype.key_unit</a> this means the keyframe at of after the
+requested position.</p>
+</td>
+	<td>
+		<span class="value">Value: 64</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_SNAP_NEAREST"></a>
+		Gst.SeekFlags.prototype.snap_nearest
+		</p>
+	</td>
+	<td><p>go to a position near the requested position,
+if <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_FLAG_KEY_UNIT">Gst.SeekFlags.prototype.key_unit</a> this means the keyframe closest
+to the requested position, if both keyframes are at an equal
+distance, behaves like <a href="../../gstreamer-core-doc-1.0/javascript/gstsegment.html#GST_SEEK_FLAG_SNAP_BEFORE">Gst.SeekFlags.prototype.snap_before</a>.</p>
+</td>
+	<td>
+		<span class="value">Value: 96</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_TRICKMODE_KEY_UNITS"></a>
+		Gst.SeekFlags.prototype.trickmode_key_units
+		</p>
+	</td>
+	<td><p>when doing fast forward or fast reverse
+playback, request that elements only decode keyframes
+and skip all other content, for formats that have
+keyframes. (Since 1.6)</p>
+</td>
+	<td>
+		<span class="value">Value: 128</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEEK_FLAG_TRICKMODE_NO_AUDIO"></a>
+		Gst.SeekFlags.prototype.trickmode_no_audio
+		</p>
+	</td>
+	<td><p>when doing fast forward or fast reverse
+playback, request that audio decoder elements skip
+decoding and output only gap events or silence. (Since 1.6)</p>
+</td>
+	<td>
+		<span class="value">Value: 256</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSegmentFlags">
+		<h3 id="gstsegmentflags">
+		Gst.SegmentFlags
+	</h3>
+
+		<pre class="raw_code">
+typedef enum { /*&lt; flags &gt;*/
+  GST_SEGMENT_FLAG_NONE            = GST_SEEK_FLAG_NONE,
+  GST_SEGMENT_FLAG_RESET           = GST_SEEK_FLAG_FLUSH,
+  GST_SEGMENT_FLAG_TRICKMODE       = GST_SEEK_FLAG_TRICKMODE,
+  /* FIXME 2.0: Remove _SKIP flag,
+   * which was kept for backward compat when _TRICKMODE was added */
+  GST_SEGMENT_FLAG_SKIP            = GST_SEEK_FLAG_TRICKMODE,
+  GST_SEGMENT_FLAG_SEGMENT         = GST_SEEK_FLAG_SEGMENT,
+  GST_SEGMENT_FLAG_TRICKMODE_KEY_UNITS = GST_SEEK_FLAG_TRICKMODE_KEY_UNITS,
+  GST_SEGMENT_FLAG_TRICKMODE_NO_AUDIO      = GST_SEEK_FLAG_TRICKMODE_NO_AUDIO
+} GstSegmentFlags;
+</pre>
+
+<p>Flags for the GstSegment structure. Currently mapped to the corresponding
+values of the seek flags.</p>
+
+
+<div class="member_details">
+	<h4 id="members2">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEGMENT_FLAG_NONE"></a>
+		Gst.SegmentFlags.prototype.none
+		</p>
+	</td>
+	<td><p>no flags</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEGMENT_FLAG_RESET"></a>
+		Gst.SegmentFlags.prototype.reset
+		</p>
+	</td>
+	<td><p>reset the pipeline running_time to the segment
+running_time</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEGMENT_FLAG_TRICKMODE"></a>
+		Gst.SegmentFlags.prototype.trickmode
+		</p>
+	</td>
+	<td><p>perform skip playback (Since 1.6)</p>
+</td>
+	<td>
+		<span class="value">Value: 16</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEGMENT_FLAG_SKIP"></a>
+		Gst.SegmentFlags.prototype.skip
+		</p>
+	</td>
+	<td><p>Deprecated backward compatibility flag, replaced
+by <em>GST_SEGMENT_FLAG_TRICKMODE</em></p>
+</td>
+	<td>
+		<span class="value">Value: 16</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEGMENT_FLAG_SEGMENT"></a>
+		Gst.SegmentFlags.prototype.segment
+		</p>
+	</td>
+	<td><p>send SEGMENT_DONE instead of EOS</p>
+</td>
+	<td>
+		<span class="value">Value: 8</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEGMENT_FLAG_TRICKMODE_KEY_UNITS"></a>
+		Gst.SegmentFlags.prototype.trickmode_key_units
+		</p>
+	</td>
+	<td><p>Decode only keyframes, where
+possible (Since 1.6)</p>
+</td>
+	<td>
+		<span class="value">Value: 128</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_SEGMENT_FLAG_TRICKMODE_NO_AUDIO"></a>
+		Gst.SegmentFlags.prototype.trickmode_no_audio
+		</p>
+	</td>
+	<td><p>Do not decode any audio, where
+possible (Since 1.6)</p>
+</td>
+	<td>
+		<span class="value">Value: 256</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TYPE_SEGMENT">
+		<h3 class="constant" id="gst_type_segment-not-introspectable">
+	GST_TYPE_SEGMENT (not introspectable)
+</h3>
+
+		
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

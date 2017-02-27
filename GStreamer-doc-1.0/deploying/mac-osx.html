@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Mac OS X deployment</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="deploying/mac-osx.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="mac-osx.md">
+<h1 id="mac-os-x-deployment">Mac OS X deployment</h1>
+<p>This page explains how to deploy GStreamer along your application. There
+are different mechanisms, which have been reviewed in <a href="index.html">Deploying your application</a>. The details for some
+of the mechanisms are given here, and more options might be added to
+this documentation in the future.</p>
+<p>**FIXME: PackageMaker is dead we need a new solution **</p>
+<h2 id="shared-gstreamer">Shared GStreamer</h2>
+<p>This is the easiest way to deploy GStreamer, although most of the time
+it installs unnecessary files which grow the size of the installer and
+the target drive free space requirements. Since GStreamer might be shared
+among all applications that use it, though, the extra space requirements
+are somewhat blurred.</p>
+<p>With PackageMaker, simply add GStreamer  **runtime ** disk image
+(<a href="../installing/on-mac-osx.html">the same one you used to install the runtime in your development
+machine</a>) inside your installer
+package and create a post-install script that mounts the disk image and
+installs GStreamer package. You can use the following example, where you
+should replace <code>$INSTALL_PATH</code> with the path where your installer copied
+GStreamer's disk image files (the <code>/tmp</code> directory is good place to
+install it as it will be removed at the end of the installation):</p>
+<pre><code class="language-bash">hdiutil attach $INSTALL_PATH/gstreamer-1.0-1.8.1-x86_64-packages.dmg
+cd /Volumes/gstreamer-1.0-1.8.1-x86_64/
+installer -pkg gstreamer-1.0-1.8.1-x86_64.pkg -target "/"
+hdiutil detach /Volumes/gstreamer-1.0-1.8.1-x86_64/
+rm $INSTALL_PATH/gstreamer-1.0-1.8.1-x86_64-packages.dmg
+</code></pre>
+<h2 id="private-deployment-of-gstreamer">Private deployment of GStreamer</h2>
+<p>You can decide to distribute a private copy of GStreamer with your
+application, although it's not the recommended method. In this case,
+simply copy the framework to the application's Frameworks folder as
+defined in the <a href="https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html#//apple_ref/doc/uid/10000123i-CH101-SW19">bundle programming
+guide</a>:</p>
+<pre><code class="language-bash">cp -r /Library/Frameworks/GStreamer.framework ~/MyApp.app/Contents/Frameworks
+</code></pre>
+<p>Note that you can have several versions of GStreamer, and targeting
+different architectures, installed in the system. Make sure you only
+copy the version you need and that you update accordingly the link
+<code>GStreamer.framework/Version/Current</code>:</p>
+<pre><code class="language-bash">$ ls -l Frameworks/GStreamer.framework/Version/Current
+lrwxr-xr-x 1 fluendo staff 21 Jun 5 18:46 Frameworks/GStreamer.framework/Versions/Current -&gt; ../Versions/0.10/x86
+</code></pre>
+<p>Since GStreamer will be relocated, you will need to follow the
+instructions on how to relocate GStreamer at the end of this page.</p>
+<h2 id="deploy-only-necessary-files-by-manually-picking-them">Deploy only necessary files, by manually picking them</h2>
+<p>On the other side of the spectrum, if you want to reduce the space
+requirements (and installer size) to the maximum, you can manually
+choose which GStreamer libraries to deploy. Unfortunately, you are on
+your own on this road, besides using the object file displaying tool:
+<a href="https://developer.apple.com/library/mac/#documentation/darwin/reference/manpages/man1/otool.1.html">otool</a>.
+Being a similar technique to deploying a private copy of GStreamer, keep
+in mind that you should relocate GStreamer too, as explained at the end of
+this page.</p>
+<p>Bear also in mind that GStreamer is modular in nature. Plug-ins are
+loaded depending on the media that is being played, so, if you do not
+know in advance what files you are going to play, you do not know which
+plugins and shared libraries you need to deploy.</p>
+<h2 id="deploy-only-necessary-packages-using-the-provided-ones">Deploy only necessary packages, using the provided ones</h2>
+<p>This will produce a smaller installer than deploying complete
+GStreamer, without the added burden of having to manually pick each
+library. You just need to know which packages your application requires.</p>
+<table>
+<thead>
+<tr>
+<th> Package name</th>
+<th> Dependencies</th>
+<th> Licenses</th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> base-system-1.0</td>
+<td></td>
+<td>JPEG, FreeType, BSD-like, LGPL, LGPL-2+, LGPL-2.1, LibPNG and MIT</td>
+<td> Base system dependencies</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-capture</td>
+<td> gstreamer-1.0-core, gstreamer-1.0-encoding</td>
+<td> LGPL and LGPL-2+</td>
+<td> GStreamer plugins for capture</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-codecs</td>
+<td> base-crypto, gstreamer-1.0-core</td>
+<td> BSD, Jasper-2.0, BSD-like, LGPL, LGPL-2, LGPL-2+, LGPL-2.1 and LGPL-2.1+</td>
+<td> GStreamer codecs</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-codecs-gpl</td>
+<td> gstreamer-1.0-core</td>
+<td> BSD-like, LGPL, LGPL-2+ and LGPL-2.1+</td>
+<td> GStreamer codecs under the GPL license and/or with patents issues</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-core</td>
+<td> base-system-1.0</td>
+<td> LGPL and LGPL-2+</td>
+<td> GStreamer core</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-dvd</td>
+<td> gstreamer-1.0-core</td>
+<td> GPL-2+, LGPL and LGPL-2+</td>
+<td> GStreamer DVD support</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-effects</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL-2+</td>
+<td> GStreamer effects and instrumentation plugins</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-net</td>
+<td> base-crypto, gstreamer-1.0-core</td>
+<td> GPL-3, LGPL, LGPL-2+, LGPL-2.1+ and LGPL-3+</td>
+<td> GStreamer plugins for network protocols</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-playback</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL-2+</td>
+<td> GStreamer plugins for playback</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-system</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL, LGPL-2+ and LGPL-2.1+</td>
+<td> GStreamer system plugins</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-visualizers</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL-2+</td>
+<td> GStreamer visualization plugins</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-encoding</td>
+<td> gstreamer-1.0-core, gstreamer-1.0-playback</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer plugins for encoding</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-editing</td>
+<td> gstreamer-1.0-core, gstreamer-1.0-devtools</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer libraries and plugins for non linear editing</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-devtools</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer developers tools</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-libav</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer plugins wrapping ffmpeg</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-net-restricted</td>
+<td> base-crypto, gstreamer-1.0-core</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer plugins for network protocols with potential patent issues in some countries</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-codecs-restricted</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer restricted codecs with potential patent issues in some countries</td>
+</tr>
+<tr>
+<td> base-crypto</td>
+<td> base-system-1.0</td>
+<td> LGPL and LGPL2+</td>
+<td> Cryptographic libraries</td>
+</tr></tbody></table>
+<h2 id="relocation-of-gstreamer-in-os-x">Relocation of GStreamer in OS X</h2>
+<p>In some situations we might need to relocate GStreamer, moving it to a
+different place in the file system, like for instance when we are
+shipping a private copy of GStreamer with our application.</p>
+<h3 id="location-of-dependent-dynamic-libraries">Location of dependent dynamic libraries.</h3>
+<p>On Darwin operating systems, the dynamic linker doesn't locate dependent
+dynamic libraries using their leaf name, but instead it uses full paths,
+which makes it harder to relocate them as explained in the DYNAMIC
+LIBRARY LOADING section of
+<a href="https://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man1/dyld.1.html">dyld</a>'s
+man page:</p>
+<blockquote>
+<p>Unlike many other operating systems, Darwin does not locate dependent
+dynamic libraries via their leaf file name. Instead the full path to
+each dylib is used (e.g. /usr/lib/libSystem.B.dylib). But there are
+times when a full path is not appropriate; for instance, may want your
+binaries to be installable in anywhere on the disk.</p>
+</blockquote>
+<p>We can get the list of paths used by an object file to locate its
+dependent dynamic libraries
+using <a href="https://developer.apple.com/library/mac/#documentation/darwin/reference/manpages/man1/otool.1.html">otool</a>:</p>
+<pre><code class="language-bash">$ otool -L /Library/Frameworks/GStreamer.framework/Commands/gst-launch-1.0
+/Library/Frameworks/GStreamer.framework/Commands/gst-launch-1.0:
+ /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (compatibility version 150.0.0, current version 550.43.0)
+ /Library/Frameworks/GStreamer.framework/Versions/0.10/x86/lib/libgstreamer-1.0.0.dylib (compatibility version 31.0.0, current version 31.0.0)
+ /Library/Frameworks/GStreamer.framework/Versions/0.10/x86/lib/libxml2.2.dylib (compatibility version 10.0.0, current version 10.8.0)
+...
+</code></pre>
+<p>As you might have already noticed, if we move GStreamer to a different
+folder, it will stop working because the runtime linker won't be able to
+find <code>gstreamer-1.0</code> in the previous location
+<code>/Library/Frameworks/GStreamer.framework/Versions/0.10/x86/lib/libgstreamer-1.0.0.dylib</code>.</p>
+<p>This full path is extracted from the dynamic library  <strong><em>install name</em></strong>
+, a path that is used by the linker to determine its location. The
+install name of a library can be retrieved with
+<a href="https://developer.apple.com/library/mac/#documentation/darwin/reference/manpages/man1/otool.1.html">otool</a> too:</p>
+<pre><code class="language-bash">$ otool -D /Library/Frameworks/GStreamer.framework/Libraries/libgstreamer-1.0.dylib
+/Library/Frameworks/GStreamer.framework/Libraries/libgstreamer-1.0.dylib:
+/Library/Frameworks/GStreamer.framework/Versions/0.10/x86/lib/libgstreamer-1.0.0.dylib
+</code></pre>
+<p>Any object file that links to the dynamic library <code>gstreamer-1.0</code> will
+use the
+path <code>/Library/Frameworks/GStreamer.framework/Versions/0.10/x86/lib/libgstreamer-1.0.0.dylib</code> to
+locate it, as we saw previously with <code>gst-launch-1.0</code>.</p>
+<p>Since working exclusively with full paths wouldn't let us install our
+binaries anywhere in the path, the linker provides a mechanism of string
+substitution, adding three variables that can be used as a path prefix.
+At runtime the linker will replace them with the generated path for the
+prefix. These variables are <code>@executable_path</code>,
+<code>@loader_path</code> and <code>@rpath</code>, described in depth in the DYNAMIC LIBRARY
+LOADING section
+of <a href="https://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man1/dyld.1.html">dyld</a>'s
+man page.</p>
+<p>For our purpose we will use the <code>@executable_path</code> variable, which is
+replaced with a fixed path, the path to the directory containing the
+main executable: <code>/Applications/MyApp.app/Contents/MacOS</code>.
+The <code>@loader_path</code> variable can't be used in our scope, because it will
+be replaced with the path to the directory containing the mach-o binary
+that loaded the dynamic library, which can vary.</p>
+<p>Therefore, in order to relocate GStreamer we will need to replace all
+paths
+containing <code>/Library/Frameworks/GStreamer.framework/</code> with <code>@executable_path/../Frameworks/GStreamer.framework/</code>, which
+can be done using
+the <a href="http://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man1/install_name_tool.1.html">install_name_tool</a>
+utility</p>
+<h3 id="relocation-of-the-binaries">Relocation of the binaries</h3>
+<p>As mentioned in the previous section, we can use
+the <code>install_name_tool</code> in combination with <code>otool</code> to list all paths
+for dependant dynamic libraries and modify them to use the new location.
+However GStreamer has a huge list of binaries and doing it manually would
+be a painful task. That's why a simple relocation script is provided
+which you can find in cerbero's repository
+(<code>cerbero/tools/osxrelocator.py</code>). This scripts takes 3 parameters:</p>
+<ol>
+<li><code>directory</code>: the directory to parse looking for binaries</li>
+<li><code>old_prefix</code>: the old prefix we want to change (eg:
+<code>/Library/Frameworks/GStreamer.framework</code>)</li>
+<li><code>new_prefix</code>: the new prefix we want to use
+(eg: <code>@executable_path/../Frameworks/GStreamer.framework/</code>)</li>
+</ol>
+<p>When looking for binaries to fix, we will run the script in the
+following
+directories:</p>
+<pre><code class="language-bash">$ osxrelocator.py MyApp.app/Contents/Frameworks/GStreamer.framework/Versions/Current/lib /Library/Frameworks/GStreamer.framework/ @executable_path/../Frameworks/GStreamer.framework/ -r
+$ osxrelocator.py MyApp.app/Contents/Frameworks/GStreamer.framework/Versions/Current/libexec /Library/Frameworks/GStreamer.framework/ @executable_path/../Frameworks/GStreamer.framework/ -r
+$ osxrelocator.py MyApp.app/Contents/Frameworks/GStreamer.framework/Versions/Current/bin /Library/Frameworks/GStreamer.framework/ @executable_path/../Frameworks/GStreamer.framework/ -r
+$ osxrelocator.py MyApp.app/Contents/MacOS /Library/Frameworks/GStreamer.framework/ @executable_path/../Frameworks/GStreamer.framework/ -r
+</code></pre>
+<h3 id="adjusting-environment-variables-with-the-new-paths">Adjusting environment variables with the new paths</h3>
+<p>The application also needs to set the following environment variables to
+help other libraries finding resources in the new
+path:</p>
+<ul>
+<li><code>GST_PLUGIN_SYSTEM_PATH=/Applications/MyApp.app/Contents/Frameworks/GStreamer.framework/Versions/Current/lib/gstreamer-1.0</code></li>
+<li><code>GST_PLUGIN_SCANNER=/Applications/MyApp.app/Contents/Frameworks/GStreamer.framework/Versions/Current/libexec/gstreamer-1.0/gst-plugin-scanner</code></li>
+<li><code>GTK_PATH=/Applications/MyApp.app/Contents/Frameworks/GStreamer.framework/Versions/Current/</code></li>
+<li><code>GIO_EXTRA_MODULES=/Applications/MyApp.app/Contents/Frameworks/GStreamer.framework/Versions/Current/lib/gio/modules</code></li>
+</ul>
+<p>You can use the following functions:</p>
+<ul>
+<li>
+<p>C: <a href="http://linux.die.net/man/3/putenv">putenv("VAR=/foo/bar")</a></p>
+</li>
+<li>
+<p>Python: <a href="http://docs.python.org/library/os.html">os.environ['VAR'] =
+'/foo/var'</a></p>
+</li>
+</ul>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

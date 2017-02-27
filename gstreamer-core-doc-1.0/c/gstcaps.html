@@ -1,0 +1,3411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstCaps</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-project="gstreamer-core-doc-1.0" data-hotdoc-ref="gstcaps.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstcaps.h">
+<h1 id="gstcaps">GstCaps</h1><p>Caps (capabilities) are lightweight refcounted objects describing media types.
+They are composed of an array of <a href="../../gstreamer-core-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a>.</p>
+<p>Caps are exposed on <a href="../../gstreamer-core-doc-1.0/c/gstpadtemplate.html#GstPadTemplate">GstPadTemplate</a> to describe all possible types a
+given pad can handle. They are also stored in the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstRegistry.html#GstRegistry-struct">GstRegistry</a> along with
+a description of the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html#GstElement-struct">GstElement</a>.</p>
+<p>Caps are exposed on the element pads using the <a href="../../gstreamer-core-doc-1.0/c/gstutils.html#gst_pad_query_caps">gst_pad_query_caps</a> pad
+function. This function describes the possible types that the pad can
+handle or produce at runtime.</p>
+<p>A <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> can be constructed with the following code fragment:</p>
+<pre><code class="language-c">  GstCaps *caps = gst_caps_new_simple ("video/x-raw",
+     "format", G_TYPE_STRING, "I420",
+     "framerate", GST_TYPE_FRACTION, 25, 1,
+     "pixel-aspect-ratio", GST_TYPE_FRACTION, 1, 1,
+     "width", G_TYPE_INT, 320,
+     "height", G_TYPE_INT, 240,
+     NULL);
+</code></pre>
+<p>A <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> is fixed when it has no properties with ranges or lists. Use
+<a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_is_fixed">gst_caps_is_fixed</a> to test for fixed caps. Fixed caps can be used in a
+caps event to notify downstream elements of the current media type.</p>
+<p>Various methods exist to work with the media types such as subtracting
+or intersecting.</p>
+<p>Be aware that the current <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> / <a href="../../gstreamer-core-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> serialization into string
+has limited support for nested <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> / <a href="../../gstreamer-core-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> fields. It can only
+support one level of nesting. Using more levels will lead to unexpected
+behavior when using serialization features, such as <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstCaps.html#gst-caps-to-string">gst_caps_to_string</a> or
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstValue.html#gst-value-serialize">gst_value_serialize</a> and their counterparts.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_ref">
+		<h3 id="gst_caps_ref1">
+	<span><code>gst_caps_ref</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> *
+gst_caps_ref (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps)</pre>
+
+<p>Add a reference to a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> object.</p>
+<p>From this point on, until the caller calls <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_unref">gst_caps_unref</a> or
+<a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_make_writable">gst_caps_make_writable</a>, it is guaranteed that the caps object will not
+change. This means its structures won't change, etc. To use a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>
+object, you must always have a refcount on it -- either the one made
+implicitly by e.g. <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstCaps.html#gst-caps-new-simple">gst_caps_new_simple</a>, or via taking one explicitly with
+this function.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to reference</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the same <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> object.</p>
+
+	</td>
+	<td>
+		<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_unref">
+		<h3 id="gst_caps_unref1">
+	<span><code>gst_caps_unref</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+gst_caps_unref (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps)</pre>
+
+<p>Unref a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> and and free all its structures and the
+structures' values when the refcount reaches 0.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_copy">
+		<h3 id="gst_caps_copy1">
+	<span><code>gst_caps_copy</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> *
+gst_caps_copy (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps)</pre>
+
+<p>Creates a new <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> as a copy of the old <em>caps</em>. The new caps will have a
+refcount of 1, owned by the caller. The structures are copied as well.</p>
+<p>Note that this function is the semantic equivalent of a <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_ref">gst_caps_ref</a>
+followed by a <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_make_writable">gst_caps_make_writable</a>. If you only want to hold on to a
+reference to the data, you should use <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_ref">gst_caps_ref</a>.</p>
+<p>When you are finished with the caps, call <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_unref">gst_caps_unref</a> on it.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the new <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+
+	</td>
+	<td>
+		<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_replace">
+		<h3 id="gst_caps_replace1">
+	<span><code>gst_caps_replace</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+int 
+gst_caps_replace (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> ** old_caps,
+                  <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * new_caps)</pre>
+
+<p>Modifies a pointer to a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to point to a different <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>. The
+modification is done atomically (so this is useful for ensuring thread safety
+in some cases), and the reference counts are updated appropriately (the old
+caps is unreffed, the new is reffed).</p>
+<p>Either <em>new_caps</em> or the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> pointed to by <em>old_caps</em> may be <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>old_caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>pointer to a pointer
+to a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to be replaced.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>new_caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>pointer to a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> that will
+replace the caps pointed to by <em>old_caps</em>.</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>new_caps</em> was different from <em>old_caps</em></p>
+
+	</td>
+	<td>
+		int 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_take">
+		<h3 id="gst_caps_take1">
+	<span><code>gst_caps_take</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+int 
+gst_caps_take (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> ** old_caps,
+               <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * new_caps)</pre>
+
+<p>Modifies a pointer to a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to point to a different <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>. This
+function is similar to <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_replace">gst_caps_replace</a> except that it takes ownership
+of <em>new_caps</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>old_caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>pointer to a pointer to a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to be
+replaced.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>new_caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>pointer to a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> that will
+replace the caps pointed to by <em>old_caps</em>.</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>new_caps</em> was different from <em>old_caps</em></p>
+
+	</td>
+	<td>
+		int 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_get_type">
+		<h3 id="gst_caps_get_type1">
+	<span><code>gst_caps_get_type</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+int 
+gst_caps_get_type ()</pre>
+
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		int 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_new_empty">
+		<h3 id="gst_caps_new_empty1">
+	<span><code>gst_caps_new_empty</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> *
+gst_caps_new_empty ()</pre>
+
+<p>Creates a new <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> that is empty.  That is, the returned
+<a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> contains no media formats.
+The <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> is guaranteed to be writable.
+Caller is responsible for unreffing the returned caps.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the new <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+
+	</td>
+	<td>
+		<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_new_any">
+		<h3 id="gst_caps_new_any1">
+	<span><code>gst_caps_new_any</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> *
+gst_caps_new_any ()</pre>
+
+<p>Creates a new <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> that indicates that it is compatible with
+any media format.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the new <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+
+	</td>
+	<td>
+		<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_static_caps_get_type">
+		<h3 id="gst_static_caps_get_type1">
+	<span><code>gst_static_caps_get_type</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GType" href="../../gstreamer-libs-doc-1.0/c/controller/gstproxycontrolbinding.html#GType">GType</a>
+gst_static_caps_get_type ()</pre>
+
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GType" href="../../gstreamer-libs-doc-1.0/c/controller/gstproxycontrolbinding.html#GType">GType</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_static_caps_get">
+		<h3 id="gst_static_caps_get1">
+	<span><code>gst_static_caps_get</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> *
+gst_static_caps_get (<a title="GstStaticCaps" href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GstStaticCaps">GstStaticCaps</a> * static_caps)</pre>
+
+<p>Converts a <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GstStaticCaps">GstStaticCaps</a> to a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>static_caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GstStaticCaps">GstStaticCaps</a> to convert</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a pointer to the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>. Unref after usage.
+Since the core holds an additional ref to the returned caps,
+use <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_make_writable">gst_caps_make_writable</a> on the returned caps to modify it.</p>
+
+	</td>
+	<td>
+		<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_static_caps_cleanup">
+		<h3 id="gst_static_caps_cleanup1">
+	<span><code>gst_static_caps_cleanup</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_static_caps_cleanup (<a title="GstStaticCaps" href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GstStaticCaps">GstStaticCaps</a> * static_caps)</pre>
+
+<p>Clean up the cached caps contained in <em>static_caps</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>static_caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GstStaticCaps">GstStaticCaps</a> to clean</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_append">
+		<h3 id="gst_caps_append1">
+	<span><code>gst_caps_append</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_caps_append (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps1,
+                 <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps2)</pre>
+
+<p>Appends the structures contained in <em>caps2</em> to <em>caps1</em>. The structures in
+<em>caps2</em> are not copied -- they are transferred to <em>caps1</em>, and then <em>caps2</em> is
+freed. If either caps is ANY, the resulting caps will be ANY.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps1:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> that will be appended to</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps2:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to append</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_append_structure">
+		<h3 id="gst_caps_append_structure1">
+	<span><code>gst_caps_append_structure</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_caps_append_structure (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                           int * structure)</pre>
+
+<p>Appends <em>structure</em> to <em>caps</em>.  The structure is not copied; <em>caps</em>
+becomes the owner of <em>structure</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> that will be appended to</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> to append</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_caps_append_structure_full">
+		<h3 id="gst_caps_append_structure_full1">
+	<span><code>gst_caps_append_structure_full</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_caps_append_structure_full (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                                int * structure,
+                                int * features)</pre>
+
+<p>Appends <em>structure</em> with <em>features</em> to <em>caps</em>.  The structure is not copied; <em>caps</em>
+becomes the owner of <em>structure</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> that will be appended to</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> to append</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>features:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/c/gstcapsfeatures.html#GstCapsFeatures">GstCapsFeatures</a> to append</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_remove_structure">
+		<h3 id="gst_caps_remove_structure1">
+	<span><code>gst_caps_remove_structure</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_caps_remove_structure (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                           int  idx)</pre>
+
+<p>removes the structure with the given index from the list of structures
+contained in <em>caps</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to remove from</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>idx:</code></em></i>
+		</p>
+	</td>
+		<td><p>Index of the structure to remove</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_get_size">
+		<h3 id="gst_caps_get_size1">
+	<span><code>gst_caps_get_size</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>
+gst_caps_get_size (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps)</pre>
+
+<p>Gets the number of structures contained in <em>caps</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the number of structures that <em>caps</em> contains</p>
+
+	</td>
+	<td>
+		<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_get_structure">
+		<h3 id="gst_caps_get_structure1">
+	<span><code>gst_caps_get_structure</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstStructure" href="../../gstreamer-core-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> *
+gst_caps_get_structure (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                        int  index)</pre>
+
+<p>Finds the structure in <em>caps</em> that has the index <em>index</em>, and
+returns it.</p>
+<p>WARNING: This function takes a const GstCaps *, but returns a
+non-const GstStructure *.  This is for programming convenience --
+the caller should be aware that structures inside a constant
+<a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> should not be modified. However, if you know the caps
+are writable, either because you have just copied them or made
+them writable with <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_make_writable">gst_caps_make_writable</a>, you may modify the
+structure returned in the usual way, e.g. with functions like
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-set">gst_structure_set</a>.</p>
+<p>You do not need to free or unref the structure returned, it
+belongs to the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>index:</code></em></i>
+		</p>
+	</td>
+		<td><p>the index of the structure</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a pointer to the <a href="../../gstreamer-core-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> corresponding
+to <em>index</em></p>
+
+	</td>
+	<td>
+		<a title="GstStructure" href="../../gstreamer-core-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_caps_set_features">
+		<h3 id="gst_caps_set_features1">
+	<span><code>gst_caps_set_features</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_caps_set_features (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                       int  index,
+                       int * features)</pre>
+
+<p>Sets the <a href="../../gstreamer-core-doc-1.0/c/gstcapsfeatures.html#GstCapsFeatures">GstCapsFeatures</a> <em>features</em> for the structure at <em>index</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>index:</code></em></i>
+		</p>
+	</td>
+		<td><p>the index of the structure</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>features:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/c/gstcapsfeatures.html#GstCapsFeatures">GstCapsFeatures</a> to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_caps_get_features">
+		<h3 id="gst_caps_get_features1">
+	<span><code>gst_caps_get_features</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCapsFeatures" href="../../gstreamer-core-doc-1.0/c/gstcapsfeatures.html#GstCapsFeatures">GstCapsFeatures</a> *
+gst_caps_get_features (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                       int  index)</pre>
+
+<p>Finds the features in <em>caps</em> that has the index <em>index</em>, and
+returns it.</p>
+<p>WARNING: This function takes a const GstCaps *, but returns a
+non-const GstCapsFeatures *.  This is for programming convenience --
+the caller should be aware that structures inside a constant
+<a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> should not be modified. However, if you know the caps
+are writable, either because you have just copied them or made
+them writable with <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_make_writable">gst_caps_make_writable</a>, you may modify the
+features returned in the usual way, e.g. with functions like
+<a href="../../gstreamer-core-doc-1.0/c/gstcapsfeatures.html#gst_caps_features_add">gst_caps_features_add</a>.</p>
+<p>You do not need to free or unref the structure returned, it
+belongs to the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>index:</code></em></i>
+		</p>
+	</td>
+		<td><p>the index of the structure</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a pointer to the <a href="../../gstreamer-core-doc-1.0/c/gstcapsfeatures.html#GstCapsFeatures">GstCapsFeatures</a> corresponding
+to <em>index</em></p>
+
+	</td>
+	<td>
+		<a title="GstCapsFeatures" href="../../gstreamer-core-doc-1.0/c/gstcapsfeatures.html#GstCapsFeatures">GstCapsFeatures</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_set_value">
+		<h3 id="gst_caps_set_value1">
+	<span><code>gst_caps_set_value</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_caps_set_value (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                    const char * field,
+                    const int * value)</pre>
+
+<p>Sets the given <em>field</em> on all structures of <em>caps</em> to the given <em>value</em>.
+This is a convenience function for calling <a href="../../gstreamer-core-doc-1.0/c/gststructure.html#gst_structure_set_value">gst_structure_set_value</a> on
+all structures of <em>caps</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a writable caps</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field:</code></em></i>
+		</p>
+	</td>
+		<td><p>name of the field to set</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>value to set the field to</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_set_simple_valist">
+		<h3 id="gst_caps_set_simple_valist1">
+	<span><code>gst_caps_set_simple_valist</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_caps_set_simple_valist (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                            const char * field,
+                            int  varargs)</pre>
+
+<p>Sets fields in a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.  The arguments must be passed in the same
+manner as <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-set">gst_structure_set</a>, and be <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>-terminated.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to set</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field:</code></em></i>
+		</p>
+	</td>
+		<td><p>first field to set</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>varargs:</code></em></i>
+		</p>
+	</td>
+		<td><p>additional parameters</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_caps_foreach">
+		<h3 id="gst_caps_foreach1">
+	<span><code>gst_caps_foreach</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_foreach (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                  int  func,
+                  int  user_data)</pre>
+
+<p>Calls the provided function once for each structure and caps feature in the
+<a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>. The function must not modify the fields.
+Also see <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_map_in_place">gst_caps_map_in_place</a> and <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_filter_and_map_in_place">gst_caps_filter_and_map_in_place</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>func:</code></em></i>
+		</p>
+	</td>
+		<td><p>a function to call for each field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>private data</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the supplied function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> for each call,
+<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_caps_map_in_place">
+		<h3 id="gst_caps_map_in_place1">
+	<span><code>gst_caps_map_in_place</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_map_in_place (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                       <a title="GstCapsMapFunc" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstCaps.html#GstCapsMapFunc">GstCapsMapFunc</a> func,
+                       int  user_data)</pre>
+
+<p>Calls the provided function once for each structure and caps feature in the
+<a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>. In contrast to <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_foreach">gst_caps_foreach</a>, the function may modify but not
+delete the structures and features. The caps must be mutable.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>func:</code></em></i>
+		</p>
+	</td>
+		<td><p>a function to call for each field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>private data</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the supplied function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> for each call,
+<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_caps_filter_and_map_in_place">
+		<h3 id="gst_caps_filter_and_map_in_place1">
+	<span><code>gst_caps_filter_and_map_in_place</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_caps_filter_and_map_in_place (<a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                                  <a title="GstCapsFilterMapFunc" href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GstCapsFilterMapFunc">GstCapsFilterMapFunc</a> func,
+                                  int  user_data)</pre>
+
+<p>Calls the provided function once for each structure and caps feature in the
+<a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>. In contrast to <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_foreach">gst_caps_foreach</a>, the function may modify the
+structure and features. In contrast to <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_filter_and_map_in_place">gst_caps_filter_and_map_in_place</a>,
+the structure and features are removed from the caps if <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> is returned
+from the function.
+The caps must be mutable.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>func:</code></em></i>
+		</p>
+	</td>
+		<td><p>a function to call for each field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>private data</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_is_any">
+		<h3 id="gst_caps_is_any1">
+	<span><code>gst_caps_is_any</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_is_any (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps)</pre>
+
+<p>Determines if <em>caps</em> represents any media format.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to test</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>caps</em> represents any format.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_is_empty">
+		<h3 id="gst_caps_is_empty1">
+	<span><code>gst_caps_is_empty</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_is_empty (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps)</pre>
+
+<p>Determines if <em>caps</em> represents no media formats.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to test</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>caps</em> represents no formats.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_is_fixed">
+		<h3 id="gst_caps_is_fixed1">
+	<span><code>gst_caps_is_fixed</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_is_fixed (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps)</pre>
+
+<p>Fixed <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> describe exactly one format, that is, they have exactly
+one structure, and each field in the structure describes a fixed type.
+Examples of non-fixed types are GST_TYPE_INT_RANGE and GST_TYPE_LIST.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to test</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns17">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>caps</em> is fixed</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_is_always_compatible">
+		<h3 id="gst_caps_is_always_compatible1">
+	<span><code>gst_caps_is_always_compatible</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_is_always_compatible (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps1,
+                               const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps2)</pre>
+
+<p>A given <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> structure is always compatible with another if
+every media format that is in the first is also contained in the
+second.  That is, <em>caps1</em> is a subset of <em>caps2</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters23">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps1:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to test</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps2:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to test</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns18">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>caps1</em> is a subset of <em>caps2</em>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_is_subset">
+		<h3 id="gst_caps_is_subset1">
+	<span><code>gst_caps_is_subset</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_is_subset (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * subset,
+                    const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * superset)</pre>
+
+<p>Checks if all caps represented by <em>subset</em> are also represented by <em>superset</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>subset:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>superset:</code></em></i>
+		</p>
+	</td>
+		<td><p>a potentially greater <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns19">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>subset</em> is a subset of <em>superset</em></p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_is_subset_structure">
+		<h3 id="gst_caps_is_subset_structure1">
+	<span><code>gst_caps_is_subset_structure</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_is_subset_structure (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                              const int * structure)</pre>
+
+<p>Checks if <em>structure</em> is a subset of <em>caps</em>. See <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_is_subset">gst_caps_is_subset</a>
+for more information.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a potential <a href="../../gstreamer-core-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> subset of <em>caps</em></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns20">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>structure</em> is a subset of <em>caps</em></p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_caps_is_subset_structure_full">
+		<h3 id="gst_caps_is_subset_structure_full1">
+	<span><code>gst_caps_is_subset_structure_full</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_is_subset_structure_full (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps,
+                                   const int * structure,
+                                   const int * features)</pre>
+
+<p>Checks if <em>structure</em> is a subset of <em>caps</em>. See <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_is_subset">gst_caps_is_subset</a>
+for more information.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a potential <a href="../../gstreamer-core-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> subset of <em>caps</em></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>features:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-core-doc-1.0/c/gstcapsfeatures.html#GstCapsFeatures">GstCapsFeatures</a> for <em>structure</em></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns21">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>structure</em> is a subset of <em>caps</em></p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_is_equal">
+		<h3 id="gst_caps_is_equal1">
+	<span><code>gst_caps_is_equal</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_is_equal (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps1,
+                   const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps2)</pre>
+
+<p>Checks if the given caps represent the same set of caps.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters27">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps1:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps2:</code></em></i>
+		</p>
+	</td>
+		<td><p>another <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns22">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if both caps are equal.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_is_equal_fixed">
+		<h3 id="gst_caps_is_equal_fixed1">
+	<span><code>gst_caps_is_equal_fixed</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_is_equal_fixed (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps1,
+                         const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps2)</pre>
+
+<p>Tests if two <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> are equal.  This function only works on fixed
+<a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters28">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps1:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to test</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps2:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to test</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns23">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the arguments represent the same format</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_can_intersect">
+		<h3 id="gst_caps_can_intersect1">
+	<span><code>gst_caps_can_intersect</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_can_intersect (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps1,
+                        const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps2)</pre>
+
+<p>Tries intersecting <em>caps1</em> and <em>caps2</em> and reports whether the result would not
+be empty</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters29">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps1:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to intersect</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps2:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> to intersect</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns24">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if intersection would be not empty</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_is_strictly_equal">
+		<h3 id="gst_caps_is_strictly_equal1">
+	<span><code>gst_caps_is_strictly_equal</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+gst_caps_is_strictly_equal (const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps1,
+                            const <a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * caps2)</pre>
+
+<p>Checks if the given caps are exactly the same set of caps.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters30">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps1:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps2:</code></em></i>
+		</p>
+	</td>
+		<td><p>another <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns25">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if both caps are strictly equal.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Function_Macros">Function Macros</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_IS_CAPS">
+		<h3 id="gst_is_caps">
+	<span><code>GST_IS_CAPS</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_IS_CAPS(obj)          (GST_IS_MINI_OBJECT_TYPE((obj), GST_TYPE_CAPS))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CAPS_CAST">
+		<h3 id="gst_caps_cast">
+	<span><code>GST_CAPS_CAST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_CAPS_CAST(obj)        ((GstCaps*)(obj))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CAPS">
+		<h3 id="gst_caps">
+	<span><code>GST_CAPS</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_CAPS(obj)             (GST_CAPS_CAST(obj))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CAPS_IS_SIMPLE">
+		<h3 id="gst_caps_is_simple">
+	<span><code>GST_CAPS_IS_SIMPLE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_CAPS_IS_SIMPLE(caps) (gst_caps_get_size(caps) == 1)
+</pre>
+
+<p>Convenience macro that checks if the number of structures in the given caps
+is exactly one.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters31">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> instance to check</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_STATIC_CAPS">
+		<h3 id="gst_static_caps">
+	<span><code>GST_STATIC_CAPS</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_STATIC_CAPS(string) \
+{ \
+  /* caps */ NULL, \
+  /* string */ string, \
+  GST_PADDING_INIT \
+}
+</pre>
+
+<p>Creates a new <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> static caps from an input string.
+This can be used in pad templates.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters32">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>string:</code></em></i>
+		</p>
+	</td>
+		<td><p>the string describing the caps</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CAPS_FLAGS">
+		<h3 id="gst_caps_flags">
+	<span><code>GST_CAPS_FLAGS</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_CAPS_FLAGS(caps)                    GST_MINI_OBJECT_FLAGS(caps)
+</pre>
+
+<p>A flags word containing <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GstCapsFlags">GstCapsFlags</a> flags set on this caps.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters33">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CAPS_REFCOUNT">
+		<h3 id="gst_caps_refcount">
+	<span><code>GST_CAPS_REFCOUNT</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_CAPS_REFCOUNT(caps)                 GST_MINI_OBJECT_REFCOUNT(caps)
+</pre>
+
+<p>Get access to the reference count field of the caps</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters34">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CAPS_REFCOUNT_VALUE">
+		<h3 id="gst_caps_refcount_value">
+	<span><code>GST_CAPS_REFCOUNT_VALUE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_CAPS_REFCOUNT_VALUE(caps)           GST_MINI_OBJECT_REFCOUNT_VALUE(caps)
+</pre>
+
+<p>Get the reference count value of the caps.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters35">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CAPS_FLAG_IS_SET">
+		<h3 id="gst_caps_flag_is_set">
+	<span><code>GST_CAPS_FLAG_IS_SET</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_CAPS_FLAG_IS_SET(caps,flag)        GST_MINI_OBJECT_FLAG_IS_SET (caps, flag)
+</pre>
+
+<p>Gives the status of a specific flag on a caps.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters36">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>flag:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GstCapsFlags">GstCapsFlags</a> to check.</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CAPS_FLAG_SET">
+		<h3 id="gst_caps_flag_set">
+	<span><code>GST_CAPS_FLAG_SET</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_CAPS_FLAG_SET(caps,flag)           GST_MINI_OBJECT_FLAG_SET (caps, flag)
+</pre>
+
+<p>Sets a caps flag on a caps.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters37">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>flag:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GstCapsFlags">GstCapsFlags</a> to set.</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CAPS_FLAG_UNSET">
+		<h3 id="gst_caps_flag_unset">
+	<span><code>GST_CAPS_FLAG_UNSET</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_CAPS_FLAG_UNSET(caps,flag)         GST_MINI_OBJECT_FLAG_UNSET (caps, flag)
+</pre>
+
+<p>Clears a caps flag.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters38">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>flag:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GstCapsFlags">GstCapsFlags</a> to clear.</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_is_writable">
+		<h3 id="gst_caps_is_writable1">
+	<span><code>gst_caps_is_writable</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define gst_caps_is_writable(caps)     gst_mini_object_is_writable (GST_MINI_OBJECT_CAST (caps))
+</pre>
+
+<p>Tests if you can safely modify <em>caps</em>. It is only safe to modify caps when
+there is only one owner of the caps - ie, the object is writable.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters39">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_caps_make_writable">
+		<h3 id="gst_caps_make_writable1">
+	<span><code>gst_caps_make_writable</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define gst_caps_make_writable(caps)   GST_CAPS_CAST (gst_mini_object_make_writable (GST_MINI_OBJECT_CAST (caps)))
+</pre>
+
+<p>Returns a writable copy of <em>caps</em>.</p>
+<p>If there is only one reference count on <em>caps</em>, the caller must be the owner,
+and so this function will return the caps object unchanged. If on the other
+hand there is more than one reference on the object, a new caps object will
+be returned. The caller's reference on <em>caps</em> will be removed, and instead the
+caller will own a reference to the returned object.</p>
+<p>In short, this function unrefs the caps in the argument and refs the caps
+that it returns. Don't access the argument after calling this function. See
+also: <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_ref">gst_caps_ref</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters40">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns26">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a writable caps which may or may not be the
+same as <em>caps</em></p>
+
+	</td>
+	<td>
+		
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="_GstCaps">
+		<h3 id="struct-_gstcaps">
+		struct _GstCaps
+	</h3>
+
+		<pre class="raw_code">
+struct _GstCaps {
+  GstMiniObject mini_object;
+};
+</pre>
+
+
+<div class="member_details">
+	<h4 id="fields">Fields</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="_GstCaps.mini_object">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>mini_object</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="_GstStaticCaps">
+		<h3 id="struct-_gststaticcaps">
+		struct _GstStaticCaps
+	</h3>
+
+		<pre class="raw_code">
+struct _GstStaticCaps {
+  GstCaps *caps;
+  const char *string;
+
+};
+</pre>
+
+
+<div class="member_details">
+	<h4 id="fields1">Fields</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="_GstStaticCaps.caps">
+		<td>
+		<p>
+		<i><em><code><a title="GstCaps" href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> * <em><code>caps</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstStaticCaps.string">
+		<td>
+		<p>
+		<i><em><code>const char * <em><code>string</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstCapsFlags">
+		<h3 id="gstcapsflags">
+		GstCapsFlags
+	</h3>
+
+		<pre class="raw_code">
+typedef enum {
+  GST_CAPS_FLAG_ANY	= (GST_MINI_OBJECT_FLAG_LAST &lt;&lt; 0)
+} GstCapsFlags;
+</pre>
+
+<p>Extra flags for a caps.</p>
+
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_CAPS_FLAG_ANY"></a>
+		GST_CAPS_FLAG_ANY
+		</p>
+	</td>
+	<td><p>Caps has no specific content, but can contain
+anything.</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstCapsIntersectMode">
+		<h3 id="gstcapsintersectmode">
+		GstCapsIntersectMode
+	</h3>
+
+		<pre class="raw_code">
+typedef enum {
+  GST_CAPS_INTERSECT_ZIG_ZAG            =  0,
+  GST_CAPS_INTERSECT_FIRST              =  1
+} GstCapsIntersectMode;
+</pre>
+
+<p>Modes of caps intersection</p>
+<p><em>GST_CAPS_INTERSECT_ZIG_ZAG</em> tries to preserve overall order of both caps
+by iterating on the caps' structures as the following matrix shows:</p>
+<pre><code>         caps1
+      +-------------
+      | 1  2  4  7
+caps2 | 3  5  8 10
+      | 6  9 11 12
+</code></pre>
+<p>Used when there is no explicit precedence of one caps over the other. e.g.
+tee's sink pad getcaps function, it will probe its src pad peers' for their
+caps and intersect them with this mode.</p>
+<p><em>GST_CAPS_INTERSECT_FIRST</em> is useful when an element wants to preserve
+another element's caps priority order when intersecting with its own caps.
+Example: If caps1 is [A, B, C] and caps2 is [E, B, D, A], the result
+would be [A, B], maintaining the first caps priority on the intersection.</p>
+
+
+<div class="member_details">
+	<h4 id="members1">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_CAPS_INTERSECT_ZIG_ZAG"></a>
+		GST_CAPS_INTERSECT_ZIG_ZAG
+		</p>
+	</td>
+	<td><p>Zig-zags over both caps.</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_CAPS_INTERSECT_FIRST"></a>
+		GST_CAPS_INTERSECT_FIRST
+		</p>
+	</td>
+	<td><p>Keeps the first caps order.</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TYPE_CAPS">
+		<h3 class="constant" id="gst_type_caps">
+	GST_TYPE_CAPS
+</h3>
+
+		<pre class="raw_code">
+#define GST_TYPE_CAPS             (_gst_caps_type)
+</pre>
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TYPE_STATIC_CAPS">
+		<h3 class="constant" id="gst_type_static_caps">
+	GST_TYPE_STATIC_CAPS
+</h3>
+
+		<pre class="raw_code">
+#define GST_TYPE_STATIC_CAPS      (gst_static_caps_get_type())
+</pre>
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CAPS_ANY">
+		<h3 class="constant" id="gst_caps_any">
+	GST_CAPS_ANY
+</h3>
+
+		<pre class="raw_code">
+#define GST_CAPS_ANY              _gst_caps_any
+</pre>
+
+<p>Means that the element/pad can output 'anything'. Useful for elements
+that output unknown media, such as filesrc. This macro returns a singleton and
+should not be unreffed.</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CAPS_NONE">
+		<h3 class="constant" id="gst_caps_none">
+	GST_CAPS_NONE
+</h3>
+
+		<pre class="raw_code">
+#define GST_CAPS_NONE             _gst_caps_none
+</pre>
+
+<p>The opposite of <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GST_CAPS_ANY">GST_CAPS_ANY</a>: it means that the pad/element outputs an
+undefined media type that can not be detected. This macro returns a singleton
+and should not be unreffed.</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_STATIC_CAPS_ANY">
+		<h3 class="constant" id="gst_static_caps_any">
+	GST_STATIC_CAPS_ANY
+</h3>
+
+		<pre class="raw_code">
+#define GST_STATIC_CAPS_ANY       GST_STATIC_CAPS("ANY")
+</pre>
+
+<p>Creates a new <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> static caps that matches anything.
+This can be used in pad templates.</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_STATIC_CAPS_NONE">
+		<h3 class="constant" id="gst_static_caps_none">
+	GST_STATIC_CAPS_NONE
+</h3>
+
+		<pre class="raw_code">
+#define GST_STATIC_CAPS_NONE      GST_STATIC_CAPS("NONE")
+</pre>
+
+<p>Creates a new <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> static caps that matches nothing.
+This can be used in pad templates.</p>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Aliases">Aliases</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstCaps">
+		<h3 id="gstcaps1">
+	GstCaps
+</h3>
+
+		<pre>
+typedef struct _GstCaps  GstCaps</pre>
+<p>Object describing media types.</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstStaticCaps">
+		<h3 id="gststaticcaps">
+	GstStaticCaps
+</h3>
+
+		<pre>
+typedef struct _GstStaticCaps  GstStaticCaps</pre>
+<p>Datastructure to initialize <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a> from a string description usually
+used in conjunction with <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#GST_STATIC_CAPS">GST_STATIC_CAPS</a> and <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_static_caps_get">gst_static_caps_get</a> to
+instantiate a <a href="../../gstreamer-libs-doc-1.0/c/base/gsttypefindhelper.html#GstCaps">GstCaps</a>.</p>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Callbacks">Callbacks</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstCapsFilterMapFunc">
+		<h3 id="gstcapsfiltermapfunc">
+	<span><code>GstCapsFilterMapFunc</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+(*GstCapsFilterMapFunc) ()</pre>
+
+<p>A function that will be called in <a href="../../gstreamer-core-doc-1.0/c/gstcaps.html#gst_caps_filter_and_map_in_place">gst_caps_filter_and_map_in_place</a>.
+The function may modify <em>features</em> and <em>structure</em>, and both will be
+removed from the caps if <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> is returned.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns27">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the features and structure should be preserved,
+<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> if it should be removed.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../gstreamer-libs-doc-1.0/c/base/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

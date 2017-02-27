@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstPipeline</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/gstpipeline.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstpipeline.md">
+<h1 id="gstpipeline">GstPipeline</h1>
+<p>A <code>GstPipeline</code> is usually a toplevel bin and provides all of its children
+with a clock.</p>
+<p>A <code>GstPipeline</code> also provides a toplevel <code>GstBus</code> (see <a href="gstbus.html">gstbus</a>)</p>
+<p>The pipeline also calculates the running_time based on the selected
+clock (see also clocks.txt and <a href="synchronisation.html">synchronisation</a>).</p>
+<p>The pipeline will calculate a global latency for the elements in the
+pipeline. (See also <a href="latency.html">latency</a>).</p>
+<h2 id="state-changes">State changes</h2>
+<p>In addition to the normal state change procedure of its parent class
+<code>GstBin</code>, the pipeline performs the following actions during a state
+change:</p>
+<ul>
+<li>NULL → READY:
+<ul>
+<li>set the bus to non-flushing</li>
+</ul>
+</li>
+<li>READY → PAUSED:
+<ul>
+<li>reset the running_time to 0</li>
+</ul>
+</li>
+<li>PAUSED → PLAYING:
+<ul>
+<li>Select and a clock.</li>
+<li>calculate base_time using the running_time.</li>
+<li>calculate and distribute latency.</li>
+<li>set clock and base_time on all elements before performing the state
+change.</li>
+</ul>
+</li>
+<li>PLAYING → PAUSED:
+<ul>
+<li>calculate the running_time when the pipeline was PAUSED.</li>
+</ul>
+</li>
+<li>READY → NULL:
+<ul>
+<li>set the bus to flushing (when auto-flushing is enabled)</li>
+</ul>
+</li>
+</ul>
+<p>The running_time represents the total elapsed time, measured in clock
+units, that the pipeline spent in the PLAYING state (see
+<a href="synchronisation.html">synchronisation</a>). The running_time is set to 0 after a
+flushing seek.</p>
+<h2 id="clock-selection">Clock selection</h2>
+<p>Since all of the children of a <code>GstPipeline</code> must use the same clock, the
+pipeline must select one. This clock selection happens when the
+pipeline goes to the PLAYING state.</p>
+<p>The default clock selection algorithm works as follows:</p>
+<ul>
+<li>
+<p>If the application selected a clock, use that clock. (see below)</p>
+</li>
+<li>
+<p>Use the clock of the most upstream element that can provide one.
+This selection is performed by iterating the element starting from
+the sinks going upstream.</p>
+<ul>
+<li>since this selection procedure happens in the PAUSED→PLAYING
+state change, all the sinks are prerolled and we can thus be
+sure that each sink is linked to some upstream element.</li>
+<li>in the case of a live pipeline (<code>NO_PREROLL</code>), the sink will not
+yet be prerolled and the selection process will select the clock
+of a more upstream element.</li>
+</ul>
+</li>
+<li>
+<p>use <code>GstSystemClock</code>, this only happens when no element provides a
+usable clock.</p>
+</li>
+</ul>
+<p>The application can influence this clock selection with two methods:
+<code>gst_pipeline_use_clock()</code> and <code>gst_pipeline_auto_clock()</code>.</p>
+<p>The <code>_use_clock()</code> method forces the use of a specific clock on the
+pipeline regardless of what clock providers are children of the
+pipeline. Setting NULL disables the clock completely and makes the
+pipeline run as fast as possible.</p>
+<p>The <code>_auto_clock()</code> method removes the fixed clock and reactivates the
+auto- matic clock selection algorithm described above.</p>
+<h2 id="gstbus">GstBus</h2>
+<p>A <code>GstPipeline</code> provides a <code>GstBus</code> to the application. The bus can be
+retrieved with <code>gst_pipeline_get_bus()</code> and can then be used to
+retrieve messages posted by the elements in the pipeline (see
+<a href="gstbus.html">gstbus</a>).</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>TODO - Future Development</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/TODO.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="TODO.md">
+<h1 id="todo-future-development">TODO - Future Development</h1>
+<h2 id="apiabi">API/ABI</h2>
+<ul>
+<li>
+<p>implement return values from events in addition to the gboolean.
+This should be done by making the event contain a <code>GstStructure</code> with
+input/output values, similar to <code>GstQuery</code>. A typical use case is
+performing a non-accurate seek to a keyframe, after the seek you
+want to get the new stream time that will actually be used to update
+the slider bar.</p>
+</li>
+<li>
+<p>make <code>_pad_push_event()</code> return a <code>GstFlowReturn</code></p>
+</li>
+<li>
+<p><code>GstEvent</code>, <code>GstMessage</code> register like <code>GstFormat</code> or <code>GstQuery</code>.</p>
+</li>
+<li>
+<p>query POSITION/DURATION return accuracy. Just a flag or accuracy
+percentage.</p>
+</li>
+<li>
+<p>use | instead of + as divider in serialization of Flags
+(gstvalue/gststructure)</p>
+</li>
+<li>
+<p>rethink how we handle dynamic replugging wrt segments and other
+events that already got pushed and need to be pushed again. Might
+need <code>GstFlowReturn</code> from <code>gst_pad_push_event()</code>. FIXED in 0.11 with
+sticky events.</p>
+</li>
+<li>
+<p>Optimize negotiation. We currently do a <code>get_caps()</code> call when we
+link pads, which could potentially generate a huge list of caps and
+all their combinations, we need to avoid generating these huge lists
+by generating them We also need to incrementally return
+intersections etc, for this. somewhat incrementally when needed. We
+can do this with a <code>gst_pad_iterate_caps()</code> call. We also need to
+incrementally return intersections etc, for this. FIXED in 0.11 with
+a filter on getcaps functions.</p>
+</li>
+<li>
+<p>Elements in a bin have no clue about the final state of the parent
+element since the bin sets the target state on its children in small
+steps. This causes problems for elements that like to know the final
+state (rtspsrc going to <code>PAUSED</code> or <code>READY</code> is different in that we can
+avoid sending the useless <code>PAUSED</code> request).</p>
+</li>
+<li>
+<p>Make serialisation of structures more consistent, readable and nicer
+code-wise.</p>
+</li>
+<li>
+<p>pad block has several issues:</p>
+<ul>
+<li>
+<p>can’t block on selected things, like push, pull, <code>pad_alloc</code>,
+events, …</p>
+</li>
+<li>
+<p>can’t check why the block happened. We should also be able to
+get the item/ reason that blocked the pad.</p>
+</li>
+<li>
+<p>it only blocks on datapassing. When EOS, the block never happens
+but ideally should because pad block should inform the app when
+there is no dataflow.</p>
+</li>
+<li>
+<p>the same goes for segment seeks that don’t push in-band EOS
+events. Maybe segment seeks should also send an EOS event when
+they’re done.</p>
+</li>
+<li>
+<p>blocking should only happen from one thread. If one thread does
+<code>pad_alloc</code> and another a push, the push might be busy while the
+block callback is done.</p>
+</li>
+<li>
+<p>maybe this name is overloaded. We need to look at some more use
+cases before trying to fix this. FIXED in 0.11 with BLOCKING
+probes.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>rethink the way we do upstream renegotiation. Currently it’s done
+with <code>pad_alloc</code> but this has many issues such as only being able to
+suggest 1 format and the need to allocate a buffer of this suggested
+format (some elements such as capsfilter only know about the format,
+not the size). We would ideally like to let upstream renegotiate a
+new format just like it did when it started. This could, for
+example, easily be triggered with a RENEGOTIATE event. FIXED in 0.11
+with RECONFIGURE events.</p>
+</li>
+<li>
+<p>Remove the result format value in queries. FIXED in 0.11</p>
+</li>
+<li>
+<p>Try to minimize the amount of acceptcaps calls when pushing buffers
+around. The element pushing the buffer usually negotiated already
+and decided on the format. The element receiving the buffer usually
+has to accept the caps anyway.</p>
+</li>
+</ul>
+<h2 id="implementation">IMPLEMENTATION</h2>
+<ul>
+<li>
+<p>implement more QOS, <a href="qos.html">qos</a>.</p>
+</li>
+<li>
+<p>implement BUFFERSIZE.</p>
+</li>
+</ul>
+<h2 id="design">DESIGN</h2>
+<ul>
+<li>unlinking pads in the <code>PAUSED</code> state needs to make sure the stream
+thread is not executing code. Can this be done with a flush to
+unlock all downstream chain functions? Do we do this automatically
+or let the app handle this?</li>
+</ul>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

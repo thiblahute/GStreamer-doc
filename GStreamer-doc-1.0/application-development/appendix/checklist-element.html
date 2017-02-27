@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Things to check when writing an application</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="application-development/appendix/checklist-element.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="checklist-element.md">
+<h1 id="things-to-check-when-writing-an-application">Things to check when writing an application</h1>
+<p>This chapter contains a fairly random selection of things that can be
+useful to keep in mind when writing GStreamer-based applications. It's
+up to you how much you're going to use the information provided here. We
+will shortly discuss how to debug pipeline problems using GStreamer
+applications. Also, we will touch upon how to acquire knowledge about
+plugins and elements and how to test simple pipelines before building
+applications around them.</p>
+<h2 id="good-programming-habits">Good programming habits</h2>
+<ul>
+<li>
+<p>Always add a <code>GstBus</code> handler to your pipeline. Always report errors
+in your application, and try to do something with warnings and
+information messages, too.</p>
+</li>
+<li>
+<p>Always check return values of GStreamer functions. Especially, check
+return values of <code>gst_element_link ()</code> and <code>gst_element_set_state ()</code>.</p>
+</li>
+<li>
+<p>Dereference return values of all functions returning a non-base
+type, such as <code>gst_element_get_pad ()</code>. Also, always free non-const
+string returns, such as <code>gst_object_get_name ()</code>.</p>
+</li>
+<li>
+<p>Always use your pipeline object to keep track of the current state
+of your pipeline. Don't keep private variables in your application.
+Also, don't update your user interface if a user presses the “play”
+button. Instead, listen for the “state-changed” message on the
+<code>GstBus</code> and only update the user interface whenever this message is
+received.</p>
+</li>
+<li>
+<p>Report all bugs that you find in GStreamer bugzilla at
+<a href="http://bugzilla.gnome.org">http://bugzilla.gnome.org/</a>.</p>
+</li>
+</ul>
+<h2 id="debugging">Debugging</h2>
+<p>Applications can make use of the extensive GStreamer debugging system to
+debug pipeline problems. Elements will write output to this system to
+log what they're doing. It's not used for error reporting, but it is
+very useful for tracking what an element is doing exactly, which can
+come in handy when debugging application issues (such as failing seeks,
+out-of-sync media, etc.).</p>
+<p>Most GStreamer-based applications accept the commandline option
+<code>--gst-debug=LIST</code> and related family members. The list consists of a
+comma-separated list of category/level pairs, which can set the
+debugging level for a specific debugging category. For example,
+<code>--gst-debug=oggdemux:5</code> would turn on debugging for the Ogg demuxer
+element. You can use wildcards as well. A debugging level of 0 will turn
+off all debugging, and a level of 9 will turn on all debugging.
+Intermediate values only turn on some debugging (based on message
+severity; 2, for example, will only display errors and warnings). Here's
+a list of all available options:</p>
+<ul>
+<li>
+<p><code>--gst-debug-help</code> will print available debug categories and exit.</p>
+</li>
+<li>
+<p><code>--gst-debug-level=LEVEL</code> will set the default debug level (which
+can range from 0 (no output) to 9 (everything)).</p>
+</li>
+<li>
+<p><code>--gst-debug=LIST</code> takes a comma-separated list of
+category_name:level pairs to set specific levels for the individual
+categories. Example: <code>GST_AUTOPLUG:5,avidemux:3</code>. Alternatively, you
+can also set the <code>GST_DEBUG</code> environment variable, which has the
+same effect.</p>
+</li>
+<li>
+<p><code>--gst-debug-no-color</code> will disable color debugging. You can also
+set the GST_DEBUG_NO_COLOR environment variable to 1 if you want
+to disable colored debug output permanently. Note that if you are
+disabling color purely to avoid messing up your pager output, try
+using <code>less -R</code>.</p>
+</li>
+<li>
+<p><code>--gst-debug-color-mode=MODE</code> will change debug log coloring mode.
+MODE can be one of the following: <code>on</code>, <code>off</code>, <code>auto</code>, <code>disable</code>,
+<code>unix</code>. You can also set the GST_DEBUG_COLOR_MODE environment
+variable if you want to change colored debug output permanently.
+Note that if you are disabling color purely to avoid messing up your
+pager output, try using <code>less -R</code>.</p>
+</li>
+<li>
+<p><code>--gst-debug-disable</code> disables debugging altogether.</p>
+</li>
+<li>
+<p><code>--gst-plugin-spew</code> enables printout of errors while loading
+GStreamer plugins.</p>
+</li>
+</ul>
+<h2 id="conversion-plugins">Conversion plugins</h2>
+<p>GStreamer contains a bunch of conversion plugins that most applications
+will find useful. Specifically, those are videoscalers (videoscale),
+colorspace convertors (videoconvert), audio format convertors and
+channel resamplers (audioconvert) and audio samplerate convertors
+(audioresample). Those convertors don't do anything when not required,
+they will act in passthrough mode. They will activate when the hardware
+doesn't support a specific request, though. All applications are
+recommended to use those elements.</p>
+<h2 id="utility-applications-provided-with-gstreamer">Utility applications provided with GStreamer</h2>
+<p>GStreamer comes with a default set of command-line utilities that can
+help in application development. We will discuss only <code>gst-launch</code> and
+<code>gst-inspect</code> here.</p>
+<h3 id="gstlaunch"><code>gst-launch</code></h3>
+<p><code>gst-launch</code> is a simple script-like commandline application that can be
+used to test pipelines. For example, the command <code>gst-launch audiotestsrc ! audioconvert ! audio/x-raw,channels=2 ! alsasink</code> will run a pipeline which generates a
+sine-wave audio stream and plays it to your ALSA audio card.
+<code>gst-launch</code> also allows the use of threads (will be used automatically
+as required or as queue elements are inserted in the pipeline) and bins
+(using brackets, so “(” and “)”). You can use dots to imply padnames on
+elements, or even omit the padname to automatically select a pad. Using
+all this, the pipeline <code>gst-launch filesrc location=file.ogg ! oggdemux name=d d. ! queue ! theoradec ! videoconvert ! xvimagesink d. ! queue ! vorbisdec ! audioconvert ! audioresample ! alsasink</code> will play an Ogg file containing a Theora video-stream and a Vorbis
+audio-stream. You can also use autopluggers such as decodebin on the
+commandline. See the manual page of <code>gst-launch</code> for more information.</p>
+<h3 id="gstinspect"><code>gst-inspect</code></h3>
+<p><code>gst-inspect</code> can be used to inspect all properties, signals, dynamic
+parameters and the object hierarchy of an element. This can be very
+useful to see which <code>GObject</code> properties or which signals (and using
+what arguments) an element supports. Run <code>gst-inspect fakesrc</code> to get an
+idea of what it does. See the manual page of <code>gst-inspect</code> for more
+information.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

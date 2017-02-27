@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Buffering</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/buffering.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="buffering.md">
+<h1 id="buffering">Buffering</h1>
+<p>This document outlines the buffering policy used in the GStreamer core
+that can be used by plugins and applications.</p>
+<p>The purpose of buffering is to accumulate enough data in a pipeline so
+that playback can occur smoothly and without interruptions. It is
+typically done when reading from a (slow) non-live network source but
+can also be used for live sources.</p>
+<p>We want to be able to implement the following features:</p>
+<ul>
+<li>
+<p>buffering up to a specific amount of data, in memory, before
+starting playback so that network fluctuations are minimized.</p>
+</li>
+<li>
+<p>download of the network file to a local disk with fast seeking in
+the downloaded data. This is similar to the quicktime/youtube
+players.</p>
+</li>
+<li>
+<p>caching of semi-live streams to a local, on disk, ringbuffer with
+seeking in the cached area. This is similar to tivo-like
+timeshifting.</p>
+</li>
+<li>
+<p>progress report about the buffering operations</p>
+</li>
+<li>
+<p>the possibility for the application to do more complex buffering</p>
+</li>
+</ul>
+<h2 id="some-use-cases">Some use cases</h2>
+<h3 id="stream-buffering">Stream buffering</h3>
+<pre><code>+---------+     +---------+     +-------+
+| httpsrc |     | buffer  |     | demux |
+|        src - sink      src - sink     ....
++---------+     +---------+     +-------+
+</code></pre>
+<p>In this case we are reading from a slow network source into a buffer element
+(such as queue2).</p>
+<p>The buffer element has a low and high watermark expressed in bytes. The
+buffer uses the watermarks as follows:</p>
+<ul>
+<li>
+<p>The buffer element will post <code>BUFFERING</code> messages until the high
+watermark is hit. This instructs the application to keep the
+pipeline PAUSED, which will eventually block the srcpad from
+pushing while data is prerolled in the sinks.</p>
+</li>
+<li>
+<p>When the high watermark is hit, a <code>BUFFERING</code> message with 100%
+will be posted, which instructs the application to continue
+playback.</p>
+</li>
+<li>
+<p>When the low watermark is hit during playback, the queue will
+start posting <code>BUFFERING</code> messages again, making the application
+PAUSE the pipeline again until the high watermark is hit again.
+This is called the rebuffering stage.</p>
+</li>
+<li>
+<p>During playback, the queue level will fluctuate between the high
+and low watermarks as a way to compensate for network
+irregularities.</p>
+</li>
+</ul>
+<p>This buffering method is usable when the demuxer operates in push mode.
+Seeking in the stream requires the seek to happen in the network source.
+It is mostly desirable when the total duration of the file is not known, such
+as in live streaming or when efficient seeking is not possible/required.</p>
+<h3 id="incremental-download">Incremental download</h3>
+<pre><code>+---------+     +---------+     +-------+
+| httpsrc |     | buffer  |     | demux |
+|        src - sink      src - sink     ....
++---------+     +----|----+     +-------+
+                     V
+                    file
+</code></pre>
+<p>In this case, we know the server is streaming a fixed length file to the
+client. The application can choose to download the file to disk. The buffer
+element will provide a push or pull based srcpad to the demuxer to navigate in
+the downloaded file.</p>
+<p>This mode is only suitable when the client can determine the length of the
+file on the server.</p>
+<p>In this case, buffering messages will be emitted as usual when the requested
+range is not within the downloaded area + buffersize. The buffering message
+will also contain an indication that incremental download is being performed.
+This flag can be used to let the application control the buffering in a more
+intelligent way, using the <code>BUFFERING</code> query, for example.</p>
+<p>The application can use the <code>BUFFERING</code> query to get the estimated download time
+and match this time to the current/remaining playback time to control when
+playback should start to have a non-interrupted playback experience.</p>
+<h3 id="timeshifting">Timeshifting</h3>
+<pre><code>+---------+     +---------+     +-------+
+| httpsrc |     | buffer  |     | demux |
+|        src - sink      src - sink     ....
++---------+     +----|----+     +-------+
+                     V
+              file-ringbuffer
+</code></pre>
+<p>In this mode, a fixed size ringbuffer is kept to download the server content.
+This allows for seeking in the buffered data. Depending on the size of the
+buffer one can seek further back in time.</p>
+<p>This mode is suitable for all live streams.</p>
+<p>As with the incremental download mode, buffering messages are emitted along
+with an indication that timeshifting download is in progress.</p>
+<h3 id="live-buffering">Live buffering</h3>
+<p>In live pipelines we usually introduce some latency between the capture and
+the playback elements. This latency can be introduced by a queue (such as a
+jitterbuffer) or by other means (in the audiosink).</p>
+<p>Buffering messages can be emitted in those live pipelines as well and serve as
+an indication to the user of the latency buffering. The application usually
+does not react to these buffering messages with a state change.</p>
+<h2 id="messages">Messages</h2>
+<p>A <code>GST_MESSAGE_BUFFERING</code> must be posted on the bus when playback
+temporarily stops to buffer and when buffering finishes. When the
+percentage field in the <code>BUFFERING</code> message is 100, buffering is done.
+Values less than 100 mean that buffering is in progress.</p>
+<p>The <code>BUFFERING</code> message should be intercepted and acted upon by the
+application. The message contains at least one field that is sufficient
+for basic functionality:</p>
+<ul>
+<li><strong><code>buffer-percent</code></strong>, <code>G_TYPE_INT</code>: between 0 and 100</li>
+</ul>
+<p>Several more clever ways of dealing with the buffering messages can be
+used when in incremental or timeshifting download mode. For this purpose
+additional fields are added to the buffering message:</p>
+<ul>
+<li>
+<p><strong><code>buffering-mode</code></strong>, <code>GST_TYPE_BUFFERING_MODE</code>: <code>enum { "stream", "download", "timeshift", "live" }</code>: Buffering mode in use. See above for an explanation of the different
+alternatives. This field can be used to let the application have more control
+over the buffering process.</p>
+</li>
+<li>
+<p><strong><code>avg-in-rate</code></strong>, <code>G_TYPE_INT</code>: Average input buffering speed in bytes/second.
+-1 is unknown. This is the average number of bytes per second that is received
+on the buffering element input (sink) pads. It is a measurement of the network
+speed in most cases.</p>
+</li>
+<li>
+<p><strong><code>avg-out-rate</code></strong>, <code>G_TYPE_INT</code>: Average consumption speed in bytes/second. -1
+is unknown. This is the average number of bytes per second that is consumed by
+the downstream element of the buffering element.</p>
+</li>
+<li>
+<p><strong><code>buffering-left</code></strong>, <code>G_TYPE_INT64</code>: Estimated time that buffering will take
+in milliseconds. -1 is unknown. This is measured based on the avg-in-rate and
+the filled level of the queue. The application can use this hint to update the
+GUI about the estimated remaining time that buffering will take.</p>
+</li>
+</ul>
+<h2 id="application">Application</h2>
+<p>While data is buffered the pipeline should remain in the PAUSED state.
+It is also possible that more data should be buffered while the pipeline
+is PLAYING, in which case the pipeline should be PAUSED until the
+buffering finishes.</p>
+<p><code>BUFFERING</code> messages can be posted while the pipeline is prerolling. The
+application should not set the pipeline to PLAYING before a <code>BUFFERING</code>
+message with a 100 percent value is received, which might only happen
+after the pipeline prerolls.</p>
+<p>An exception is made for live pipelines. The application may not change
+the state of a live pipeline when a buffering message is received.
+Usually these buffering messages contain the "buffering-mode" = "live".</p>
+<p>The buffering message can also instruct the application to switch to a
+periodical <code>BUFFERING</code> query instead, so it can more precisely control the
+buffering process. The application can, for example, choose not to act
+on the <code>BUFFERING</code> complete message (buffer-percent = 100) to resume
+playback but use the estimated download time instead, resuming playback
+when it has determined that it should be able to provide uninterrupted
+playback.</p>
+<h2 id="buffering-query">Buffering Query</h2>
+<p>In addition to the <code>BUFFERING</code> messages posted by the buffering elements,
+we want to be able to query the same information from the application.
+We also want to be able to present the user with information about the
+downloaded range in the file so that the GUI can react on it.</p>
+<p>In addition to all the fields present in the buffering message, the
+<code>BUFFERING</code> query contains the following field, which indicates the
+available downloaded range in a specific format and the estimated time
+to complete:</p>
+<ul>
+<li>
+<p><strong><code>busy</code></strong>, <code>G_TYPE_BOOLEAN</code>: if buffering was busy. This flag allows the
+application to pause the pipeline by using the query only.</p>
+</li>
+<li>
+<p><strong><code>format</code></strong>, <code>GST_TYPE_FORMAT</code>: the format of the "start" and "stop" values
+below</p>
+</li>
+<li>
+<p><strong><code>start</code></strong>, <code>G_TYPE_INT64</code>, -1 unknown: the start position of the available
+data. If there are multiple ranges, this field contains the start position of
+the currently downloading range.</p>
+</li>
+<li>
+<p><strong><code>stop</code></strong>, <code>G_TYPE_INT64</code>, -1 unknown: the stop position of the available
+data. If there are multiple ranges, this field contains the stop position of
+the currently downloading range.</p>
+</li>
+<li>
+<p><strong><code>estimated-total</code></strong>, <code>G_TYPE_INT64</code>: gives the estimated download time in
+milliseconds. -1 unknown. When the size of the downloaded file is known, this
+value will contain the latest estimate of the remaining download time of the
+currently downloading range. This value is usually only filled for the
+"download" buffering mode. The application can use this information to estimate
+the amount of remaining time to download till the end of the file.</p>
+</li>
+<li>
+<p><strong><code>buffering-ranges</code></strong>, <code>G_TYPE_ARRAY</code> of <code>GstQueryBufferingRange</code>: contains
+optionally the downloaded areas in the format given above. One of the ranges
+contains the same start/stop position as above:</p>
+</li>
+</ul>
+<pre><code>    typedef struct
+    {
+      gint64 start;
+      gint64 stop;
+    } GstQueryBufferingRange;
+</code></pre>
+<p>For the <code>download</code> and <code>timeshift</code> buffering-modes, the start and stop
+positions specify the ranges where efficient seeking in the downloaded
+media is possible. Seeking outside of these ranges might be slow or not
+at all possible.</p>
+<p>For the <code>stream</code> and <code>live</code> mode the start and stop values describe the
+oldest and newest item (expressed in <code>format</code>) in the buffer.</p>
+<h2 id="defaults">Defaults</h2>
+<p>Some defaults for common elements:</p>
+<p>A <code>GstBaseSrc</code> with random access replies to the <code>BUFFERING</code> query with:</p>
+<pre><code>"buffer-percent" = 100
+"buffering-mode" = "stream"
+"avg-in-rate" = -1
+"avg-out-rate" = -1
+"buffering-left" = 0
+"format" = GST_FORMAT_BYTES
+"start" = 0
+"stop" = the total filesize
+"estimated-total" = 0
+"buffering-ranges" = NULL
+</code></pre>
+<p>A <code>GstBaseSrc</code> in push mode replies to the <code>BUFFERING</code> query with:</p>
+<pre><code>"buffer-percent" = 100
+"buffering-mode" = "stream"
+"avg-in-rate" = -1
+"avg-out-rate" = -1
+"buffering-left" = 0
+"format" = a valid GST_TYPE_FORMAT
+"start" = current position
+"stop" = current position
+"estimated-total" = -1
+"buffering-ranges" = NULL
+</code></pre>
+<h2 id="buffering-strategies">Buffering strategies</h2>
+<p>Buffering strategies are specific implementations based on the buffering
+message and query described above.</p>
+<p>Most strategies have to balance buffering time versus maximal playback
+experience.</p>
+<h3 id="simple-buffering">Simple buffering</h3>
+<p>NON-live pipelines are kept in the paused state while buffering messages with
+a percent &lt; 100% are received.</p>
+<p>This buffering strategy relies on the buffer size and low/high watermarks of
+the element. It can work with a fixed size buffer in memory or on disk.</p>
+<p>The size of the buffer is usually expressed in a fixed amount of time units
+and the estimated bitrate of the upstream source is used to convert this time
+to bytes.</p>
+<p>All GStreamer applications must implement this strategy. Failure to do so
+will result in starvation at the sink.</p>
+<h3 id="norebuffer-strategy">No-rebuffer strategy</h3>
+<p>This strategy tries to buffer as much data as possible so that playback can
+continue without any further rebuffering.</p>
+<p>This strategy is initially similar to simple buffering, the difference is in
+deciding on the condition to continue playback. When a 100% buffering message
+has been received, the application will not yet start the playback but it will
+start a periodic buffering query, which will return the estimated amount of
+buffering time left. When the estimated time left is less than the remaining
+playback time, playback can continue.</p>
+<p>This strategy requires a unlimited buffer size in memory or on disk, such as
+provided by elements that implement the incremental download buffering mode.</p>
+<p>Usually, the application can choose to start playback even before the
+remaining buffer time elapsed in order to more quickly start the playback at
+the expense of a possible rebuffering phase.</p>
+<h3 id="incremental-rebuffering">Incremental rebuffering</h3>
+<p>The application implements the simple buffering strategy but with each
+rebuffering phase, it increases the size of the buffer.</p>
+<p>This strategy has quick, fixed time startup times but incrementally longer
+rebuffering times if the network is slower than the media bitrate.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Metadata</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/draft-metadata.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="draft-metadata.md">
+<h1 id="metadata">Metadata</h1>
+<p>This draft recaps the current metadata handling in GStreamer and
+proposes some additions.</p>
+<h2 id="supported-metadata-standards">Supported Metadata standards</h2>
+<p>The paragraphs below list supported native metadata standards sorted by
+type and then in alphabetical order. Some standards have been extended
+to support additional metadata. GStreamer already supports all of those
+to some extend. This is showns in the table below as either [--],
+[r-], [-w] or [rw] depending on read/write support (08.Feb.2010).</p>
+<h3 id="audio">Audio</h3>
+<ul>
+<li>mp3
+<ul>
+<li>ID3v2: [rw]
+<ul>
+<li>http://www.id3.org/Developer_Information</li>
+</ul>
+</li>
+<li>ID3v1: [rw]
+<ul>
+<li>http://www.id3.org/ID3v1</li>
+</ul>
+</li>
+<li>XMP: [--] (inside ID3v2 PRIV tag of owner XMP)
+<ul>
+<li>http://www.adobe.com/devnet/xmp/</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>ogg/vorbis
+<ul>
+<li>vorbiscomment: [rw]
+<ul>
+<li>http://www.xiph.org/vorbis/doc/v-comment.html</li>
+<li>http://wiki.xiph.org/VorbisComment</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>wav
+<ul>
+<li>LIST/INFO chunk: [rw]
+<ul>
+<li>http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/RIFF.html#Info</li>
+<li>http://www.kk.iij4u.or.jp/~kondo/wave/mpidata.txt</li>
+</ul>
+</li>
+<li>XMP: [--]
+<ul>
+<li>http://www.adobe.com/devnet/xmp/</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="video">Video</h3>
+<ul>
+<li>3gp
+<ul>
+<li>{moov,trak}.udta:  [rw]
+<ul>
+<li>http://www.3gpp.org/ftp/Specs/html-info/26244.htm</li>
+</ul>
+</li>
+<li>ID3V2: [--]
+<ul>
+<li>http://www.3gpp.org/ftp/Specs/html-info/26244.htm</li>
+<li>http://www.mp4ra.org/specs.html#id3v2</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>avi
+<ul>
+<li>LIST/INFO chunk: [rw]
+<ul>
+<li>http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/RIFF.html#Info</li>
+<li>http://www.kk.iij4u.or.jp/~kondo/wave/mpidata.txt</li>
+</ul>
+</li>
+<li>XMP: [--] (inside "_PMX" chunk)
+<ul>
+<li>http://www.adobe.com/devnet/xmp/</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>asf
+<ul>
+<li>??:</li>
+<li>XMP: [--]
+<ul>
+<li>http://www.adobe.com/devnet/xmp/</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>flv [--]
+<ul>
+<li>XMP: (inside onXMPData script data tag)
+<ul>
+<li>http://www.adobe.com/devnet/xmp/</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mkv
+<ul>
+<li>tags: [rw]
+<ul>
+<li>http://www.matroska.org/technical/specs/tagging/index.html</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mov
+<ul>
+<li>XMP: [--] (inside moov.udta.XMP_ box)
+<ul>
+<li>http://www.adobe.com/devnet/xmp/</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mp4
+<ul>
+<li>{moov,trak}.udta: [rw]
+<ul>
+<li>http://standards.iso.org/ittf/PubliclyAvailableStandards/c051533_ISO_IEC_14496-12_2008.zip</li>
+</ul>
+</li>
+<li>moov.udta.meta.ilst: [rw]
+<ul>
+<li>http://atomicparsley.sourceforge.net/</li>
+<li>http://atomicparsley.sourceforge.net/mpeg-4files.html</li>
+</ul>
+</li>
+<li>ID3v2: [--]
+<ul>
+<li>http://www.mp4ra.org/specs.html#id3v2</li>
+</ul>
+</li>
+<li>XMP: [--] (inside UUID box)
+<ul>
+<li>http://www.adobe.com/devnet/xmp/</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mxf
+<ul>
+<li>??</li>
+</ul>
+</li>
+</ul>
+<h3 id="images">Images</h3>
+<ul>
+<li>gif
+<ul>
+<li>XMP: [--]
+<ul>
+<li>http://www.adobe.com/devnet/xmp/</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>jpg
+<ul>
+<li>jif: [rw] (only comments)</li>
+<li>EXIF: [rw] (via metadata plugin)
+<ul>
+<li>http://www.exif.org/specifications.html</li>
+</ul>
+</li>
+<li>IPTC: [rw] (via metadata plugin)
+<ul>
+<li>http://www.iptc.org/IPTC4XMP/</li>
+</ul>
+</li>
+<li>XMP: [rw] (via metadata plugin)
+<ul>
+<li>http://www.adobe.com/devnet/xmp/</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>png
+<ul>
+<li>XMP: [--]
+<ul>
+<li>http://www.adobe.com/devnet/xmp/</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="further-links">further Links:</h3>
+<p>http://age.hobba.nl/audio/tag_frame_reference.html
+http://wiki.creativecommons.org/Tracker_CC_Indexing</p>
+<h2 id="current-metadata-handling">Current Metadata handling</h2>
+<p>When reading files, demuxers or parsers extract the metadata. It will be
+sent a GST_EVENT_TAG to downstream elements. When a sink element
+receives a tag event, it will post a GST_MESSAGE_TAG message on the
+bus with the contents of the tag event.</p>
+<p>Elements receiving GST_EVENT_TAG events can mangle them, mux them into
+the buffers they send or just pass them through. Usually is muxers that
+will format the tag data into the form required by the format they mux.
+Such elements would also implement the GstTagSetter interface to receive
+tags from the application.</p>
+<pre><code> +----------+
+ | demux    |
+sink       src --&gt; GstEvent(tag) over GstPad to downstream element
+ +----------+
+
+           method call over GstTagSetter interface from application
+                                                          |
+                                                          v
+                                                    +----------+
+                                                    | mux      |
+GstEvent(tag) over GstPad from upstream element --&gt; sink       src
+                                                    +----------+
+</code></pre>
+<p>The data used in all those interfaces is GstTagList. It is based on a
+GstStructure which is like a hash table with differently typed entries.
+The key is always a string/GQuark. Many keys are predefined in GStreamer
+core. More keys are defined in gst-plugins-base/gst-libs/gst/tag/tag.h.
+If elements and applications use predefined types, it is possible to
+transcode a file from one format into another while preserving all known
+and mapped metadata.</p>
+<h2 id="issues">Issues</h2>
+<h3 id="unknownunmapped-metadata">Unknown/Unmapped metadata</h3>
+<p>Right now GStreamer can lose metadata when transcoding, remuxing
+content. This can happend as we don’t map all metadata fields to generic
+ones.</p>
+<p>We should probably also add the whole metadata blob to the GstTagList.
+We would need a GST_TAG_SYSTEM_xxx define (e.g.
+GST_TAG_SYSTEM_ID3V2) for each standard. The content is not printable
+and should be treated as binary if not known. The tag is not mergeable -
+call gst_tag_register() with GstTagMergeFunc=NULL. Also the tag data
+is only useful for upstream elements, not for the application.</p>
+<p>A muxer would first scan a taglist for known system tags. Unknown tags
+are ignored as already. It would first populate its own metadata store
+with the entries from the system tag and the update the entries with the
+data in normal tags.</p>
+<p>Below is an initial list of tag systems: ID3V1 - GST_TAG_SYSTEM_ID3V1
+ID3V2 - GST_TAG_SYSTEM_ID3V2 RIFF_INFO -
+GST_TAG_SYSTEM_RIFF_INFO XMP - GST_TAG_SYSTEM_XMP</p>
+<p>We would basically need this for each container format.</p>
+<p>See also <a href="https://bugzilla.gnome.org/show_bug.cgi?id=345352">https://bugzilla.gnome.org/show_bug.cgi?id=345352</a></p>
+<h3 id="lost-metadata">Lost metadata</h3>
+<p>A case slighly different from the previous is that when an application
+sets a GstTagList on a pipeline. Right elements consuming tags do not
+report which tags have been consumed. Especially when using elements
+that make metadata persistent, we have no means of knowing which of the
+tags made it into the target stream and which were not serialized.
+Ideally the application would like to know which kind of metadata is
+accepted by a pipleine to reflect that in the UI.</p>
+<p>Although it is in practise so that elements implementing GstTagSetter
+are the ones that serialize, this does not have to be so. Otherwise we
+could add a means to that interface, where elements add the tags they
+have serialized. The application could build one list from all the tag
+messages and then query all the serialized tags from tag-setters. The
+delta tells what has not been serialized.</p>
+<p>A different approach would be to query the list of supported tags in
+advance. This could be a query (GST_QUERY_TAG_SUPPORT). The query
+result could be a list of elements and their tags. As a convenience we
+could flatten the list of tags for the top-level element (if the query
+was sent to a bin) and add that.</p>
+<h3 id="tags-are-per-element">Tags are per Element</h3>
+<p>In many cases we want tags per stream. Even metadata standards like
+mp4/3gp metadata supports that. Right now GST_MESSAGE_SRC(tags) is the
+element. We tried changing that to the pad, but that broke applications.
+Also we miss the symmetric functionality in GstTagSetter. This interface
+is usually implemented by
+elements.</p>
+<h3 id="open-bugs">Open bugs</h3>
+<p><a href="https://bugzilla.gnome.org/buglist.cgi?query_format=advanced;short_desc=tag;bug_status=UNCONFIRMED;bug_status=NEW;bug_status=ASSIGNED;bug_status=REOPENED;bug_status=NEEDINFO;short_desc_type=allwordssubstr;product=GStreamer">https://bugzilla.gnome.org/buglist.cgi?query_format=advanced;short_desc=tag;bug_status=UNCONFIRMED;bug_status=NEW;bug_status=ASSIGNED;bug_status=REOPENED;bug_status=NEEDINFO;short_desc_type=allwordssubstr;product=GStreamer</a></p>
+<p>Add GST_TAG_MERGE_REMOVE
+<a href="https://bugzilla.gnome.org/show_bug.cgi?id=560302">https://bugzilla.gnome.org/show_bug.cgi?id=560302</a></p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Controller</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/controller.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="controller.md">
+<h1 id="controller">Controller</h1>
+<p>The controller subsystem allows to automate element property changes. It
+works so that all parameter changes are time based and elements request
+property updates at processing time.</p>
+<h2 id="element-view">Element view</h2>
+<p>Elements don’t need to do much. They need to: - mark object properties
+that can be changed while processing with <code>GST_PARAM_CONTROLLABLE</code> -
+call <code>gst_object_sync_values (self, timestamp)</code> in the processing
+function before accessing the parameters.</p>
+<p>All ordered property types can be automated (int, double, boolean,
+enum). Other property types can also be automated by using special
+control bindings. One can e.g. write a control-binding that updates a
+text property based on timestamps.</p>
+<h2 id="application-view">Application view</h2>
+<p>Applications need to setup the property automation. For that they need
+to create a <code>GstControlSource</code> and attach it to a property using
+<code>GstControlBinding</code>. Various control-sources and control-bindings exist.
+All control sources produce control value sequences in the form of
+gdouble values. The control bindings map them to the value range and
+type of the bound property.</p>
+<p>One control-source can be attached to one or more properties at the same
+time. If it is attached multiple times, then each control-binding will
+scale and convert the control values to the target property type and
+range.</p>
+<p>One can create complex control-curves by using a
+<code>GstInterpolationControlSource</code>. This allows the classic user editable
+control-curve (often seen in audio/video editors). Another way is to use
+computed control curves. <code>GstLFOControlSource</code> can generate various
+repetitive signals. Those can be made more complex by chaining the
+control sources. One can attach another control-source to e.g. modulate
+the frequency of the first <code>GstLFOControlSource</code>.</p>
+<p>In most cases <code>GstDirectControlBinding</code> will be the binding to be used.
+Other control bindings are there to handle special cases, such as having
+1-4 control- sources and combine their values into a single guint to
+control a rgba-color property.</p>
+<h2 id="todo">TODO</h2>
+<ul>
+<li>
+<p>control-source value ranges - control sources should ideally emit values
+between [0.0 and 1.0] - right now lfo-control-sources emits values
+between [-1.0 and 1.0] - we can make control-sources announce that or
+fix it in a lfo2-control-source</p>
+</li>
+<li>
+<p>ranged-control-binding - it might be a nice thing to have a
+control-binding that has scale and offset properties - when attaching a
+control-source to e.g. volume, one needs to be aware that the values go
+from [0.0 to 4.0] - we can also have a "mapping-mode"={AS_IS,
+TRANSFORMED} on direct-control-binding and two extra properties that are
+used in TRANSFORMED mode</p>
+</li>
+<li>
+<p>control-setup descriptions - it would be nice to have a way to parse a
+textual control-setup description. This could be used in gst-launch and
+in presets. It needs to be complemented with a formatter (for the preset
+storage or e.g. for debug logging). - this could be function-style:
+direct(control-source=lfo(waveform=<em>sine</em>,offset=0.5)) or gst-launch
+style (looks weird) lfo wave=sine offset=0.5 ! direct .control-source</p>
+</li>
+</ul>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

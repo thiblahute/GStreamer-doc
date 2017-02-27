@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstMeta</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/meta.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="meta.md">
+<h1 id="gstmeta">GstMeta</h1>
+<p>This document describes the design for arbitrary per-buffer metadata.</p>
+<p>Buffer metadata typically describes the low level properties of the
+buffer content. These properties are commonly not negotiated with caps
+but they are negotiated in the bufferpools.</p>
+<p>Some examples of metadata:</p>
+<ul>
+<li>
+<p>interlacing information</p>
+</li>
+<li>
+<p>video alignment, cropping, panning information</p>
+</li>
+<li>
+<p>extra container information such as granulepos, …</p>
+</li>
+<li>
+<p>extra global buffer properties</p>
+</li>
+</ul>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>
+<p>It must be fast</p>
+<ul>
+<li>
+<p>allocation, free, low fragmentation</p>
+</li>
+<li>
+<p>access to the metadata fields, preferably not much slower than
+directly accessing a C structure field</p>
+</li>
+</ul>
+</li>
+<li>
+<p>It must be extensible. Elements should be able to add new arbitrary
+metadata without requiring much effort. Also new metadata fields
+should not break API or ABI.</p>
+</li>
+<li>
+<p>It plays nice with subbuffers. When a subbuffer is created, the
+various buffer metadata should be copied/updated correctly.</p>
+</li>
+<li>
+<p>We should be able to negotiate metadata between elements</p>
+</li>
+</ul>
+<h2 id="use-cases">Use cases</h2>
+<ul>
+<li>
+<p><strong>Video planes</strong>: Video data is sometimes allocated in non-contiguous planes
+for the Y and the UV data. We need to be able to specify the data on a buffer
+using multiple pointers in memory. We also need to be able to specify the
+stride for these planes.</p>
+</li>
+<li>
+<p><strong>Extra buffer data</strong>: Some elements might need to store extra data for
+a buffer. This is typically done when the resources are allocated from another
+subsystem such as OMX or X11.</p>
+</li>
+<li>
+<p><strong>Processing information</strong>: Pan and crop information can be added to the
+buffer data when the downstream element can understand and use this metadata.
+An imagesink can, for example, use the pan and cropping information when
+blitting the image on the screen with little overhead.</p>
+</li>
+</ul>
+<h2 id="gstmeta1">GstMeta</h2>
+<p>A <code>GstMeta</code> is a structure as follows:</p>
+<pre><code class="language-c">struct _GstMeta {
+  GstMetaFlags       flags;
+  const GstMetaInfo *info;    /* tag and info for the meta item */
+};
+</code></pre>
+<p>The purpose of this structure is to serve as a common header for all
+metadata information that we can attach to a buffer. Specific metadata,
+such as timing metadata, will have this structure as the first field.
+For example:</p>
+<pre><code class="language-c">struct _GstMetaTiming {
+  GstMeta        meta;        /* common meta header */
+
+  GstClockTime   dts;         /* decoding timestamp */
+  GstClockTime   pts;         /* presentation timestamp */
+  GstClockTime   duration;    /* duration of the data */
+  GstClockTime   clock_rate;  /* clock rate for the above values */
+};
+</code></pre>
+<p>Or another example for the video memory regions that consists of both
+fields and methods.</p>
+<pre><code class="language-c">#define GST_VIDEO_MAX_PLANES 4
+
+struct GstMetaVideo {
+  GstMeta       meta;
+
+  GstBuffer         *buffer;
+
+  GstVideoFlags      flags;
+  GstVideoFormat     format;
+  guint              id
+  guint              width;
+  guint              height;
+
+  guint              n_planes;
+  gsize              offset[GST_VIDEO_MAX_PLANES];   /* offset in the buffer memory region of the
+                                                    * first pixel. */
+  gint               stride[GST_VIDEO_MAX_PLANES];   /* stride of the image lines. Can be negative when
+                                                    * the image is upside-down */
+
+  gpointer (*map)    (GstMetaVideo *meta, guint plane, gpointer * data, gint *stride,
+                      GstMapFlags flags);
+  gboolean (*unmap)  (GstMetaVideo *meta, guint plane, gpointer data);
+};
+
+gpointer gst_meta_video_map   (GstMetaVideo *meta, guint plane, gpointer * data,
+                               gint *stride, GstMapflags flags);
+gboolean gst_meta_video_unmap (GstMetaVideo *meta, guint plane, gpointer data);
+</code></pre>
+<p><code>GstMeta</code> derived structures define the API of the metadata. The API can
+consist of fields and/or methods. It is possible to have different
+implementations for the same <code>GstMeta</code> structure.</p>
+<p>The implementation of the <code>GstMeta</code> API would typically add more fields to
+the public structure that allow it to implement the API.</p>
+<p><code>GstMetaInfo</code> will point to more information about the metadata and looks
+like this:</p>
+<pre><code class="language-c">struct _GstMetaInfo {
+  GType                      api;       /* api type */
+  GType                      type;      /* implementation type */
+  gsize                      size;      /* size of the structure */
+
+  GstMetaInitFunction        init_func;
+  GstMetaFreeFunction        free_func;
+  GstMetaTransformFunction   transform_func;
+};
+</code></pre>
+<p>The <code>api</code> member will contain a <code>GType</code> of the metadata API. A repository of
+registered <code>MetaInfo</code> will be maintained by the core. We will register some
+common metadata structures in core and some media specific info for
+audio/video/text in -base. Plugins can register additional custom metadata.</p>
+<p>For each implementation of api, there will thus be a unique <code>GstMetaInfo</code>.
+In the case of metadata with a well defined API, the implementation
+specific init function will setup the methods in the metadata structure.
+A unique <code>GType</code> will be made for each implementation and stored in the
+type field.</p>
+<p>Along with the metadata description we will have functions to
+initialize/free (and/or refcount) a specific <code>GstMeta</code> instance. We also
+have the possibility to add a custom transform function that can be used
+to modify the metadata when a transformation happens.</p>
+<p>There are no explicit methods to serialize and deserialize the metadata.
+Since each type has a <code>GType</code>, we can reuse the <code>GValue</code> transform functions
+for this.</p>
+<p>The purpose of the separate <code>MetaInfo</code> is to not have to carry the
+free/init functions in each buffer instance but to define them globally.
+We still want quick access to the info so we need to make the buffer
+metadata point to the info.</p>
+<p>Technically we could also specify the field and types in the <code>MetaInfo</code>
+and provide a generic API to retrieve the metadata fields without the
+need for a header file. We will not do this yet.</p>
+<p>Allocation of the <code>GstBuffer</code> structure will result in the allocation of a
+memory region of a customizable size (512 bytes). Only the first <code>sizeof (GstBuffer)</code> bytes of this region will initially be used. The remaining
+bytes will be part of the free metadata region of the buffer. Different
+implementations are possible and are invisible in the API or ABI.</p>
+<p>The complete buffer with metadata could, for example, look as follows:</p>
+<pre><code>                         +----------------------------------+
+GstMiniObject            |  GType (GstBuffer)               |
+                         |  refcount, flags, copy/disp/free |
+                         +----------------------------------+
+GstBuffer                |  pool,pts,dts,duration,offsets   |
+                         |  &lt;private data&gt;                  |
+                         +..................................+
+                         |  next                           ---+
+                      +- |  info                           ------&gt; GstMetaInfo
+GstMetaTiming         |  |                                  | |
+                      |  |  dts                             | |
+                      |  |  pts                             | |
+                      |  |  duration                        | |
+                      +- |  clock_rate                      | |
+                         +  . . . . . . . . . . . . . . . . + |
+                         |  next                           &lt;--+
+GstMetaVideo       +- +- |  info                           ------&gt; GstMetaInfo
+                   |  |  |                                  | |
+                   |  |  |  flags                           | |
+                   |  |  |  n_planes                        | |
+                   |  |  |  planes[]                        | |
+                   |  |  |  map                             | |
+                   |  |  |  unmap                           | |
+                   +- |  |                                  | |
+                      |  |  private fields                  | |
+GstMetaVideoImpl      |  |  ...                             | |
+                      |  |  ...                             | |
+                      +- |                                  | |
+                         +  . . . . . . . . . . . . . . . . + .
+                         .                                    .
+</code></pre>
+<h2 id="api-examples">API examples</h2>
+<p>Buffers are created using the normal <code>gst_buffer_new()</code> functions. The
+standard fields are initialized as usual. A memory area that is bigger
+than the structure size is allocated for the buffer metadata.</p>
+<pre><code class="language-c">gst_buffer_new ();
+</code></pre>
+<p>After creating a buffer, the application can set caps and add metadata
+information.</p>
+<p>To add or retrieve metadata, a handle to a <code>GstMetaInfo</code> structure needs
+to be obtained. This defines the implementation and API of the metadata.
+Usually, a handle to this info structure can be obtained by calling a
+public <code>_get_info()</code> method from a shared library (for shared metadata).</p>
+<p>The following defines can usually be found in the shared .h file.</p>
+<pre><code class="language-c">GstMetaInfo * gst_meta_timing_get_info();
+#define GST_META_TIMING_INFO  (gst_meta_timing_get_info())
+</code></pre>
+<p>Adding metadata to a buffer can be done with the
+<code>gst_buffer_add_meta()</code> call. This function will create new metadata
+based on the implementation specified by the <code>GstMetaInfo</code>. It is also
+possible to pass a generic pointer to the <code>add_meta()</code> function that can
+contain parameters to initialize the new metadata fields.</p>
+<p>Retrieving the metadata on a buffer can be done with the
+<code>gst_buffer_meta_get()</code> method. This function retrieves an existing
+metadata conforming to the API specified in the given info. When no such
+metadata exists, the function will return NULL.</p>
+<pre><code class="language-c">GstMetaTiming *timing;
+
+timing = gst_buffer_get_meta (buffer, GST_META_TIMING_INFO);
+</code></pre>
+<p>Once a reference to the info has been obtained, the associated metadata
+can be added or modified on a buffer.</p>
+<pre><code class="language-c">timing-&gt;timestamp = 0;
+timing-&gt;duration = 20 * GST_MSECOND;
+</code></pre>
+<p>Other convenience macros can be made to simplify the above code:</p>
+<pre><code class="language-c">#define gst_buffer_get_meta_timing(b) \
+   ((GstMetaTiming *) gst_buffer_get_meta ((b), GST_META_TIMING_INFO)
+</code></pre>
+<p>This makes the code look like this:</p>
+<pre><code class="language-c">GstMetaTiming *timing;
+
+timing = gst_buffer_get_meta_timing (buffer);
+timing-&gt;timestamp = 0;
+timing-&gt;duration = 20 * GST_MSECOND;
+</code></pre>
+<p>To iterate the different metainfo structures, one can use the
+<code>gst_buffer_meta_get_next()</code> methods.</p>
+<pre><code class="language-c">GstMeta *current = NULL;
+
+/* passing NULL gives the first entry */
+current = gst_buffer_meta_get_next (buffer, current);
+
+/* passing a GstMeta returns the next */
+current = gst_buffer_meta_get_next (buffer, current);
+</code></pre>
+<h2 id="memory-management">Memory management</h2>
+<h3 id="allocation">allocation</h3>
+<p>We initially allocate a reasonable sized <code>GstBuffer</code> structure (say 512 bytes).</p>
+<p>Since the complete buffer structure, including a large area for metadata, is
+allocated in one go, we can reduce the number of memory allocations while still
+providing dynamic metadata.</p>
+<p>When adding metadata, we need to call the init function of the associated
+metadata info structure. Since adding the metadata requires the caller to pass
+a handle to the info, this operation does not require table lookups.</p>
+<p>Per-metadata memory initialisation is needed because not all metadata is
+initialized in the same way. We need to, for example, set the timestamps to
+NONE in the MetaTiming structures.</p>
+<p>The init/free functions can also be used to implement refcounting for a metadata
+structure. This can be useful when a structure is shared between buffers.</p>
+<p>When the <code>free_size</code> of the <code>GstBuffer</code> is exhausted, we will allocate new
+memory for each newly added Meta and use the next pointers to point to this. It
+is expected that this does not occur often and we might be able to optimize
+this transparently in the future.</p>
+<h3 id="free">free</h3>
+<p>When a <code>GstBuffer</code> is freed, we potentially might have to call a custom <code>free()</code>
+function on the metadata info. In the case of the Memory metadata, we need to
+call the associated <code>free()</code> function to free the memory.</p>
+<p>When freeing a <code>GstBuffer</code>, the custom buffer free function will iterate all of
+the metadata in the buffer and call the associated free functions in the
+<code>MetaInfo</code> associated with the entries. Usually, this function will be NULL.</p>
+<h2 id="serialization">Serialization</h2>
+<p>When a buffer should be sent over the wire or be serialized in GDP, we
+need a way to perform custom serialization and deserialization on the
+metadata. For this we can use the <code>GValue</code> transform functions.</p>
+<h2 id="transformations">Transformations</h2>
+<p>After certain transformations, the metadata on a buffer might not be
+relevant anymore.</p>
+<p>Consider, for example, metadata that lists certain regions of interest
+on the video data. If the video is scaled or rotated, the coordinates
+might not make sense anymore. A transform element should be able to
+adjust or remove the associated metadata when it becomes invalid.</p>
+<p>We can make the transform element aware of the metadata so that it can
+adjust or remove in an intelligent way. Since we allow arbitrary
+metadata, we can’t do this for all metadata and thus we need some other
+way.</p>
+<p>One proposition is to tag the metadata type with keywords that specify
+what it functionally refers too. We could, for example, tag the metadata
+for the regions of interest with a tag that notes that the metadata
+refers to absolute pixel positions. A transform could then know that the
+metadata is not valid anymore when the position of the pixels changed
+(due to rotation, flipping, scaling and so on).</p>
+<h2 id="subbuffers">Subbuffers</h2>
+<p>Subbuffers are implemented with a generic copy. Parameters to the copy
+are the offset and size. This allows each metadata structure to
+implement the actions needed to update the metadata of the subbuffer.</p>
+<p>It might not make sense for some metadata to work with subbuffers. For
+example when we take a subbuffer of a buffer with a video frame, the
+<code>GstMetaVideo</code> simply becomes invalid and is removed from the new
+subbuffer.</p>
+<h2 id="relationship-with-gstcaps">Relationship with GstCaps</h2>
+<p>The difference between <code>GstCaps</code>, used in negotiation, and the metadata is
+not clearly defined.</p>
+<p>We would like to think of the <code>GstCaps</code> containing the information needed
+to functionally negotiate the format between two elements. The Metadata
+should then only contain variables that can change between each buffer.</p>
+<p>For example, for video we would have width/height/framerate in the caps
+but then have the more technical details, such as stride, data pointers,
+pan/crop/zoom etc in the metadata.</p>
+<p>A scheme like this would still allow us to functionally specify the
+desired video resolution while the implementation details would be
+inside the metadata.</p>
+<h2 id="relationship-with-gstminiobject-qdata">Relationship with GstMiniObject qdata</h2>
+<p>qdata on a miniobject is element private and is not visible to other
+element. Therefore qdata never contains essential information that
+describes the buffer content.</p>
+<h2 id="compatibility">Compatibility</h2>
+<p>We need to make sure that elements exchange metadata that they both
+understand, This is particularly important when the metadata describes
+the data layout in memory (such as strides).</p>
+<p>The ALLOCATION query is used to let upstream know what metadata we can
+suport.</p>
+<p>It is also possible to have a bufferpool add certain metadata to the
+buffers from the pool. This feature is activated by enabling a buffer
+option when configuring the pool.</p>
+<h2 id="notes">Notes</h2>
+<p>Some structures that we need to be able to add to buffers.</p>
+<ul>
+<li>Clean Aperture</li>
+<li>Arbitrary Matrix Transform</li>
+<li>Aspect ratio</li>
+<li>Pan/crop/zoom</li>
+<li>Video strides</li>
+</ul>
+<p>Some of these overlap, we need to find a minimal set of metadata
+structures that allows us to define all use cases.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

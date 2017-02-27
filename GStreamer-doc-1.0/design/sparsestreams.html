@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>DRAFT Sparse Streams</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/sparsestreams.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="sparsestreams.md">
+<h1 id="draft-sparse-streams">DRAFT Sparse Streams</h1>
+<h2 id="introduction">Introduction</h2>
+<p>In 0.8, there was some support for sparse streams through the use of
+<code>FILLER</code> events. These were used to mark gaps between buffers so that
+downstream elements could know not to expect any more data for that gap.</p>
+<p>In 0.10, segment information conveyed through <code>SEGMENT</code> events can be used
+for the same purpose.</p>
+<p>In 1.0, there is a <code>GAP</code> event that works in a similar fashion as the
+<code>FILLER</code> event in 0.8.</p>
+<h2 id="use-cases">Use cases</h2>
+<h3 id="subtitle-streams">Sub-title streams</h3>
+<p>Sub-title information from muxed formats such as
+Matroska or MPEG consist of irregular buffers spaced far apart compared
+to the other streams (audio and video). Since these usually only appear
+when someone speaks or some other action in the video/audio needs
+describing, they can be anywhere from 1-2 seconds to several minutes
+apart. Downstream elements that want to mix sub-titles and video (and muxers)
+have no way of knowing whether to process a video packet or wait a moment
+for a corresponding sub-title to be delivered on another pad.</p>
+<h3 id="still-framedvd-menues">Still frame/DVD menues</h3>
+<p>In DVDs and other formats, there are still-frame regions where the current
+video frame should be retained and no audio played for a period. In DVD,
+these are described either as a fixed duration, or infinite duration still
+frame.</p>
+<h3 id="avoiding-processing-silence-from-audio-generators">Avoiding processing silence from audio generators</h3>
+<p>Imagine a source that, from time to time, produces empty buffers (silence or
+blank images). If the pipeline has many elements next, it is better to
+optimise the absolute data processing in this case. Examples for such sources
+are sound-generators (simsyn in gst-buzztard) or a source in a voip
+application that uses noise-gating (to save bandwith).</p>
+<h2 id="details">Details</h2>
+<h3 id="subtitle-streams1">Sub-title streams</h3>
+<p>The main requirement here is to avoid stalling the
+pipeline between sub-title packets, and is effectively updating the
+minimum-timestamp for that
+stream.</p>
+<p>A demuxer can do this by sending an 'update' SEGMENT with a new start time
+to the subtitle pad. For example, every time the SCR in MPEG data
+advances more than 0.5 seconds, the MPEG demuxer can issue a SEGMENT with
+(update=TRUE, start=SCR ). Downstream elements can then be aware not to
+expect any data older than the new start time.</p>
+<p>The same holds true for any element that knows the current position in the
+stream - once the element knows that there is no more data to be presented
+until time 'n' it can advance the start time of the current segment to 'n'.</p>
+<p>This technique can also be used, for example, to represent a stream of
+MIDI events spaced to a clock period. When there is no event present for
+a clock time, a SEGMENT update can be sent in its place.</p>
+<h3 id="still-framemenu-support">Still frame/menu support</h3>
+<p>Still frames in DVD menus are different because they do not introduce a gap
+in the data timestamps. Instead, they represent a pause in the presentation
+of a stream. Correctly performing the wait requires some synchronisation with
+downstream elements.</p>
+<p>In this scenario, an upstream element that wants to execute a still frame
+performs the following steps:</p>
+<ul>
+<li>
+<p>Send all data before the still frame wait</p>
+</li>
+<li>
+<p>Send a <code>DRAIN</code> event to ensure that all data has been played
+downstream.</p>
+</li>
+<li>
+<p>wait on the clock for the required duration, possibly interrupting
+if necessary due to an intervening activity (such as a user
+navigation)</p>
+</li>
+<li>
+<p>FLUSH the pipeline using a normal flush sequence (<code>FLUSH_START</code>,
+chain-lock, <code>FLUSH_STOP</code>)</p>
+</li>
+<li>
+<p>Send a SEGMENT to restart playback with the next timestamp in the
+stream.</p>
+</li>
+</ul>
+<p>The upstream element performing the wait must only do so when in the <code>PLAYING</code>
+state. During <code>PAUSED</code>, the clock will not be running, and may not even have
+been distributed to the element yet.</p>
+<p><code>DRAIN</code> is a new event that will block on a src pad until all data downstream
+has been played out.</p>
+<p>Flushing after completing the still wait is to ensure that data after the wait
+is played correctly. Without it, sinks will consider the first buffers
+(x seconds, where x is the duration of the wait that occurred) to be
+arriving late at the sink, and they will be discarded instead of played.</p>
+<h3 id="for-audio">For audio</h3>
+<p>It is the same case as the first one - there is a <em>gap</em> in the audio
+data that needs to be presented, and this can be done by sending a
+SEGMENT update that moves the start time of the segment to the next
+timestamp when data will be sent.</p>
+<p>For video, however, it is slightly different. Video frames are typically
+treated at the moment as continuing to be displayed after their indicated
+duration if no new frame arrives. Here, it is desired to display a blank
+frame instead, in which case at least one blank frame should be sent before
+updating the start time of the segment.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

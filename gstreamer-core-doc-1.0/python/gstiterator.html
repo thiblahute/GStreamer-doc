@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstIterator</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-project="gstreamer-core-doc-1.0" data-hotdoc-ref="gstiterator.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="python">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstiterator.h">
+<h1 id="gstiterator">GstIterator</h1><p>A GstIterator is used to retrieve multiple objects from another object in
+a threadsafe way.</p>
+<p>Various GStreamer objects provide access to their internal structures using
+an iterator.</p>
+<p>Note that if calling a GstIterator function results in your code receiving
+a refcounted object (with, say, <a href="https://developer.gnome.org/gobject/unstable/gobject-Standard-Parameter-and-Value-Types.html#g-value-get-object">GObject.Value.get_object</a>), the refcount for that
+object will not be increased. Your code is responsible for taking a reference
+if it wants to continue using it later.</p>
+<p>The basic use pattern of an iterator is as follows:</p>
+<pre><code class="language-c">  GstIterator *it = _get_iterator(object);
+  GValue item = G_VALUE_INIT;
+  done = FALSE;
+  while (!done) {
+    switch (gst_iterator_next (it, &amp;amp;item)) {
+      case GST_ITERATOR_OK:
+        ...get/use/change item here...
+        g_value_reset (&amp;amp;item);
+        break;
+      case GST_ITERATOR_RESYNC:
+        ...rollback changes to items...
+        gst_iterator_resync (it);
+        break;
+      case GST_ITERATOR_ERROR:
+        ...wrong parameters were given...
+        done = TRUE;
+        break;
+      case GST_ITERATOR_DONE:
+        done = TRUE;
+        break;
+    }
+  }
+  g_value_unset (&amp;amp;item);
+  gst_iterator_free (it);
+</code></pre>
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_iterator_get_type">
+		<h3 id="gst_iterator_get_type-not-introspectable">
+	<span><code>gst_iterator_get_type (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+int 
+gst_iterator_get_type (not introspectable) ()</pre>
+
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		int 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_iterator_next">
+		<h3 id="gstiteratornext">
+	<span><code>Gst.Iterator.next</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Iterator.next (self):
+    #python wrapper for 'gst_iterator_next'</pre>
+
+<p>Get the next item from the iterator in <em>elem</em>.</p>
+<p>Only when this function returns <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#GST-ITERATOR-OK:CAPS">Gst.IteratorResult.ok</a>, <em>elem</em> will contain a valid
+value. <em>elem</em> must have been initialized to the type of the iterator or
+initialized to zeroes with <a href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#g-value-unset">GObject.Value.unset</a>. The caller is responsible for
+unsetting or resetting <em>elem</em> with <a href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#g-value-unset">GObject.Value.unset</a> or <a href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#g-value-reset">GObject.Value.reset</a>
+after usage.</p>
+<p>When this function returns <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#GST-ITERATOR-DONE:CAPS">Gst.IteratorResult.done</a>, no more elements can be
+retrieved from <em>it</em>.</p>
+<p>A return value of <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#GST-ITERATOR-RESYNC:CAPS">Gst.IteratorResult.resync</a> indicates that the element list was
+concurrently updated. The user of <em>it</em> should call <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#gst_iterator_resync">Gst.Iterator.resync</a> to
+get the newly updated list.</p>
+<p>A return value of <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#GST-ITERATOR-ERROR:CAPS">Gst.IteratorResult.error</a> indicates an unrecoverable fatal error.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> to iterate</p>
+</td>
+<td>
+<a title="Gst.Iterator" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The result of the iteration. Unset <em>elem</em> after usage.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Gst.IteratorResult" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIteratorResult">Gst.IteratorResult</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>elem:</i>
+				</p>
+	</td>
+	<td>
+		<p>The result of the iteration. Unset <em>elem</em> after usage.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="GObject.Value" href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GObject.Value</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_iterator_resync">
+		<h3 id="gstiteratorresync">
+	<span><code>Gst.Iterator.resync</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Iterator.resync (self):
+    #python wrapper for 'gst_iterator_resync'</pre>
+
+<p>Resync the iterator. this function is mostly called
+after <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#gst_iterator_next">Gst.Iterator.next</a> returned <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#GST-ITERATOR-RESYNC:CAPS">Gst.IteratorResult.resync</a>.</p>
+<p>When an iterator was pushed on <em>it</em>, it will automatically be popped again
+with this function.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> to resync</p>
+</td>
+<td>
+<a title="Gst.Iterator" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_iterator_free">
+		<h3 id="gstiteratorfree">
+	<span><code>Gst.Iterator.free</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Iterator.free (self):
+    #python wrapper for 'gst_iterator_free'</pre>
+
+<p>Free the iterator.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> to free</p>
+</td>
+<td>
+<a title="Gst.Iterator" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_iterator_push">
+		<h3 id="gstiteratorpush">
+	<span><code>Gst.Iterator.push</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Iterator.push (self, other):
+    #python wrapper for 'gst_iterator_push'</pre>
+
+<p>Pushes <em>other</em> iterator onto <em>it</em>. All calls performed on <em>it</em> are
+forwarded to <em>other</em>. If <em>other</em> returns <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#GST-ITERATOR-DONE:CAPS">Gst.IteratorResult.done</a>, it is
+popped again and calls are handled by <em>it</em> again.</p>
+<p>This function is mainly used by objects implementing the iterator
+next function to recurse into substructures.</p>
+<p>When <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#gst_iterator_resync">Gst.Iterator.resync</a> is called on <em>it</em>, <em>other</em> will automatically be
+popped.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> to use</p>
+</td>
+<td>
+<a title="Gst.Iterator" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>other:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> to push</p>
+</td>
+<td>
+<a title="Gst.Iterator" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_iterator_fold">
+		<h3 id="gstiteratorfold">
+	<span><code>Gst.Iterator.fold</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Iterator.fold (self, func, ret, user_data):
+    #python wrapper for 'gst_iterator_fold'</pre>
+
+<p>Folds <em>func</em> over the elements of <em>iter</em>. That is to say, <em>func</em> will be called
+as <em>func</em> (object, <em>ret</em>, <em>user_data</em>) for each object in <em>it</em>. The normal use
+of this procedure is to accumulate the results of operating on the objects in
+<em>ret</em>.</p>
+<p>This procedure can be used (and is used internally) to implement the
+<a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#gst_iterator_foreach">Gst.Iterator.foreach</a> and <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#gst_iterator_find_custom">Gst.Iterator.find_custom</a> operations.</p>
+<p>The fold will proceed as long as <em>func</em> returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>. When the iterator has no
+more arguments, <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#GST-ITERATOR-DONE:CAPS">Gst.IteratorResult.done</a> will be returned. If <em>func</em> returns <a href="https://docs.python.org/2/library/constants.html#False">False</a>,
+the fold will stop, and <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#GST-ITERATOR-OK:CAPS">Gst.IteratorResult.ok</a> will be returned. Errors or resyncs
+will cause fold to return <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#GST-ITERATOR-ERROR:CAPS">Gst.IteratorResult.error</a> or <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#GST-ITERATOR-RESYNC:CAPS">Gst.IteratorResult.resync</a> as
+appropriate.</p>
+<p>The iterator will not be freed.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> to fold over</p>
+</td>
+<td>
+<a title="Gst.Iterator" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>func:</code></em></i>
+		</p>
+	</td>
+		<td><p>the fold function</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ret:</code></em></i>
+		</p>
+	</td>
+		<td><p>the seed value passed to the fold function</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>user data passed to the fold function</p>
+</td>
+<td>
+<a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>A <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIteratorResult">Gst.IteratorResult</a>, as described above.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Gst.IteratorResult" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIteratorResult">Gst.IteratorResult</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_iterator_foreach">
+		<h3 id="gstiteratorforeach">
+	<span><code>Gst.Iterator.foreach</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Iterator.foreach (self, func, user_data):
+    #python wrapper for 'gst_iterator_foreach'</pre>
+
+<p>Iterate over all element of <em>it</em> and call the given function <em>func</em> for
+each element.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> to iterate</p>
+</td>
+<td>
+<a title="Gst.Iterator" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>func:</code></em></i>
+		</p>
+	</td>
+		<td><p>the function to call for each element.</p>
+</td>
+<td>
+<a title="Gst.IteratorForeachFunction" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIteratorForeachFunction">Gst.IteratorForeachFunction</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>user data passed to the function</p>
+</td>
+<td>
+<a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the result call to <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#gst_iterator_fold">Gst.Iterator.fold</a>. The iterator will not be
+freed.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Gst.IteratorResult" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIteratorResult">Gst.IteratorResult</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_iterator_find_custom">
+		<h3 id="gstiteratorfind_custom">
+	<span><code>Gst.Iterator.find_custom</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Iterator.find_custom (self, func, user_data):
+    #python wrapper for 'gst_iterator_find_custom'</pre>
+
+<p>Find the first element in <em>it</em> that matches the compare function <em>func</em>.
+<em>func</em> should return 0 when the element is found. The first parameter
+to <em>func</em> will be the current element of the iterator and the
+second parameter will be <em>user_data</em>.
+The result will be stored in <em>elem</em> if a result is found.</p>
+<p>The iterator will not be freed.</p>
+<p>This function will return <a href="https://docs.python.org/2/library/constants.html#False">False</a> if an error happened to the iterator
+or if the element wasn't found.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> to iterate</p>
+</td>
+<td>
+<a title="Gst.Iterator" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>func:</code></em></i>
+		</p>
+	</td>
+		<td><p>the compare function to use</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>user data passed to the compare function</p>
+</td>
+<td>
+<a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of1">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>Returns <a href="https://docs.python.org/2/library/constants.html#True">True</a> if the element was found, else <a href="https://docs.python.org/2/library/constants.html#False">False</a>.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>elem:</i>
+				</p>
+	</td>
+	<td>
+		<p>Returns <a href="https://docs.python.org/2/library/constants.html#True">True</a> if the element was found, else <a href="https://docs.python.org/2/library/constants.html#False">False</a>.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="GObject.Value" href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GObject.Value</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Function_Macros">Function Macros</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_ITERATOR">
+		<h3 id="gst_iterator-not-introspectable">
+	<span><code>GST_ITERATOR (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_ITERATOR(it)                ((GstIterator*)(it))
+</pre>
+
+<p>Macro to cast to a <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a></p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> value</p>
+</td>
+<td>
+ it
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_ITERATOR_LOCK">
+		<h3 id="gst_iterator_lock-not-introspectable">
+	<span><code>GST_ITERATOR_LOCK (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_ITERATOR_LOCK(it)           (GST_ITERATOR(it)-&gt;lock)
+</pre>
+
+<p>Macro to get the lock protecting the datastructure being iterated.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> to get the lock of</p>
+</td>
+<td>
+ it
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_ITERATOR_COOKIE">
+		<h3 id="gst_iterator_cookie-not-introspectable">
+	<span><code>GST_ITERATOR_COOKIE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_ITERATOR_COOKIE(it)         (GST_ITERATOR(it)-&gt;cookie)
+</pre>
+
+<p>Macro to get the cookie of a <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>. The cookie of the
+iterator is the value of the master cookie when the iterator
+was created.
+Whenever the iterator is iterated, the value is compared to the
+value of the master cookie. If they are different, a concurrent
+modification happened to the iterator and a resync is needed.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> to get the cookie of</p>
+</td>
+<td>
+ it
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_ITERATOR_ORIG_COOKIE">
+		<h3 id="gst_iterator_orig_cookie-not-introspectable">
+	<span><code>GST_ITERATOR_ORIG_COOKIE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_ITERATOR_ORIG_COOKIE(it)    (GST_ITERATOR(it)-&gt;master_cookie)
+</pre>
+
+<p>Macro to get a pointer to where the master cookie is stored. The
+master cookie protects the structure being iterated and gets updated
+whenever the datastructure changes.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> to get the master cookie of</p>
+</td>
+<td>
+ it
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+<div class="refsect2">
+	<a id="_GstIterator"></a>
+	<h3 id="_gstiterator-not-introspectable">
+		_GstIterator (not introspectable)
+	</h3>
+		
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstIteratorItem">
+		<h3 id="gstiteratoritem">
+		Gst.IteratorItem
+	</h3>
+
+		<pre class="raw_code">
+typedef enum {
+  GST_ITERATOR_ITEM_SKIP        = 0,
+  GST_ITERATOR_ITEM_PASS        = 1,
+  GST_ITERATOR_ITEM_END         = 2
+} GstIteratorItem;
+</pre>
+
+<p>The result of a <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIteratorItemFunction">Gst.IteratorItemFunction</a>.</p>
+
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_ITERATOR_ITEM_SKIP"></a>
+		Gst.IteratorItem.skip
+		</p>
+	</td>
+	<td><p>Skip this item</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_ITERATOR_ITEM_PASS"></a>
+		Gst.IteratorItem.pass
+		</p>
+	</td>
+	<td><p>Return item</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_ITERATOR_ITEM_END"></a>
+		Gst.IteratorItem.end
+		</p>
+	</td>
+	<td><p>Stop after this item.</p>
+</td>
+	<td>
+		<span class="value">Value: 2</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TYPE_ITERATOR">
+		<h3 class="constant" id="gst_type_iterator-not-introspectable">
+	GST_TYPE_ITERATOR (not introspectable)
+</h3>
+
+		
+
+</div>
+
+
+<h2 class="symbol_section" id="Exported_Variables">Exported Variables</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstIteratorResult">
+		<h3 class="constant" id="gstiteratorresult">
+	Gst.IteratorResult
+</h3>
+
+		<p>The result of <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#gst_iterator_next">Gst.Iterator.next</a>.</p>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Aliases">Aliases</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstIterator">
+		<h3 id="gstiterator1">
+	Gst.Iterator
+</h3>
+
+		<pre>
+typedef struct _GstIterator  Gst.Iterator</pre>
+<p><a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> base structure. The values of this structure are
+protected for subclasses, use the methods to use the <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>.</p>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Callbacks">Callbacks</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstIteratorCopyFunction">
+		<h3 id="gstiteratorcopyfunction">
+	<span><code>Gst.IteratorCopyFunction</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.IteratorCopyFunction (copy):
+    #python wrapper for 'GstIteratorCopyFunction'</pre>
+
+<p>This function will be called when creating a copy of <em>it</em> and should
+create a copy of all custom iterator fields or increase their
+reference counts.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>copy:</code></em></i>
+		</p>
+	</td>
+		<td><p>The copied iterator</p>
+</td>
+<td>
+<a title="Gst.Iterator" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstIteratorItemFunction">
+		<h3 id="gstiteratoritemfunction">
+	<span><code>Gst.IteratorItemFunction</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.IteratorItemFunction (it, item):
+    #python wrapper for 'GstIteratorItemFunction'</pre>
+
+<p>The function that will be called after the next item of the iterator
+has been retrieved. This function can be used to skip items or stop
+the iterator.</p>
+<p>The function will be called with the iterator lock held.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>it:</code></em></i>
+		</p>
+	</td>
+		<td><p>the iterator</p>
+</td>
+<td>
+<a title="Gst.Iterator" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>item:</code></em></i>
+		</p>
+	</td>
+		<td><p>the item being retrieved.</p>
+</td>
+<td>
+const int 
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the result of the operation.</p>
+
+	</td>
+	<td>
+		<a title="Gst.IteratorItem" href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIteratorItem">Gst.IteratorItem</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstIteratorResyncFunction">
+		<h3 id="gstiteratorresyncfunction">
+	<span><code>Gst.IteratorResyncFunction</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.IteratorResyncFunction ():
+    #python wrapper for 'GstIteratorResyncFunction'</pre>
+
+<p>This function will be called whenever a concurrent update happened
+to the iterated datastructure. The implementor of the iterator should
+restart the iterator from the beginning and clean up any state it might
+have.</p>
+<p>Implementors of a <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> should implement this
+function and pass it to the constructor of the custom iterator.
+The function will be called with the iterator lock held.</p>
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstIteratorFreeFunction">
+		<h3 id="gstiteratorfreefunction">
+	<span><code>Gst.IteratorFreeFunction</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.IteratorFreeFunction ():
+    #python wrapper for 'GstIteratorFreeFunction'</pre>
+
+<p>This function will be called when the iterator is freed.</p>
+<p>Implementors of a <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#GstIterator">Gst.Iterator</a> should implement this
+function and pass it to the constructor of the custom iterator.
+The function will be called with the iterator lock held.</p>
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstIteratorForeachFunction">
+		<h3 id="gstiteratorforeachfunction">
+	<span><code>Gst.IteratorForeachFunction</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.IteratorForeachFunction (user_data):
+    #python wrapper for 'GstIteratorForeachFunction'</pre>
+
+<p>A function that is called by <a href="../../gstreamer-core-doc-1.0/python/gstiterator.html#gst_iterator_foreach">Gst.Iterator.foreach</a> for every element.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>User data</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

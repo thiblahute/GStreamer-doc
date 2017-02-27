@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Basic tutorial 10: GStreamer tools</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="tutorials/basic/gstreamer-tools.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstreamer-tools.md">
+<h1 id="basic-tutorial-10-gstreamer-tools">Basic tutorial 10: GStreamer tools</h1>
+<h2 id="goal">Goal</h2>
+<p>GStreamer comes with a set of tools which range from handy to
+absolutely essential. There is no code in this tutorial, just sit back
+and relax, and we will teach you:</p>
+<ul>
+<li>How to build and run GStreamer pipelines from the command line,
+without using C at all!</li>
+<li>How to find out what GStreamer elements you have available and their
+capabilities.</li>
+<li>How to discover the internal structure of media files.</li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p>These tools are available in the bin directory of the GStreamer
+binaries. You need to move to this directory to execute them, because
+it is not added to the system’s <code>PATH</code> environment variable (to avoid
+polluting it too much).</p>
+<p>Just open a terminal (or console window) and go to the <code>bin</code> directory
+of your GStreamer installation (Read again the <a href="../../installing/index.html">Installing
+GStreamer</a> section to find our where this is),
+and you are ready to start typing the commands given in this tutorial.</p>
+<blockquote>
+<p><img src="images/icons/emoticons/information.png" alt="Information" id="information"></p>
+<p>On Linux, you should use the GStreamer version installed with your
+distribution, the tools should be installed with a package named <code>gstreamer1</code>
+on Fedora style distributions, or <code>gstreamer1.0-tools</code> on Debian/Ubuntu style
+distributions.</p>
+</blockquote>
+<p>In order to allow for multiple versions of GStreamer to coexists in the
+same system, these tools are versioned, this is, a GStreamer version
+number is appended to their name. This version is based on
+GStreamer 1.0, so the tools are called <code>gst-launch-1.0</code>,
+<code>gst-inspect-1.0</code> and <code>gst-discoverer-1.0</code></p>
+<h2 id="gstlaunch10"><code>gst-launch-1.0</code></h2>
+<p>This tool accepts a textual description of a pipeline, instantiates it,
+and sets it to the PLAYING state. It allows you to quickly check if a
+given pipeline works, before going through the actual implementation
+using GStreamer API calls.</p>
+<p>Bear in mind that it can only create simple pipelines. In particular, it
+can only simulate the interaction of the pipeline with the application
+up to a certain level. In any case, it is extremely handy to test
+pipelines quickly, and is used by GStreamer developers around the world
+on a daily basis.</p>
+<p>Please note that <code>gst-launch-1.0</code> is primarily a debugging tool for
+developers. You should not build applications on top of it. Instead, use
+the <code>gst_parse_launch()</code> function of the GStreamer API as an easy way to
+construct pipelines from pipeline descriptions.</p>
+<p>Although the rules to construct pipeline descriptions are very simple,
+the concatenation of multiple elements can quickly make such
+descriptions resemble black magic. Fear not, for everyone learns the
+<code>gst-launch-1.0</code> syntax, eventually.</p>
+<p>The command line for gst-launch-1.0 consists of a list of options followed
+by a PIPELINE-DESCRIPTION. Some simplified instructions are given next,
+se the complete documentation at <a href="../../tools/gst-launch.html">the reference page</a>
+for <code>gst-launch-1.0</code>.</p>
+<h3 id="elements">Elements</h3>
+<p>In simple form, a PIPELINE-DESCRIPTION is a list of element types
+separated by exclamation marks (!). Go ahead and type in the following
+command:</p>
+<pre><code>gst-launch-1.0 videotestsrc ! videoconvert ! autovideosink
+</code></pre>
+<p>You should see a windows with an animated video pattern. Use CTRL+C on
+the terminal to stop the program.</p>
+<p>This instantiates a new element of type <code>videotestsrc</code> (an element which
+generates a sample video pattern), an <code>videoconvert</code> (an element
+which does raw video format conversion, making sure other elements can
+understand each other), and an <code>autovideosink</code> (a window to which video
+is rendered). Then, GStreamer tries to link the output of each element
+to the input of the element appearing on its right in the description.
+If more than one input or output Pad is available, the Pad Caps are used
+to find two compatible Pads.</p>
+<h3 id="properties">Properties</h3>
+<p>Properties may be appended to elements, in the form
+*property=value *(multiple properties can be specified, separated by
+spaces). Use the <code>gst-inspect-1.0</code> tool (explained next) to find out the
+available properties for an
+element.</p>
+<pre><code>gst-launch-1.0 videotestsrc pattern=11 ! videoconvert ! autovideosink
+</code></pre>
+<p>You should see a static video pattern, made of circles.</p>
+<h3 id="named-elements">Named elements</h3>
+<p>Elements can be named using the <code>name</code> property, in this way complex
+pipelines involving branches can be created. Names allow linking to
+elements created previously in the description, and are indispensable to
+use elements with multiple output pads, like demuxers or tees, for
+example.</p>
+<p>Named elements are referred to using their name followed by a
+dot.</p>
+<pre><code>gst-launch-1.0 videotestsrc ! videoconvert ! tee name=t ! queue ! autovideosink t. ! queue ! autovideosink
+</code></pre>
+<p>You should see two video windows, showing the same sample video pattern.
+If you see only one, try to move it, since it is probably on top of the
+second window.</p>
+<p>This example instantiates a <code>videotestsrc</code>, linked to a
+<code>videoconvert</code>, linked to a <code>tee</code> (Remember from <a href="multithreading-and-pad-availability.html">Basic tutorial 7: Multithreading and Pad Availability</a> that
+a <code>tee</code> copies to each of its output pads everything coming through its
+input pad). The <code>tee</code> is named simply ‘t’ (using the <code>name</code> property)
+and then linked to a <code>queue</code> and an <code>autovideosink</code>. The same <code>tee</code> is
+referred to using ‘t.’ (mind the dot) and then linked to a second
+<code>queue</code> and a second <code>autovideosink</code>.</p>
+<p>To learn why the queues are necessary read <a href="multithreading-and-pad-availability.html">Basic tutorial 7: Multithreading and Pad Availability</a>.</p>
+<h3 id="pads">Pads</h3>
+<p>Instead of letting GStreamer choose which Pad to use when linking two
+elements, you may want to specify the Pads directly. You can do this by
+adding a dot plus the Pad name after the name of the element (it must be
+a named element). Learn the names of the Pads of an element by using
+the <code>gst-inspect-1.0</code> tool.</p>
+<p>This is useful, for example, when you want to retrieve one particular
+stream out of a
+demuxer:</p>
+<pre><code>gst-launch-1.0 souphttpsrc location=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm ! matroskademux name=d d.video_00 ! matroskamux ! filesink location=sintel_video.mkv
+</code></pre>
+<p>This fetches a media file from the internet using <code>souphttpsrc</code>, which
+is in webm format (a special kind of Matroska container, see <a href="concepts.html">Basic tutorial 2: GStreamer concepts</a>). We
+then open the container using <code>matroskademux</code>. This media contains both
+audio and video, so <code>matroskademux</code> will create two output Pads, named
+<code>video_00</code> and <code>audio_00</code>. We link <code>video_00</code> to a <code>matroskamux</code> element
+to re-pack the video stream into a new container, and finally link it to
+a <code>filesink</code>, which will write the stream into a file named
+"sintel_video.mkv" (the <code>location</code> property specifies the name of the
+file).</p>
+<p>All in all, we took a webm file, stripped it of audio, and generated a
+new matroska file with the video. If we wanted to keep only the
+audio:</p>
+<pre><code>gst-launch-1.0 souphttpsrc location=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm ! matroskademux name=d d.audio_00 ! vorbisparse ! matroskamux ! filesink location=sintel_audio.mka
+</code></pre>
+<p>The <code>vorbisparse</code> element is required to extract some information from
+the stream and put it in the Pad Caps, so the next element,
+<code>matroskamux</code>, knows how to deal with the stream. In the case of video
+this was not necessary, because <code>matroskademux</code> already extracted this
+information and added it to the Caps.</p>
+<p>Note that in the above two examples no media has been decoded or played.
+We have just moved from one container to another (demultiplexing and
+re-multiplexing again).</p>
+<h3 id="caps-filters">Caps filters</h3>
+<p>When an element has more than one output pad, it might happen that the
+link to the next element is ambiguous: the next element may have more
+than one compatible input pad, or its input pad may be compatible with
+the Pad Caps of all the output pads. In these cases GStreamer will link
+using the first pad that is available, which pretty much amounts to
+saying that GStreamer will choose one output pad at random.</p>
+<p>Consider the following
+pipeline:</p>
+<pre><code>gst-launch-1.0 souphttpsrc location=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm ! matroskademux ! filesink location=test
+</code></pre>
+<p>This is the same media file and demuxer as in the previous example. The
+input Pad Caps of <code>filesink</code> are <code>ANY</code>, meaning that it can accept any
+kind of media. Which one of the two output pads of <code>matroskademux</code> will
+be linked against the filesink? <code>video_00</code> or <code>audio_00</code>? You cannot
+know.</p>
+<p>You can remove this ambiguity, though, by using named pads, as in the
+previous sub-section, or by using <strong>Caps
+Filters</strong>:</p>
+<pre><code>gst-launch-1.0 souphttpsrc location=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm ! matroskademux ! video/x-vp8 ! matroskamux ! filesink location=sintel_video.mkv
+</code></pre>
+<p>A Caps Filter behaves like a pass-through element which does nothing and
+only accepts media with the given Caps, effectively resolving the
+ambiguity. In this example, between <code>matroskademux</code> and <code>matroskamux</code> we
+added a <code>video/x-vp8</code> Caps Filter to specify that we are interested in
+the output pad of <code>matroskademux</code> which can produce this kind of video.</p>
+<p>To find out the Caps an element accepts and produces, use the
+<code>gst-inspect-1.0</code> tool. To find out the Caps contained in a particular file,
+use the <code>gst-discoverer-1.0</code> tool. To find out the Caps an element is
+producing for a particular pipeline, run <code>gst-launch-1.0</code> as usual, with the
+<code>–v</code> option to print Caps information.</p>
+<h3 id="examples">Examples</h3>
+<p>Play a media file using <code>playbin</code> (as in <a href="hello-world.html">Basic tutorial 1: Hello world!</a>):</p>
+<pre><code>gst-launch-1.0 playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm
+</code></pre>
+<p>A fully operation playback pipeline, with audio and video (more or less
+the same pipeline that <code>playbin</code> will create
+internally):</p>
+<pre><code>gst-launch-1.0 souphttpsrc location=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm ! matroskademux name=d ! queue ! vp8dec ! videoconvert ! autovideosink d. ! queue ! vorbisdec ! audioconvert ! audioresample ! autoaudiosink
+</code></pre>
+<p>A transcoding pipeline, which opens the webm container and decodes both
+streams (via uridecodebin), then re-encodes the audio and video branches
+with a different codec, and puts them back together in an Ogg container
+(just for the sake of
+it).</p>
+<pre><code>gst-launch-1.0 uridecodebin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm name=d ! queue ! theoraenc ! oggmux name=m ! filesink location=sintel.ogg d. ! queue ! audioconvert ! audioresample ! flacenc ! m.
+</code></pre>
+<p>A rescaling pipeline. The <code>videoscale</code> element performs a rescaling
+operation whenever the frame size is different in the input and the
+output caps. The output caps are set by the Caps Filter to
+320x200.</p>
+<pre><code>gst-launch-1.0 uridecodebin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm ! queue ! videoscale ! video/x-raw-yuv,width=320,height=200 ! videoconvert ! autovideosink
+</code></pre>
+<p>This short description of <code>gst-launch-1.0</code> should be enough to get you
+started. Remember that you have the <a href="../../tools/gst-launch.html">complete documentation available
+here</a>.</p>
+<h2 id="gstinspect10"><code>gst-inspect-1.0</code></h2>
+<p>This tool has three modes of operation:</p>
+<ul>
+<li>Without arguments, it lists all available elements types, this is,
+the types you can use to instantiate new elements.</li>
+<li>With a file name as an argument, it treats the file as a GStreamer
+plugin, tries to open it, and lists all the elements described
+inside.</li>
+<li>With a GStreamer element name as an argument, it lists all
+information regarding that element.</li>
+</ul>
+<p>Let's see an example of the third mode:</p>
+<pre><code>gst-inspect-1.0 vp8dec
+
+Factory Details:
+  Rank                     primary (256)
+  Long-name                On2 VP8 Decoder
+  Klass                    Codec/Decoder/Video
+  Description              Decode VP8 video streams
+  Author                   David Schleef &lt;ds@entropywave.com&gt;, Sebastian Dröge &lt;sebastian.droege@collabora.co.uk&gt;
+
+Plugin Details:
+  Name                     vpx
+  Description              VP8 plugin
+  Filename                 /usr/lib64/gstreamer-1.0/libgstvpx.so
+  Version                  1.6.4
+  License                  LGPL
+  Source module            gst-plugins-good
+  Source release date      2016-04-14
+  Binary package           Fedora GStreamer-plugins-good package
+  Origin URL               http://download.fedoraproject.org
+
+GObject
+ +----GInitiallyUnowned
+       +----GstObject
+             +----GstElement
+                   +----GstVideoDecoder
+                         +----GstVP8Dec
+
+Pad Templates:
+  SINK template: 'sink'
+    Availability: Always
+    Capabilities:
+      video/x-vp8
+
+  SRC template: 'src'
+    Availability: Always
+    Capabilities:
+      video/x-raw
+                 format: I420
+                  width: [ 1, 2147483647 ]
+                 height: [ 1, 2147483647 ]
+              framerate: [ 0/1, 2147483647/1 ]
+
+
+Element Flags:
+  no flags set
+
+Element Implementation:
+  Has change_state() function: gst_video_decoder_change_state
+
+Element has no clocking capabilities.
+Element has no URI handling capabilities.
+
+Pads:
+  SINK: 'sink'
+    Pad Template: 'sink'
+  SRC: 'src'
+    Pad Template: 'src'
+
+Element Properties:
+  name                : The name of the object
+                        flags: readable, writable
+                        String. Default: "vp8dec0"
+  parent              : The parent of the object
+                        flags: readable, writable
+                        Object of type "GstObject"
+  post-processing     : Enable post processing
+                        flags: readable, writable
+                        Boolean. Default: false
+  post-processing-flags: Flags to control post processing
+                        flags: readable, writable
+                        Flags "GstVP8DecPostProcessingFlags" Default: 0x00000403, "mfqe+demacroblock+deblock"
+                           (0x00000001): deblock          - Deblock
+                           (0x00000002): demacroblock     - Demacroblock
+                           (0x00000004): addnoise         - Add noise
+                           (0x00000400): mfqe             - Multi-frame quality enhancement
+  deblocking-level    : Deblocking level
+                        flags: readable, writable
+                        Unsigned Integer. Range: 0 - 16 Default: 4
+  noise-level         : Noise level
+                        flags: readable, writable
+                        Unsigned Integer. Range: 0 - 16 Default: 0
+  threads             : Maximum number of decoding threads
+                        flags: readable, writable
+                        Unsigned Integer. Range: 1 - 16 Default: 0
+</code></pre>
+<p>The most relevant sections are:</p>
+<ul>
+<li>Pad Templates: This lists all the kinds of Pads this
+element can have, along with their capabilities. This is where you
+look to find out if an element can link with another one. In this
+case, it has only one sink pad template, accepting only
+<code>video/x-vp8</code> (encoded video data in VP8 format) and only one source
+pad template, producing <code>video/x-raw</code> (decoded video data).</li>
+<li>Element Properties: This lists the properties of the
+element, along with their type and accepted values.</li>
+</ul>
+<p>For more information, you can check the <a href="../../tools/gst-inspect.html">documentation
+page</a> of <code>gst-inspect-1.0</code>.</p>
+<h2 id="gstdiscoverer10"><code>gst-discoverer-1.0</code></h2>
+<p>This tool is a wrapper around the <code>GstDiscoverer</code> object shown in <a href="media-information-gathering.html">Basic tutorial 9: Media information gathering</a>.
+It accepts a URI from the command line and prints all information
+regarding the media that GStreamer can extract. It is useful to find out
+what container and codecs have been used to produce the media, and
+therefore what elements you need to put in a pipeline to play it.</p>
+<p>Use <code>gst-discoverer-1.0 --help</code> to obtain the list of available options,
+which basically control the amount of verbosity of the output.</p>
+<p>Let's see an
+example:</p>
+<pre><code>gst-discoverer-1.0 https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm -v
+
+Analyzing https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm
+Done discovering https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm
+Topology:
+  container: video/webm
+    audio: audio/x-vorbis, channels=(int)2, rate=(int)48000
+      Codec:
+        audio/x-vorbis, channels=(int)2, rate=(int)48000
+      Additional info:
+        None
+      Language: en
+      Channels: 2
+      Sample rate: 48000
+      Depth: 0
+      Bitrate: 80000
+      Max bitrate: 0
+      Tags:
+        taglist, language-code=(string)en, container-format=(string)Matroska, audio-codec=(string)Vorbis, application-name=(string)ffmpeg2theora-0.24, encoder=(string)"Xiph.Org\ libVorbis\ I\ 20090709", encoder-version=(uint)0, nominal-bitrate=(uint)80000, bitrate=(uint)80000;
+    video: video/x-vp8, width=(int)854, height=(int)480, framerate=(fraction)25/1
+      Codec:
+        video/x-vp8, width=(int)854, height=(int)480, framerate=(fraction)25/1
+      Additional info:
+        None
+      Width: 854
+      Height: 480
+      Depth: 0
+      Frame rate: 25/1
+      Pixel aspect ratio: 1/1
+      Interlaced: false
+      Bitrate: 0
+      Max bitrate: 0
+      Tags:
+        taglist, video-codec=(string)"VP8\ video", container-format=(string)Matroska;
+
+Properties:
+  Duration: 0:00:52.250000000
+  Seekable: yes
+  Tags:
+      video codec: VP8 video
+      language code: en
+      container format: Matroska
+      application name: ffmpeg2theora-0.24
+      encoder: Xiph.Org libVorbis I 20090709
+      encoder version: 0
+      audio codec: Vorbis
+      nominal bitrate: 80000
+      bitrate: 80000
+</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>This tutorial has shown:</p>
+<ul>
+<li>How to build and run GStreamer pipelines from the command line using
+the <code>gst-launch-1.0</code> tool.</li>
+<li>How to find out what GStreamer elements you have available and their
+capabilities, using the <code>gst-inspect-1.0</code> tool.</li>
+<li>How to discover the internal structure of media files, using
+<code>gst-discoverer-1.0</code>.</li>
+</ul>
+<p>It has been a pleasure having you here, and see you soon!</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

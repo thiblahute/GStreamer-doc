@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Foundations</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="application-development/introduction/basics.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="basics.md">
+<h1 id="foundations">Foundations</h1>
+<p>This chapter of the guide introduces the basic concepts of GStreamer.
+Understanding these concepts will be important in reading any of the
+rest of this guide, all of them assume understanding of these basic
+concepts.</p>
+<h2 id="elements">Elements</h2>
+<p>An <em>element</em> is the most important class of objects in GStreamer. You
+will usually create a chain of elements linked together and let data
+flow through this chain of elements. An element has one specific
+function, which can be the reading of data from a file, decoding of this
+data or outputting this data to your sound card (or anything else). By
+chaining together several such elements, you create a <em>pipeline</em> that
+can do a specific task, for example media playback or capture. GStreamer
+ships with a large collection of elements by default, making the
+development of a large variety of media applications possible. If
+needed, you can also write new elements. That topic is explained in
+great deal in the <em>GStreamer Plugin Writer's Guide</em>.</p>
+<h2 id="pads">Pads</h2>
+<p><em>Pads</em> are element's input and output, where you can connect other
+elements. They are used to negotiate links and data flow between
+elements in GStreamer. A pad can be viewed as a “plug” or “port” on an
+element where links may be made with other elements, and through which
+data can flow to or from those elements. Pads have specific data
+handling capabilities: a pad can restrict the type of data that flows
+through it. Links are only allowed between two pads when the allowed
+data types of the two pads are compatible. Data types are negotiated
+between pads using a process called <em>caps negotiation</em>. Data types are
+described as a <code>GstCaps</code>.</p>
+<p>An analogy may be helpful here. A pad is similar to a plug or jack on a
+physical device. Consider, for example, a home theater system consisting
+of an amplifier, a DVD player, and a (silent) video projector. Linking
+the DVD player to the amplifier is allowed because both devices have
+audio jacks, and linking the projector to the DVD player is allowed
+because both devices have compatible video jacks. Links between the
+projector and the amplifier may not be made because the projector and
+amplifier have different types of jacks. Pads in GStreamer serve the
+same purpose as the jacks in the home theater system.</p>
+<p>For the most part, all data in GStreamer flows one way through a link
+between elements. Data flows out of one element through one or more
+<em>source pads</em>, and elements accept incoming data through one or more
+<em>sink pads</em>. Source and sink elements have only source and sink pads,
+respectively. Data usually means buffers (described by the
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/stable/gstreamer/html/gstreamer-GstBuffer.html"><code>GstBuffer</code></a>
+object) and events (described by the
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/stable/gstreamer/html/gstreamer-GstEvent.html"><code>GstEvent</code></a>
+object).</p>
+<h2 id="bins-and-pipelines">Bins and pipelines</h2>
+<p>A <em>bin</em> is a container for a collection of elements. Since bins are
+subclasses of elements themselves, you can mostly control a bin as if it
+were an element, thereby abstracting away a lot of complexity for your
+application. You can, for example change state on all elements in a bin
+by changing the state of that bin itself. Bins also forward bus messages
+from their contained children (such as error messages, tag messages or
+EOS messages).</p>
+<p>A <em>pipeline</em> is a top-level bin. It provides a bus for the application
+and manages the synchronization for its children. As you set it to
+PAUSED or PLAYING state, data flow will start and media processing will
+take place. Once started, pipelines will run in a separate thread until
+you stop them or the end of the data stream is reached.</p>
+<p><img src="images/simple-player.png" alt="GStreamer pipeline for a simple ogg player" title="fig:" id="gstreamer-pipeline-for-a-simple-ogg-player"></p>
+<h2 id="communication">Communication</h2>
+<p>GStreamer provides several mechanisms for communication and data
+exchange between the <em>application</em> and the <em>pipeline</em>.</p>
+<ul>
+<li>
+<p><em>buffers</em> are objects for passing streaming data between elements in
+the pipeline. Buffers always travel from sources to sinks
+(downstream).</p>
+</li>
+<li>
+<p><em>events</em> are objects sent between elements or from the application
+to elements. Events can travel upstream and downstream. Downstream
+events can be synchronised to the data flow.</p>
+</li>
+<li>
+<p><em>messages</em> are objects posted by elements on the pipeline's message
+bus, where they will be held for collection by the application.
+Messages can be intercepted synchronously from the streaming thread
+context of the element posting the message, but are usually handled
+asynchronously by the application from the application's main
+thread. Messages are used to transmit information such as errors,
+tags, state changes, buffering state, redirects etc. from elements
+to the application in a thread-safe way.</p>
+</li>
+<li>
+<p><em>queries</em> allow applications to request information such as duration
+or current playback position from the pipeline. Queries are always
+answered synchronously. Elements can also use queries to request
+information from their peer elements (such as the file size or
+duration). They can be used both ways within a pipeline, but
+upstream queries are more common.</p>
+</li>
+</ul>
+<p><img src="images/communication.png" alt="GStreamer pipeline with different communication flows" title="fig:" id="gstreamer-pipeline-with-different-communication-flows"></p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Preroll</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/preroll.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="preroll.md">
+<h1 id="preroll">Preroll</h1>
+<p>A sink element can only complete the state change to <code>PAUSED</code> after a
+buffer has been queued on the input pad or pads. This process is called
+prerolling and is needed to fill the pipeline with buffers so that the
+transition to <code>PLAYING</code> goes as fast as possible, with no visual delay for
+the user.</p>
+<p>Preroll is also crucial in maintaining correct audio and video
+synchronisation and ensuring that no buffers are dropped in the sinks.</p>
+<p>After receiving a buffer (or EOS) on a pad the chain/event function
+should wait to render the buffers or in the EOS case, wait to post the
+EOS message. While waiting, the sink will wait for the preroll cond to
+be signalled.</p>
+<p>Several things can happen that require the preroll cond to be signalled.
+These include state changes or flush events. The prerolling is
+implemented in sinks (see <a href="element-sink.html">element-sink</a></p>
+<h2 id="committing-the-state">Committing the state</h2>
+<p>When going to <code>PAUSED</code> and <code>PLAYING</code> a buffer should be queued in the pad.
+We also make this a requirement for going to <code>PLAYING</code> since a flush event
+in the <code>PAUSED</code> state could unqueue the buffer again.</p>
+<p>The state is commited in the following conditions:</p>
+<ul>
+<li>a buffer is received on a sinkpad</li>
+<li>an GAP event is received on a sinkpad.</li>
+<li>an EOS event is received on a sinkpad.</li>
+</ul>
+<p>We require the state change to be commited in EOS as well, since an EOS
+, by definition, means no buffer is going to arrive anymore.</p>
+<p>After the state is commited, a blocking wait should be performed for the
+next event. Some sinks might render the preroll buffer before starting
+this blocking wait.</p>
+<h2 id="unlocking-the-preroll">Unlocking the preroll</h2>
+<p>The following conditions unlock the preroll:</p>
+<ul>
+<li>a state change</li>
+<li>a flush event</li>
+</ul>
+<p>When the preroll is unlocked by a flush event, a return value of
+<code>GST_FLOW_FLUSHING</code> is to be returned to the peer pad.</p>
+<p>When preroll is unlocked by a state change to <code>PLAYING</code>, playback and
+rendering of the buffers shall start.</p>
+<p>When preroll is unlocked by a state change to READY, the buffer is to be
+discarded and a <code>GST_FLOW_FLUSHING</code> shall be returned to the peer
+element.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>
