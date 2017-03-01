@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "w.r.t", "urls": ["gstreamer-libs-doc-1.0/c/base/gstbaseparse.html#GstBaseParseFrame"]});
+urls_downloaded_cb({"token": "w.r.t", "urls": ["libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParseFrame"]});

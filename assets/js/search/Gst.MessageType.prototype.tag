@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "Gst.MessageType.prototype.tag", "urls": ["gstreamer-core-doc-1.0/javascript/gstmessage.html#GstMessageType"]});
+urls_downloaded_cb({"token": "Gst.MessageType.prototype.tag", "urls": ["libgstreamer-doc-1.0/javascript/gstmessage.html#GstMessageType"]});
