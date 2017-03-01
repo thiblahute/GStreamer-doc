@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstFlowCombiner</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-project="libgstbase-doc-1.0" data-hotdoc-ref="gstflowcombiner.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstflowcombiner.h">
+<h1 id="gstflowcombiner">GstFlowCombiner</h1><p>Utility struct to help handling <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a> combination. Useful for
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html#GstElement-struct">GstElement</a><!-- -->s that have multiple source pads and need to combine
+the different <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a> for those pads.</p>
+<p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a> works by using the last <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a> for all <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a>
+it has in its list and computes the combined return value and provides
+it to the caller.</p>
+<p>To add a new pad to the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a> use <a href="../../libgstbase-doc-1.0/c/gstflowcombiner.html#gst_flow_combiner_add_pad">gst_flow_combiner_add_pad</a>.
+The new <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a> is stored with a default value of <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GST_FLOW_OK">GST_FLOW_OK</a>.</p>
+<p>In case you want a <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a> to be removed, use <a href="../../libgstbase-doc-1.0/c/gstflowcombiner.html#gst_flow_combiner_remove_pad">gst_flow_combiner_remove_pad</a>.</p>
+<p>Please be aware that this struct isn't thread safe as its designed to be
+used by demuxers, those usually will have a single thread operating it.</p>
+<p>These functions will take refs on the passed <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a><!-- -->s.</p>
+<p>Aside from reducing the user's code size, the main advantage of using this
+helper struct is to follow the standard rules for <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a> combination.
+These rules are:</p>
+<ul>
+<li><a href="../../libgstreamer-doc-1.0/c/gstpad.html#GST_FLOW_EOS">GST_FLOW_EOS</a>: only if all returns are EOS too</li>
+<li><a href="../../libgstreamer-doc-1.0/c/gstpad.html#GST_FLOW_NOT_LINKED">GST_FLOW_NOT_LINKED</a>: only if all returns are NOT_LINKED too</li>
+<li><a href="../../libgstreamer-doc-1.0/c/gstpad.html#GST_FLOW_ERROR">GST_FLOW_ERROR</a> or below: if at least one returns an error return</li>
+<li><a href="../../libgstreamer-doc-1.0/c/gstpad.html#GST_FLOW_NOT_NEGOTIATED">GST_FLOW_NOT_NEGOTIATED</a>: if at least one returns a not-negotiated return</li>
+<li><a href="../../libgstreamer-doc-1.0/c/gstpad.html#GST_FLOW_FLUSHING">GST_FLOW_FLUSHING</a>: if at least one returns flushing</li>
+<li><a href="../../libgstreamer-doc-1.0/c/gstpad.html#GST_FLOW_OK">GST_FLOW_OK</a>: otherwise</li>
+</ul>
+<p><a href="../../libgstreamer-doc-1.0/c/gstpad.html#GST_FLOW_ERROR">GST_FLOW_ERROR</a> or below, GST_FLOW_NOT_NEGOTIATED and GST_FLOW_FLUSHING are
+returned immediatelly from the <a href="../../libgstbase-doc-1.0/c/gstflowcombiner.html#gst_flow_combiner_update_flow">gst_flow_combiner_update_flow</a> function.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_flow_combiner_new">
+		<h3 id="gst_flow_combiner_new1">
+	<span><code>gst_flow_combiner_new</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowCombiner" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a> *
+gst_flow_combiner_new ()</pre>
+
+<p>Creates a new <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a>, use <a href="../../libgstbase-doc-1.0/c/gstflowcombiner.html#gst_flow_combiner_free">gst_flow_combiner_free</a> to free it.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>A new <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a></p>
+
+	</td>
+	<td>
+		<a title="GstFlowCombiner" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_flow_combiner_free">
+		<h3 id="gst_flow_combiner_free1">
+	<span><code>gst_flow_combiner_free</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_flow_combiner_free (int * combiner)</pre>
+
+<p>Frees a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a> struct and all its internal data.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>combiner:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a> to free</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_flow_combiner_update_flow">
+		<h3 id="gst_flow_combiner_update_flow1">
+	<span><code>gst_flow_combiner_update_flow</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a>
+gst_flow_combiner_update_flow (int * combiner,
+                               int  fret)</pre>
+
+<p>Computes the combined flow return for the pads in it.</p>
+<p>The <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a> parameter should be the last flow return update for a pad
+in this <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a>. It will use this value to be able to shortcut some
+combinations and avoid looking over all pads again. e.g. The last combined
+return is the same as the latest obtained <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>combiner:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fret:</code></em></i>
+		</p>
+	</td>
+		<td><p>the latest <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a> received for a pad in this <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The combined <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a></p>
+
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_flow_combiner_update_pad_flow">
+		<h3 id="gst_flow_combiner_update_pad_flow1">
+	<span><code>gst_flow_combiner_update_pad_flow</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a>
+gst_flow_combiner_update_pad_flow (int * combiner,
+                                   int * pad,
+                                   int  fret)</pre>
+
+<p>Sets the provided pad's last flow return to provided value and computes
+the combined flow return for the pads in it.</p>
+<p>The <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a> parameter should be the last flow return update for a pad
+in this <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a>. It will use this value to be able to shortcut some
+combinations and avoid looking over all pads again. e.g. The last combined
+return is the same as the latest obtained <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>combiner:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a> whose <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a> to update</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fret:</code></em></i>
+		</p>
+	</td>
+		<td><p>the latest <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a> received for a pad in this <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The combined <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a></p>
+
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_flow_combiner_add_pad">
+		<h3 id="gst_flow_combiner_add_pad1">
+	<span><code>gst_flow_combiner_add_pad</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_flow_combiner_add_pad (int * combiner,
+                           int * pad)</pre>
+
+<p>Adds a new <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a> to the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>combiner:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a> that is being added</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_flow_combiner_remove_pad">
+		<h3 id="gst_flow_combiner_remove_pad1">
+	<span><code>gst_flow_combiner_remove_pad</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_flow_combiner_remove_pad (int * combiner,
+                              int * pad)</pre>
+
+<p>Removes a <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a> from the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>combiner:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a> to remove</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_flow_combiner_clear">
+		<h3 id="gst_flow_combiner_clear1">
+	<span><code>gst_flow_combiner_clear</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_flow_combiner_clear (int * combiner)</pre>
+
+<p>Removes all pads from a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a> and resets it to its initial state.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>combiner:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a> to clear</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_flow_combiner_reset">
+		<h3 id="gst_flow_combiner_reset1">
+	<span><code>gst_flow_combiner_reset</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_flow_combiner_reset (int * combiner)</pre>
+
+<p>Reset flow combiner and all pads to their initial state without removing pads.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>combiner:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/gstreamer-libs-GstFlowCombiner.html#GstFlowCombiner">GstFlowCombiner</a> to clear</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_flow_combiner_get_type">
+		<h3 id="gst_flow_combiner_get_type1">
+	<span><code>gst_flow_combiner_get_type</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+int 
+gst_flow_combiner_get_type ()</pre>
+
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		int 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TYPE_FLOW_COMBINER">
+		<h3 class="constant" id="gst_type_flow_combiner">
+	GST_TYPE_FLOW_COMBINER
+</h3>
+
+		<pre class="raw_code">
+#define GST_TYPE_FLOW_COMBINER gst_flow_combiner_get_type()
+</pre>
+
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

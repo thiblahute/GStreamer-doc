@@ -1,0 +1,3364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstBaseSrc</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-project="libgstbase-doc-1.0" data-hotdoc-ref="gstbasesrc.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstbasesrc.h">
+<h1 id="gstbasesrc">GstBaseSrc</h1><p>This is a generic base class for source elements. The following
+types of sources are supported:</p>
+<ul>
+<li>random access sources like files</li>
+<li>seekable sources</li>
+<li>live sources</li>
+</ul>
+<p>The source can be configured to operate in any <a href="../../libgstreamer-doc-1.0/c/gstformat.html#GstFormat">Gst.Format</a> with the
+<a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#gst_base_src_set_format">GstBase.BaseSrc.prototype.set_format</a> method. The currently set format determines
+the format of the internal <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a> and any <a href="../../libgstreamer-doc-1.0/c/gstevent.html#GST_EVENT_SEGMENT">Gst.EventType.prototype.segment</a>
+events. The default format for <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> is <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstFormat.html#GST-FORMAT-BYTES:CAPS">Gst.Format.prototype.bytes</a>.</p>
+<p><a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> always supports push mode scheduling. If the following
+conditions are met, it also supports pull mode scheduling:</p>
+<ul>
+<li>The format is set to <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstFormat.html#GST-FORMAT-BYTES:CAPS">Gst.Format.prototype.bytes</a> (default).</li>
+<li>GstBaseSrcClass.is_seekable returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
+</ul>
+<p>If all the conditions are met for operating in pull mode, <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> is
+automatically seekable in push mode as well. The following conditions must
+be met to make the element seekable in push mode when the format is not
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstFormat.html#GST-FORMAT-BYTES:CAPS">Gst.Format.prototype.bytes</a>:</p>
+<ul>
+<li>GstBaseSrcClass.is_seekable returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
+<li><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseSrc.html#GstBaseSrcClass.query">GstBaseSrcClass.query (not introspectable)</a>() can convert all supported seek formats to the
+internal format as set with <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#gst_base_src_set_format">GstBase.BaseSrc.prototype.set_format</a>.</li>
+<li>GstBaseSrcClass.do_seek is implemented, performs the seek and returns
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
+</ul>
+<p>When the element does not meet the requirements to operate in pull mode, the
+offset and length in the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseSrc.html#GstBaseSrcClass.create">GstBaseSrcClass.create (not introspectable)</a>() method should be ignored.
+It is recommended to subclass <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstPushSrc.html#GstPushSrc-struct">GstBase.PushSrc</a> instead, in this situation. If the
+element can operate in pull mode but only with specific offsets and
+lengths, it is allowed to generate an error when the wrong values are passed
+to the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseSrc.html#GstBaseSrcClass.create">GstBaseSrcClass.create (not introspectable)</a>() function.</p>
+<p><a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> has support for live sources. Live sources are sources that when
+paused discard data, such as audio or video capture devices. A typical live
+source also produces data at a fixed rate and thus provides a clock to publish
+this rate.
+Use <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#gst_base_src_set_live">GstBase.BaseSrc.prototype.set_live</a> to activate the live source mode.</p>
+<p>A live source does not produce data in the PAUSED state. This means that the
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseSrc.html#GstBaseSrcClass.create">GstBaseSrcClass.create (not introspectable)</a>() method will not be called in PAUSED but only in
+PLAYING. To signal the pipeline that the element will not produce data, the
+return value from the READY to PAUSED state will be
+<a href="../../libgstreamer-doc-1.0/c/gstelement.html#GST_STATE_CHANGE_NO_PREROLL">Gst.StateChangeReturn.prototype.no_preroll</a>.</p>
+<p>A typical live source will timestamp the buffers it creates with the
+current running time of the pipeline. This is one reason why a live source
+can only produce data in the PLAYING state, when the clock is actually
+distributed and running.</p>
+<p>Live sources that synchronize and block on the clock (an audio source, for
+example) can use <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#gst_base_src_wait_playing">GstBase.BaseSrc.prototype.wait_playing</a> when the
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseSrc.html#GstBaseSrcClass.create">GstBaseSrcClass.create (not introspectable)</a>() function was interrupted by a state change to
+PAUSED.</p>
+<p>The GstBaseSrcClass.get_times method can be used to implement pseudo-live
+sources. It only makes sense to implement the GstBaseSrcClass.get_times
+function if the source is a live source. The GstBaseSrcClass.get_times
+function should return timestamps starting from 0, as if it were a non-live
+source. The base class will make sure that the timestamps are transformed
+into the current running_time. The base source will then wait for the
+calculated running_time before pushing out the buffer.</p>
+<p>For live sources, the base class will by default report a latency of 0.
+For pseudo live sources, the base class will by default measure the difference
+between the first buffer timestamp and the start time of get_times and will
+report this value as the latency.
+Subclasses should override the query function when this behaviour is not
+acceptable.</p>
+<p>There is only support in <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> for exactly one source pad, which
+should be named "src". A source implementation (subclass of <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>)
+should install a pad template in its class_init function, like so:</p>
+<pre><code class="language-c">static void
+my_element_class_init (GstMyElementClass *klass)
+{
+  GstElementClass *gstelement_class = GST_ELEMENT_CLASS (klass);
+  // srctemplate should be a #GstStaticPadTemplate with direction
+  // %GST_PAD_SRC and name "src"
+  gst_element_class_add_static_pad_template (gstelement_class, &amp;amp;srctemplate);
+
+  gst_element_class_set_static_metadata (gstelement_class,
+     "Source name",
+     "Source",
+     "My Source element",
+     "The author &lt;my.sink@my.email&gt;");
+}
+</code></pre>
+<h2 id="controlled-shutdown-of-live-sources-in-applications">Controlled shutdown of live sources in applications</h2>
+<p>Applications that record from a live source may want to stop recording
+in a controlled way, so that the recording is stopped, but the data
+already in the pipeline is processed to the end (remember that many live
+sources would go on recording forever otherwise). For that to happen the
+application needs to make the source stop recording and send an EOS
+event down the pipeline. The application would then wait for an
+EOS message posted on the pipeline's bus to know when all data has
+been processed and the pipeline can safely be stopped.</p>
+<p>An application may send an EOS event to a source element to make it
+perform the EOS logic (send EOS event downstream or post a
+<a href="../../libgstreamer-doc-1.0/c/gstmessage.html#GST_MESSAGE_SEGMENT_DONE">Gst.MessageType.prototype.segment_done</a> on the bus). This can typically be done
+with the <a href="../../libgstreamer-doc-1.0/c/gstelement.html#gst_element_send_event">Gst.Element.prototype.send_event</a> function on the element or its parent bin.</p>
+<p>After the EOS has been sent to the element, the application should wait for
+an EOS message to be posted on the pipeline's bus. Once this EOS message is
+received, it may safely shut down the entire pipeline.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc::GstBaseSrc">
+		<h3 id="gstbasebasesrc">
+	GstBase.BaseSrc
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject.Object" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a>
+    <span class="lineart">╰──</span><a title="GObject.InitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GObject.InitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="Gst.Object" href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">Gst.Object</a>
+            <span class="lineart">╰──</span><a title="Gst.Element" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html#GstElement-struct">Gst.Element</a>
+                <span class="lineart">╰──</span>GstBase.BaseSrc
+                    <span class="lineart">╰──</span><a title="GstBase.PushSrc" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstPushSrc.html#GstPushSrc-struct">GstBase.PushSrc</a>
+</pre>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_wait_playing">
+		<h3 id="gstbasebasesrcprototypewait_playing">
+	<span><code>GstBase.BaseSrc.prototype.wait_playing</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.wait_playing(): {
+    // javascript wrapper for 'gst_base_src_wait_playing'
+}</pre>
+
+<p>If the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseSrc.html#GstBaseSrcClass.create">GstBaseSrcClass.create (not introspectable)</a>() method performs its own synchronisation
+against the clock it must unblock when going from PLAYING to the PAUSED state
+and call this method before continuing to produce the remaining data.</p>
+<p>This function will block until a state change to PLAYING happens (in which
+case this function returns <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GST_FLOW_OK">Gst.FlowReturn.prototype.ok</a>) or the processing must be stopped due
+to a state change to READY or a FLUSH event (in which case this function
+returns <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GST_FLOW_FLUSHING">Gst.FlowReturn.prototype.flushing</a>).</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>the src</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="../../libgstreamer-doc-1.0/c/gstpad.html#GST_FLOW_OK">Gst.FlowReturn.prototype.ok</a> if <em>src</em> is PLAYING and processing can
+continue. Any other return value should be returned from the create vmethod.</p>
+
+	</td>
+	<td>
+		<a title="Gst.FlowReturn" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">Gst.FlowReturn</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_set_live">
+		<h3 id="gstbasebasesrcprototypeset_live">
+	<span><code>GstBase.BaseSrc.prototype.set_live</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.set_live(live: <a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_base_src_set_live'
+}</pre>
+
+<p>If the element listens to a live source, <em>live</em> should
+be set to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</p>
+<p>A live source will not produce data in the PAUSED state and
+will therefore not be able to participate in the PREROLL phase
+of a pipeline. To signal this fact to the application and the
+pipeline, the state change return value of the live source will
+be GST_STATE_CHANGE_NO_PREROLL.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>base source instance</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>live:</code></em></i>
+		</p>
+	</td>
+		<td><p>new live-mode</p>
+</td>
+<td>
+<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_is_live">
+		<h3 id="gstbasebasesrcprototypeis_live">
+	<span><code>GstBase.BaseSrc.prototype.is_live</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.is_live(): {
+    // javascript wrapper for 'gst_base_src_is_live'
+}</pre>
+
+<p>Check if an element is in live mode.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>base source instance</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if element is in live mode.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_set_format">
+		<h3 id="gstbasebasesrcprototypeset_format">
+	<span><code>GstBase.BaseSrc.prototype.set_format</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.set_format(format: int ): {
+    // javascript wrapper for 'gst_base_src_set_format'
+}</pre>
+
+<p>Sets the default format of the source. This will be the format used
+for sending SEGMENT events and for performing seeks.</p>
+<p>If a format of GST_FORMAT_BYTES is set, the element will be able to
+operate in pull mode if the GstBaseSrcClass.is_seekable returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</p>
+<p>This function must only be called in states &lt; <a href="../../libgstreamer-doc-1.0/c/gstelement.html#GST_STATE_PAUSED">Gst.State.prototype.paused</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>base source instance</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format to use</p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_set_dynamic_size">
+		<h3 id="gstbasebasesrcprototypeset_dynamic_size">
+	<span><code>GstBase.BaseSrc.prototype.set_dynamic_size</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.set_dynamic_size(dynamic: <a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_base_src_set_dynamic_size'
+}</pre>
+
+<p>If not <em>dynamic</em>, size is only updated when needed, such as when trying to
+read past current tracked size.  Otherwise, size is checked for upon each
+read.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>base source instance</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dynamic:</code></em></i>
+		</p>
+	</td>
+		<td><p>new dynamic size mode</p>
+</td>
+<td>
+<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_base_src_set_automatic_eos">
+		<h3 id="gstbasebasesrcprototypeset_automatic_eos">
+	<span><code>GstBase.BaseSrc.prototype.set_automatic_eos</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.set_automatic_eos(automatic_eos: <a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_base_src_set_automatic_eos'
+}</pre>
+
+<p>If <em>automatic_eos</em> is <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>, <em>src</em> will automatically go EOS if a buffer
+after the total size is returned. By default this is <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> but sources
+that can't return an authoritative size and only know that they're EOS
+when trying to read more should set this to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>base source instance</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>automatic_eos:</code></em></i>
+		</p>
+	</td>
+		<td><p>automatic eos</p>
+</td>
+<td>
+<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_set_async">
+		<h3 id="gstbasebasesrcprototypeset_async">
+	<span><code>GstBase.BaseSrc.prototype.set_async</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.set_async(async: <a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_base_src_set_async'
+}</pre>
+
+<p>Configure async behaviour in <em>src</em>, no state change will block. The open,
+close, start, stop, play and pause virtual methods will be executed in a
+different thread and are thus allowed to perform blocking operations. Any
+blocking operation should be unblocked with the unlock vmethod.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>base source instance</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>async:</code></em></i>
+		</p>
+	</td>
+		<td><p>new async mode</p>
+</td>
+<td>
+<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_is_async">
+		<h3 id="gstbasebasesrcprototypeis_async">
+	<span><code>GstBase.BaseSrc.prototype.is_async</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.is_async(): {
+    // javascript wrapper for 'gst_base_src_is_async'
+}</pre>
+
+<p>Get the current async behaviour of <em>src</em>. See also <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#gst_base_src_set_async">GstBase.BaseSrc.prototype.set_async</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>base source instance</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if <em>src</em> is operating in async mode.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_start_complete">
+		<h3 id="gstbasebasesrcprototypestart_complete">
+	<span><code>GstBase.BaseSrc.prototype.start_complete</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.start_complete(ret: int ): {
+    // javascript wrapper for 'gst_base_src_start_complete'
+}</pre>
+
+<p>Complete an asynchronous start operation. When the subclass overrides the
+start method, it should call <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#gst_base_src_start_complete">GstBase.BaseSrc.prototype.start_complete</a> when the start
+operation completes either from the same thread or from an asynchronous
+helper thread.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>basesrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>base source instance</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ret:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">Gst.FlowReturn</a></p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_start_wait">
+		<h3 id="gstbasebasesrcprototypestart_wait">
+	<span><code>GstBase.BaseSrc.prototype.start_wait</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.start_wait(): {
+    // javascript wrapper for 'gst_base_src_start_wait'
+}</pre>
+
+<p>Wait until the start operation completes.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>basesrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>base source instance</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">Gst.FlowReturn</a>.</p>
+
+	</td>
+	<td>
+		<a title="Gst.FlowReturn" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">Gst.FlowReturn</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_query_latency">
+		<h3 id="gstbasebasesrcprototypequery_latency">
+	<span><code>GstBase.BaseSrc.prototype.query_latency</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.query_latency(): {
+    // javascript wrapper for 'gst_base_src_query_latency'
+}</pre>
+
+<p>Query the source for the latency parameters. <em>live</em> will be <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> when <em>src</em> is
+configured as a live source. <em>min_latency</em> and <em>max_latency</em> will be set
+to the difference between the running time and the timestamp of the first
+buffer.</p>
+<p>This function is mostly used by subclasses.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>the source</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the query succeeded.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>live:</i>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the query succeeded.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>min_latency:</i>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the query succeeded.</p>
+
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstClock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>max_latency:</i>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the query succeeded.</p>
+
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstClock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_set_blocksize">
+		<h3 id="gstbasebasesrcprototypeset_blocksize">
+	<span><code>GstBase.BaseSrc.prototype.set_blocksize</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.set_blocksize(blocksize: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_base_src_set_blocksize'
+}</pre>
+
+<p>Set the number of bytes that <em>src</em> will push out with each buffer. When
+<em>blocksize</em> is set to -1, a default length will be used.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>the source</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>blocksize:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new blocksize in bytes</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_get_blocksize">
+		<h3 id="gstbasebasesrcprototypeget_blocksize">
+	<span><code>GstBase.BaseSrc.prototype.get_blocksize</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.get_blocksize(): {
+    // javascript wrapper for 'gst_base_src_get_blocksize'
+}</pre>
+
+<p>Get the number of bytes that <em>src</em> will push out with each buffer.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>the source</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the number of bytes pushed with each buffer.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_set_do_timestamp">
+		<h3 id="gstbasebasesrcprototypeset_do_timestamp">
+	<span><code>GstBase.BaseSrc.prototype.set_do_timestamp</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.set_do_timestamp(timestamp: <a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_base_src_set_do_timestamp'
+}</pre>
+
+<p>Configure <em>src</em> to automatically timestamp outgoing buffers based on the
+current running_time of the pipeline. This property is mostly useful for live
+sources.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>the source</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timestamp:</code></em></i>
+		</p>
+	</td>
+		<td><p>enable or disable timestamping</p>
+</td>
+<td>
+<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_get_do_timestamp">
+		<h3 id="gstbasebasesrcprototypeget_do_timestamp">
+	<span><code>GstBase.BaseSrc.prototype.get_do_timestamp</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.get_do_timestamp(): {
+    // javascript wrapper for 'gst_base_src_get_do_timestamp'
+}</pre>
+
+<p>Query if <em>src</em> timestamps outgoing buffers based on the current running_time.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>the source</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the base class will automatically timestamp outgoing buffers.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_new_seamless_segment">
+		<h3 id="gstbasebasesrcprototypenew_seamless_segment">
+	<span><code>GstBase.BaseSrc.prototype.new_seamless_segment</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.new_seamless_segment(start: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, stop: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, time: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_base_src_new_seamless_segment'
+}</pre>
+
+<p>Prepare a new seamless segment for emission downstream. This function must
+only be called by derived sub-classes, and only from the create function,
+as the stream-lock needs to be held.</p>
+<p>The format for the new segment will be the current format of the source, as
+configured with <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#gst_base_src_set_format">GstBase.BaseSrc.prototype.set_format</a></p>
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>The source</p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>start:</code></em></i>
+		</p>
+	</td>
+		<td><p>The new start value for the segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stop:</code></em></i>
+		</p>
+	</td>
+		<td><p>Stop value for the new segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>time:</code></em></i>
+		</p>
+	</td>
+		<td><p>The new time value for the start of the new segment</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if preparation of the seamless segment succeeded.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_set_caps">
+		<h3 id="gstbasebasesrcprototypeset_caps">
+	<span><code>GstBase.BaseSrc.prototype.set_caps</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.set_caps(caps: int ): {
+    // javascript wrapper for 'gst_base_src_set_caps'
+}</pre>
+
+<p>Set new caps on the basesrc source pad.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a></p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">Gst.Caps</a></p>
+</td>
+<td>
+int 
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the caps could be set</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_get_buffer_pool">
+		<h3 id="gstbasebasesrcprototypeget_buffer_pool">
+	<span><code>GstBase.BaseSrc.prototype.get_buffer_pool</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.get_buffer_pool(): {
+    // javascript wrapper for 'gst_base_src_get_buffer_pool'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a></p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the instance of the <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBufferPool">Gst.BufferPool</a> used
+by the src; unref it after usage.</p>
+
+	</td>
+	<td>
+		<a title="Gst.BufferPool" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBufferPool">Gst.BufferPool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_src_get_allocator">
+		<h3 id="gstbasebasesrcprototypeget_allocator">
+	<span><code>GstBase.BaseSrc.prototype.get_allocator</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstBase.BaseSrc.prototype.get_allocator(): {
+    // javascript wrapper for 'gst_base_src_get_allocator'
+}</pre>
+
+<p>Lets <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> sub-classes to know the memory <em>allocator</em>
+used by the base class and its <em>params</em>.</p>
+<p>Unref the <em>allocator</em> after usage.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a></p>
+</td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of1">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>allocator:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Allocator" href="../../libgstreamer-doc-1.0/c/gstmemory.html#GstAllocator">Gst.Allocator</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>params:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.AllocationParams" href="../../libgstreamer-doc-1.0/c/gstallocator.html#GstAllocationParams">Gst.AllocationParams</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Function_Macros">Function Macros</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_BASE_SRC_CAST">
+		<h3 id="gst_base_src_cast-not-introspectable">
+	<span><code>GST_BASE_SRC_CAST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_BASE_SRC_CAST(obj)          ((GstBaseSrc *)(obj))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_BASE_SRC_IS_STARTING">
+		<h3 id="gst_base_src_is_starting-not-introspectable">
+	<span><code>GST_BASE_SRC_IS_STARTING (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_BASE_SRC_IS_STARTING(obj) GST_OBJECT_FLAG_IS_SET ((obj), GST_BASE_SRC_FLAG_STARTING)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_BASE_SRC_IS_STARTED">
+		<h3 id="gst_base_src_is_started-not-introspectable">
+	<span><code>GST_BASE_SRC_IS_STARTED (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_BASE_SRC_IS_STARTED(obj)  GST_OBJECT_FLAG_IS_SET ((obj), GST_BASE_SRC_FLAG_STARTED)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_BASE_SRC_PAD">
+		<h3 id="gst_base_src_pad-not-introspectable">
+	<span><code>GST_BASE_SRC_PAD (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_BASE_SRC_PAD(obj)                 (GST_BASE_SRC_CAST (obj)-&gt;srcpad)
+</pre>
+
+<p>Gives the pointer to the <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">Gst.Pad</a> object of the element.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>obj:</code></em></i>
+		</p>
+	</td>
+		<td><p>base source instance</p>
+</td>
+<td>
+ obj
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:blocksize">
+		<h3 class="method" id="blocksize">
+	<span><code>blocksize</code></span>
+</h3>
+
+		<pre class="property_signature">
+“blocksize” <span class="type"><a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:do-timestamp">
+		<h3 class="method" id="dotimestamp">
+	<span><code>do-timestamp</code></span>
+</h3>
+
+		<pre class="property_signature">
+“do-timestamp” <span class="type"><a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:num-buffers">
+		<h3 class="method" id="numbuffers">
+	<span><code>num-buffers</code></span>
+</h3>
+
+		<pre class="property_signature">
+“num-buffers” <span class="type"><a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:typefind">
+		<h3 class="method" id="typefind">
+	<span><code>typefind</code></span>
+</h3>
+
+		<pre class="property_signature">
+“typefind” <span class="type"><a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+<div class="refsect2">
+	<a id="_GstBaseSrc"></a>
+	<h3 id="_gstbasesrc-not-introspectable">
+		_GstBaseSrc (not introspectable)
+	</h3>
+		
+<div class="member_details">
+	<h4 id="attributes">Attributes</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="_GstBaseSrc.element">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>element</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+</div>
+
+<div class="refsect2">
+	<a id="_GstBaseSrcClass"></a>
+	<h3 id="_gstbasesrcclass-not-introspectable">
+		_GstBaseSrcClass (not introspectable)
+	</h3>
+		
+<div class="member_details">
+	<h4 id="attributes1">Attributes</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="_GstBaseSrcClass.get_caps">
+		<td>
+		<p>
+		<i><em><code><em><code>get_caps</code></em>():</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstBaseSrcClass.gboolean">
+		<td>
+		<p>
+		<i><em><code>int (int *)  <em><code>gboolean</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstBaseSrcClass.fixate">
+		<td>
+		<p>
+		<i><em><code><em><code>fixate</code></em>():</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstBaseSrcClass.get_times">
+		<td>
+		<p>
+		<i><em><code><em><code>get_times</code></em>():</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstBaseSrcClass.GstFlowReturn">
+		<td>
+		<p>
+		<i><em><code>int (int *)  <em><code>GstFlowReturn</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+</div>
+
+
+<h2 class="symbol_section" id="Virtual_Methods">Virtual Methods</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::alloc">
+		<h3 id="alloc">
+	<span><code>alloc</code></span>
+</h3>
+
+		<pre class="programlisting">
+function alloc(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, buf: <a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'alloc' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>offset:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.FlowReturn" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">Gst.FlowReturn</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::create">
+		<h3 id="create">
+	<span><code>create</code></span>
+</h3>
+
+		<pre class="programlisting">
+function create(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, buf: <a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'create' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>offset:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.FlowReturn" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">Gst.FlowReturn</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::decide_allocation">
+		<h3 id="decide_allocation">
+	<span><code>decide_allocation</code></span>
+</h3>
+
+		<pre class="programlisting">
+function decide_allocation(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, query: <a title="Gst.Query" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstQuery.html#GstQuery-struct">Gst.Query</a>): {
+    // javascript implementation of the 'decide_allocation' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Query" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstQuery.html#GstQuery-struct">Gst.Query</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::do_seek">
+		<h3 id="do_seek">
+	<span><code>do_seek</code></span>
+</h3>
+
+		<pre class="programlisting">
+function do_seek(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, segment: <a title="Gst.Segment" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a>): {
+    // javascript implementation of the 'do_seek' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters23">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Segment" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::event">
+		<h3 id="event">
+	<span><code>event</code></span>
+</h3>
+
+		<pre class="programlisting">
+function event(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, event: <a title="Gst.Event" href="../../libgstreamer-doc-1.0/c/gstevent.html#GstEvent">Gst.Event</a>): {
+    // javascript implementation of the 'event' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Event" href="../../libgstreamer-doc-1.0/c/gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::fill">
+		<h3 id="fill">
+	<span><code>fill</code></span>
+</h3>
+
+		<pre class="programlisting">
+function fill(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, buf: <a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'fill' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>offset:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.FlowReturn" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstFlowReturn">Gst.FlowReturn</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::fixate">
+		<h3 id="fixate">
+	<span><code>fixate</code></span>
+</h3>
+
+		<pre class="programlisting">
+function fixate(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, caps: <a title="Gst.Caps" href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'fixate' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Caps" href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">Gst.Caps</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Caps" href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">Gst.Caps</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::get_caps">
+		<h3 id="get_caps">
+	<span><code>get_caps</code></span>
+</h3>
+
+		<pre class="programlisting">
+function get_caps(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, filter: <a title="Gst.Caps" href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'get_caps' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters27">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>filter:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Caps" href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">Gst.Caps</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Caps" href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">Gst.Caps</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::get_size">
+		<h3 id="get_size">
+	<span><code>get_size</code></span>
+</h3>
+
+		<pre class="programlisting">
+function get_size(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript implementation of the 'get_size' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters28">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns17">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::get_times">
+		<h3 id="get_times">
+	<span><code>get_times</code></span>
+</h3>
+
+		<pre class="programlisting">
+function get_times(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, buffer: <a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>, start: <a title="Gst.ClockTime" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstClock.html#GstClockTime">Gst.ClockTime</a>, end: <a title="Gst.ClockTime" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstClock.html#GstClockTime">Gst.ClockTime</a>): {
+    // javascript implementation of the 'get_times' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters29">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>start:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.ClockTime" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstClock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>end:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.ClockTime" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstClock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::is_seekable">
+		<h3 id="is_seekable">
+	<span><code>is_seekable</code></span>
+</h3>
+
+		<pre class="programlisting">
+function is_seekable(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'is_seekable' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters30">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns18">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::negotiate">
+		<h3 id="negotiate">
+	<span><code>negotiate</code></span>
+</h3>
+
+		<pre class="programlisting">
+function negotiate(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'negotiate' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters31">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns19">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::prepare_seek_segment">
+		<h3 id="prepare_seek_segment">
+	<span><code>prepare_seek_segment</code></span>
+</h3>
+
+		<pre class="programlisting">
+function prepare_seek_segment(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, seek: <a title="Gst.Event" href="../../libgstreamer-doc-1.0/c/gstevent.html#GstEvent">Gst.Event</a>, segment: <a title="Gst.Segment" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a>): {
+    // javascript implementation of the 'prepare_seek_segment' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters32">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>seek:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Event" href="../../libgstreamer-doc-1.0/c/gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Segment" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSegment.html#GstSegment-struct">Gst.Segment</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns20">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::query">
+		<h3 id="query">
+	<span><code>query</code></span>
+</h3>
+
+		<pre class="programlisting">
+function query(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, query: <a title="Gst.Query" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstQuery.html#GstQuery-struct">Gst.Query</a>): {
+    // javascript implementation of the 'query' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters33">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Query" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstQuery.html#GstQuery-struct">Gst.Query</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns21">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::set_caps">
+		<h3 id="set_caps">
+	<span><code>set_caps</code></span>
+</h3>
+
+		<pre class="programlisting">
+function set_caps(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, caps: <a title="Gst.Caps" href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'set_caps' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters34">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Caps" href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">Gst.Caps</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns22">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::start">
+		<h3 id="start">
+	<span><code>start</code></span>
+</h3>
+
+		<pre class="programlisting">
+function start(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'start' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters35">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns23">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::stop">
+		<h3 id="stop">
+	<span><code>stop</code></span>
+</h3>
+
+		<pre class="programlisting">
+function stop(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'stop' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters36">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns24">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::unlock">
+		<h3 id="unlock">
+	<span><code>unlock</code></span>
+</h3>
+
+		<pre class="programlisting">
+function unlock(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'unlock' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters37">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns25">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc:::unlock_stop">
+		<h3 id="unlock_stop">
+	<span><code>unlock_stop</code></span>
+</h3>
+
+		<pre class="programlisting">
+function unlock_stop(src: <a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'unlock_stop' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters38">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstBase.BaseSrc" href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns26">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https:/c/developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Exported_Variables">Exported Variables</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcFlags">
+		<h3 class="constant" id="gstbasebasesrcflags">
+	GstBase.BaseSrcFlags
+</h3>
+
+		<p>The <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html#GstElement-struct">Gst.Element</a> flags that a basesrc element may have.</p>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Aliases">Aliases</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc">
+		<h3 id="gstbasebasesrc1">
+	GstBase.BaseSrc
+</h3>
+
+		<pre>
+typedef struct _GstBaseSrc  GstBase.BaseSrc</pre>
+<p>The opaque <a href="../../libgstbase-doc-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> data structure.</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcPrivate">
+		<h3 id="gstbasebasesrcprivate">
+	GstBase.BaseSrcPrivate
+</h3>
+
+		<pre>
+typedef struct _GstBaseSrcPrivate  GstBase.BaseSrcPrivate</pre>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass">
+		<h3 id="gstbasebasesrcclass">
+	GstBase.BaseSrcClass
+</h3>
+
+		<pre>
+typedef struct _GstBaseSrcClass  GstBase.BaseSrcClass</pre>
+<p>Subclasses can override any of the available virtual methods or not, as
+needed. At the minimum, the <em>create</em> method should be overridden to produce
+buffers.</p>
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

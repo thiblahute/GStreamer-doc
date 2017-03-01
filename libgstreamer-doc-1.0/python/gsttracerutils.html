@@ -1,0 +1,4866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstTracerHook</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-project="libgstreamer-doc-1.0" data-hotdoc-ref="gsttracerutils.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="python">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gsttracerutils.h">
+<h1 id="gsttracerhook">GstTracerHook</h1>
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="_priv_gst_tracing_deinit">
+		<h3 id="_priv_gst_tracing_deinit-not-introspectable">
+	<span><code>_priv_gst_tracing_deinit (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+_priv_gst_tracing_deinit (not introspectable) ()</pre>
+
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Function_Macros">Function Macros</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_QUARK">
+		<h3 id="gst_tracer_quark-not-introspectable">
+	<span><code>GST_TRACER_QUARK (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_QUARK(q) _priv_gst_tracer_quark_table[GST_TRACER_QUARK_##q]
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_DISPATCH">
+		<h3 id="gst_tracer_dispatch-not-introspectable">
+	<span><code>GST_TRACER_DISPATCH (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_DISPATCH(key,type,args) G_STMT_START{ \
+  if (GST_TRACER_IS_ENABLED) {                                         \
+    GstClockTime ts = GST_TRACER_TS;                                   \
+    GList *__l, *__n;                                                  \
+    GstTracerHook *h;                                                  \
+    __l = g_hash_table_lookup (_priv_tracers, GINT_TO_POINTER (key));  \
+    for (__n = __l; __n; __n = g_list_next (__n)) {                    \
+      h = (GstTracerHook *) __n-&gt;data;                                 \
+      ((type)(h-&gt;func)) args;                                          \
+    }                                                                  \
+    __l = g_hash_table_lookup (_priv_tracers, NULL);                   \
+    for (__n = __l; __n; __n = g_list_next (__n)) {                    \
+      h = (GstTracerHook *) __n-&gt;data;                                 \
+      ((type)(h-&gt;func)) args;                                          \
+    }                                                                  \
+  }                                                                    \
+}G_STMT_END
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_PRE">
+		<h3 id="gst_tracer_pad_push_pre-not-introspectable">
+	<span><code>GST_TRACER_PAD_PUSH_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_PRE(pad, buffer)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_POST">
+		<h3 id="gst_tracer_pad_push_post-not-introspectable">
+	<span><code>GST_TRACER_PAD_PUSH_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_POST(pad, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_LIST_PRE">
+		<h3 id="gst_tracer_pad_push_list_pre-not-introspectable">
+	<span><code>GST_TRACER_PAD_PUSH_LIST_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_LIST_PRE(pad, list)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_LIST_POST">
+		<h3 id="gst_tracer_pad_push_list_post-not-introspectable">
+	<span><code>GST_TRACER_PAD_PUSH_LIST_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_LIST_POST(pad, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PULL_RANGE_PRE">
+		<h3 id="gst_tracer_pad_pull_range_pre-not-introspectable">
+	<span><code>GST_TRACER_PAD_PULL_RANGE_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PULL_RANGE_PRE(pad, offset, size)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PULL_RANGE_POST">
+		<h3 id="gst_tracer_pad_pull_range_post-not-introspectable">
+	<span><code>GST_TRACER_PAD_PULL_RANGE_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PULL_RANGE_POST(pad, buffer, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_EVENT_PRE">
+		<h3 id="gst_tracer_pad_push_event_pre-not-introspectable">
+	<span><code>GST_TRACER_PAD_PUSH_EVENT_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_EVENT_PRE(pad, event)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_EVENT_POST">
+		<h3 id="gst_tracer_pad_push_event_post-not-introspectable">
+	<span><code>GST_TRACER_PAD_PUSH_EVENT_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_EVENT_POST(pad, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_QUERY_PRE">
+		<h3 id="gst_tracer_pad_query_pre-not-introspectable">
+	<span><code>GST_TRACER_PAD_QUERY_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_QUERY_PRE(pad, query)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_QUERY_POST">
+		<h3 id="gst_tracer_pad_query_post-not-introspectable">
+	<span><code>GST_TRACER_PAD_QUERY_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_QUERY_POST(pad, query, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_POST_MESSAGE_PRE">
+		<h3 id="gst_tracer_element_post_message_pre-not-introspectable">
+	<span><code>GST_TRACER_ELEMENT_POST_MESSAGE_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_POST_MESSAGE_PRE(element, message)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_POST_MESSAGE_POST">
+		<h3 id="gst_tracer_element_post_message_post-not-introspectable">
+	<span><code>GST_TRACER_ELEMENT_POST_MESSAGE_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_POST_MESSAGE_POST(element, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_QUERY_PRE">
+		<h3 id="gst_tracer_element_query_pre-not-introspectable">
+	<span><code>GST_TRACER_ELEMENT_QUERY_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_QUERY_PRE(element, query)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_QUERY_POST">
+		<h3 id="gst_tracer_element_query_post-not-introspectable">
+	<span><code>GST_TRACER_ELEMENT_QUERY_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_QUERY_POST(element, query, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_NEW">
+		<h3 id="gst_tracer_element_new-not-introspectable">
+	<span><code>GST_TRACER_ELEMENT_NEW (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_NEW(element)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_ADD_PAD">
+		<h3 id="gst_tracer_element_add_pad-not-introspectable">
+	<span><code>GST_TRACER_ELEMENT_ADD_PAD (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_ADD_PAD(element, pad)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_REMOVE_PAD">
+		<h3 id="gst_tracer_element_remove_pad-not-introspectable">
+	<span><code>GST_TRACER_ELEMENT_REMOVE_PAD (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_REMOVE_PAD(element, pad)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_CHANGE_STATE_PRE">
+		<h3 id="gst_tracer_element_change_state_pre-not-introspectable">
+	<span><code>GST_TRACER_ELEMENT_CHANGE_STATE_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_CHANGE_STATE_PRE(element, transition)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_CHANGE_STATE_POST">
+		<h3 id="gst_tracer_element_change_state_post-not-introspectable">
+	<span><code>GST_TRACER_ELEMENT_CHANGE_STATE_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_CHANGE_STATE_POST(element, transition, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_BIN_ADD_PRE">
+		<h3 id="gst_tracer_bin_add_pre-not-introspectable">
+	<span><code>GST_TRACER_BIN_ADD_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_BIN_ADD_PRE(bin, element)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_BIN_ADD_POST">
+		<h3 id="gst_tracer_bin_add_post-not-introspectable">
+	<span><code>GST_TRACER_BIN_ADD_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_BIN_ADD_POST(bin, element, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_BIN_REMOVE_PRE">
+		<h3 id="gst_tracer_bin_remove_pre-not-introspectable">
+	<span><code>GST_TRACER_BIN_REMOVE_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_BIN_REMOVE_PRE(bin, element)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_BIN_REMOVE_POST">
+		<h3 id="gst_tracer_bin_remove_post-not-introspectable">
+	<span><code>GST_TRACER_BIN_REMOVE_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_BIN_REMOVE_POST(bin, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_LINK_PRE">
+		<h3 id="gst_tracer_pad_link_pre-not-introspectable">
+	<span><code>GST_TRACER_PAD_LINK_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_LINK_PRE(srcpad, sinkpad)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_LINK_POST">
+		<h3 id="gst_tracer_pad_link_post-not-introspectable">
+	<span><code>GST_TRACER_PAD_LINK_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_LINK_POST(srcpad, sinkpad, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_UNLINK_PRE">
+		<h3 id="gst_tracer_pad_unlink_pre-not-introspectable">
+	<span><code>GST_TRACER_PAD_UNLINK_PRE (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_UNLINK_PRE(srcpad, sinkpad)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_UNLINK_POST">
+		<h3 id="gst_tracer_pad_unlink_post-not-introspectable">
+	<span><code>GST_TRACER_PAD_UNLINK_POST (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_UNLINK_POST(srcpad, sinkpad, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_MINI_OBJECT_CREATED">
+		<h3 id="gst_tracer_mini_object_created-not-introspectable">
+	<span><code>GST_TRACER_MINI_OBJECT_CREATED (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_MINI_OBJECT_CREATED(object)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_MINI_OBJECT_DESTROYED">
+		<h3 id="gst_tracer_mini_object_destroyed-not-introspectable">
+	<span><code>GST_TRACER_MINI_OBJECT_DESTROYED (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_MINI_OBJECT_DESTROYED(object)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_OBJECT_UNREFFED">
+		<h3 id="gst_tracer_object_unreffed-not-introspectable">
+	<span><code>GST_TRACER_OBJECT_UNREFFED (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_OBJECT_UNREFFED(object, new_refcount)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_OBJECT_REFFED">
+		<h3 id="gst_tracer_object_reffed-not-introspectable">
+	<span><code>GST_TRACER_OBJECT_REFFED (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_OBJECT_REFFED(object, new_refcount)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_MINI_OBJECT_UNREFFED">
+		<h3 id="gst_tracer_mini_object_unreffed-not-introspectable">
+	<span><code>GST_TRACER_MINI_OBJECT_UNREFFED (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_MINI_OBJECT_UNREFFED(object, new_refcount) G_STMT_START{ \
+  GST_TRACER_DISPATCH(GST_TRACER_QUARK(HOOK_MINI_OBJECT_UNREFFED), \
+    GstTracerHookMiniObjectUnreffed, (GST_TRACER_ARGS, object, new_refcount)); \
+}G_STMT_END
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_MINI_OBJECT_REFFED">
+		<h3 id="gst_tracer_mini_object_reffed-not-introspectable">
+	<span><code>GST_TRACER_MINI_OBJECT_REFFED (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_MINI_OBJECT_REFFED(object, new_refcount)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_OBJECT_CREATED">
+		<h3 id="gst_tracer_object_created-not-introspectable">
+	<span><code>GST_TRACER_OBJECT_CREATED (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_OBJECT_CREATED(object)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_OBJECT_DESTROYED">
+		<h3 id="gst_tracer_object_destroyed-not-introspectable">
+	<span><code>GST_TRACER_OBJECT_DESTROYED (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_OBJECT_DESTROYED(object)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_MINI_OBJECT_UNREF">
+		<h3 id="gst_tracer_mini_object_unref-not-introspectable">
+	<span><code>GST_TRACER_MINI_OBJECT_UNREF (not introspectable)</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_MINI_OBJECT_UNREF(object, new_refcount)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+<div class="refsect2">
+	<a id="GstTracerHook"></a>
+	<h3 id="gsttracerhook-not-introspectable">
+		GstTracerHook (not introspectable)
+	</h3>
+		
+<div class="member_details">
+	<h4 id="attributes">Attributes</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstTracerHook.tracer">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>tracer</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstTracerHook.func">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>func</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerQuarkId">
+		<h3 id="gsttracerquarkid-not-introspectable">
+		GstTracerQuarkId (not introspectable)
+	</h3>
+
+		<pre class="raw_code">
+typedef enum /*&lt; skip &gt;*/
+{
+  GST_TRACER_QUARK_HOOK_PAD_PUSH_PRE = 0,
+  GST_TRACER_QUARK_HOOK_PAD_PUSH_POST,
+  GST_TRACER_QUARK_HOOK_PAD_PUSH_LIST_PRE,
+  GST_TRACER_QUARK_HOOK_PAD_PUSH_LIST_POST,
+  GST_TRACER_QUARK_HOOK_PAD_PULL_RANGE_PRE,
+  GST_TRACER_QUARK_HOOK_PAD_PULL_RANGE_POST,
+  GST_TRACER_QUARK_HOOK_PAD_PUSH_EVENT_PRE ,
+  GST_TRACER_QUARK_HOOK_PAD_PUSH_EVENT_POST,
+  GST_TRACER_QUARK_HOOK_PAD_QUERY_PRE ,
+  GST_TRACER_QUARK_HOOK_PAD_QUERY_POST,
+  GST_TRACER_QUARK_HOOK_ELEMENT_POST_MESSAGE_PRE,
+  GST_TRACER_QUARK_HOOK_ELEMENT_POST_MESSAGE_POST,
+  GST_TRACER_QUARK_HOOK_ELEMENT_QUERY_PRE,
+  GST_TRACER_QUARK_HOOK_ELEMENT_QUERY_POST,
+  GST_TRACER_QUARK_HOOK_ELEMENT_NEW,
+  GST_TRACER_QUARK_HOOK_ELEMENT_ADD_PAD,
+  GST_TRACER_QUARK_HOOK_ELEMENT_REMOVE_PAD,
+  GST_TRACER_QUARK_HOOK_BIN_ADD_PRE,
+  GST_TRACER_QUARK_HOOK_BIN_ADD_POST,
+  GST_TRACER_QUARK_HOOK_BIN_REMOVE_PRE,
+  GST_TRACER_QUARK_HOOK_BIN_REMOVE_POST,
+  GST_TRACER_QUARK_HOOK_PAD_LINK_PRE,
+  GST_TRACER_QUARK_HOOK_PAD_LINK_POST,
+  GST_TRACER_QUARK_HOOK_PAD_UNLINK_PRE,
+  GST_TRACER_QUARK_HOOK_PAD_UNLINK_POST,
+  GST_TRACER_QUARK_HOOK_ELEMENT_CHANGE_STATE_PRE,
+  GST_TRACER_QUARK_HOOK_ELEMENT_CHANGE_STATE_POST,
+  GST_TRACER_QUARK_HOOK_MINI_OBJECT_CREATED,
+  GST_TRACER_QUARK_HOOK_MINI_OBJECT_DESTROYED,
+  GST_TRACER_QUARK_HOOK_OBJECT_CREATED,
+  GST_TRACER_QUARK_HOOK_OBJECT_DESTROYED,
+  GST_TRACER_QUARK_HOOK_MINI_OBJECT_REFFED,
+  GST_TRACER_QUARK_HOOK_MINI_OBJECT_UNREFFED,
+  GST_TRACER_QUARK_HOOK_OBJECT_REFFED,
+  GST_TRACER_QUARK_HOOK_OBJECT_UNREFFED,
+  GST_TRACER_QUARK_MAX
+} GstTracerQuarkId;
+</pre>
+
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_PUSH_PRE"></a>
+		GST_TRACER_QUARK_HOOK_PAD_PUSH_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_PUSH_POST"></a>
+		GST_TRACER_QUARK_HOOK_PAD_PUSH_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_PUSH_LIST_PRE"></a>
+		GST_TRACER_QUARK_HOOK_PAD_PUSH_LIST_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 2</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_PUSH_LIST_POST"></a>
+		GST_TRACER_QUARK_HOOK_PAD_PUSH_LIST_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 3</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_PULL_RANGE_PRE"></a>
+		GST_TRACER_QUARK_HOOK_PAD_PULL_RANGE_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 4</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_PULL_RANGE_POST"></a>
+		GST_TRACER_QUARK_HOOK_PAD_PULL_RANGE_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 5</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_PUSH_EVENT_PRE"></a>
+		GST_TRACER_QUARK_HOOK_PAD_PUSH_EVENT_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 6</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_PUSH_EVENT_POST"></a>
+		GST_TRACER_QUARK_HOOK_PAD_PUSH_EVENT_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 7</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_QUERY_PRE"></a>
+		GST_TRACER_QUARK_HOOK_PAD_QUERY_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 8</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_QUERY_POST"></a>
+		GST_TRACER_QUARK_HOOK_PAD_QUERY_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 9</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_ELEMENT_POST_MESSAGE_PRE"></a>
+		GST_TRACER_QUARK_HOOK_ELEMENT_POST_MESSAGE_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 10</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_ELEMENT_POST_MESSAGE_POST"></a>
+		GST_TRACER_QUARK_HOOK_ELEMENT_POST_MESSAGE_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 11</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_ELEMENT_QUERY_PRE"></a>
+		GST_TRACER_QUARK_HOOK_ELEMENT_QUERY_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 12</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_ELEMENT_QUERY_POST"></a>
+		GST_TRACER_QUARK_HOOK_ELEMENT_QUERY_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 13</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_ELEMENT_NEW"></a>
+		GST_TRACER_QUARK_HOOK_ELEMENT_NEW (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 14</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_ELEMENT_ADD_PAD"></a>
+		GST_TRACER_QUARK_HOOK_ELEMENT_ADD_PAD (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 15</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_ELEMENT_REMOVE_PAD"></a>
+		GST_TRACER_QUARK_HOOK_ELEMENT_REMOVE_PAD (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 16</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_BIN_ADD_PRE"></a>
+		GST_TRACER_QUARK_HOOK_BIN_ADD_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 17</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_BIN_ADD_POST"></a>
+		GST_TRACER_QUARK_HOOK_BIN_ADD_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 18</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_BIN_REMOVE_PRE"></a>
+		GST_TRACER_QUARK_HOOK_BIN_REMOVE_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 19</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_BIN_REMOVE_POST"></a>
+		GST_TRACER_QUARK_HOOK_BIN_REMOVE_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 20</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_LINK_PRE"></a>
+		GST_TRACER_QUARK_HOOK_PAD_LINK_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 21</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_LINK_POST"></a>
+		GST_TRACER_QUARK_HOOK_PAD_LINK_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 22</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_UNLINK_PRE"></a>
+		GST_TRACER_QUARK_HOOK_PAD_UNLINK_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 23</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_PAD_UNLINK_POST"></a>
+		GST_TRACER_QUARK_HOOK_PAD_UNLINK_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 24</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_ELEMENT_CHANGE_STATE_PRE"></a>
+		GST_TRACER_QUARK_HOOK_ELEMENT_CHANGE_STATE_PRE (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 25</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_ELEMENT_CHANGE_STATE_POST"></a>
+		GST_TRACER_QUARK_HOOK_ELEMENT_CHANGE_STATE_POST (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 26</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_MINI_OBJECT_CREATED"></a>
+		GST_TRACER_QUARK_HOOK_MINI_OBJECT_CREATED (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 27</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_MINI_OBJECT_DESTROYED"></a>
+		GST_TRACER_QUARK_HOOK_MINI_OBJECT_DESTROYED (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 28</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_OBJECT_CREATED"></a>
+		GST_TRACER_QUARK_HOOK_OBJECT_CREATED (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 29</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_OBJECT_DESTROYED"></a>
+		GST_TRACER_QUARK_HOOK_OBJECT_DESTROYED (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 30</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_MINI_OBJECT_REFFED"></a>
+		GST_TRACER_QUARK_HOOK_MINI_OBJECT_REFFED (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 31</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_MINI_OBJECT_UNREFFED"></a>
+		GST_TRACER_QUARK_HOOK_MINI_OBJECT_UNREFFED (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 32</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_OBJECT_REFFED"></a>
+		GST_TRACER_QUARK_HOOK_OBJECT_REFFED (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 33</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_HOOK_OBJECT_UNREFFED"></a>
+		GST_TRACER_QUARK_HOOK_OBJECT_UNREFFED (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 34</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_TRACER_QUARK_MAX"></a>
+		GST_TRACER_QUARK_MAX (not introspectable)
+		</p>
+	</td>
+	<td></td>
+	<td>
+		<span class="value">Value: 35</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_IS_ENABLED">
+		<h3 class="constant" id="gst_tracer_is_enabled-not-introspectable">
+	GST_TRACER_IS_ENABLED (not introspectable)
+</h3>
+
+		
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_TS">
+		<h3 class="constant" id="gst_tracer_ts-not-introspectable">
+	GST_TRACER_TS (not introspectable)
+</h3>
+
+		
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ARGS">
+		<h3 class="constant" id="gst_tracer_args-not-introspectable">
+	GST_TRACER_ARGS (not introspectable)
+</h3>
+
+		
+
+</div>
+
+
+<h2 class="symbol_section" id="Exported_Variables">Exported Variables</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="_priv_tracer_enabled">
+		<h3 class="constant" id="_priv_tracer_enabled-not-introspectable">
+	_priv_tracer_enabled (not introspectable)
+</h3>
+
+		
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="_priv_tracers">
+		<h3 class="constant" id="_priv_tracers-not-introspectable">
+	_priv_tracers (not introspectable)
+</h3>
+
+		
+
+</div>
+
+
+<h2 class="symbol_section" id="Callbacks">Callbacks</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadPushPre">
+		<h3 id="gsttracerhookpadpushpre-not-introspectable">
+	<span><code>GstTracerHookPadPushPre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadPushPre (not introspectable)) (int  ts,
+                                                 int  pad,
+                                                 int  buffer)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push">Gst.Pad.push</a> named "pad-push-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td><p>the buffer</p>
+</td>
+<td>
+int  buffer
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadPushPost">
+		<h3 id="gsttracerhookpadpushpost-not-introspectable">
+	<span><code>GstTracerHookPadPushPost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadPushPost (not introspectable)) (int  ts,
+                                                  int  pad,
+                                                  int  res)</pre>
+
+<p>Post-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push">Gst.Pad.push</a> named "pad-push-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>res:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push">Gst.Pad.push</a></p>
+</td>
+<td>
+int  res
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadPushListPre">
+		<h3 id="gsttracerhookpadpushlistpre-not-introspectable">
+	<span><code>GstTracerHookPadPushListPre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadPushListPre (not introspectable)) (int  ts,
+                                                     int  pad,
+                                                     int  list)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push_list">Gst.Pad.push_list</a> named "pad-push-list-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>list:</code></em></i>
+		</p>
+	</td>
+		<td><p>the buffer-list</p>
+</td>
+<td>
+int  list
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadPushListPost">
+		<h3 id="gsttracerhookpadpushlistpost-not-introspectable">
+	<span><code>GstTracerHookPadPushListPost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadPushListPost (not introspectable)) (int  ts,
+                                                      int  pad,
+                                                      int  res)</pre>
+
+<p>Post-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push_list">Gst.Pad.push_list</a> named "pad-push-list-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>res:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push_list">Gst.Pad.push_list</a></p>
+</td>
+<td>
+int  res
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadPullRangePre">
+		<h3 id="gsttracerhookpadpullrangepre-not-introspectable">
+	<span><code>GstTracerHookPadPullRangePre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadPullRangePre (not introspectable)) (int  ts,
+                                                      int  pad,
+                                                      int  offset,
+                                                      int  size)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_pull_range">Gst.Pad.pull_range</a> named "pad-pull-range-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>offset:</code></em></i>
+		</p>
+	</td>
+		<td><p>the stream offset</p>
+</td>
+<td>
+int  offset
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+	</td>
+		<td><p>the requested size</p>
+</td>
+<td>
+int  size
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadPullRangePost">
+		<h3 id="gsttracerhookpadpullrangepost-not-introspectable">
+	<span><code>GstTracerHookPadPullRangePost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadPullRangePost (not introspectable)) (int  ts,
+                                                       int  pad,
+                                                       int  buffer,
+                                                       int  res)</pre>
+
+<p>Post-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_pull_range">Gst.Pad.pull_range</a> named "pad-pull-range-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td><p>the buffer</p>
+</td>
+<td>
+int  buffer
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>res:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_pull_range">Gst.Pad.pull_range</a></p>
+</td>
+<td>
+int  res
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadPushEventPre">
+		<h3 id="gsttracerhookpadpusheventpre-not-introspectable">
+	<span><code>GstTracerHookPadPushEventPre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadPushEventPre (not introspectable)) (int  ts,
+                                                      int  pad,
+                                                      int  event)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push_event">Gst.Pad.push_event</a> named "pad-push-event-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>the event</p>
+</td>
+<td>
+int  event
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadPushEventPost">
+		<h3 id="gsttracerhookpadpusheventpost-not-introspectable">
+	<span><code>GstTracerHookPadPushEventPost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadPushEventPost (not introspectable)) (int  ts,
+                                                       int  pad,
+                                                       int  res)</pre>
+
+<p>Post-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push_event">Gst.Pad.push_event</a> named "pad-push-event-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>res:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push_event">Gst.Pad.push_event</a></p>
+</td>
+<td>
+int  res
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadQueryPre">
+		<h3 id="gsttracerhookpadquerypre-not-introspectable">
+	<span><code>GstTracerHookPadQueryPre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadQueryPre (not introspectable)) (int  ts,
+                                                  int  pad,
+                                                  int  query)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_query">Gst.Pad.query</a> named "pad-query-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td><p>the query</p>
+</td>
+<td>
+int  query
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadQueryPost">
+		<h3 id="gsttracerhookpadquerypost-not-introspectable">
+	<span><code>GstTracerHookPadQueryPost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadQueryPost (not introspectable)) (int  ts,
+                                                   int  pad,
+                                                   int  query,
+                                                   int  res)</pre>
+
+<p>Post-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_query">Gst.Pad.query</a> named "pad-query-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td><p>the query</p>
+</td>
+<td>
+int  query
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>res:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_query">Gst.Pad.query</a></p>
+</td>
+<td>
+int  res
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookElementPostMessagePre">
+		<h3 id="gsttracerhookelementpostmessagepre-not-introspectable">
+	<span><code>GstTracerHookElementPostMessagePre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookElementPostMessagePre (not introspectable)) (int  ts,
+                                                            int  element,
+                                                            int  message)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstelement.html#gst_element_post_message">Gst.Element.post_message</a> named "element-post-message-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>message:</code></em></i>
+		</p>
+	</td>
+		<td><p>the message</p>
+</td>
+<td>
+int  message
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookElementPostMessagePost">
+		<h3 id="gsttracerhookelementpostmessagepost-not-introspectable">
+	<span><code>GstTracerHookElementPostMessagePost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookElementPostMessagePost (not introspectable)) (int  ts,
+                                                             int  element,
+                                                             int  res)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstelement.html#gst_element_post_message">Gst.Element.post_message</a> named "element-post-message-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>res:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstelement.html#gst_element_post_message">Gst.Element.post_message</a></p>
+</td>
+<td>
+int  res
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookElementQueryPre">
+		<h3 id="gsttracerhookelementquerypre-not-introspectable">
+	<span><code>GstTracerHookElementQueryPre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookElementQueryPre (not introspectable)) (int  ts,
+                                                      int  element,
+                                                      int  query)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstelement.html#gst_element_query">Gst.Element.query</a> named "element-query-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td><p>the query</p>
+</td>
+<td>
+int  query
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookElementQueryPost">
+		<h3 id="gsttracerhookelementquerypost-not-introspectable">
+	<span><code>GstTracerHookElementQueryPost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookElementQueryPost (not introspectable)) (int  ts,
+                                                       int  element,
+                                                       int  query,
+                                                       int  res)</pre>
+
+<p>Post-hook for <a href="../../libgstreamer-doc-1.0/python/gstelement.html#gst_element_query">Gst.Element.query</a> named "element-query-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td><p>the query</p>
+</td>
+<td>
+int  query
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>res:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstelement.html#gst_element_query">Gst.Element.query</a></p>
+</td>
+<td>
+int  res
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookElementNew">
+		<h3 id="gsttracerhookelementnew-not-introspectable">
+	<span><code>GstTracerHookElementNew (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookElementNew (not introspectable)) (int  ts,
+                                                 int  element)</pre>
+
+<p>Hook for gst_element_new named "element-new".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookElementAddPad">
+		<h3 id="gsttracerhookelementaddpad-not-introspectable">
+	<span><code>GstTracerHookElementAddPad (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookElementAddPad (not introspectable)) (int  ts,
+                                                    int  element,
+                                                    int  pad)</pre>
+
+<p>Hook for <a href="../../libgstreamer-doc-1.0/python/gstelement.html#gst_element_add_pad">Gst.Element.add_pad</a> named "element-add-pad".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookElementRemovePad">
+		<h3 id="gsttracerhookelementremovepad-not-introspectable">
+	<span><code>GstTracerHookElementRemovePad (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookElementRemovePad (not introspectable)) (int  ts,
+                                                       int  element,
+                                                       int  pad)</pre>
+
+<p>Hook for <a href="../../libgstreamer-doc-1.0/python/gstelement.html#gst_element_remove_pad">Gst.Element.remove_pad</a> named "element-remove-pad".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the pad</p>
+</td>
+<td>
+int  pad
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns17">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookElementChangeStatePre">
+		<h3 id="gsttracerhookelementchangestatepre-not-introspectable">
+	<span><code>GstTracerHookElementChangeStatePre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookElementChangeStatePre (not introspectable)) (int  ts,
+                                                            int  element,
+                                                            int  transition)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstelement.html#gst_element_change_state">Gst.Element.change_state</a> named "element-change-state-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>transition:</code></em></i>
+		</p>
+	</td>
+		<td><p>the transition</p>
+</td>
+<td>
+int  transition
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns18">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookElementChangeStatePost">
+		<h3 id="gsttracerhookelementchangestatepost-not-introspectable">
+	<span><code>GstTracerHookElementChangeStatePost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookElementChangeStatePost (not introspectable)) (int  ts,
+                                                             int  element,
+                                                             int  transition,
+                                                             int  result)</pre>
+
+<p>Post-hook for <a href="../../libgstreamer-doc-1.0/python/gstelement.html#gst_element_change_state">Gst.Element.change_state</a> named "element-change-state-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>transition:</code></em></i>
+		</p>
+	</td>
+		<td><p>the transition</p>
+</td>
+<td>
+int  transition
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>result:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push">Gst.Pad.push</a></p>
+</td>
+<td>
+int  result
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns19">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookBinAddPre">
+		<h3 id="gsttracerhookbinaddpre-not-introspectable">
+	<span><code>GstTracerHookBinAddPre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookBinAddPre (not introspectable)) (int  ts,
+                                                int  bin,
+                                                int  element)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstbin.html#gst_bin_add">Gst.Bin.add</a> named "bin-add-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>bin:</code></em></i>
+		</p>
+	</td>
+		<td><p>the bin</p>
+</td>
+<td>
+int  bin
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns20">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookBinAddPost">
+		<h3 id="gsttracerhookbinaddpost-not-introspectable">
+	<span><code>GstTracerHookBinAddPost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookBinAddPost (not introspectable)) (int  ts,
+                                                 int  bin,
+                                                 int  element,
+                                                 int  result)</pre>
+
+<p>Post-hook for <a href="../../libgstreamer-doc-1.0/python/gstbin.html#gst_bin_add">Gst.Bin.add</a> named "bin-add-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>bin:</code></em></i>
+		</p>
+	</td>
+		<td><p>the bin</p>
+</td>
+<td>
+int  bin
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>result:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstbin.html#gst_bin_add">Gst.Bin.add</a></p>
+</td>
+<td>
+int  result
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns21">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookBinRemovePre">
+		<h3 id="gsttracerhookbinremovepre-not-introspectable">
+	<span><code>GstTracerHookBinRemovePre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookBinRemovePre (not introspectable)) (int  ts,
+                                                   int  bin,
+                                                   int  element)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstbin.html#gst_bin_remove">Gst.Bin.remove</a> named "bin-remove-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>bin:</code></em></i>
+		</p>
+	</td>
+		<td><p>the bin</p>
+</td>
+<td>
+int  bin
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element</p>
+</td>
+<td>
+int  element
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns22">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookBinRemovePost">
+		<h3 id="gsttracerhookbinremovepost-not-introspectable">
+	<span><code>GstTracerHookBinRemovePost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookBinRemovePost (not introspectable)) (int  ts,
+                                                    int  bin,
+                                                    int  result)</pre>
+
+<p>Post-hook for <a href="../../libgstreamer-doc-1.0/python/gstbin.html#gst_bin_remove">Gst.Bin.remove</a> named "bin-remove-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>bin:</code></em></i>
+		</p>
+	</td>
+		<td><p>the bin</p>
+</td>
+<td>
+int  bin
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>result:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstbin.html#gst_bin_remove">Gst.Bin.remove</a></p>
+</td>
+<td>
+int  result
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns23">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadLinkPre">
+		<h3 id="gsttracerhookpadlinkpre-not-introspectable">
+	<span><code>GstTracerHookPadLinkPre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadLinkPre (not introspectable)) (int  ts,
+                                                 int  srcpad,
+                                                 int  sinkpad)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_link">Gst.Pad.link</a> named "pad-link-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters23">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>srcpad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the srcpad</p>
+</td>
+<td>
+int  srcpad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>sinkpad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the sinkpad</p>
+</td>
+<td>
+int  sinkpad
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns24">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadLinkPost">
+		<h3 id="gsttracerhookpadlinkpost-not-introspectable">
+	<span><code>GstTracerHookPadLinkPost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadLinkPost (not introspectable)) (int  ts,
+                                                  int  srcpad,
+                                                  int  sinkpad,
+                                                  int  result)</pre>
+
+<p>Post-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_link">Gst.Pad.link</a> named "pad-link-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>srcpad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the srcpad</p>
+</td>
+<td>
+int  srcpad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>sinkpad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the sinkpad</p>
+</td>
+<td>
+int  sinkpad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>result:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_link">Gst.Pad.link</a></p>
+</td>
+<td>
+int  result
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns25">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadUnlinkPre">
+		<h3 id="gsttracerhookpadunlinkpre-not-introspectable">
+	<span><code>GstTracerHookPadUnlinkPre (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadUnlinkPre (not introspectable)) (int  ts,
+                                                   int  srcpad,
+                                                   int  sinkpad)</pre>
+
+<p>Pre-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_unlink">Gst.Pad.unlink</a> named "pad-unlink-pre".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>srcpad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the srcpad</p>
+</td>
+<td>
+int  srcpad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>sinkpad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the sinkpad</p>
+</td>
+<td>
+int  sinkpad
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns26">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookPadUnlinkPost">
+		<h3 id="gsttracerhookpadunlinkpost-not-introspectable">
+	<span><code>GstTracerHookPadUnlinkPost (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookPadUnlinkPost (not introspectable)) (int  ts,
+                                                    int  srcpad,
+                                                    int  sinkpad,
+                                                    int  result)</pre>
+
+<p>Post-hook for <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_unlink">Gst.Pad.unlink</a> named "pad-unlink-post".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>srcpad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the srcpad</p>
+</td>
+<td>
+int  srcpad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>sinkpad:</code></em></i>
+		</p>
+	</td>
+		<td><p>the sinkpad</p>
+</td>
+<td>
+int  sinkpad
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>result:</code></em></i>
+		</p>
+	</td>
+		<td><p>the result of <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push">Gst.Pad.push</a></p>
+</td>
+<td>
+int  result
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns27">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookMiniObjectCreated">
+		<h3 id="gsttracerhookminiobjectcreated-not-introspectable">
+	<span><code>GstTracerHookMiniObjectCreated (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookMiniObjectCreated (not introspectable)) (int  ts,
+                                                        int  object)</pre>
+
+<p>Hook called when a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMiniObject.html#GstMiniObject">Gst.MiniObject</a> is created named "mini-object-created".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters27">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the mini object being created</p>
+</td>
+<td>
+int  object
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns28">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookMiniObjectDestroyed">
+		<h3 id="gsttracerhookminiobjectdestroyed-not-introspectable">
+	<span><code>GstTracerHookMiniObjectDestroyed (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookMiniObjectDestroyed (not introspectable)) (int  ts,
+                                                          int  object)</pre>
+
+<p>Hook called when a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMiniObject.html#GstMiniObject">Gst.MiniObject</a> is being destroyed named
+"mini-object-destroyed".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters28">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the mini object being destroyed</p>
+</td>
+<td>
+int  object
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns29">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookObjectUnreffed">
+		<h3 id="gsttracerhookobjectunreffed-not-introspectable">
+	<span><code>GstTracerHookObjectUnreffed (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookObjectUnreffed (not introspectable)) (int  ts,
+                                                     int  object,
+                                                     int  new_refcount)</pre>
+
+<p>Hook called when a <a href="../../libgstreamer-doc-1.0/python/gstobject.html#GstObject">Gst.Object</a> is being unreffed named
+"object-unreffed"</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters29">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object being unreffed</p>
+</td>
+<td>
+int  object
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>new_refcount:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+int  new_refcount
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns30">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookObjectReffed">
+		<h3 id="gsttracerhookobjectreffed-not-introspectable">
+	<span><code>GstTracerHookObjectReffed (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookObjectReffed (not introspectable)) (int  ts,
+                                                   int  object,
+                                                   int  new_refcount)</pre>
+
+<p>Hook called when a <a href="../../libgstreamer-doc-1.0/python/gstobject.html#GstObject">Gst.Object</a> is being reffed named
+"object-reffed".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters30">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object being reffed</p>
+</td>
+<td>
+int  object
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>new_refcount:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+int  new_refcount
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns31">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookMiniObjectUnreffed">
+		<h3 id="gsttracerhookminiobjectunreffed-not-introspectable">
+	<span><code>GstTracerHookMiniObjectUnreffed (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookMiniObjectUnreffed (not introspectable)) (int  ts,
+                                                         int  object,
+                                                         int  new_refcount)</pre>
+
+<p>Hook called when a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMiniObject.html#GstMiniObject">Gst.MiniObject</a> is being unreffed named
+"mini-object-unreffed".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters31">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the mini object being unreffed</p>
+</td>
+<td>
+int  object
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>new_refcount:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+int  new_refcount
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns32">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookMiniObjectReffed">
+		<h3 id="gsttracerhookminiobjectreffed-not-introspectable">
+	<span><code>GstTracerHookMiniObjectReffed (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookMiniObjectReffed (not introspectable)) (int  ts,
+                                                       int  object,
+                                                       int  new_refcount)</pre>
+
+<p>Hook called when a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMiniObject.html#GstMiniObject">Gst.MiniObject</a> is being reffed named
+"mini-object-reffed".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters32">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the mini object being reffed</p>
+</td>
+<td>
+int  object
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>new_refcount:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+int  new_refcount
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns33">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookObjectCreated">
+		<h3 id="gsttracerhookobjectcreated-not-introspectable">
+	<span><code>GstTracerHookObjectCreated (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookObjectCreated (not introspectable)) (int  ts,
+                                                    int  object)</pre>
+
+<p>Hook called when a <a href="../../libgstreamer-doc-1.0/python/gstobject.html#GstObject">Gst.Object</a> is created named "object-created".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters33">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object being created</p>
+</td>
+<td>
+int  object
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns34">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTracerHookObjectDestroyed">
+		<h3 id="gsttracerhookobjectdestroyed-not-introspectable">
+	<span><code>GstTracerHookObjectDestroyed (not introspectable)</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void 
+(*GstTracerHookObjectDestroyed (not introspectable)) (int  ts,
+                                                      int  object)</pre>
+
+<p>Hook called when a <a href="../../libgstreamer-doc-1.0/python/gstobject.html#GstObject">Gst.Object</a> is being destroyed named
+"object-destroyed".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters34">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ts:</code></em></i>
+		</p>
+	</td>
+		<td><p>the current timestamp</p>
+</td>
+<td>
+int  ts
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object being destroyed</p>
+</td>
+<td>
+int  object
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns35">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

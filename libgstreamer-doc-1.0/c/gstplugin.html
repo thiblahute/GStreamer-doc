@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstPluginClass</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-project="libgstreamer-doc-1.0" data-hotdoc-ref="gstplugin.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstplugin.h">
+<h1 id="gstpluginclass">GstPluginClass</h1><p>GStreamer is extensible, so <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html#GstElement-struct">GstElement</a> instances can be loaded at runtime.
+A plugin system can provide one or more of the basic
+<application>GStreamer</application> <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPluginFeature.html#GstPluginFeature-struct">GstPluginFeature</a> subclasses.</p>
+<p>A plugin should export a symbol <symbol>gst_plugin_desc</symbol> that is a
+struct of type <a href="../../libgstreamer-doc-1.0/c/gstplugin.html#GstPluginDesc">GstPluginDesc</a>.
+the plugin loader will check the version of the core library the plugin was
+linked against and will create a new <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPlugin-struct">GstPlugin</a>. It will then call the
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPluginInitFunc">GstPluginInitFunc</a> function that was provided in the
+<symbol>gst_plugin_desc</symbol>.</p>
+<p>Once you have a handle to a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPlugin-struct">GstPlugin</a> (e.g. from the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstRegistry.html#GstRegistry-struct">GstRegistry</a>), you
+can add any object that subclasses <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPluginFeature.html#GstPluginFeature-struct">GstPluginFeature</a>.</p>
+<p>Usually plugins are always automatically loaded so you don't need to call
+<a href="../../libgstreamer-doc-1.0/c/gstplugin.html#gst_plugin_load">gst_plugin_load</a> explicitly to bring it into memory. There are options to
+statically link plugins to an app or even use GStreamer without a plugin
+repository in which case <a href="../../libgstreamer-doc-1.0/c/gstplugin.html#gst_plugin_load">gst_plugin_load</a> can be needed to bring the plugin
+into memory.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_error_quark">
+		<h3 id="gst_plugin_error_quark1">
+	<span><code>gst_plugin_error_quark</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GQuark" href="../../libgstreamer-doc-1.0/c/gstmeta.html#GQuark">GQuark</a>
+gst_plugin_error_quark ()</pre>
+
+<p>Get the error quark.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The error quark used in GError messages</p>
+
+	</td>
+	<td>
+		<a title="GQuark" href="../../libgstreamer-doc-1.0/c/gstmeta.html#GQuark">GQuark</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_register_static">
+		<h3 id="gst_plugin_register_static1">
+	<span><code>gst_plugin_register_static</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_plugin_register_static (int  major_version,
+                            int  minor_version,
+                            const int * name,
+                            const int * description,
+                            int  init_func,
+                            const int * version,
+                            const int * license,
+                            const int * source,
+                            const int * package,
+                            const int * origin)</pre>
+
+<p>Registers a static plugin, ie. a plugin which is private to an application
+or library and contained within the application or library (as opposed to
+being shipped as a separate module file).</p>
+<p>You must make sure that GStreamer has been initialised (with <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-Gst.html#gst-init">gst_init</a> or
+via <a href="../../libgstreamer-doc-1.0/c/gst.html#gst_init_get_option_group">gst_init_get_option_group</a>) before calling this function.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>major_version:</code></em></i>
+		</p>
+	</td>
+		<td><p>the major version number of the GStreamer core that the
+plugin was compiled for, you can just use GST_VERSION_MAJOR here</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>minor_version:</code></em></i>
+		</p>
+	</td>
+		<td><p>the minor version number of the GStreamer core that the
+plugin was compiled for, you can just use GST_VERSION_MINOR here</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>a unique name of the plugin (ideally prefixed with an application- or
+library-specific namespace prefix in order to avoid name conflicts in
+case a similar plugin with the same name ever gets added to GStreamer)</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>description:</code></em></i>
+		</p>
+	</td>
+		<td><p>description of the plugin</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>init_func:</code></em></i>
+		</p>
+	</td>
+		<td><p>pointer to the init function of this plugin.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>version:</code></em></i>
+		</p>
+	</td>
+		<td><p>version string of the plugin</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>license:</code></em></i>
+		</p>
+	</td>
+		<td><p>effective license of plugin. Must be one of the approved licenses
+(see <a href="../../libgstreamer-doc-1.0/c/gstplugin.html#GstPluginDesc">GstPluginDesc</a> above) or the plugin will not be registered.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>source:</code></em></i>
+		</p>
+	</td>
+		<td><p>source module plugin belongs to</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>package:</code></em></i>
+		</p>
+	</td>
+		<td><p>shipped package plugin belongs to</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>origin:</code></em></i>
+		</p>
+	</td>
+		<td><p>URL to provider of plugin</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the plugin was registered correctly, otherwise <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_register_static_full">
+		<h3 id="gst_plugin_register_static_full1">
+	<span><code>gst_plugin_register_static_full</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_plugin_register_static_full (int  major_version,
+                                 int  minor_version,
+                                 const int * name,
+                                 const int * description,
+                                 <a title="GstPluginInitFullFunc" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPluginInitFullFunc">GstPluginInitFullFunc</a> init_full_func,
+                                 const int * version,
+                                 const int * license,
+                                 const int * source,
+                                 const int * package,
+                                 const int * origin,
+                                 int  user_data)</pre>
+
+<p>Registers a static plugin, ie. a plugin which is private to an application
+or library and contained within the application or library (as opposed to
+being shipped as a separate module file) with a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPluginInitFullFunc">GstPluginInitFullFunc</a>
+which allows user data to be passed to the callback function (useful
+for bindings).</p>
+<p>You must make sure that GStreamer has been initialised (with <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-Gst.html#gst-init">gst_init</a> or
+via <a href="../../libgstreamer-doc-1.0/c/gst.html#gst_init_get_option_group">gst_init_get_option_group</a>) before calling this function.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>major_version:</code></em></i>
+		</p>
+	</td>
+		<td><p>the major version number of the GStreamer core that the
+plugin was compiled for, you can just use GST_VERSION_MAJOR here</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>minor_version:</code></em></i>
+		</p>
+	</td>
+		<td><p>the minor version number of the GStreamer core that the
+plugin was compiled for, you can just use GST_VERSION_MINOR here</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>a unique name of the plugin (ideally prefixed with an application- or
+library-specific namespace prefix in order to avoid name conflicts in
+case a similar plugin with the same name ever gets added to GStreamer)</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>description:</code></em></i>
+		</p>
+	</td>
+		<td><p>description of the plugin</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>init_full_func:</code></em></i>
+		</p>
+	</td>
+		<td><p>pointer to the init function with user data
+of this plugin.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>version:</code></em></i>
+		</p>
+	</td>
+		<td><p>version string of the plugin</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>license:</code></em></i>
+		</p>
+	</td>
+		<td><p>effective license of plugin. Must be one of the approved licenses
+(see <a href="../../libgstreamer-doc-1.0/c/gstplugin.html#GstPluginDesc">GstPluginDesc</a> above) or the plugin will not be registered.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>source:</code></em></i>
+		</p>
+	</td>
+		<td><p>source module plugin belongs to</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>package:</code></em></i>
+		</p>
+	</td>
+		<td><p>shipped package plugin belongs to</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>origin:</code></em></i>
+		</p>
+	</td>
+		<td><p>URL to provider of plugin</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>gpointer to user data</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the plugin was registered correctly, otherwise <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_get_name">
+		<h3 id="gst_plugin_get_name1">
+	<span><code>gst_plugin_get_name</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_plugin_get_name (int * plugin)</pre>
+
+<p>Get the short name of the plugin</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>plugin to get the name of</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the name of the plugin</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_get_description">
+		<h3 id="gst_plugin_get_description1">
+	<span><code>gst_plugin_get_description</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_plugin_get_description (int * plugin)</pre>
+
+<p>Get the long descriptive name of the plugin</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>plugin to get long name of</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the long name of the plugin</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_get_filename">
+		<h3 id="gst_plugin_get_filename1">
+	<span><code>gst_plugin_get_filename</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_plugin_get_filename (int * plugin)</pre>
+
+<p>get the filename of the plugin</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>plugin to get the filename of</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the filename of the plugin</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_get_version">
+		<h3 id="gst_plugin_get_version1">
+	<span><code>gst_plugin_get_version</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_plugin_get_version (int * plugin)</pre>
+
+<p>get the version of the plugin</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>plugin to get the version of</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the version of the plugin</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_get_license">
+		<h3 id="gst_plugin_get_license1">
+	<span><code>gst_plugin_get_license</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_plugin_get_license (int * plugin)</pre>
+
+<p>get the license of the plugin</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>plugin to get the license of</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the license of the plugin</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_get_source">
+		<h3 id="gst_plugin_get_source1">
+	<span><code>gst_plugin_get_source</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_plugin_get_source (int * plugin)</pre>
+
+<p>get the source module the plugin belongs to.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>plugin to get the source of</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the source of the plugin</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_get_package">
+		<h3 id="gst_plugin_get_package1">
+	<span><code>gst_plugin_get_package</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_plugin_get_package (int * plugin)</pre>
+
+<p>get the package the plugin belongs to.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>plugin to get the package of</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the package of the plugin</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_get_origin">
+		<h3 id="gst_plugin_get_origin1">
+	<span><code>gst_plugin_get_origin</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_plugin_get_origin (int * plugin)</pre>
+
+<p>get the URL where the plugin comes from</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>plugin to get the origin of</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the origin of the plugin</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_get_release_date_string">
+		<h3 id="gst_plugin_get_release_date_string1">
+	<span><code>gst_plugin_get_release_date_string</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_plugin_get_release_date_string (int * plugin)</pre>
+
+<p>Get the release date (and possibly time) in form of a string, if available.</p>
+<p>For normal GStreamer plugin releases this will usually just be a date in
+the form of "YYYY-MM-DD", while pre-releases and builds from git may contain
+a time component after the date as well, in which case the string will be
+formatted like "YYYY-MM-DDTHH:MMZ" (e.g. "2012-04-30T09:30Z").</p>
+<p>There may be plugins that do not have a valid release date set on them.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>plugin to get the release date of</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the date string of the plugin, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if not
+available.</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_get_cache_data">
+		<h3 id="gst_plugin_get_cache_data1">
+	<span><code>gst_plugin_get_cache_data</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> *
+gst_plugin_get_cache_data (int * plugin)</pre>
+
+<p>Gets the plugin specific data cache. If it is <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> there is no cached data
+stored. This is the case when the registry is getting rebuilt.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>a plugin</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The cached data as a
+<a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>.</p>
+
+	</td>
+	<td>
+		const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_set_cache_data">
+		<h3 id="gst_plugin_set_cache_data1">
+	<span><code>gst_plugin_set_cache_data</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_plugin_set_cache_data (int * plugin,
+                           int * cache_data)</pre>
+
+<p>Adds plugin specific data to cache. Passes the ownership of the structure to
+the <em>plugin</em>.</p>
+<p>The cache is flushed every time the registry is rebuilt.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>a plugin</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>cache_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>a structure containing the data to cache</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_is_loaded">
+		<h3 id="gst_plugin_is_loaded1">
+	<span><code>gst_plugin_is_loaded</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_plugin_is_loaded (int * plugin)</pre>
+
+<p>queries if the plugin is loaded into memory</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>plugin to query</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> is loaded, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_load_file">
+		<h3 id="gst_plugin_load_file1">
+	<span><code>gst_plugin_load_file</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstPlugin" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPlugin-struct">GstPlugin</a> *
+gst_plugin_load_file (const int * filename,
+                      int ** error)</pre>
+
+<p>Loads the given plugin and refs it.  Caller needs to unref after use.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>filename:</code></em></i>
+		</p>
+	</td>
+		<td><p>the plugin filename to load</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>error:</code></em></i>
+		</p>
+	</td>
+		<td><p>pointer to a <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>-valued GError</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a reference to the existing loaded GstPlugin, a
+reference to the newly-loaded GstPlugin, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if an error occurred.</p>
+
+	</td>
+	<td>
+		<a title="GstPlugin" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPlugin-struct">GstPlugin</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_load">
+		<h3 id="gst_plugin_load1">
+	<span><code>gst_plugin_load</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstPlugin" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPlugin-struct">GstPlugin</a> *
+gst_plugin_load (int * plugin)</pre>
+
+<p>Loads <em>plugin</em>. Note that the <em>return value</em> is the loaded plugin; <em>plugin</em> is
+untouched. The normal use pattern of this function goes like this:</p>
+<pre><code>GstPlugin *loaded_plugin;
+loaded_plugin = gst_plugin_load (plugin);
+// presumably, we're no longer interested in the potentially-unloaded plugin
+gst_object_unref (plugin);
+plugin = loaded_plugin;
+</code></pre>
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>plugin to load</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a reference to a loaded plugin, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> on error.</p>
+
+	</td>
+	<td>
+		<a title="GstPlugin" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPlugin-struct">GstPlugin</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_load_by_name">
+		<h3 id="gst_plugin_load_by_name1">
+	<span><code>gst_plugin_load_by_name</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstPlugin" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPlugin-struct">GstPlugin</a> *
+gst_plugin_load_by_name (const int * name)</pre>
+
+<p>Load the named plugin. Refs the plugin.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>name of plugin to load</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a reference to a loaded plugin, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> on error.</p>
+
+	</td>
+	<td>
+		<a title="GstPlugin" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPlugin-struct">GstPlugin</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_add_dependency">
+		<h3 id="gst_plugin_add_dependency1">
+	<span><code>gst_plugin_add_dependency</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_plugin_add_dependency (int * plugin,
+                           const int ** env_vars,
+                           const int ** paths,
+                           const int ** names,
+                           <a title="GstPluginDependencyFlags" href="../../libgstreamer-doc-1.0/c/gstplugin.html#GstPluginDependencyFlags">GstPluginDependencyFlags</a> flags)</pre>
+
+<p>Make GStreamer aware of external dependencies which affect the feature
+set of this plugin (ie. the elements or typefinders associated with it).</p>
+<p>GStreamer will re-inspect plugins with external dependencies whenever any
+of the external dependencies change. This is useful for plugins which wrap
+other plugin systems, e.g. a plugin which wraps a plugin-based visualisation
+library and makes visualisations available as GStreamer elements, or a
+codec loader which exposes elements and/or caps dependent on what external
+codec libraries are currently installed.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPlugin-struct">GstPlugin</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>env_vars:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>-terminated array of environment variables affecting the
+feature set of the plugin (e.g. an environment variable containing
+paths where to look for additional modules/plugins of a library),
+or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>. Environment variable names may be followed by a path component
+which will be added to the content of the environment variable, e.g.
+"HOME/.mystuff/plugins".</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>paths:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>-terminated array of directories/paths where dependent files
+may be, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>names:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>-terminated array of file names (or file name suffixes,
+depending on <em>flags</em>) to be used in combination with the paths from
+<em>paths</em> and/or the paths extracted from the environment variables in
+<em>env_vars</em>, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>flags:</code></em></i>
+		</p>
+	</td>
+		<td><p>optional flags, or <a href="../../libgstreamer-doc-1.0/c/gstplugin.html#GST_PLUGIN_DEPENDENCY_FLAG_NONE">GST_PLUGIN_DEPENDENCY_FLAG_NONE</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_add_dependency_simple">
+		<h3 id="gst_plugin_add_dependency_simple1">
+	<span><code>gst_plugin_add_dependency_simple</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_plugin_add_dependency_simple (int * plugin,
+                                  const int * env_vars,
+                                  const int * paths,
+                                  const int * names,
+                                  <a title="GstPluginDependencyFlags" href="../../libgstreamer-doc-1.0/c/gstplugin.html#GstPluginDependencyFlags">GstPluginDependencyFlags</a> flags)</pre>
+
+<p>Make GStreamer aware of external dependencies which affect the feature
+set of this plugin (ie. the elements or typefinders associated with it).</p>
+<p>GStreamer will re-inspect plugins with external dependencies whenever any
+of the external dependencies change. This is useful for plugins which wrap
+other plugin systems, e.g. a plugin which wraps a plugin-based visualisation
+library and makes visualisations available as GStreamer elements, or a
+codec loader which exposes elements and/or caps dependent on what external
+codec libraries are currently installed.</p>
+<p>Convenience wrapper function for <a href="../../libgstreamer-doc-1.0/c/gstplugin.html#gst_plugin_add_dependency">gst_plugin_add_dependency</a> which
+takes simple strings as arguments instead of string arrays, with multiple
+arguments separated by predefined delimiters (see above).</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plugin:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPlugin-struct">GstPlugin</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>env_vars:</code></em></i>
+		</p>
+	</td>
+		<td><p>one or more environment variables (separated by ':', ';' or ','),
+or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>. Environment variable names may be followed by a path component
+which will be added to the content of the environment variable, e.g.
+"HOME/.mystuff/plugins:MYSTUFF_PLUGINS_PATH"</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>paths:</code></em></i>
+		</p>
+	</td>
+		<td><p>one ore more directory paths (separated by ':' or ';' or ','),
+or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>. Example: "/usr/lib/mystuff/plugins"</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>names:</code></em></i>
+		</p>
+	</td>
+		<td><p>one or more file names or file name suffixes (separated by commas),
+or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>flags:</code></em></i>
+		</p>
+	</td>
+		<td><p>optional flags, or <a href="../../libgstreamer-doc-1.0/c/gstplugin.html#GST_PLUGIN_DEPENDENCY_FLAG_NONE">GST_PLUGIN_DEPENDENCY_FLAG_NONE</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_plugin_list_free">
+		<h3 id="gst_plugin_list_free1">
+	<span><code>gst_plugin_list_free</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_plugin_list_free (int * list)</pre>
+
+<p>Unrefs each member of <em>list</em>, then frees the list.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>list:</code></em></i>
+		</p>
+	</td>
+		<td><p>list of <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPlugin.html#GstPlugin-struct">GstPlugin</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Function_Macros">Function Macros</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_PLUGIN_CAST">
+		<h3 id="gst_plugin_cast">
+	<span><code>GST_PLUGIN_CAST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_PLUGIN_CAST(obj)           ((GstPlugin*)(obj))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="GST_PLUGIN_STATIC_DECLARE">
+		<h3 id="gst_plugin_static_declare">
+	<span><code>GST_PLUGIN_STATIC_DECLARE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_PLUGIN_STATIC_DECLARE(name) \
+  extern void G_PASTE(gst_plugin_, G_PASTE(name, _register)) (void)
+</pre>
+
+<p>This macro can be used to initialize statically linked plugins. It is
+necessary to call this macro before the plugin can be used.
+It has to be used in combination with GST_PLUGIN_STATIC_REGISTER
+and must be placed outside any block to declare the plugin initialization
+function.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>short, but unique name of the plugin</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="GST_PLUGIN_STATIC_REGISTER">
+		<h3 id="gst_plugin_static_register">
+	<span><code>GST_PLUGIN_STATIC_REGISTER</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_PLUGIN_STATIC_REGISTER(name) G_PASTE(gst_plugin_, G_PASTE(name, _register)) ()
+</pre>
+
+<p>This macro can be used to initialize statically linked plugins. It is
+necessary to call this macro before the plugin can be used.
+It has to be used in combination with GST_PLUGIN_STATIC_DECLARE and
+calls the plugin initialization function.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>short, but unique name of the plugin</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_PLUGIN_DEFINE">
+		<h3 id="gst_plugin_define">
+	<span><code>GST_PLUGIN_DEFINE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_PLUGIN_DEFINE(major,minor,name,description,init,version,license,package,origin)	\
+G_BEGIN_DECLS \
+GST_PLUGIN_EXPORT GstPluginDesc gst_plugin_desc = {	\
+  major,						\
+  minor,						\
+  G_STRINGIFY(name),                                    \
+  (gchar *) description,				\
+  init,							\
+  version,						\
+  license,						\
+  PACKAGE,						\
+  package,						\
+  origin,						\
+  __GST_PACKAGE_RELEASE_DATETIME,                       \
+  GST_PADDING_INIT				        \
+}; \
+G_END_DECLS
+</pre>
+
+<p>This macro needs to be used to define the entry point and meta data of a
+plugin. One would use this macro to export a plugin, so that it can be used
+by other applications.</p>
+<p>The macro uses a define named PACKAGE for the <a href="../../libgstreamer-doc-1.0/c/gstplugin.html#GstPluginDesc">GstPluginDesc</a>,source field.
+When using autoconf, this is usually set automatically via the AC_INIT
+macro, and set in config.h. If you are not using autoconf, you will need to
+define PACKAGE yourself and set it to a short mnemonic string identifying
+your application/package, e.g. 'someapp' or 'my-plugins-foo.</p>
+<p>If defined, the GST_PACKAGE_RELEASE_DATETIME will also be used for the
+<a href="../../libgstreamer-doc-1.0/c/gstplugin.html#GstPluginDesc">GstPluginDesc</a>,release_datetime field.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>major:</code></em></i>
+		</p>
+	</td>
+		<td><p>major version number of the gstreamer-core that plugin was compiled for</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>minor:</code></em></i>
+		</p>
+	</td>
+		<td><p>minor version number of the gstreamer-core that plugin was compiled for</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>short, but unique name of the plugin</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>description:</code></em></i>
+		</p>
+	</td>
+		<td><p>information about the purpose of the plugin</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>init:</code></em></i>
+		</p>
+	</td>
+		<td><p>function pointer to the plugin_init method with the signature of <code>static gboolean plugin_init (GstPlugin * plugin)</code>.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>version:</code></em></i>
+		</p>
+	</td>
+		<td><p>full version string (e.g. VERSION from config.h)</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>license:</code></em></i>
+		</p>
+	</td>
+		<td><p>under which licence the package has been released, e.g. GPL, LGPL.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>package:</code></em></i>
+		</p>
+	</td>
+		<td><p>the package-name (e.g. PACKAGE_NAME from config.h)</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>origin:</code></em></i>
+		</p>
+	</td>
+		<td><p>a description from where the package comes from (e.g. the homepage URL)</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="_GstPluginDesc">
+		<h3 id="struct-_gstplugindesc">
+		struct _GstPluginDesc
+	</h3>
+
+		<pre class="raw_code">
+struct _GstPluginDesc {
+  gint major_version;
+  gint minor_version;
+  const gchar *name;
+  const gchar *description;
+  GstPluginInitFunc plugin_init;
+  const gchar *version;
+  const gchar *license;
+  const gchar *source;
+  const gchar *package;
+  const gchar *origin;
+  const gchar *release_datetime;
+};
+</pre>
+
+
+<div class="member_details">
+	<h4 id="fields">Fields</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="_GstPluginDesc.major_version">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>major_version</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstPluginDesc.minor_version">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>minor_version</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstPluginDesc.name">
+		<td>
+		<p>
+		<i><em><code>const int * <em><code>name</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstPluginDesc.description">
+		<td>
+		<p>
+		<i><em><code>const int * <em><code>description</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstPluginDesc.plugin_init">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>plugin_init</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstPluginDesc.version">
+		<td>
+		<p>
+		<i><em><code>const int * <em><code>version</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstPluginDesc.license">
+		<td>
+		<p>
+		<i><em><code>const int * <em><code>license</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstPluginDesc.source">
+		<td>
+		<p>
+		<i><em><code>const int * <em><code>source</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstPluginDesc.package">
+		<td>
+		<p>
+		<i><em><code>const int * <em><code>package</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstPluginDesc.origin">
+		<td>
+		<p>
+		<i><em><code>const int * <em><code>origin</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="_GstPluginDesc.release_datetime">
+		<td>
+		<p>
+		<i><em><code>const int * <em><code>release_datetime</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPluginError">
+		<h3 id="gstpluginerror">
+		GstPluginError
+	</h3>
+
+		<pre class="raw_code">
+typedef enum
+{
+  GST_PLUGIN_ERROR_MODULE,
+  GST_PLUGIN_ERROR_DEPENDENCIES,
+  GST_PLUGIN_ERROR_NAME_MISMATCH
+} GstPluginError;
+</pre>
+
+<p>The plugin loading errors</p>
+
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_PLUGIN_ERROR_MODULE"></a>
+		GST_PLUGIN_ERROR_MODULE
+		</p>
+	</td>
+	<td><p>The plugin could not be loaded</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_PLUGIN_ERROR_DEPENDENCIES"></a>
+		GST_PLUGIN_ERROR_DEPENDENCIES
+		</p>
+	</td>
+	<td><p>The plugin has unresolved dependencies</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_PLUGIN_ERROR_NAME_MISMATCH"></a>
+		GST_PLUGIN_ERROR_NAME_MISMATCH
+		</p>
+	</td>
+	<td><p>The plugin has already be loaded from a different file</p>
+</td>
+	<td>
+		<span class="value">Value: 2</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPluginFlags">
+		<h3 id="gstpluginflags">
+		GstPluginFlags
+	</h3>
+
+		<pre class="raw_code">
+typedef enum
+{
+  GST_PLUGIN_FLAG_CACHED      = (GST_OBJECT_FLAG_LAST &lt;&lt; 0),
+  GST_PLUGIN_FLAG_BLACKLISTED = (GST_OBJECT_FLAG_LAST &lt;&lt; 1)
+} GstPluginFlags;
+</pre>
+
+<p>The plugin loading state</p>
+
+
+<div class="member_details">
+	<h4 id="members1">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_PLUGIN_FLAG_CACHED"></a>
+		GST_PLUGIN_FLAG_CACHED
+		</p>
+	</td>
+	<td><p>Temporarily loaded plugins</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_PLUGIN_FLAG_BLACKLISTED"></a>
+		GST_PLUGIN_FLAG_BLACKLISTED
+		</p>
+	</td>
+	<td><p>The plugin won't be scanned (again)</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPluginDependencyFlags">
+		<h3 id="gstplugindependencyflags">
+		GstPluginDependencyFlags
+	</h3>
+
+		<pre class="raw_code">
+typedef enum {
+  GST_PLUGIN_DEPENDENCY_FLAG_NONE = 0,
+  GST_PLUGIN_DEPENDENCY_FLAG_RECURSE = (1 &lt;&lt; 0),
+  GST_PLUGIN_DEPENDENCY_FLAG_PATHS_ARE_DEFAULT_ONLY = (1 &lt;&lt; 1),
+  GST_PLUGIN_DEPENDENCY_FLAG_FILE_NAME_IS_SUFFIX = (1 &lt;&lt; 2),
+  GST_PLUGIN_DEPENDENCY_FLAG_FILE_NAME_IS_PREFIX = (1 &lt;&lt; 3)
+} GstPluginDependencyFlags;
+</pre>
+
+<p>Flags used in connection with <a href="../../libgstreamer-doc-1.0/c/gstplugin.html#gst_plugin_add_dependency">gst_plugin_add_dependency</a>.</p>
+
+
+<div class="member_details">
+	<h4 id="members2">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_PLUGIN_DEPENDENCY_FLAG_NONE"></a>
+		GST_PLUGIN_DEPENDENCY_FLAG_NONE
+		</p>
+	</td>
+	<td><p>no special flags</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_PLUGIN_DEPENDENCY_FLAG_RECURSE"></a>
+		GST_PLUGIN_DEPENDENCY_FLAG_RECURSE
+		</p>
+	</td>
+	<td><p>recurse into subdirectories</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_PLUGIN_DEPENDENCY_FLAG_PATHS_ARE_DEFAULT_ONLY"></a>
+		GST_PLUGIN_DEPENDENCY_FLAG_PATHS_ARE_DEFAULT_ONLY
+		</p>
+	</td>
+	<td><p>use paths
+argument only if none of the environment variables is set</p>
+</td>
+	<td>
+		<span class="value">Value: 2</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_PLUGIN_DEPENDENCY_FLAG_FILE_NAME_IS_SUFFIX"></a>
+		GST_PLUGIN_DEPENDENCY_FLAG_FILE_NAME_IS_SUFFIX
+		</p>
+	</td>
+	<td><p>interpret
+filename argument as filter suffix and check all matching files in
+the directory</p>
+</td>
+	<td>
+		<span class="value">Value: 4</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_PLUGIN_DEPENDENCY_FLAG_FILE_NAME_IS_PREFIX"></a>
+		GST_PLUGIN_DEPENDENCY_FLAG_FILE_NAME_IS_PREFIX
+		</p>
+	</td>
+	<td><p>interpret
+filename argument as filter prefix and check all matching files in
+the directory. Since 1.8.</p>
+</td>
+	<td>
+		<span class="value">Value: 8</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_PLUGIN_ERROR">
+		<h3 class="constant" id="gst_plugin_error">
+	GST_PLUGIN_ERROR
+</h3>
+
+		<pre class="raw_code">
+#define GST_PLUGIN_ERROR gst_plugin_error_quark ()
+</pre>
+
+<p>The error message category quark</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="__GST_PACKAGE_RELEASE_DATETIME">
+		<h3 class="constant" id="__gst_package_release_datetime">
+	__GST_PACKAGE_RELEASE_DATETIME
+</h3>
+
+		<pre class="raw_code">
+#define __GST_PACKAGE_RELEASE_DATETIME NULL
+</pre>
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_LICENSE_UNKNOWN">
+		<h3 class="constant" id="gst_license_unknown">
+	GST_LICENSE_UNKNOWN
+</h3>
+
+		<pre class="raw_code">
+#define GST_LICENSE_UNKNOWN "unknown"
+</pre>
+
+<p>To be used in GST_PLUGIN_DEFINE if unsure about the licence.</p>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Aliases">Aliases</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPluginClass">
+		<h3 id="gstpluginclass1">
+	GstPluginClass
+</h3>
+
+		<pre>
+typedef struct _GstPluginClass  GstPluginClass</pre>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPluginDesc">
+		<h3 id="gstplugindesc">
+	GstPluginDesc
+</h3>
+
+		<pre>
+typedef struct _GstPluginDesc  GstPluginDesc</pre>
+<p>A plugin should export a variable of this type called plugin_desc. The plugin
+loader will use the data provided there to initialize the plugin.</p>
+<p>The <em>licence</em> parameter must be one of: LGPL, GPL, QPL, GPL/QPL, MPL,
+BSD, MIT/X11, Proprietary, unknown.</p>
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

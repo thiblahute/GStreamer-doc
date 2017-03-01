@@ -1,0 +1,4476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstStructure</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-project="libgstreamer-doc-1.0" data-hotdoc-ref="gststructure.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gststructure.h">
+<h1 id="gststructure">GstStructure</h1><p>A <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> is a collection of key/value pairs. The keys are expressed
+as GQuarks and the values can be of any GType.</p>
+<p>In addition to the key/value pairs, a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> also has a name. The name
+starts with a letter and can be filled by letters, numbers and any of "/-_.:".</p>
+<p><a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> is used by various GStreamer subsystems to store information
+in a flexible and extensible way. A <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> does not have a refcount
+because it usually is part of a higher level object such as <a href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">GstCaps</a>,
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstMessage.html#GstMessage-struct">GstMessage</a>, <a href="../../libgstreamer-doc-1.0/c/gstevent.html#GstEvent">GstEvent</a>, <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstQuery.html#GstQuery-struct">GstQuery</a>. It provides a means to enforce mutability
+using the refcount of the parent with the <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_set_parent_refcount">gst_structure_set_parent_refcount</a>
+method.</p>
+<p>A <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> can be created with <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-new-empty">gst_structure_new_empty</a> or
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-new">gst_structure_new</a>, which both take a name and an optional set of
+key/value pairs along with the types of the values.</p>
+<p>Field values can be changed with <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_set_value">gst_structure_set_value</a> or
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-set">gst_structure_set</a>.</p>
+<p>Field values can be retrieved with <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_get_value">gst_structure_get_value</a> or the more
+convenient gst_structure_get_*() functions.</p>
+<p>Fields can be removed with <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_remove_field">gst_structure_remove_field</a> or
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-remove-fields">gst_structure_remove_fields</a>.</p>
+<p>Strings in structures must be ASCII or UTF-8 encoded. Other encodings are
+not allowed. Strings may be <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> however.</p>
+<p>Be aware that the current <a href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">GstCaps</a> / <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> serialization into string
+has limited support for nested <a href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">GstCaps</a> / <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> fields. It can only
+support one level of nesting. Using more levels will lead to unexpected
+behavior when using serialization features, such as <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstCaps.html#gst-caps-to-string">gst_caps_to_string</a> or
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstValue.html#gst-value-serialize">gst_value_serialize</a> and their counterparts.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_type">
+		<h3 id="gst_structure_get_type1">
+	<span><code>gst_structure_get_type</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+int 
+gst_structure_get_type ()</pre>
+
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		int 
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_structure_new_from_string">
+		<h3 id="gst_structure_new_from_string1">
+	<span><code>gst_structure_new_from_string</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> *
+gst_structure_new_from_string (const int * string)</pre>
+
+<p>Creates a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> from a string representation.
+If end is not <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>, a pointer to the place inside the given string
+where parsing ended will be returned.</p>
+<p>The current implementation of serialization will lead to unexpected results
+when there are nested <a href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstCaps">GstCaps</a> / <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> deeper than one level.</p>
+<p>Free-function: gst_structure_free</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>string:</code></em></i>
+		</p>
+	</td>
+		<td><p>a string representation of a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>
+when the string could not be parsed. Free with
+<a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_free">gst_structure_free</a> after use.</p>
+
+	</td>
+	<td>
+		<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_set_parent_refcount">
+		<h3 id="gst_structure_set_parent_refcount1">
+	<span><code>gst_structure_set_parent_refcount</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_set_parent_refcount (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                                   int * refcount)</pre>
+
+<p>Sets the parent_refcount field of <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a>. This field is used to
+determine whether a structure is mutable or not. This function should only be
+called by code implementing parent objects of <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a>, as described in
+the MT Refcounting section of the design documents.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>refcount:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to the parent's refcount</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the parent refcount could be set.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_free">
+		<h3 id="gst_structure_free1">
+	<span><code>gst_structure_free</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_free (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure)</pre>
+
+<p>Frees a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> and all its fields and values. The structure must not
+have a parent when this function is called.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> to free</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_name">
+		<h3 id="gst_structure_get_name1">
+	<span><code>gst_structure_get_name</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_structure_get_name (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure)</pre>
+
+<p>Get the name of <em>structure</em> as a string.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the name of the structure.</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_name_id">
+		<h3 id="gst_structure_get_name_id1">
+	<span><code>gst_structure_get_name_id</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GQuark" href="../../libgstreamer-doc-1.0/c/gstmeta.html#GQuark">GQuark</a>
+gst_structure_get_name_id (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure)</pre>
+
+<p>Get the name of <em>structure</em> as a GQuark.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the quark representing the name of the structure.</p>
+
+	</td>
+	<td>
+		<a title="GQuark" href="../../libgstreamer-doc-1.0/c/gstmeta.html#GQuark">GQuark</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_has_name">
+		<h3 id="gst_structure_has_name1">
+	<span><code>gst_structure_has_name</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_has_name (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                        const int * name)</pre>
+
+<p>Checks if the structure has the given name</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>structure name to check for</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>name</em> matches the name of the structure.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_set_name">
+		<h3 id="gst_structure_set_name1">
+	<span><code>gst_structure_set_name</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_set_name (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                        const int * name)</pre>
+
+<p>Sets the name of the structure to the given <em>name</em>.  The string
+provided is copied before being used. It must not be empty, start with a
+letter and can be followed by letters, numbers and any of "/-_.:".</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new name of the structure</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_id_set_value">
+		<h3 id="gst_structure_id_set_value1">
+	<span><code>gst_structure_id_set_value</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_id_set_value (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                            int  field,
+                            const int * value)</pre>
+
+<p>Sets the field with the given GQuark <em>field</em> to <em>value</em>.  If the field
+does not exist, it is created.  If the field exists, the previous
+value is replaced and freed.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gstmeta.html#GQuark">GQuark</a> representing a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new value of the field</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_set_value">
+		<h3 id="gst_structure_set_value1">
+	<span><code>gst_structure_set_value</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_set_value (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                         const int * fieldname,
+                         const int * value)</pre>
+
+<p>Sets the field with the given name <em>field</em> to <em>value</em>.  If the field
+does not exist, it is created.  If the field exists, the previous
+value is replaced and freed.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the field to set</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new value of the field</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_id_take_value">
+		<h3 id="gst_structure_id_take_value1">
+	<span><code>gst_structure_id_take_value</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_id_take_value (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                             int  field,
+                             int * value)</pre>
+
+<p>Sets the field with the given GQuark <em>field</em> to <em>value</em>.  If the field
+does not exist, it is created.  If the field exists, the previous
+value is replaced and freed.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gstmeta.html#GQuark">GQuark</a> representing a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new value of the field</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_take_value">
+		<h3 id="gst_structure_take_value1">
+	<span><code>gst_structure_take_value</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_take_value (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                          const int * fieldname,
+                          int * value)</pre>
+
+<p>Sets the field with the given name <em>field</em> to <em>value</em>.  If the field
+does not exist, it is created.  If the field exists, the previous
+value is replaced and freed. The function will take ownership of <em>value</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the field to set</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new value of the field</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_set_valist">
+		<h3 id="gst_structure_set_valist1">
+	<span><code>gst_structure_set_valist</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_set_valist (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                          const int * fieldname,
+                          int  varargs)</pre>
+
+<p>va_list form of <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-set">gst_structure_set</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the field to set</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>varargs:</code></em></i>
+		</p>
+	</td>
+		<td><p>variable arguments</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_id_set_valist">
+		<h3 id="gst_structure_id_set_valist1">
+	<span><code>gst_structure_id_set_valist</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_id_set_valist (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                             int  fieldname,
+                             int  varargs)</pre>
+
+<p>va_list form of <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-id-set">gst_structure_id_set</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the field to set</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>varargs:</code></em></i>
+		</p>
+	</td>
+		<td><p>variable arguments</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_valist">
+		<h3 id="gst_structure_get_valist1">
+	<span><code>gst_structure_get_valist</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_valist (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                          const char * first_fieldname,
+                          int  args)</pre>
+
+<p>Parses the variable arguments and reads fields from <em>structure</em> accordingly.
+valist-variant of <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-get">gst_structure_get</a>. Look at the documentation of
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-get">gst_structure_get</a> for more details.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>first_fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the first field to read</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>args:</code></em></i>
+		</p>
+	</td>
+		<td><p>variable arguments</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> if there was a problem reading any of the fields</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_id_get_valist">
+		<h3 id="gst_structure_id_get_valist1">
+	<span><code>gst_structure_id_get_valist</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_id_get_valist (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                             int  first_field_id,
+                             int  args)</pre>
+
+<p>Parses the variable arguments and reads fields from <em>structure</em> accordingly.
+valist-variant of <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-id-get">gst_structure_id_get</a>. Look at the documentation of
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-id-get">gst_structure_id_get</a> for more details.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>first_field_id:</code></em></i>
+		</p>
+	</td>
+		<td><p>the quark of the first field to read</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>args:</code></em></i>
+		</p>
+	</td>
+		<td><p>variable arguments</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> if there was a problem reading any of the fields</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_id_get_value">
+		<h3 id="gst_structure_id_get_value1">
+	<span><code>gst_structure_id_get_value</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="GValue" href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GValue</a> *
+gst_structure_id_get_value (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                            int  field)</pre>
+
+<p>Get the value of the field with GQuark <em>field</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gstmeta.html#GQuark">GQuark</a> of the field to get</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the <a href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GValue</a> corresponding to the field with the given name
+identifier.</p>
+
+	</td>
+	<td>
+		const <a title="GValue" href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GValue</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_value">
+		<h3 id="gst_structure_get_value1">
+	<span><code>gst_structure_get_value</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="GValue" href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GValue</a> *
+gst_structure_get_value (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                         const int * fieldname)</pre>
+
+<p>Get the value of the field with name <em>fieldname</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the field to get</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the <a href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GValue</a> corresponding to the field with the given name.</p>
+
+	</td>
+	<td>
+		const <a title="GValue" href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GValue</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_remove_field">
+		<h3 id="gst_structure_remove_field1">
+	<span><code>gst_structure_remove_field</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_remove_field (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                            const int * fieldname)</pre>
+
+<p>Removes the field with the given name.  If the field with the given
+name does not exist, the structure is unchanged.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the field to remove</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_remove_fields_valist">
+		<h3 id="gst_structure_remove_fields_valist1">
+	<span><code>gst_structure_remove_fields_valist</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_remove_fields_valist (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                                    const int * fieldname,
+                                    int  varargs)</pre>
+
+<p>va_list form of <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#gst-structure-remove-fields">gst_structure_remove_fields</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the field to remove</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>varargs:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>-terminated list of more fieldnames to remove</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_remove_all_fields">
+		<h3 id="gst_structure_remove_all_fields1">
+	<span><code>gst_structure_remove_all_fields</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_remove_all_fields (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure)</pre>
+
+<p>Removes all fields in a GstStructure.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_field_type">
+		<h3 id="gst_structure_get_field_type1">
+	<span><code>gst_structure_get_field_type</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GType" href="../../libgstcontroller-doc-1.0/c/gstproxycontrolbinding.html#GType">GType</a>
+gst_structure_get_field_type (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                              const int * fieldname)</pre>
+
+<p>Finds the field with the given name, and returns the type of the
+value it contains.  If the field is not found, G_TYPE_INVALID is
+returned.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the field</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the <a href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GValue</a> of the field</p>
+
+	</td>
+	<td>
+		<a title="GType" href="../../libgstcontroller-doc-1.0/c/gstproxycontrolbinding.html#GType">GType</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_foreach">
+		<h3 id="gst_structure_foreach1">
+	<span><code>gst_structure_foreach</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_foreach (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                       int  func,
+                       int  user_data)</pre>
+
+<p>Calls the provided function once for each field in the <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a>. The
+function must not modify the fields. Also see <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_map_in_place">gst_structure_map_in_place</a>
+and <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_filter_and_map_in_place">gst_structure_filter_and_map_in_place</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>func:</code></em></i>
+		</p>
+	</td>
+		<td><p>a function to call for each field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>private data</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the supplied function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> For each of the fields,
+<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_map_in_place">
+		<h3 id="gst_structure_map_in_place1">
+	<span><code>gst_structure_map_in_place</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_map_in_place (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                            <a title="GstStructureMapFunc" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstStructure.html#GstStructureMapFunc">GstStructureMapFunc</a> func,
+                            int  user_data)</pre>
+
+<p>Calls the provided function once for each field in the <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a>. In
+contrast to <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_foreach">gst_structure_foreach</a>, the function may modify but not delete the
+fields. The structure must be mutable.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>func:</code></em></i>
+		</p>
+	</td>
+		<td><p>a function to call for each field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>private data</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the supplied function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> For each of the fields,
+<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_structure_filter_and_map_in_place">
+		<h3 id="gst_structure_filter_and_map_in_place1">
+	<span><code>gst_structure_filter_and_map_in_place</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_filter_and_map_in_place (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                                       <a title="GstStructureFilterMapFunc" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructureFilterMapFunc">GstStructureFilterMapFunc</a> func,
+                                       int  user_data)</pre>
+
+<p>Calls the provided function once for each field in the <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a>. In
+contrast to <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_foreach">gst_structure_foreach</a>, the function may modify the fields.
+In contrast to <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_map_in_place">gst_structure_map_in_place</a>, the field is removed from
+the structure if <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> is returned from the function.
+The structure must be mutable.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters23">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>func:</code></em></i>
+		</p>
+	</td>
+		<td><p>a function to call for each field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>private data</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_n_fields">
+		<h3 id="gst_structure_n_fields1">
+	<span><code>gst_structure_n_fields</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gint" href="../../libgstreamer-doc-1.0/c/gstvalue.html#gint">gint</a>
+gst_structure_n_fields (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure)</pre>
+
+<p>Get the number of fields in the structure.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the number of fields in the structure</p>
+
+	</td>
+	<td>
+		<a title="gint" href="../../libgstreamer-doc-1.0/c/gstvalue.html#gint">gint</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_nth_field_name">
+		<h3 id="gst_structure_nth_field_name1">
+	<span><code>gst_structure_nth_field_name</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_structure_nth_field_name (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                              int  index)</pre>
+
+<p>Get the name of the given field number, counting from 0 onwards.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>index:</code></em></i>
+		</p>
+	</td>
+		<td><p>the index to get the name of</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the name of the given field number</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_id_has_field">
+		<h3 id="gst_structure_id_has_field1">
+	<span><code>gst_structure_id_has_field</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_id_has_field (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                            int  field)</pre>
+
+<p>Check if <em>structure</em> contains a field named <em>field</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="../../libgstreamer-doc-1.0/c/gstmeta.html#GQuark">GQuark</a> of the field name</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the structure contains a field with the given name</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_id_has_field_typed">
+		<h3 id="gst_structure_id_has_field_typed1">
+	<span><code>gst_structure_id_has_field_typed</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_id_has_field_typed (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                                  int  field,
+                                  int  type)</pre>
+
+<p>Check if <em>structure</em> contains a field named <em>field</em> and with GType <em>type</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters27">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="../../libgstreamer-doc-1.0/c/gstmeta.html#GQuark">GQuark</a> of the field name</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>type:</code></em></i>
+		</p>
+	</td>
+		<td><p>the type of a value</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the structure contains a field with the given name and type</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_has_field">
+		<h3 id="gst_structure_has_field1">
+	<span><code>gst_structure_has_field</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_has_field (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                         const int * fieldname)</pre>
+
+<p>Check if <em>structure</em> contains a field named <em>fieldname</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters28">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns17">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the structure contains a field with the given name</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_has_field_typed">
+		<h3 id="gst_structure_has_field_typed1">
+	<span><code>gst_structure_has_field_typed</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_has_field_typed (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                               const int * fieldname,
+                               int  type)</pre>
+
+<p>Check if <em>structure</em> contains a field named <em>fieldname</em> and with GType <em>type</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters29">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>type:</code></em></i>
+		</p>
+	</td>
+		<td><p>the type of a value</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns18">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the structure contains a field with the given name and type</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_boolean">
+		<h3 id="gst_structure_get_boolean1">
+	<span><code>gst_structure_get_boolean</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_boolean (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                           const int * fieldname,
+                           <a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a> * value)</pre>
+
+<p>Sets the boolean pointed to by <em>value</em> corresponding to the value of the
+given field.  Caller is responsible for making sure the field exists
+and has the correct type.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters30">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a <a href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a> to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns19">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the value could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain a boolean, this
+function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_int">
+		<h3 id="gst_structure_get_int1">
+	<span><code>gst_structure_get_int</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_int (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                       const int * fieldname,
+                       int * value)</pre>
+
+<p>Sets the int pointed to by <em>value</em> corresponding to the value of the
+given field.  Caller is responsible for making sure the field exists
+and has the correct type.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters31">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to an int to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns20">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the value could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain an int, this function
+returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_uint">
+		<h3 id="gst_structure_get_uint1">
+	<span><code>gst_structure_get_uint</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_uint (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                        const int * fieldname,
+                        int * value)</pre>
+
+<p>Sets the uint pointed to by <em>value</em> corresponding to the value of the
+given field.  Caller is responsible for making sure the field exists
+and has the correct type.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters32">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a uint to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns21">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the value could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain a uint, this function
+returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_structure_get_int64">
+		<h3 id="gst_structure_get_int641">
+	<span><code>gst_structure_get_int64</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_int64 (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                         const int * fieldname,
+                         int * value)</pre>
+
+<p>Sets the <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a> pointed to by <em>value</em> corresponding to the value of the
+given field. Caller is responsible for making sure the field exists
+and has the correct type.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters33">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a> to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns22">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the value could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain a <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a>, this function
+returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_structure_get_uint64">
+		<h3 id="gst_structure_get_uint641">
+	<span><code>gst_structure_get_uint64</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_uint64 (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                          const int * fieldname,
+                          int * value)</pre>
+
+<p>Sets the <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> pointed to by <em>value</em> corresponding to the value of the
+given field. Caller is responsible for making sure the field exists
+and has the correct type.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters34">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns23">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the value could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain a <a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a>, this function
+returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_double">
+		<h3 id="gst_structure_get_double1">
+	<span><code>gst_structure_get_double</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_double (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                          const int * fieldname,
+                          int * value)</pre>
+
+<p>Sets the double pointed to by <em>value</em> corresponding to the value of the
+given field.  Caller is responsible for making sure the field exists
+and has the correct type.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters35">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a gdouble to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns24">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the value could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain a double, this
+function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_date">
+		<h3 id="gst_structure_get_date1">
+	<span><code>gst_structure_get_date</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_date (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                        const int * fieldname,
+                        int ** value)</pre>
+
+<p>Sets the date pointed to by <em>value</em> corresponding to the date of the
+given field.  Caller is responsible for making sure the field exists
+and has the correct type.</p>
+<p>On success <em>value</em> will point to a newly-allocated copy of the date which
+should be freed with <a href="https://developer.gnome.org/glib/unstable/glib-Date-and-Time-Functions.html#g-date-free">g_date_free</a> when no longer needed (note: this is
+inconsistent with e.g. <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_get_string">gst_structure_get_string</a> which doesn't return a
+copy of the string).</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters36">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a <a href="https://developer.gnome.org/glib/unstable/glib-Date-and-Time-Functions.html#GDate">GDate</a> to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns25">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the value could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain a data, this function
+returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_date_time">
+		<h3 id="gst_structure_get_date_time1">
+	<span><code>gst_structure_get_date_time</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_date_time (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                             const int * fieldname,
+                             int ** value)</pre>
+
+<p>Sets the datetime pointed to by <em>value</em> corresponding to the datetime of the
+given field. Caller is responsible for making sure the field exists
+and has the correct type.</p>
+<p>On success <em>value</em> will point to a reference of the datetime which
+should be unreffed with <a href="../../libgstreamer-doc-1.0/c/gstdatetime.html#gst_date_time_unref">gst_date_time_unref</a> when no longer needed
+(note: this is inconsistent with e.g. <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_get_string">gst_structure_get_string</a>
+which doesn't return a copy of the string).</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters37">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstDateTime.html#GstDateTime-struct">GstDateTime</a> to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns26">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the value could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain a data, this function
+returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_clock_time">
+		<h3 id="gst_structure_get_clock_time1">
+	<span><code>gst_structure_get_clock_time</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_clock_time (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                              const int * fieldname,
+                              int * value)</pre>
+
+<p>Sets the clock time pointed to by <em>value</em> corresponding to the clock time
+of the given field.  Caller is responsible for making sure the field exists
+and has the correct type.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters38">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstClock.html#GstClockTime">GstClockTime</a> to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns27">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the value could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstClock.html#GstClockTime">GstClockTime</a>, this
+function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_string">
+		<h3 id="gst_structure_get_string1">
+	<span><code>gst_structure_get_string</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_structure_get_string (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                          const int * fieldname)</pre>
+
+<p>Finds the field corresponding to <em>fieldname</em>, and returns the string
+contained in the field's value.  Caller is responsible for making
+sure the field exists and has the correct type.</p>
+<p>The string should not be modified, and remains valid until the next
+call to a gst_structure_*() function with the given structure.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters39">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns28">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a pointer to the string or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> when the
+field did not exist or did not contain a string.</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_enum">
+		<h3 id="gst_structure_get_enum1">
+	<span><code>gst_structure_get_enum</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_enum (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                        const int * fieldname,
+                        int  enumtype,
+                        int * value)</pre>
+
+<p>Sets the int pointed to by <em>value</em> corresponding to the value of the
+given field.  Caller is responsible for making sure the field exists,
+has the correct type and that the enumtype is correct.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters40">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>enumtype:</code></em></i>
+		</p>
+	</td>
+		<td><p>the enum type of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to an int to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns29">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the value could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain an enum of the given
+type, this function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_get_fraction">
+		<h3 id="gst_structure_get_fraction1">
+	<span><code>gst_structure_get_fraction</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_fraction (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                            const int * fieldname,
+                            int * value_numerator,
+                            int * value_denominator)</pre>
+
+<p>Sets the integers pointed to by <em>value_numerator</em> and <em>value_denominator</em>
+corresponding to the value of the given field.  Caller is responsible
+for making sure the field exists and has the correct type.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters41">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value_numerator:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to an int to set</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value_denominator:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to an int to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns30">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the values could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain a GstFraction, this
+function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_structure_get_flagset">
+		<h3 id="gst_structure_get_flagset1">
+	<span><code>gst_structure_get_flagset</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_get_flagset (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                           const int * fieldname,
+                           int * value_flags,
+                           int * value_mask)</pre>
+
+<p>Read the GstFlagSet flags and mask out of the structure into the
+provided pointers.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters42">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>fieldname:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of a field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value_flags:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a guint for the flags field</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value_mask:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a guint for the mask field</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns31">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the values could be set correctly. If there was no field
+with <em>fieldname</em> or the existing field did not contain a GstFlagSet, this
+function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_fixate_field_nearest_int">
+		<h3 id="gst_structure_fixate_field_nearest_int1">
+	<span><code>gst_structure_fixate_field_nearest_int</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_fixate_field_nearest_int (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                                        const char * field_name,
+                                        int  target)</pre>
+
+<p>Fixates a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> by changing the given field to the nearest
+integer to <em>target</em> that is a subset of the existing field.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters43">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field_name:</code></em></i>
+		</p>
+	</td>
+		<td><p>a field in <em>structure</em></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>target:</code></em></i>
+		</p>
+	</td>
+		<td><p>the target value of the fixation</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns32">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the structure could be fixated</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_fixate_field_nearest_double">
+		<h3 id="gst_structure_fixate_field_nearest_double1">
+	<span><code>gst_structure_fixate_field_nearest_double</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_fixate_field_nearest_double (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                                           const char * field_name,
+                                           double  target)</pre>
+
+<p>Fixates a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> by changing the given field to the nearest
+double to <em>target</em> that is a subset of the existing field.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters44">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field_name:</code></em></i>
+		</p>
+	</td>
+		<td><p>a field in <em>structure</em></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>target:</code></em></i>
+		</p>
+	</td>
+		<td><p>the target value of the fixation</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns33">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the structure could be fixated</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_fixate_field_boolean">
+		<h3 id="gst_structure_fixate_field_boolean1">
+	<span><code>gst_structure_fixate_field_boolean</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_fixate_field_boolean (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                                    const char * field_name,
+                                    <a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a> target)</pre>
+
+<p>Fixates a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> by changing the given <em>field_name</em> field to the given
+<em>target</em> boolean if that field is not fixed yet.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters45">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field_name:</code></em></i>
+		</p>
+	</td>
+		<td><p>a field in <em>structure</em></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>target:</code></em></i>
+		</p>
+	</td>
+		<td><p>the target value of the fixation</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns34">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the structure could be fixated</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_fixate_field_string">
+		<h3 id="gst_structure_fixate_field_string1">
+	<span><code>gst_structure_fixate_field_string</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_fixate_field_string (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                                   const char * field_name,
+                                   const int * target)</pre>
+
+<p>Fixates a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> by changing the given <em>field_name</em> field to the given
+<em>target</em> string if that field is not fixed yet.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters46">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field_name:</code></em></i>
+		</p>
+	</td>
+		<td><p>a field in <em>structure</em></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>target:</code></em></i>
+		</p>
+	</td>
+		<td><p>the target value of the fixation</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns35">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the structure could be fixated</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_fixate_field_nearest_fraction">
+		<h3 id="gst_structure_fixate_field_nearest_fraction1">
+	<span><code>gst_structure_fixate_field_nearest_fraction</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_fixate_field_nearest_fraction (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                                             const char * field_name,
+                                             const int  target_numerator,
+                                             const int  target_denominator)</pre>
+
+<p>Fixates a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> by changing the given field to the nearest
+fraction to <em>target_numerator</em>/@target_denominator that is a subset
+of the existing field.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters47">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field_name:</code></em></i>
+		</p>
+	</td>
+		<td><p>a field in <em>structure</em></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>target_numerator:</code></em></i>
+		</p>
+	</td>
+		<td><p>The numerator of the target value of the fixation</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>target_denominator:</code></em></i>
+		</p>
+	</td>
+		<td><p>The denominator of the target value of the fixation</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns36">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the structure could be fixated</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_fixate_field">
+		<h3 id="gst_structure_fixate_field1">
+	<span><code>gst_structure_fixate_field</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_fixate_field (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure,
+                            const char * field_name)</pre>
+
+<p>Fixates a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> by changing the given field with its fixated value.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters48">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>field_name:</code></em></i>
+		</p>
+	</td>
+		<td><p>a field in <em>structure</em></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns37">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the structure field could be fixated</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_fixate">
+		<h3 id="gst_structure_fixate1">
+	<span><code>gst_structure_fixate</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_structure_fixate (<a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure)</pre>
+
+<p>Fixate all values in <em>structure</em> using <a href="../../libgstreamer-doc-1.0/c/gstvalue.html#gst_value_fixate">gst_value_fixate</a>.
+<em>structure</em> will be modified in-place and should be writable.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters49">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_is_equal">
+		<h3 id="gst_structure_is_equal1">
+	<span><code>gst_structure_is_equal</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_is_equal (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure1,
+                        const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * structure2)</pre>
+
+<p>Tests if the two <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> are equal.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters50">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure1:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a>.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure2:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a>.</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns38">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the two structures have the same name and field.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_is_subset">
+		<h3 id="gst_structure_is_subset1">
+	<span><code>gst_structure_is_subset</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_is_subset (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * subset,
+                         const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * superset)</pre>
+
+<p>Checks if <em>subset</em> is a subset of <em>superset</em>, i.e. has the same
+structure name and for all fields that are existing in <em>superset</em>,
+<em>subset</em> has a value that is a subset of the value in <em>superset</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters51">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>subset:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>superset:</code></em></i>
+		</p>
+	</td>
+		<td><p>a potentially greater <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns39">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>subset</em> is a subset of <em>superset</em></p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_structure_can_intersect">
+		<h3 id="gst_structure_can_intersect1">
+	<span><code>gst_structure_can_intersect</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+gst_structure_can_intersect (const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * struct1,
+                             const <a title="GstStructure" href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> * struct2)</pre>
+
+<p>Tries intersecting <em>struct1</em> and <em>struct2</em> and reports whether the result
+would not be empty.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters52">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>struct1:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>struct2:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns40">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if intersection would not be empty</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Function_Macros">Function Macros</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_IS_STRUCTURE">
+		<h3 id="gst_is_structure">
+	<span><code>GST_IS_STRUCTURE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_IS_STRUCTURE(object)       ((object) &amp;&amp; (GST_STRUCTURE(object)-&gt;type == GST_TYPE_STRUCTURE))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_STRUCTURE_CAST">
+		<h3 id="gst_structure_cast">
+	<span><code>GST_STRUCTURE_CAST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_STRUCTURE_CAST(object)     ((GstStructure *)(object))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_STRUCTURE">
+		<h3 id="gst_structure">
+	<span><code>GST_STRUCTURE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_STRUCTURE(object)          (GST_STRUCTURE_CAST(object))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="_GstStructure">
+		<h3 id="struct-_gststructure">
+		struct _GstStructure
+	</h3>
+
+		<pre class="raw_code">
+struct _GstStructure {
+  GType type;
+
+};
+</pre>
+
+
+<div class="member_details">
+	<h4 id="fields">Fields</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="_GstStructure.type">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>type</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TYPE_STRUCTURE">
+		<h3 class="constant" id="gst_type_structure">
+	GST_TYPE_STRUCTURE
+</h3>
+
+		<pre class="raw_code">
+#define GST_TYPE_STRUCTURE             (_gst_structure_type)
+</pre>
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Aliases">Aliases</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstStructure">
+		<h3 id="gststructure1">
+	GstStructure
+</h3>
+
+		<pre>
+typedef struct _GstStructure  GstStructure</pre>
+<p>The GstStructure object. Most fields are private.</p>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Callbacks">Callbacks</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstStructureFilterMapFunc">
+		<h3 id="gststructurefiltermapfunc">
+	<span><code>GstStructureFilterMapFunc</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+(*GstStructureFilterMapFunc) ()</pre>
+
+<p>A function that will be called in <a href="../../libgstreamer-doc-1.0/c/gststructure.html#gst_structure_filter_and_map_in_place">gst_structure_filter_and_map_in_place</a>.
+The function may modify <em>value</em>, and the value will be removed from
+the structure if <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> is returned.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns41">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the field should be preserved, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> if it
+should be removed.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="../../libgstbase-doc-1.0/c/gstdataqueue.html#gboolean">gboolean</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

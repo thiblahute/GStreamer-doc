@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstTagSetterInterface</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a id="home-link" class="hotdoc-navbar-brand">
+				
+<img src="assets/images/home.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-project="libgstreamer-doc-1.0" data-hotdoc-ref="gsttagsetter.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gsttagsetter.h">
+<h1 id="gsttagsetterinterface">GstTagSetterInterface</h1><p>Element interface that allows setting of media metadata.</p>
+<p>Elements that support changing a stream's metadata will implement this
+interface. Examples of such elements are 'vorbisenc', 'theoraenc' and
+'id3v2mux'.</p>
+<p>If you just want to retrieve metadata in your application then all you
+need to do is watch for tag messages on your pipeline's bus. This
+interface is only for setting metadata, not for extracting it. To set tags
+from the application, find tagsetter elements and set tags using e.g.
+<a href="../../libgstreamer-doc-1.0/c/gsttagsetter.html#gst_tag_setter_merge_tags">gst_tag_setter_merge_tags</a> or <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTagSetter.html#gst-tag-setter-add-tags">gst_tag_setter_add_tags</a>. Also consider
+setting the <a href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GstTagMergeMode">GstTagMergeMode</a> that is used for tag events that arrive at the
+tagsetter element (default mode is to keep existing tags).
+The application should do that before the element goes to <a href="../../libgstreamer-doc-1.0/c/gstelement.html#GST_STATE_PAUSED">GST_STATE_PAUSED</a>.</p>
+<p>Elements implementing the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTagSetter.html#GstTagSetter-struct">GstTagSetter</a> interface often have to merge
+any tags received from upstream and the tags set by the application via
+the interface. This can be done like this:</p>
+<pre><code class="language-c">GstTagMergeMode merge_mode;
+const GstTagList *application_tags;
+const GstTagList *event_tags;
+GstTagSetter *tagsetter;
+GstTagList *result;
+
+tagsetter = GST_TAG_SETTER (element);
+
+merge_mode = gst_tag_setter_get_tag_merge_mode (tagsetter);
+application_tags = gst_tag_setter_get_tag_list (tagsetter);
+event_tags = (const GstTagList *) element-&gt;event_tags;
+
+GST_LOG_OBJECT (tagsetter, "merging tags, merge mode = %d", merge_mode);
+GST_LOG_OBJECT (tagsetter, "event tags: %" GST_PTR_FORMAT, event_tags);
+GST_LOG_OBJECT (tagsetter, "set   tags: %" GST_PTR_FORMAT, application_tags);
+
+result = gst_tag_list_merge (application_tags, event_tags, merge_mode);
+
+GST_LOG_OBJECT (tagsetter, "final tags: %" GST_PTR_FORMAT, result);
+</code></pre>
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_tag_setter_reset_tags">
+		<h3 id="gst_tag_setter_reset_tags1">
+	<span><code>gst_tag_setter_reset_tags</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_tag_setter_reset_tags (int * setter)</pre>
+
+<p>Reset the internal taglist. Elements should call this from within the
+state-change handler.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>setter:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTagSetter.html#GstTagSetter-struct">GstTagSetter</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_tag_setter_merge_tags">
+		<h3 id="gst_tag_setter_merge_tags1">
+	<span><code>gst_tag_setter_merge_tags</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_tag_setter_merge_tags (int * setter,
+                           const int * list,
+                           int  mode)</pre>
+
+<p>Merges the given list into the setter's list using the given mode.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>setter:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTagSetter.html#GstTagSetter-struct">GstTagSetter</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>list:</code></em></i>
+		</p>
+	</td>
+		<td><p>a tag list to merge from</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>mode:</code></em></i>
+		</p>
+	</td>
+		<td><p>the mode to merge with</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_tag_setter_add_tag_valist">
+		<h3 id="gst_tag_setter_add_tag_valist1">
+	<span><code>gst_tag_setter_add_tag_valist</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_tag_setter_add_tag_valist (int * setter,
+                               int  mode,
+                               const int * tag,
+                               int  var_args)</pre>
+
+<p>Adds the given tag / value pairs on the setter using the given merge mode.
+The list must be terminated with <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>setter:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTagSetter.html#GstTagSetter-struct">GstTagSetter</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>mode:</code></em></i>
+		</p>
+	</td>
+		<td><p>the mode to use</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>tag:</code></em></i>
+		</p>
+	</td>
+		<td><p>tag to set</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>var_args:</code></em></i>
+		</p>
+	</td>
+		<td><p>tag / value pairs to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_tag_setter_add_tag_valist_values">
+		<h3 id="gst_tag_setter_add_tag_valist_values1">
+	<span><code>gst_tag_setter_add_tag_valist_values</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_tag_setter_add_tag_valist_values (int * setter,
+                                      int  mode,
+                                      const int * tag,
+                                      int  var_args)</pre>
+
+<p>Adds the given tag / GValue pairs on the setter using the given merge mode.
+The list must be terminated with <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>setter:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTagSetter.html#GstTagSetter-struct">GstTagSetter</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>mode:</code></em></i>
+		</p>
+	</td>
+		<td><p>the mode to use</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>tag:</code></em></i>
+		</p>
+	</td>
+		<td><p>tag to set</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>var_args:</code></em></i>
+		</p>
+	</td>
+		<td><p>tag / GValue pairs to set</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_tag_setter_add_tag_value">
+		<h3 id="gst_tag_setter_add_tag_value1">
+	<span><code>gst_tag_setter_add_tag_value</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_tag_setter_add_tag_value (int * setter,
+                              int  mode,
+                              const int * tag,
+                              const int * value)</pre>
+
+<p>Adds the given tag / GValue pair on the setter using the given merge mode.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>setter:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTagSetter.html#GstTagSetter-struct">GstTagSetter</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>mode:</code></em></i>
+		</p>
+	</td>
+		<td><p>the mode to use</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>tag:</code></em></i>
+		</p>
+	</td>
+		<td><p>tag to set</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>value:</code></em></i>
+		</p>
+	</td>
+		<td><p>GValue to set for the tag</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_tag_setter_get_tag_list">
+		<h3 id="gst_tag_setter_get_tag_list1">
+	<span><code>gst_tag_setter_get_tag_list</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="GstTagList" href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GstTagList">GstTagList</a> *
+gst_tag_setter_get_tag_list (int * setter)</pre>
+
+<p>Returns the current list of tags the setter uses.  The list should not be
+modified or freed.</p>
+<p>This function is not thread-safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>setter:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTagSetter.html#GstTagSetter-struct">GstTagSetter</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a current snapshot of the
+taglist used in the setter or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if none is used.</p>
+
+	</td>
+	<td>
+		const <a title="GstTagList" href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GstTagList">GstTagList</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_tag_setter_set_tag_merge_mode">
+		<h3 id="gst_tag_setter_set_tag_merge_mode1">
+	<span><code>gst_tag_setter_set_tag_merge_mode</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_tag_setter_set_tag_merge_mode (int * setter,
+                                   int  mode)</pre>
+
+<p>Sets the given merge mode that is used for adding tags from events to tags
+specified by this interface. The default is <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTagList.html#GST-TAG-MERGE-KEEP:CAPS">GST_TAG_MERGE_KEEP</a>, which keeps
+the tags set with this interface and discards tags from events.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>setter:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTagSetter.html#GstTagSetter-struct">GstTagSetter</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>mode:</code></em></i>
+		</p>
+	</td>
+		<td><p>The mode with which tags are added</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_tag_setter_get_tag_merge_mode">
+		<h3 id="gst_tag_setter_get_tag_merge_mode1">
+	<span><code>gst_tag_setter_get_tag_merge_mode</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstTagMergeMode" href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GstTagMergeMode">GstTagMergeMode</a>
+gst_tag_setter_get_tag_merge_mode (int * setter)</pre>
+
+<p>Queries the mode by which tags inside the setter are overwritten by tags
+from events</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>setter:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTagSetter.html#GstTagSetter-struct">GstTagSetter</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the merge mode used inside the element.</p>
+
+	</td>
+	<td>
+		<a title="GstTagMergeMode" href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GstTagMergeMode">GstTagMergeMode</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Function_Macros">Function Macros</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TAG_SETTER_GET_INTERFACE">
+		<h3 id="gst_tag_setter_get_interface">
+	<span><code>GST_TAG_SETTER_GET_INTERFACE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TAG_SETTER_GET_INTERFACE(obj)       (G_TYPE_INSTANCE_GET_INTERFACE ((obj), GST_TYPE_TAG_SETTER, GstTagSetterInterface))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="_GstTagSetterInterface">
+		<h3 id="struct-_gsttagsetterinterface">
+		struct _GstTagSetterInterface
+	</h3>
+
+		<pre class="raw_code">
+struct _GstTagSetterInterface
+{
+  GTypeInterface g_iface;
+
+  /* signals */
+
+  /* virtual table */
+};
+</pre>
+
+
+<div class="member_details">
+	<h4 id="fields">Fields</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="_GstTagSetterInterface.g_iface">
+		<td>
+		<p>
+		<i><em><code>int  <em><code>g_iface</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Aliases">Aliases</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTagSetterInterface">
+		<h3 id="gsttagsetterinterface1">
+	GstTagSetterInterface
+</h3>
+
+		<pre>
+typedef struct _GstTagSetterInterface  GstTagSetterInterface</pre>
+<p><a href="../../libgstreamer-doc-1.0/c/gsttagsetter.html#GstTagSetterInterface">GstTagSetterInterface</a> interface.</p>
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>
