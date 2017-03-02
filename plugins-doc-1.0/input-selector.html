@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
 <script src="assets/js/jquery.js"></script>
@@ -31,9 +32,13 @@
 <script src="assets/js/trie.js"></script>
 
 
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
 </head>
 
 <body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
 
 <nav class="navbar navbar-fixed-top navbar-default">
 	<div class="container-fluid">
@@ -44,9 +49,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/home.svg" alt="Home" id="home">
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -216,6 +220,11 @@ properties, which users may find useful, namely:</p>
 “sync-streams” <span class="type">gboolean</span>
 </pre>
 
+<p>If set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> all inactive streams will be synced to the
+running time of the active stream or to the current clock.</p>
+<p>To make sure no buffers are dropped by input-selector
+that might be needed when switching the active pad,
+sync-mode should be set to "clock" and cache-buffers to TRUE.</p>
 
 
 <p>
@@ -242,6 +251,11 @@ properties, which users may find useful, namely:</p>
 “sync-mode” <span class="type">GstInputSelectorSyncMode</span>
 </pre>
 
+<p>Select how input-selector will sync buffers when in sync-streams mode.</p>
+<p>Note that when using the "active-segment" mode, the "active-segment" may
+be ahead of current clock time when switching the active pad, as the current
+active pad may have pushed more buffers than what was displayed/consumed,
+which may cause delays and some missing buffers.</p>
 
 
 <p>
@@ -268,6 +282,13 @@ properties, which users may find useful, namely:</p>
 “cache-buffers” <span class="type">gboolean</span>
 </pre>
 
+<p>If set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> and GstInputSelector:sync-streams is also set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>,
+the active pad will cache the buffers still considered valid (after current
+running time, see sync-mode) to avoid missing frames if/when the pad is
+reactivated.</p>
+<p>The active pad may push more buffers than what is currently displayed/consumed
+and when changing pads those buffers will be discarded and the only way to
+reactivate that pad without loosing the already consumed buffers is to enable cache.</p>
 
 
 <p>

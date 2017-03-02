@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
 <script src="assets/js/jquery.js"></script>
@@ -31,9 +32,13 @@
 <script src="assets/js/trie.js"></script>
 
 
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
 </head>
 
 <body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
 
 <nav class="navbar navbar-fixed-top navbar-default">
 	<div class="container-fluid">
@@ -44,9 +49,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/home.svg" alt="Home" id="home">
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -200,18 +204,23 @@
 <h2 class="symbol_section" id="Signals">Signals</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlaySink::reconfigure">
-		<h3 id="reconfigure">
-	<span><code>reconfigure</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlaySink::convert-sample">
+		<h3 id="convertsample">
+	<span><code>convert-sample</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-gboolean
-reconfigure_callback (GstPlaySink * param_0,
-                      gpointer udata)</pre>
+GstSample
+convert_sample_callback (GstPlaySink * playsink,
+                         GstCaps * caps,
+                         gpointer udata)</pre>
 
+<p>Action signal to retrieve the currently playing video sample in the format
+specified by <em>caps</em>.
+If <em>caps</em> is <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>, no conversion will be performed and this function is
+equivalent to the GstPlaySink::sample property.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters">Parameters</h4>
@@ -220,10 +229,21 @@ reconfigure_callback (GstPlaySink * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>playsink:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>a <a href="playsink.html#GstPlaySink">playsink</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the target format of the sample</p>
+</td>
 </tr>
 
 									<tr>
@@ -254,10 +274,14 @@ reconfigure_callback (GstPlaySink * param_0,
 				</p>
 	</td>
 	<td>
-		
+		<p>a <a href="../libgstreamer-doc-1.0/c/gstsample.html#GstSample">GstSample</a> of the current video sample converted to caps.
+The caps in the sample will describe the final layout of the buffer data.
+<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> is returned when no current sample can be retrieved or when the
+conversion failed.</p>
+
 	</td>
 	<td>
-		gboolean
+		GstSample
 	</td>
 	</tr>
 
@@ -272,18 +296,17 @@ reconfigure_callback (GstPlaySink * param_0,
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlaySink::convert-sample">
-		<h3 id="convertsample">
-	<span><code>convert-sample</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlaySink::reconfigure">
+		<h3 id="reconfigure">
+	<span><code>reconfigure</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-GstSample
-convert_sample_callback (GstPlaySink * param_0,
-                         GstCaps * param_1,
-                         gpointer udata)</pre>
+gboolean
+reconfigure_callback (GstPlaySink * param_0,
+                      gpointer udata)</pre>
 
 
 	<div class="parameter_container">
@@ -294,15 +317,6 @@ convert_sample_callback (GstPlaySink * param_0,
 		<td>
 		<p>
 		<i><em><code>param_0:</code></em></i>
-		</p>
-	</td>
-		<td></td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>param_1:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -339,7 +353,7 @@ convert_sample_callback (GstPlaySink * param_0,
 		
 	</td>
 	<td>
-		GstSample
+		gboolean
 	</td>
 	</tr>
 
@@ -365,6 +379,7 @@ convert_sample_callback (GstPlaySink * param_0,
 “flags” <span class="type">GstPlayFlags</span>
 </pre>
 
+<p>Control the behaviour of playsink.</p>
 
 
 <p>
