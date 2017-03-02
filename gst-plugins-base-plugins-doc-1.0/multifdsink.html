@@ -79,7 +79,71 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="multifdsink">
-<h1 id="multifdsink">multifdsink</h1>
+<h1 id="multifdsink">multifdsink</h1><p>This plugin writes incoming data to a set of file descriptors. The
+file descriptors can be added to multifdsink by emitting the <a href="multifdsink.html#GstMultiFdSink::add">add</a> signal.
+For each descriptor added, the <a href="multifdsink.html#GstMultiFdSink::client-added">client-added</a> signal will be called.</p>
+<p>The multifdsink element needs to be set into READY, PAUSED or PLAYING state
+before operations such as adding clients are possible.</p>
+<p>A client can also be added with the <a href="multifdsink.html#GstMultiFdSink::add-full">add-full</a> signal
+that allows for more control over what and how much data a client
+initially receives.</p>
+<p>Clients can be removed from multifdsink by emitting the <a href="multifdsink.html#GstMultiFdSink::remove">remove</a> signal. For
+each descriptor removed, the <a href="multifdsink.html#GstMultiFdSink::client-removed">client-removed</a> signal will be called. The
+<a href="multifdsink.html#GstMultiFdSink::client-removed">client-removed</a> signal can also be fired when multifdsink decides that a
+client is not active anymore or, depending on the value of the
+GstMultiFdSink:recover-policy property, if the client is reading too slowly.
+In all cases, multifdsink will never close a file descriptor itself.
+The user of multifdsink is responsible for closing all file descriptors.
+This can for example be done in response to the <a href="multifdsink.html#GstMultiFdSink::client-fd-removed">client-fd-removed</a> signal.
+Note that multifdsink still has a reference to the file descriptor when the
+<a href="multifdsink.html#GstMultiFdSink::client-removed">client-removed</a> signal is emitted, so that "get-stats" can be performed on
+the descriptor; it is therefore not safe to close the file descriptor in
+the <a href="multifdsink.html#GstMultiFdSink::client-removed">client-removed</a> signal handler, and you should use the
+<a href="multifdsink.html#GstMultiFdSink::client-fd-removed">client-fd-removed</a> signal to safely close the fd.</p>
+<p>Multifdsink internally keeps a queue of the incoming buffers and uses a
+separate thread to send the buffers to the clients. This ensures that no
+client write can block the pipeline and that clients can read with different
+speeds.</p>
+<p>When adding a client to multifdsink, the GstMultiFdSink:sync-method property will define
+which buffer in the queued buffers will be sent first to the client. Clients
+can be sent the most recent buffer (which might not be decodable by the
+client if it is not a keyframe), the next keyframe received in
+multifdsink (which can take some time depending on the keyframe rate), or the
+last received keyframe (which will cause a simple burst-on-connect).
+Multifdsink will always keep at least one keyframe in its internal buffers
+when the sync-mode is set to latest-keyframe.</p>
+<p>There are additional values for the GstMultiFdSink:sync-method
+property to allow finer control over burst-on-connect behaviour. By selecting
+the 'burst' method a minimum burst size can be chosen, 'burst-keyframe'
+additionally requires that the burst begin with a keyframe, and
+'burst-with-keyframe' attempts to burst beginning with a keyframe, but will
+prefer a minimum burst size even if it requires not starting with a keyframe.</p>
+<p>Multifdsink can be instructed to keep at least a minimum amount of data
+expressed in time or byte units in its internal queues with the
+GstMultiFdSink:time-min and GstMultiFdSink:bytes-min properties respectively.
+These properties are useful if the application adds clients with the
+<a href="multifdsink.html#GstMultiFdSink::add-full">add-full</a> signal to make sure that a burst connect can
+actually be honored.</p>
+<p>When streaming data, clients are allowed to read at a different rate than
+the rate at which multifdsink receives data. If the client is reading too
+fast, no data will be send to the client until multifdsink receives more
+data. If the client, however, reads too slowly, data for that client will be
+queued up in multifdsink. Two properties control the amount of data
+(buffers) that is queued in multifdsink: GstMultiFdSink:buffers-max and
+GstMultiFdSink:buffers-soft-max. A client that falls behind by
+GstMultiFdSink:buffers-max is removed from multifdsink forcibly.</p>
+<p>A client with a lag of at least GstMultiFdSink:buffers-soft-max enters the recovery
+procedure which is controlled with the GstMultiFdSink:recover-policy property.
+A recover policy of NONE will do nothing, RESYNC_LATEST will send the most recently
+received buffer as the next buffer for the client, RESYNC_SOFT_LIMIT
+positions the client to the soft limit in the buffer queue and
+RESYNC_KEYFRAME positions the client at the most recent keyframe in the
+buffer queue.</p>
+<p>multifdsink will by default synchronize on the clock before serving the
+buffers to the clients. This behaviour can be disabled by setting the sync
+property to FALSE. Multifdsink will by default not do QoS and will never
+drop late buffers.</p>
+
 </div>
 
 

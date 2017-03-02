@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>GstAppSrcClass</title>
+<title>GstAppSrc</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
@@ -79,7 +79,60 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="gstappsrc.h">
-<h1 id="gstappsrcclass">GstAppSrcClass</h1>
+<h1 id="gstappsrc">GstAppSrc</h1><p>The appsrc element can be used by applications to insert data into a
+GStreamer pipeline. Unlike most GStreamer elements, appsrc provides
+external API functions.</p>
+<p>appsrc can be used by linking with the libgstapp library to access the
+methods directly or by using the appsrc action signals.</p>
+<p>Before operating appsrc, the caps property must be set to fixed caps
+describing the format of the data that will be pushed with appsrc. An
+exception to this is when pushing buffers with unknown caps, in which case no
+caps should be set. This is typically true of file-like sources that push raw
+byte buffers. If you don't want to explicitly set the caps, you can use
+gst_app_src_push_sample. This method gets the caps associated with the
+sample and sets them on the appsrc replacing any previously set caps (if
+different from sample's caps).</p>
+<p>The main way of handing data to the appsrc element is by calling the
+<a href="../../gst-plugins-base-app-doc-1.0/c/gstappsrc.html#gst_app_src_push_buffer">gst_app_src_push_buffer</a> method or by emitting the push-buffer action signal.
+This will put the buffer onto a queue from which appsrc will read from in its
+streaming thread. It is important to note that data transport will not happen
+from the thread that performed the push-buffer call.</p>
+<p>The "max-bytes" property controls how much data can be queued in appsrc
+before appsrc considers the queue full. A filled internal queue will always
+signal the "enough-data" signal, which signals the application that it should
+stop pushing data into appsrc. The "block" property will cause appsrc to
+block the push-buffer method until free data becomes available again.</p>
+<p>When the internal queue is running out of data, the "need-data" signal is
+emitted, which signals the application that it should start pushing more data
+into appsrc.</p>
+<p>In addition to the "need-data" and "enough-data" signals, appsrc can emit the
+"seek-data" signal when the "stream-mode" property is set to "seekable" or
+"random-access". The signal argument will contain the new desired position in
+the stream expressed in the unit set with the "format" property. After
+receiving the seek-data signal, the application should push-buffers from the
+new position.</p>
+<p>These signals allow the application to operate the appsrc in two different
+ways:</p>
+<p>The push mode, in which the application repeatedly calls the push-buffer/push-sample
+method with a new buffer/sample. Optionally, the queue size in the appsrc
+can be controlled with the enough-data and need-data signals by respectively
+stopping/starting the push-buffer/push-sample calls. This is a typical
+mode of operation for the stream-type "stream" and "seekable". Use this
+mode when implementing various network protocols or hardware devices.</p>
+<p>The pull mode, in which the need-data signal triggers the next push-buffer call.
+This mode is typically used in the "random-access" stream-type. Use this
+mode for file access or other randomly accessable sources. In this mode, a
+buffer of exactly the amount of bytes given by the need-data signal should be
+pushed into appsrc.</p>
+<p>In all modes, the size property on appsrc should contain the total stream
+size in bytes. Setting this property is mandatory in the random-access mode.
+For the stream and seekable modes, setting this property is optional but
+recommended.</p>
+<p>When the application has finished pushing data into appsrc, it should call
+<a href="../../gst-plugins-base-app-doc-1.0/c/gstappsrc.html#gst_app_src_end_of_stream">gst_app_src_end_of_stream</a> or emit the end-of-stream action signal. After
+this call, no more buffers can be pushed into appsrc until a flushing seek
+occurs or the state of the appsrc has gone through READY.</p>
+
 </div>
 
 
@@ -1647,7 +1700,7 @@ such as in a local file.</p>
 
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrcClass">
-		<h3 id="gstappsrcclass1">
+		<h3 id="gstappsrcclass">
 	GstAppSrcClass
 </h3>
 

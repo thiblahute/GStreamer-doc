@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>GstVideoDecoderClass</title>
+<title>GstVideoDecoder</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
@@ -79,7 +79,137 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="gstvideodecoder.h">
-<h1 id="gstvideodecoderclass">GstVideoDecoderClass</h1>
+<h1 id="gstvideodecoder">GstVideoDecoder</h1><p>This base class is for video decoders turning encoded data into raw video
+frames.</p>
+<p>The GstVideoDecoder base class and derived subclasses should cooperate as
+follows:
+<orderedlist></orderedlist></p>
+<ul>
+<li>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li>
+<p>Initially, GstVideoDecoder calls <em>start</em> when the decoder element
+is activated, which allows the subclass to perform any global setup.</p>
+</li>
+<li>
+<p>GstVideoDecoder calls <em>set_format</em> to inform the subclass of caps
+describing input video data that it is about to receive, including
+possibly configuration data.
+While unlikely, it might be called more than once, if changing input
+parameters require reconfiguration.</p>
+</li>
+<li>
+<p>Incoming data buffers are processed as needed, described in Data
+Processing below.</p>
+</li>
+<li>
+<p>GstVideoDecoder calls <em>stop</em> at end of all processing.</p>
+</li>
+</ul>
+</li>
+<li>
+<h2 id="data-processing">Data processing</h2>
+<ul>
+<li>
+<p>The base class gathers input data, and optionally allows subclass
+to parse this into subsequently manageable chunks, typically
+corresponding to and referred to as 'frames'.</p>
+</li>
+<li>
+<p>Each input frame is provided in turn to the subclass' <em>handle_frame</em>
+callback.
+The ownership of the frame is given to the <em>handle_frame</em> callback.</p>
+</li>
+<li>
+<p>If codec processing results in decoded data, the subclass should call
+<em>gst_video_decoder_finish_frame</em> to have decoded data pushed.
+downstream. Otherwise, the subclass must call
+<em>gst_video_decoder_drop_frame</em>, to allow the base class to do timestamp
+and offset tracking, and possibly to requeue the frame for a later
+attempt in the case of reverse playback.</p>
+</li>
+</ul>
+</li>
+<li>
+<h2 id="shutdown-phase">Shutdown phase</h2>
+<ul>
+<li>The GstVideoDecoder class calls <em>stop</em> to inform the subclass that data
+parsing will be stopped.</li>
+</ul>
+</li>
+<li>
+<h2 id="additional-notes">Additional Notes</h2>
+<ul>
+<li>
+<h2 id="seekingflushing">Seeking/Flushing</h2>
+<ul>
+<li>When the pipeline is seeked or otherwise flushed, the subclass is
+informed via a call to its <em>reset</em> callback, with the hard parameter
+set to true. This indicates the subclass should drop any internal data
+queues and timestamps and prepare for a fresh set of buffers to arrive
+for parsing and decoding.</li>
+</ul>
+</li>
+<li>
+<h2 id="end-of-stream">End Of Stream</h2>
+<ul>
+<li>At end-of-stream, the subclass <em>parse</em> function may be called some final
+times with the at_eos parameter set to true, indicating that the element
+should not expect any more data to be arriving, and it should parse and
+remaining frames and call <a href="../../gst-plugins-base-video-doc-1.0/javascript/gstvideodecoder.html#gst_video_decoder_have_frame">GstVideo.VideoDecoder.prototype.have_frame</a> if possible.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+ 
+<p>The subclass is responsible for providing pad template caps for
+source and sink pads. The pads need to be named "sink" and "src". It also
+needs to provide information about the ouptput caps, when they are known.
+This may be when the base class calls the subclass' <em>set_format</em> function,
+though it might be during decoding, before calling
+<em>gst_video_decoder_finish_frame</em>. This is done via
+<em>gst_video_decoder_set_output_state</em></p>
+<p>The subclass is also responsible for providing (presentation) timestamps
+(likely based on corresponding input ones).  If that is not applicable
+or possible, the base class provides limited framerate based interpolation.</p>
+<p>Similarly, the base class provides some limited (legacy) seeking support
+if specifically requested by the subclass, as full-fledged support
+should rather be left to upstream demuxer, parser or alike.  This simple
+approach caters for seeking and duration reporting using estimated input
+bitrates. To enable it, a subclass should call
+<em>gst_video_decoder_set_estimate_rate</em> to enable handling of incoming
+byte-streams.</p>
+<p>The base class provides some support for reverse playback, in particular
+in case incoming data is not packetized or upstream does not provide
+fragments on keyframe boundaries.  However, the subclass should then be
+prepared for the parsing and frame processing stage to occur separately
+(in normal forward processing, the latter immediately follows the former),
+The subclass also needs to ensure the parsing stage properly marks
+keyframes, unless it knows the upstream elements will do so properly for
+incoming data.</p>
+<p>The bare minimum that a functional subclass needs to implement is:</p>
+<ul>
+<li>
+<p>Provide pad templates</p>
+</li>
+<li>
+<p>Inform the base class of output caps via
+<em>gst_video_decoder_set_output_state</em></p>
+</li>
+<li>
+<p>Parse input data, if it is not considered packetized from upstream
+Data will be provided to <em>parse</em> which should invoke
+<em>gst_video_decoder_add_to_frame</em> and <em>gst_video_decoder_have_frame</em> to
+separate the data belonging to each video frame.</p>
+</li>
+<li>
+<p>Accept data in <em>handle_frame</em> and provide decoded results to
+<em>gst_video_decoder_finish_frame</em>, or call <em>gst_video_decoder_drop_frame</em>.</p>
+</li>
+</ul>
+
 </div>
 
 

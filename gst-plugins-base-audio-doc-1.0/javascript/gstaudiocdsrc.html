@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>GstAudioCdSrcClass</title>
+<title>GstAudioCdSrc</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
@@ -79,7 +79,41 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="gstaudiocdsrc.h">
-<h1 id="gstaudiocdsrcclass">GstAudioCdSrcClass</h1>
+<h1 id="gstaudiocdsrc">GstAudioCdSrc</h1><p>Provides a base class for CD digital audio (CDDA) sources, which handles
+things like seeking, querying, discid calculation, tags, and buffer
+timestamping.</p>
+<h2 id="using-gstaudiocdsrcbased-elements-in-applications">Using GstAudioCdSrc-based elements in applications</h2>
+<p>GstAudioCdSrc registers two <a href="../../libgstreamer-doc-1.0/c/gstformat.html#GstFormat">Gst.Format</a><!-- -->s of its own, namely
+the "track" format and the "sector" format. Applications will usually
+only find the "track" format interesting. You can retrieve that <a href="../../libgstreamer-doc-1.0/c/gstformat.html#GstFormat">Gst.Format</a>
+for use in seek events or queries with gst_format_get_by_nick("track").</p>
+<p>In order to query the number of tracks, for example, an application would
+set the CDDA source element to READY or PAUSED state and then query the
+the number of tracks via <a href="../../libgstreamer-doc-1.0/c/gstutils.html#gst_element_query_duration">Gst.Element.prototype.query_duration</a> using the track
+format acquired above. Applications can query the currently playing track
+in the same way.</p>
+<p>Alternatively, applications may retrieve the currently playing track and
+the total number of tracks from the taglist that will posted on the bus
+whenever the CD is opened or the currently playing track changes. The
+taglist will contain GST_TAG_TRACK_NUMBER and GST_TAG_TRACK_COUNT tags.</p>
+<p>Applications playing back CD audio using playbin and cdda://n URIs should
+issue a seek command in track format to change between tracks, rather than
+setting a new cdda://n+1 URI on playbin (as setting a new URI on playbin
+involves closing and re-opening the CD device, which is much much slower).</p>
+<h2 id="tags-and-metainformation">Tags and meta-information</h2>
+<p>CDDA sources will automatically emit a number of tags, details about which
+can be found in the libgsttag documentation. Those tags are:
+<a href="../../gst-plugins-base-tag-doc-1.0/c/tag.html#GST_TAG_CDDA_CDDB_DISCID">GST_TAG_CDDA_CDDB_DISCID (not introspectable)</a>, <a href="../../gst-plugins-base-tag-doc-1.0/c/tag.html#GST_TAG_CDDA_CDDB_DISCID_FULL">GST_TAG_CDDA_CDDB_DISCID_FULL (not introspectable)</a>,
+<a href="../../gst-plugins-base-tag-doc-1.0/c/tag.html#GST_TAG_CDDA_MUSICBRAINZ_DISCID">GST_TAG_CDDA_MUSICBRAINZ_DISCID (not introspectable)</a>, <a href="../../gst-plugins-base-tag-doc-1.0/c/tag.html#GST_TAG_CDDA_MUSICBRAINZ_DISCID_FULL">GST_TAG_CDDA_MUSICBRAINZ_DISCID_FULL (not introspectable)</a>,
+among others.</p>
+<h2 id="tracks-and-table-of-contents-toc">Tracks and Table of Contents (TOC)</h2>
+<p>Applications will be informed of the available tracks via a TOC message
+on the pipeline's <a href="../../libgstreamer-doc-1.0/c/gstbus.html#GstBus">Gst.Bus</a>. The <a href="../../libgstreamer-doc-1.0/c/gsttoc.html#GstToc">Gst.Toc</a> will contain a <a href="../../libgstreamer-doc-1.0/c/gsttoc.html#GstTocEntry">Gst.TocEntry</a> for
+each track, with information about each track. The duration for each
+track can be retrieved via the <a href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GST_TAG_DURATION">Gst.TAG_DURATION</a> tag from each entry's
+tag list, or calculated via <a href="../../libgstreamer-doc-1.0/c/gsttoc.html#gst_toc_entry_get_start_stop_times">Gst.TocEntry.prototype.get_start_stop_times</a>.
+The track entries in the TOC will be sorted by track number.</p>
+
 </div>
 
 

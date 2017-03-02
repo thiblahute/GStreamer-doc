@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>GstAppSinkClass</title>
+<title>GstAppSink</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
@@ -79,7 +79,36 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="gstappsink.h">
-<h1 id="gstappsinkclass">GstAppSinkClass</h1>
+<h1 id="gstappsink">GstAppSink</h1><p>Appsink is a sink plugin that supports many different methods for making
+the application get a handle on the GStreamer data in a pipeline. Unlike
+most GStreamer elements, Appsink provides external API functions.</p>
+<p>appsink can be used by linking to the gstappsink.h header file to access the
+methods or by using the appsink action signals and properties.</p>
+<p>The normal way of retrieving samples from appsink is by using the
+<a href="../../gst-plugins-base-app-doc-1.0/javascript/gstappsink.html#gst_app_sink_pull_sample">GstApp.AppSink.prototype.pull_sample</a> and <a href="../../gst-plugins-base-app-doc-1.0/javascript/gstappsink.html#gst_app_sink_pull_preroll">GstApp.AppSink.prototype.pull_preroll</a> methods.
+These methods block until a sample becomes available in the sink or when the
+sink is shut down or reaches EOS. There are also timed variants of these
+methods, <a href="../../gst-plugins-base-app-doc-1.0/javascript/gstappsink.html#gst_app_sink_try_pull_sample">GstApp.AppSink.prototype.try_pull_sample</a> and <a href="../../gst-plugins-base-app-doc-1.0/javascript/gstappsink.html#gst_app_sink_try_pull_preroll">GstApp.AppSink.prototype.try_pull_preroll</a>,
+which accept a timeout parameter to limit the amount of time to wait.</p>
+<p>Appsink will internally use a queue to collect buffers from the streaming
+thread. If the application is not pulling samples fast enough, this queue
+will consume a lot of memory over time. The "max-buffers" property can be
+used to limit the queue size. The "drop" property controls whether the
+streaming thread blocks or if older buffers are dropped when the maximum
+queue size is reached. Note that blocking the streaming thread can negatively
+affect real-time performance and should be avoided.</p>
+<p>If a blocking behaviour is not desirable, setting the "emit-signals" property
+to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> will make appsink emit the "new-sample" and "new-preroll" signals
+when a sample can be pulled without blocking.</p>
+<p>The "caps" property on appsink can be used to control the formats that
+appsink can receive. This property can contain non-fixed caps, the format of
+the pulled samples can be obtained by getting the sample caps.</p>
+<p>If one of the pull-preroll or pull-sample methods return <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a>, the appsink
+is stopped or in the EOS state. You can check for the EOS state with the
+"eos" property or with the <a href="../../gst-plugins-base-app-doc-1.0/javascript/gstappsink.html#gst_app_sink_is_eos">GstApp.AppSink.prototype.is_eos</a> method.</p>
+<p>The eos signal can also be used to be informed when the EOS state is reached
+to avoid polling.</p>
+
 </div>
 
 

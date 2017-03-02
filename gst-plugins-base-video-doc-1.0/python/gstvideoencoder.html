@@ -79,7 +79,82 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="gstvideoencoder.h">
-<h1 id="gstvideoencoderprivate">GstVideoEncoderPrivate</h1>
+<h1 id="gstvideoencoderprivate">GstVideoEncoderPrivate</h1><p>This base class is for video encoders turning raw video into
+encoded video data.</p>
+<p>GstVideoEncoder and subclass should cooperate as follows.
+<orderedlist></orderedlist></p>
+<ul>
+<li>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li>
+<p>Initially, GstVideoEncoder calls <em>start</em> when the encoder element
+is activated, which allows subclass to perform any global setup.</p>
+</li>
+<li>
+<p>GstVideoEncoder calls <em>set_format</em> to inform subclass of the format
+of input video data that it is about to receive.  Subclass should
+setup for encoding and configure base class as appropriate
+(e.g. latency). While unlikely, it might be called more than once,
+if changing input parameters require reconfiguration.  Baseclass
+will ensure that processing of current configuration is finished.</p>
+</li>
+<li>
+<p>GstVideoEncoder calls <em>stop</em> at end of all processing.</p>
+</li>
+</ul>
+</li>
+<li>
+<h2 id="data-processing">Data processing</h2>
+<ul>
+<li>
+<p>Base class collects input data and metadata into a frame and hands
+this to subclass' <em>handle_frame</em>.</p>
+</li>
+<li>
+<p>If codec processing results in encoded data, subclass should call
+<em>gst_video_encoder_finish_frame</em> to have encoded data pushed
+downstream.</p>
+</li>
+<li>
+<p>If implemented, baseclass calls subclass <em>pre_push</em> just prior to
+pushing to allow subclasses to modify some metadata on the buffer.
+If it returns GST_FLOW_OK, the buffer is pushed downstream.</p>
+</li>
+<li>
+<p>GstVideoEncoderClass will handle both srcpad and sinkpad events.
+Sink events will be passed to subclass if <em>event</em> callback has been
+provided.</p>
+</li>
+</ul>
+</li>
+<li>
+<h2 id="shutdown-phase">Shutdown phase</h2>
+<ul>
+<li>GstVideoEncoder class calls <em>stop</em> to inform the subclass that data
+parsing will be stopped.</li>
+</ul>
+</li>
+</ul>
+ 
+<p>Subclass is responsible for providing pad template caps for
+source and sink pads. The pads need to be named "sink" and "src". It should
+also be able to provide fixed src pad caps in <em>getcaps</em> by the time it calls
+<em>gst_video_encoder_finish_frame</em>.</p>
+<p>Things that subclass need to take care of:</p>
+<ul>
+<li>
+<p>Provide pad templates</p>
+</li>
+<li>
+<p>Provide source pad caps before pushing the first buffer</p>
+</li>
+<li>
+<p>Accept data in <em>handle_frame</em> and provide encoded results to
+<em>gst_video_encoder_finish_frame</em>.</p>
+</li>
+</ul>
+
 </div>
 
 

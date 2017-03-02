@@ -79,7 +79,69 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="multisocketsink">
-<h1 id="multisocketsink">multisocketsink</h1>
+<h1 id="multisocketsink">multisocketsink</h1><p>This plugin writes incoming data to a set of file descriptors. The
+file descriptors can be added to multisocketsink by emitting the <a href="multisocketsink.html#GstMultiSocketSink::add">add</a> signal.
+For each descriptor added, the <a href="multisocketsink.html#GstMultiSocketSink::client-added">client-added</a> signal will be called.</p>
+<p>A client can also be added with the <a href="multisocketsink.html#GstMultiSocketSink::add-full">add-full</a> signal
+that allows for more control over what and how much data a client
+initially receives.</p>
+<p>Clients can be removed from multisocketsink by emitting the <a href="multisocketsink.html#GstMultiSocketSink::remove">remove</a> signal. For
+each descriptor removed, the <a href="multisocketsink.html#GstMultiSocketSink::client-removed">client-removed</a> signal will be called. The
+<a href="multisocketsink.html#GstMultiSocketSink::client-removed">client-removed</a> signal can also be fired when multisocketsink decides that a
+client is not active anymore or, depending on the value of the
+GstMultiSocketSink:recover-policy property, if the client is reading too slowly.
+In all cases, multisocketsink will never close a file descriptor itself.
+The user of multisocketsink is responsible for closing all file descriptors.
+This can for example be done in response to the GstMultiSocketSink::client-fd-removed signal.
+Note that multisocketsink still has a reference to the file descriptor when the
+<a href="multisocketsink.html#GstMultiSocketSink::client-removed">client-removed</a> signal is emitted, so that "get-stats" can be performed on
+the descriptor; it is therefore not safe to close the file descriptor in
+the <a href="multisocketsink.html#GstMultiSocketSink::client-removed">client-removed</a> signal handler, and you should use the
+GstMultiSocketSink::client-fd-removed signal to safely close the fd.</p>
+<p>Multisocketsink internally keeps a queue of the incoming buffers and uses a
+separate thread to send the buffers to the clients. This ensures that no
+client write can block the pipeline and that clients can read with different
+speeds.</p>
+<p>When adding a client to multisocketsink, the GstMultiSocketSink:sync-method property will define
+which buffer in the queued buffers will be sent first to the client. Clients
+can be sent the most recent buffer (which might not be decodable by the
+client if it is not a keyframe), the next keyframe received in
+multisocketsink (which can take some time depending on the keyframe rate), or the
+last received keyframe (which will cause a simple burst-on-connect).
+Multisocketsink will always keep at least one keyframe in its internal buffers
+when the sync-mode is set to latest-keyframe.</p>
+<p>There are additional values for the GstMultiSocketSink:sync-method
+property to allow finer control over burst-on-connect behaviour. By selecting
+the 'burst' method a minimum burst size can be chosen, 'burst-keyframe'
+additionally requires that the burst begin with a keyframe, and
+'burst-with-keyframe' attempts to burst beginning with a keyframe, but will
+prefer a minimum burst size even if it requires not starting with a keyframe.</p>
+<p>Multisocketsink can be instructed to keep at least a minimum amount of data
+expressed in time or byte units in its internal queues with the
+GstMultiSocketSink:time-min and GstMultiSocketSink:bytes-min properties respectively.
+These properties are useful if the application adds clients with the
+<a href="multisocketsink.html#GstMultiSocketSink::add-full">add-full</a> signal to make sure that a burst connect can
+actually be honored.</p>
+<p>When streaming data, clients are allowed to read at a different rate than
+the rate at which multisocketsink receives data. If the client is reading too
+fast, no data will be send to the client until multisocketsink receives more
+data. If the client, however, reads too slowly, data for that client will be
+queued up in multisocketsink. Two properties control the amount of data
+(buffers) that is queued in multisocketsink: GstMultiSocketSink:buffers-max and
+GstMultiSocketSink:buffers-soft-max. A client that falls behind by
+GstMultiSocketSink:buffers-max is removed from multisocketsink forcibly.</p>
+<p>A client with a lag of at least GstMultiSocketSink:buffers-soft-max enters the recovery
+procedure which is controlled with the GstMultiSocketSink:recover-policy property.
+A recover policy of NONE will do nothing, RESYNC_LATEST will send the most recently
+received buffer as the next buffer for the client, RESYNC_SOFT_LIMIT
+positions the client to the soft limit in the buffer queue and
+RESYNC_KEYFRAME positions the client at the most recent keyframe in the
+buffer queue.</p>
+<p>multisocketsink will by default synchronize on the clock before serving the
+buffers to the clients. This behaviour can be disabled by setting the sync
+property to FALSE. Multisocketsink will by default not do QoS and will never
+drop late buffers.</p>
+
 </div>
 
 

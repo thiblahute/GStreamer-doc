@@ -79,7 +79,73 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="encodebin">
-<h1 id="encodebin">encodebin</h1>
+<h1 id="encodebin">encodebin</h1><p>EncodeBin provides a bin for encoding/muxing various streams according to
+a specified <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-libs/html/gst-plugins-base-libs-encoding-profile.html#GstEncodingProfile-struct">GstEncodingProfile</a>.</p>
+<p>Based on the profile that was set (via the <a href="encodebin.html#GstEncodeBin:profile">profile</a> property),
+EncodeBin will internally select and configure the required elements
+(encoders, muxers, but also audio and video converters) so that you can
+provide it raw or pre-encoded streams of data in input and have your
+encoded/muxed/converted stream in output.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>
+<p>Automatic encoder and muxer selection based on elements available on the
+system.</p>
+</li>
+<li>
+<p>Conversion of raw audio/video streams (scaling, framerate conversion,
+colorspace conversion, samplerate conversion) to conform to the profile
+output format.</p>
+</li>
+<li>
+<p>Variable number of streams. If the presence property for a stream encoding
+profile is 0, you can request any number of sink pads for it via the
+standard request pad gstreamer API or the <a href="encodebin.html#GstEncodeBin::request-pad">request-pad</a> action
+signal.</p>
+</li>
+<li>
+<p>Avoid reencoding (passthrough). If the input stream is already encoded and is
+compatible with what the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-libs/html/gst-plugins-base-libs-encoding-profile.html#GstEncodingProfile-struct">GstEncodingProfile</a> expects, then the stream won't
+be re-encoded but just passed through downstream to the muxer or the output.</p>
+</li>
+<li>
+<p>Mix pre-encoded and raw streams as input. In addition to the passthrough
+feature above, you can feed both raw audio/video <em>AND</em> already-encoded data
+to a pad. <a href="encodebin.html#GstEncodeBin">encodebin</a> will take care of passing through the compatible
+segments and re-encoding the segments of media that need encoding.</p>
+</li>
+<li>
+<p>Standard behaviour is to use a <a href="../gst-plugins-base-pbutils-doc-1.0/c/encoding-profile.html#GstEncodingContainerProfile">GstEncodingContainerProfile</a> to have both
+encoding and muxing performed. But you can also provide a single stream
+profile (like <a href="../gst-plugins-base-pbutils-doc-1.0/c/encoding-profile.html#GstEncodingAudioProfile">GstEncodingAudioProfile</a>) to only have the encoding done and
+handle the encoded output yourself.</p>
+</li>
+<li>
+<p>Audio imperfection corrections. Incoming audio streams can have non perfect
+timestamps (jitter), like the streams coming from ASF files. <a href="encodebin.html#GstEncodeBin">encodebin</a>
+will automatically fix those imperfections for you. See
+<a href="encodebin.html#GstEncodeBin:audio-jitter-tolerance">audio-jitter-tolerance</a> for more details.</p>
+</li>
+<li>
+<p>Variable or Constant video framerate. If your <a href="../gst-plugins-base-pbutils-doc-1.0/c/encoding-profile.html#GstEncodingVideoProfile">GstEncodingVideoProfile</a> has
+the variableframerate property deactivated (default), then the incoming
+raw video stream will be retimestampped in order to produce a constant
+framerate.</p>
+</li>
+<li>
+<p>Cross-boundary re-encoding. When feeding compatible pre-encoded streams that
+fall on segment boundaries, and for supported formats (right now only H263),
+the GOP will be decoded/reencoded when needed to produce an encoded output
+that fits exactly within the request GstSegment.</p>
+</li>
+<li>
+<p>Missing plugin support. If a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html#GstElement-struct">GstElement</a> is missing to encode/mux to the
+request profile formats, a missing-plugin <a href="../gst-plugins-base-pbutils-doc-1.0/c/missing-plugins.html#GstMessage">GstMessage</a> will be posted on the
+<a href="../libgstreamer-doc-1.0/c/gstbus.html#GstBus">GstBus</a>, allowing systems that support the missing-plugin system to offer the
+user a way to install the missing element.</p>
+</li>
+</ul>
+
 </div>
 
 

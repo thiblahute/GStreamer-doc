@@ -79,7 +79,38 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="giostreamsrc">
-<h1 id="giostreamsrc">giostreamsrc</h1>
+<h1 id="giostreamsrc">giostreamsrc</h1><p>This plugin reads data from a custom GIO GInputStream.</p>
+<p>It can, for example, be used to read data from memory with a
+GMemoryInputStream or to read from a file with a
+GFileInputStream.</p>
+<h2 id="example-code">Example code</h2>
+<p>The following example reads data from a GMemoryInputStream.</p>
+<pre><code>
+#include &lt;gst/gst.h&gt;
+#include &lt;gio/gio.h&gt;
+
+...
+
+GstElement *src;
+GMemoryInputStream *stream;
+// in_data will contain the data to send
+guint8 *in_data;
+gint i;
+
+...
+in_data = g_new (guint8, 512);
+for (i = 0; i &lt; 512; i++)
+ in_data[i] = i % 256;
+
+stream = G_MEMORY_INPUT_STREAM (g_memory_input_stream_new_from_data (in_data, 512,
+         (GDestroyNotify) g_free));
+src = gst_element_factory_make ("giostreamsrc", "src");
+g_object_set (G_OBJECT (src), "stream", stream, NULL);
+
+...
+
+</code></pre>
+
 </div>
 
 

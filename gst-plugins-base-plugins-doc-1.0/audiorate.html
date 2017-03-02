@@ -79,7 +79,40 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="audiorate">
-<h1 id="audiorate">audiorate</h1>
+<h1 id="audiorate">audiorate</h1><p>This element takes an incoming stream of timestamped raw audio frames and
+produces a perfect stream by inserting or dropping samples as needed.</p>
+<p>This operation may be of use to link to elements that require or otherwise
+implicitly assume a perfect stream as they do not store timestamps,
+but derive this by some means (e.g. bitrate for some AVI cases).</p>
+<p>The properties <a href="audiorate.html#GstAudioRate:in">in</a>, <a href="audiorate.html#GstAudioRate:out">out</a>, <a href="audiorate.html#GstAudioRate:add">add</a>
+and <a href="audiorate.html#GstAudioRate:drop">drop</a> can be read to obtain information about number of
+input samples, output samples, dropped samples (i.e. the number of unused
+input samples) and inserted samples (i.e. the number of samples added to
+stream).</p>
+<p>When the <a href="audiorate.html#GstAudioRate:silent">silent</a> property is set to FALSE, a GObject property
+notification will be emitted whenever one of the <a href="audiorate.html#GstAudioRate:add">add</a> or
+<a href="audiorate.html#GstAudioRate:drop">drop</a> values changes.
+This can potentially cause performance degradation.
+Note that property notification will happen from the streaming thread, so
+applications should be prepared for this.</p>
+<p>If the <a href="audiorate.html#GstAudioRate:tolerance">tolerance</a> property is non-zero, and an incoming buffer's
+timestamp deviates less than the property indicates from what would make a
+'perfect time', then no samples will be added or dropped.
+Note that the output is still guaranteed to be a perfect stream, which means
+that the incoming data is then simply shifted (by less than the indicated
+tolerance) to a perfect time.</p>
+<h2 id="example-pipelines">Example pipelines</h2>
+<pre><code>gst-launch-1.0 -v autoaudiosrc ! audiorate ! audioconvert ! wavenc ! filesink location=alsa.wav
+</code></pre>
+<p>Capture audio from the sound card and turn it into a perfect stream
+for saving in a raw audio file.</p>
+<pre><code>gst-launch-1.0 -v uridecodebin uri=file:///path/to/audio.file ! audiorate ! audioconvert ! wavenc ! filesink location=alsa.wav
+</code></pre>
+<p>Decodes an audio file and transforms it into a perfect stream for saving
+in a raw audio WAV file. Without the audio rate, the timing might not be
+preserved correctly in the WAV file in case the decoded stream is jittery
+or there are samples missing.</p>
+
 </div>
 
 

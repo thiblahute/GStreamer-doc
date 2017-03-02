@@ -79,7 +79,26 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="vorbisparse">
-<h1 id="vorbisparse">vorbisparse</h1>
+<h1 id="vorbisparse">vorbisparse</h1><p>The vorbisparse element will parse the header packets of the Vorbis
+stream and put them as the streamheader in the caps. This is used in the
+multifdsink case where you want to stream live vorbis streams to multiple
+clients, each client has to receive the streamheaders first before they can
+consume the vorbis packets.</p>
+<p>This element also makes sure that the buffers that it pushes out are properly
+timestamped and that their offset and offset_end are set. The buffers that
+vorbisparse outputs have all of the metadata that oggmux expects to receive,
+which allows you to (for example) remux an ogg/vorbis file.</p>
+<h2 id="example-pipelines">Example pipelines</h2>
+<pre><code>gst-launch-1.0 -v filesrc location=sine.ogg ! oggdemux ! vorbisparse ! fakesink
+</code></pre>
+<p>This pipeline shows that the streamheader is set in the caps, and that each
+buffer has the timestamp, duration, offset, and offset_end set.</p>
+<pre><code>gst-launch-1.0 filesrc location=sine.ogg ! oggdemux ! vorbisparse \
+           ! oggmux ! filesink location=sine-remuxed.ogg
+</code></pre>
+<p>This pipeline shows remuxing. sine-remuxed.ogg might not be exactly the same
+as sine.ogg, but they should produce exactly the same decoded data.</p>
+
 </div>
 
 

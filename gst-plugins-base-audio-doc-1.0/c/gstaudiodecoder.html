@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>GstAudioDecoderClass</title>
+<title>GstAudioDecoder</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
@@ -79,7 +79,122 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="gstaudiodecoder.h">
-<h1 id="gstaudiodecoderclass">GstAudioDecoderClass</h1>
+<h1 id="gstaudiodecoder">GstAudioDecoder</h1><p>This base class is for audio decoders turning encoded data into
+raw audio samples.</p>
+<p>GstAudioDecoder and subclass should cooperate as follows.
+<orderedlist></orderedlist></p>
+<ul>
+<li>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li>
+<p>Initially, GstAudioDecoder calls <em>start</em> when the decoder element
+is activated, which allows subclass to perform any global setup.
+Base class (context) parameters can already be set according to subclass
+capabilities (or possibly upon receive more information in subsequent
+<em>set_format</em>).</p>
+</li>
+<li>
+<p>GstAudioDecoder calls <em>set_format</em> to inform subclass of the format
+of input audio data that it is about to receive.
+While unlikely, it might be called more than once, if changing input
+parameters require reconfiguration.</p>
+</li>
+<li>
+<p>GstAudioDecoder calls <em>stop</em> at end of all processing.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>As of configuration stage, and throughout processing, GstAudioDecoder
+provides various (context) parameters, e.g. describing the format of
+output audio data (valid when output caps have been set) or current parsing state.
+Conversely, subclass can and should configure context to inform
+base class of its expectation w.r.t. buffer handling.</p>
+<ul>
+<li>
+<h2 id="data-processing">Data processing</h2>
+<ul>
+<li>
+<p>Base class gathers input data, and optionally allows subclass
+to parse this into subsequently manageable (as defined by subclass)
+chunks.  Such chunks are subsequently referred to as 'frames',
+though they may or may not correspond to 1 (or more) audio format frame.</p>
+</li>
+<li>
+<p>Input frame is provided to subclass' <em>handle_frame</em>.</p>
+</li>
+<li>
+<p>If codec processing results in decoded data, subclass should call
+<em>gst_audio_decoder_finish_frame</em> to have decoded data pushed
+downstream.</p>
+</li>
+<li>
+<p>Just prior to actually pushing a buffer downstream,
+it is passed to <em>pre_push</em>.  Subclass should either use this callback
+to arrange for additional downstream pushing or otherwise ensure such
+custom pushing occurs after at least a method call has finished since
+setting src pad caps.</p>
+</li>
+<li>
+<p>During the parsing process GstAudioDecoderClass will handle both
+srcpad and sinkpad events. Sink events will be passed to subclass
+if <em>event</em> callback has been provided.</p>
+</li>
+</ul>
+</li>
+<li>
+<h2 id="shutdown-phase">Shutdown phase</h2>
+<ul>
+<li>GstAudioDecoder class calls <em>stop</em> to inform the subclass that data
+parsing will be stopped.</li>
+</ul>
+</li>
+</ul>
+ 
+<p>Subclass is responsible for providing pad template caps for
+source and sink pads. The pads need to be named "sink" and "src". It also
+needs to set the fixed caps on srcpad, when the format is ensured.  This
+is typically when base class calls subclass' <em>set_format</em> function, though
+it might be delayed until calling <em>gst_audio_decoder_finish_frame</em>.</p>
+<p>In summary, above process should have subclass concentrating on
+codec data processing while leaving other matters to base class,
+such as most notably timestamp handling.  While it may exert more control
+in this area (see e.g. <em>pre_push</em>), it is very much not recommended.</p>
+<p>In particular, base class will try to arrange for perfect output timestamps
+as much as possible while tracking upstream timestamps.
+To this end, if deviation between the next ideal expected perfect timestamp
+and upstream exceeds <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-libs/html/gst-plugins-base-libs-gstaudiodecoder.html#GstAudioDecoder--tolerance">GstAudioDecoder:tolerance</a>, then resync to upstream
+occurs (which would happen always if the tolerance mechanism is disabled).</p>
+<p>In non-live pipelines, baseclass can also (configurably) arrange for
+output buffer aggregation which may help to redue large(r) numbers of
+small(er) buffers being pushed and processed downstream.</p>
+<p>On the other hand, it should be noted that baseclass only provides limited
+seeking support (upon explicit subclass request), as full-fledged support
+should rather be left to upstream demuxer, parser or alike.  This simple
+approach caters for seeking and duration reporting using estimated input
+bitrates.</p>
+<p>Things that subclass need to take care of:</p>
+<ul>
+<li>
+<p>Provide pad templates</p>
+</li>
+<li>
+<p>Set source pad caps when appropriate</p>
+</li>
+<li>
+<p>Set user-configurable properties to sane defaults for format and
+implementing codec at hand, and convey some subclass capabilities and
+expectations in context.</p>
+</li>
+<li>
+<p>Accept data in <em>handle_frame</em> and provide encoded results to
+<em>gst_audio_decoder_finish_frame</em>.  If it is prepared to perform
+PLC, it should also accept NULL data in <em>handle_frame</em> and provide for
+data for indicated duration.</p>
+</li>
+</ul>
+
 </div>
 
 
@@ -2645,7 +2760,7 @@ struct _GstAudioDecoder
 
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoderClass">
-		<h3 id="gstaudiodecoderclass1">
+		<h3 id="gstaudiodecoderclass">
 	GstAudioDecoderClass
 </h3>
 

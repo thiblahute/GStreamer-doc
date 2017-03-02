@@ -79,7 +79,49 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="rawaudioparse">
-<h1 id="rawaudioparse">rawaudioparse</h1>
+<h1 id="rawaudioparse">rawaudioparse</h1><p>This element parses incoming data as raw audio samples and timestamps it.
+It also handles seek queries in said raw audio data, and ensures that output
+buffers contain an integer number of samples, even if the input buffers don't.
+For example, with sample format S16LE and 2 channels, an input buffer of 411
+bytes contains 102.75 samples. rawaudioparse will then output 102 samples
+(= 408 bytes) and keep the remaining 3 bytes. These will then be prepended to
+the next input data.</p>
+<p>The element implements the properties and sink caps configuration as specified
+in the GstRawBaseParse documentation. The properties configuration can be
+modified by using the sample-rate, num-channels, channel-positions, format,
+and pcm-format properties.</p>
+<p>Currently, this parser supports raw data in a-law, mu-law, or linear PCM format.</p>
+<p>To facilitate operation with the unalignedaudioparse element, rawaudioparse
+supports the "audio/x-unaligned-raw" media type. This is treated identically to
+"audio/x-raw", except that it is used by source elements which do not guarantee
+that the buffers they push out are timestamped and contain an integer amount of
+samples (see the 411 bytes example above). By using a different media type, it
+is guaranteed that unalignedaudioparse is autoplugged, making sure that the
+autoplugged chain does not push unparsed content downstream. The source caps'
+media type with linear PCM data is always "audio/x-raw", even if the sink caps
+use "audio/x-unaligned-raw".</p>
+<p>The channel-positions property can be used to set explicit position information
+for each channel. If the array that is passed to this property does not match
+the number of channels indicated by num-channels, then said number of channels
+is updated to the array length. If channel-positions is NULL, then the default
+GStreamer positioning is used. This property is also useful for swapping left
+and right in a stereo signal for example.</p>
+<h2 id="example-pipelines">Example pipelines</h2>
+<pre><code>gst-launch-1.0 souphttpsrc http://my-dlna-server/track.l16 \
+    rawaudioparse ! audioconvert ! audioresample ! autoaudiosink
+</code></pre>
+<p>Receive L16 data from a DLNA server, parse and timestamp it with
+rawaudioparse, and play it. use-sink-caps is set to true since souphttpsrc
+will set its source pad's caps to audio/x-unaligned-raw for the L16 stream.</p>
+<pre><code>gst-launch-1.0 filesrc location=audio.raw ! rawaudioparse use-sink-caps=false \
+        format=pcm pcm-format=s16le sample-rate=48000 num-channels=2 \
+        audioconvert ! audioresample ! autoaudiosink
+</code></pre>
+<p>Read raw data from a local file and parse it as PCM data with 48000 Hz sample
+rate, signed 16 bit integer samples, and 2 channels. use-sink-caps is set to
+false to ensure the property information is used and the parser does not expect
+audio/x-raw or audio/x-unaligned-raw caps.</p>
+
 </div>
 
 
