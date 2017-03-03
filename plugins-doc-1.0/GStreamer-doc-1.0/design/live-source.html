@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Live sources</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/live-source.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="live-source.md">
+<h1 id="live-sources">Live sources</h1>
+<p>A live source is a source that cannot be arbitrarily <code>PAUSED</code> without
+losing data.</p>
+<p>A live source such as an element capturing audio or video, needs to be
+handled in a special way. It does not make sense to start the dataflow
+in the <code>PAUSED</code> state for those devices as the user might wait a long time
+between going from <code>PAUSED</code> to <code>PLAYING</code>, making the previously captured
+buffers irrelevant.</p>
+<p>A live source therefore only produces buffers in the <code>PLAYING</code> state. This
+has implications for sinks waiting for a buffer to complete the preroll
+state since such a buffer might never arrive.</p>
+<p>Live sources return <code>NO_PREROLL</code> when going to the <code>PAUSED</code> state to inform
+the bin/pipeline that this element will not be able to produce data in
+the <code>PAUSED</code> state. <code>NO_PREROLL</code> should be returned for both READY→PAUSED
+and PLAYING→PAUSED.</p>
+<p>When performing a <code>get_state()</code> on a bin with a non-zero timeout value,
+the bin must be sure that there are no live sources in the pipeline
+because otherwise, the <code>get_state()</code> function would block on the sinks.</p>
+<p>A gstbin therefore always performs a zero timeout <code>get_state()</code> on its
+elements to discover the <code>NO_PREROLL</code> (and ERROR) elements before
+performing a blocking wait.</p>
+<h2 id="scheduling">Scheduling</h2>
+<p>Live sources will not produce data in the <code>PAUSED</code> state. They block in
+the <code>get_range()</code> function or in the loop function until they go to PLAYING.</p>
+<h2 id="latency">Latency</h2>
+<p>The live source timestamps its data with the time of the clock when
+the data was captured. Normally, it will take some time to capture
+the first sample of data and the last one. This means that when the
+buffer arrives at the sink, it will already be late and will be dropped.</p>
+<p>The latency is the time it takes to construct one buffer of data and it's
+exposed with a <code>LATENCY</code> query.</p>
+<p>See <a href="latency.html">latency</a></p>
+<h2 id="timestamps">Timestamps</h2>
+<p>Live sources always timestamp their buffers with the <code>running_time</code> of
+the pipeline. This is needed to be able to match the timestamps of
+different live sources in order to synchronize them.</p>
+<p>This is in contrast to non-live sources, which timestamp their buffers
+starting from <code>running_time</code> 0.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

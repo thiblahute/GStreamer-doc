@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Pre-made base classes</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="plugin-development/element-types/base-classes.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="base-classes.md">
+<h1 id="premade-base-classes">Pre-made base classes</h1>
+<p>So far, we've been looking at low-level concepts of creating any type of
+GStreamer element. Now, let's assume that all you want is to create an
+simple audiosink that works exactly the same as, say, “esdsink”, or a
+filter that simply normalizes audio volume. Such elements are very
+general in concept and since they do nothing special, they should be
+easier to code than to provide your own scheduler activation functions
+and doing complex caps negotiation. For this purpose, GStreamer provides
+base classes that simplify some types of elements. Those base classes
+will be discussed in this chapter.</p>
+<h2 id="writing-a-sink">Writing a sink</h2>
+<p>Sinks are special elements in GStreamer. This is because sink elements
+have to take care of <em>preroll</em>, which is the process that takes care
+that elements going into the <code>GST_STATE_PAUSED</code> state will have buffers
+ready after the state change. The result of this is that such elements
+can start processing data immediately after going into the
+<code>GST_STATE_PLAYING</code> state, without requiring to take some time to
+initialize outputs or set up decoders; all that is done already before
+the state-change to <code>GST_STATE_PAUSED</code> successfully completes.</p>
+<p>Preroll, however, is a complex process that would require the same code
+in many elements. Therefore, sink elements can derive from the
+<code>GstBaseSink</code> base-class, which does preroll and a few other utility
+functions automatically. The derived class only needs to implement a
+bunch of virtual functions and will work automatically.</p>
+<p>The base class implement much of the synchronization logic that a sink
+has to perform.</p>
+<p>The <code>GstBaseSink</code> base-class specifies some limitations on elements,
+though:</p>
+<ul>
+<li>It requires that the sink only has one sinkpad. Sink elements that
+need more than one sinkpad, must make a manager element with
+multiple GstBaseSink elements inside.</li>
+</ul>
+<p>Sink elements can derive from <code>GstBaseSink</code> using the usual <code>GObject</code>
+convenience macro <code>G_DEFINE_TYPE ()</code>:</p>
+<pre><code class="language-c">G_DEFINE_TYPE (GstMySink, gst_my_sink, GST_TYPE_BASE_SINK);
+
+[..]
+
+static void
+gst_my_sink_class_init (GstMySinkClass * klass)
+{
+  klass-&gt;set_caps = [..];
+  klass-&gt;render = [..];
+[..]
+}
+
+</code></pre>
+<p>The advantages of deriving from <code>GstBaseSink</code> are numerous:</p>
+<ul>
+<li>
+<p>Derived implementations barely need to be aware of preroll, and do
+not need to know anything about the technical implementation
+requirements of preroll. The base-class does all the hard work.</p>
+<p>Less code to write in the derived class, shared code (and thus
+shared bugfixes).</p>
+</li>
+</ul>
+<p>There are also specialized base classes for audio and video, let's look
+at those a bit.</p>
+<h3 id="writing-an-audio-sink">Writing an audio sink</h3>
+<p>Essentially, audio sink implementations are just a special case of a
+general sink. An audio sink has the added complexity that it needs to
+schedule playback of samples. It must match the clock selected in the
+pipeline against the clock of the audio device and calculate and
+compensate for drift and jitter.</p>
+<p>There are two audio base classes that you can choose to derive from,
+depending on your needs: <code>GstAudioBasesink</code> and <code>GstAudioSink</code>. The
+audiobasesink provides full control over how synchronization and
+scheduling is handled, by using a ringbuffer that the derived class
+controls and provides. The audiosink base-class is a derived class of
+the audiobasesink, implementing a standard ringbuffer implementing
+default synchronization and providing a standard audio-sample clock.
+Derived classes of this base class merely need to provide a <code>_open ()</code>, <code>_close ()</code> and a <code>_write ()</code> function implementation, and some optional functions. This should
+suffice for many sound-server output elements and even most interfaces.
+More demanding audio systems, such as Jack, would want to implement the
+<code>GstAudioBaseSink</code> base-class.</p>
+<p>The <code>GstAudioBaseSink</code> has little to no limitations and should fit
+virtually every implementation, but is hard to implement. The
+<code>GstAudioSink</code>, on the other hand, only fits those systems with a simple
+<code>open ()</code> / <code>close ()</code> / <code>write ()</code> API (which practically means pretty much all of them), but has the
+advantage that it is a lot easier to implement. The benefits of this
+second base class are large:</p>
+<ul>
+<li>
+<p>Automatic synchronization, without any code in the derived class.</p>
+</li>
+<li>
+<p>Also automatically provides a clock, so that other sinks (e.g. in
+case of audio/video playback) are synchronized.</p>
+</li>
+<li>
+<p>Features can be added to all audiosinks by making a change in the
+base class, which makes maintenance easy.</p>
+</li>
+<li>
+<p>Derived classes require only three small functions, plus some
+<code>GObject</code> boilerplate code.</p>
+</li>
+</ul>
+<p>In addition to implementing the audio base-class virtual functions,
+derived classes can (should) also implement the <code>GstBaseSink</code> <code>set_caps ()</code> and <code>get_caps ()</code> virtual functions for negotiation.</p>
+<h3 id="writing-a-video-sink">Writing a video sink</h3>
+<p>Writing a videosink can be done using the <code>GstVideoSink</code> base-class,
+which derives from <code>GstBaseSink</code> internally. Currently, it does nothing
+yet but add another compile dependency, so derived classes will need to
+implement all base-sink virtual functions. When they do this correctly,
+this will have some positive effects on the end user experience with the
+videosink:</p>
+<ul>
+<li>
+<p>Because of preroll (and the <code>preroll ()</code> virtual function), it is
+possible to display a video frame already when going into the
+<code>GST_STATE_PAUSED</code> state.</p>
+</li>
+<li>
+<p>By adding new features to <code>GstVideoSink</code>, it will be possible to add
+extensions to videosinks that affect all of them, but only need to
+be coded once, which is a huge maintenance benefit.</p>
+</li>
+</ul>
+<h2 id="writing-a-source">Writing a source</h2>
+<p>In the previous part, particularly <a href="../advanced/scheduling.html#providing-random-access">Providing random access</a>,
+we have learned that some types of elements can provide random access. This
+applies most definitely to source elements reading from a randomly seekable
+location, such as file sources. However, other source elements may be better
+described as a live source element, such as a camera source, an audio
+card source and such; those are not seekable and do not provide
+byte-exact access. For all such use cases, GStreamer provides two base
+classes: <code>GstBaseSrc</code> for the basic source functionality, and
+<code>GstPushSrc</code>, which is a non-byte exact source base-class. The
+pushsource base class itself derives from basesource as well, and thus
+all statements about the basesource apply to the pushsource, too.</p>
+<p>The basesrc class does several things automatically for derived classes,
+so they no longer have to worry about it:</p>
+<ul>
+<li>
+<p>Fixes to <code>GstBaseSrc</code> apply to all derived classes automatically.</p>
+</li>
+<li>
+<p>Automatic pad activation handling, and task-wrapping in case we get
+assigned to start a task ourselves.</p>
+</li>
+</ul>
+<p>The <code>GstBaseSrc</code> may not be suitable for all cases, though; it has
+limitations:</p>
+<ul>
+<li>There is one and only one sourcepad. Source elements requiring
+multiple sourcepads must implement a manager bin and use multiple
+source elements internally or make a manager element that uses a
+source element and a demuxer inside.</li>
+</ul>
+<p>It is possible to use special memory, such as X server memory pointers
+or <code>mmap ()</code>'ed memory areas, as data pointers in buffers returned from
+the <code>create()</code> virtual function.</p>
+<h3 id="writing-an-audio-source">Writing an audio source</h3>
+<p>An audio source is nothing more but a special case of a pushsource.
+Audio sources would be anything that reads audio, such as a source
+reading from a soundserver, a kernel interface (such as ALSA) or a test
+sound / signal generator. GStreamer provides two base classes, similar
+to the two audiosinks described in <a href="../../../#writing-an-audio-sink">Writing an audio
+sink</a>; one is ringbuffer-based, and requires the
+derived class to take care of its own scheduling, synchronization and
+such. The other is based on this <code>GstAudioBaseSrc</code> and is called
+<code>GstAudioSrc</code>, and provides a simple <code>open ()</code>, <code>close ()</code> and <code>read ()</code>
+interface, which is rather simple to implement and will suffice for most
+soundserver sources and audio interfaces (e.g. ALSA or OSS) out there.</p>
+<p>The <code>GstAudioSrc</code> base-class has several benefits for derived classes,
+on top of the benefits of the <code>GstPushSrc</code> base-class that it is based
+on:</p>
+<ul>
+<li>
+<p>Does syncronization and provides a clock.</p>
+</li>
+<li>
+<p>New features can be added to it and will apply to all derived
+classes automatically.</p>
+</li>
+</ul>
+<h2 id="writing-a-transformation-element">Writing a transformation element</h2>
+<p>A third base-class that GStreamer provides is the <code>GstBaseTransform</code>.
+This is a base class for elements with one sourcepad and one sinkpad
+which act as a filter of some sort, such as volume changing, audio
+resampling, audio format conversion, and so on and so on. There is quite
+a lot of bookkeeping that such elements need to do in order for things
+such as buffer allocation forwarding, passthrough, in-place processing
+and such to all work correctly. This base class does all that for you,
+so that you just need to do the actual processing.</p>
+<p>Since the <code>GstBaseTransform</code> is based on the 1-to-1 model for filters,
+it may not apply well to elements such as decoders, which may have to
+parse properties from the stream. Also, it will not work for elements
+requiring more than one sourcepad or sinkpad.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

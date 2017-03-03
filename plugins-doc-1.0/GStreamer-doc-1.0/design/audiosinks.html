@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Audiosink design</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/audiosinks.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="audiosinks.md">
+<h2 id="audiosink-design">Audiosink design</h2>
+<h3 id="requirements">Requirements</h3>
+<ul>
+<li>
+<p>must operate chain based. Most simple playback pipelines will push
+audio from the decoders into the audio sink.</p>
+</li>
+<li>
+<p>must operate getrange based Most professional audio applications
+will operate in a mode where the audio sink pulls samples from the
+pipeline. This is typically done in a callback from the audiosink
+requesting N samples. The callback is either scheduled from a thread
+or from an interrupt from the audio hardware device.</p>
+</li>
+<li>
+<p>Exact sample accurate clocks. the audiosink must be able to provide
+a clock that is sample accurate even if samples are dropped or when
+discontinuities are found in the stream.</p>
+</li>
+<li>
+<p>Exact timing of playback. The audiosink must be able to play samples
+at their exact times.</p>
+</li>
+<li>
+<p>use DMA access when possible. When the hardware can do DMA we should
+use it. This should also work over bufferpools to avoid data copying
+to/from kernel space.</p>
+</li>
+</ul>
+<h3 id="design">Design</h3>
+<p>The design is based on a set of base classes and the concept of a
+ringbuffer of samples.</p>
+<pre><code>+-----------+   - provide preroll, rendering, timing
++ basesink  +   - caps nego
++-----+-----+
+      |
++-----V----------+   - manages ringbuffer
++ audiobasesink  +   - manages scheduling (push/pull)
++-----+----------+   - manages clock/query/seek
+      |              - manages scheduling of samples in the ringbuffer
+      |              - manages caps parsing
+      |
++-----V------+   - default ringbuffer implementation with a GThread
++ audiosink  +   - subclasses provide open/read/close methods
++------------+
+</code></pre>
+<p>The ringbuffer is a contiguous piece of memory divided into segtotal
+pieces of segments. Each segment has segsize bytes.</p>
+<pre><code>      play position 
+        v          
++---+---+---+-------------------------------------+----------+
++ 0 | 1 | 2 | ....                                | segtotal |
++---+---+---+-------------------------------------+----------+
+&lt;---&gt;
+  segsize bytes = N samples * bytes_per_sample.
+</code></pre>
+<p>The ringbuffer has a play position, which is expressed in segments. The
+play position is where the device is currently reading samples from the
+buffer.</p>
+<p>The ringbuffer can be put to the PLAYING or STOPPED state.</p>
+<p>In the STOPPED state no samples are played to the device and the play
+pointer does not advance.</p>
+<p>In the PLAYING state samples are written to the device and the
+ringbuffer should call a configurable callback after each segment is
+written to the device. In this state the play pointer is advanced after
+each segment is written.</p>
+<p>A write operation to the ringbuffer will put new samples in the
+ringbuffer. If there is not enough space in the ringbuffer, the write
+operation will block. The playback of the buffer never stops, even if
+the buffer is empty. When the buffer is empty, silence is played by the
+device.</p>
+<p>The ringbuffer is implemented with lockfree atomic operations,
+especially on the reading side so that low-latency operations are
+possible.</p>
+<p>Whenever new samples are to be put into the ringbuffer, the position of
+the read pointer is taken. The required write position is taken and the
+diff is made between the required and actual position. If the difference
+is &lt;0, the sample is too late. If the difference is bigger than
+segtotal, the writing part has to wait for the play pointer to advance.</p>
+<h3 id="scheduling">Scheduling</h3>
+<h4 id="chain-based-mode">chain based mode</h4>
+<p>In chain based mode, bytes are written into the ringbuffer. This
+operation will eventually block when the ringbuffer is filled.</p>
+<p>When no samples arrive in time, the ringbuffer will play silence. Each
+buffer that arrives will be placed into the ringbuffer at the correct
+times. This means that dropping samples or inserting silence is done
+automatically and very accurate and independend of the play pointer.</p>
+<p>In this mode, the ringbuffer is usually kept as full as possible. When
+using a small buffer (small segsize and segtotal), the latency for audio
+to start from the sink to when it is played can be kept low but at least
+one context switch has to be made between read and write.</p>
+<h4 id="getrange-based-mode">getrange based mode</h4>
+<p>In getrange based mode, the audiobasesink will use the callback
+function of the ringbuffer to get a segsize samples from the peer
+element. These samples will then be placed in the ringbuffer at the
+next play position. It is assumed that the getrange function returns
+fast enough to fill the ringbuffer before the play pointer reaches
+the write pointer.</p>
+<p>In this mode, the ringbuffer is usually kept as empty as possible.
+There is no context switch needed between the elements that create
+the samples and the actual writing of the samples to the device.</p>
+<h4 id="dma-mode">DMA mode</h4>
+<p>Elements that can do DMA based access to the audio device have to
+subclass from the GstAudioBaseSink class and wrap the DMA ringbuffer
+in a subclass of GstRingBuffer.</p>
+<p>The ringbuffer subclass should trigger a callback after writing or
+playing each sample to the device. This callback can be triggered
+from a thread or from a signal from the audio device.</p>
+<h3 id="clocks">Clocks</h3>
+<p>The GstAudioBaseSink class will use the ringbuffer to act as a clock
+provider. It can do this by using the play pointer and the delay to
+calculate the clock time.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstBuffer</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/buffer.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="buffer.md">
+<h1 id="gstbuffer">GstBuffer</h1>
+<p>This document describes the design for buffers.</p>
+<p>A <code>GstBuffer</code> is the object that is passed from an upstream element to a
+downstream element and contains memory and metadata information.</p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>It must be fast
+<ul>
+<li>allocation, free, low fragmentation</li>
+</ul>
+</li>
+<li>Must be able to attach multiple memory blocks to the buffer</li>
+<li>Must be able to attach arbitrary metadata to buffers</li>
+<li>efficient handling of subbuffer, copy, span, trim</li>
+</ul>
+<h2 id="lifecycle">Lifecycle</h2>
+<p><code>GstMemory</code> extends from <code>GstMiniObject</code> and therefore uses its lifecycle
+management (See <a href="miniobject.html">miniobject</a>).</p>
+<h2 id="writability">Writability</h2>
+<p>When a <code>GstBuffer</code> is writable as returned by <code>gst_buffer_is_writable()</code>:</p>
+<ul>
+<li>
+<p>metadata can be added/removed and the metadata can be changed</p>
+</li>
+<li>
+<p><code>GstMemory</code> blocks can be added/removed</p>
+</li>
+</ul>
+<p>The individual memory blocks have their own locking and READONLY flags
+that might influence their writability.</p>
+<p>Buffers can be made writable with <code>gst_buffer_make_writable()</code>. This
+will copy the buffer with the metadata and will ref the memory in the
+buffer. This means that the memory is not automatically copied when
+copying buffers.</p>
+<h1 id="managing-gstmemory">Managing GstMemory</h1>
+<p>A <code>GstBuffer</code> contains an array of pointers to <code>GstMemory</code> objects.</p>
+<p>When the buffer is writable, <code>gst_buffer_insert_memory()</code> can be used
+to add a new <code>GstMemory</code> object to the buffer. When the array of memory is
+full, memory will be merged to make room for the new memory object.</p>
+<p><code>gst_buffer_n_memory()</code> is used to get the amount of memory blocks on
+the <code>GstBuffer</code>.</p>
+<p>With <code>gst_buffer_peek_memory()</code>, memory can be retrieved from the
+memory array. The desired access pattern for the memory block should be
+specified so that appropriate checks can be made and, in case of
+<code>GST_MAP_WRITE</code>, a writable copy can be constructed when needed.</p>
+<p><code>gst_buffer_remove_memory_range()</code> and <code>gst_buffer_remove_memory()</code>
+can be used to remove memory from the <code>GstBuffer</code>.</p>
+<h1 id="subbuffers">Subbuffers</h1>
+<p>Subbuffers are made by copying only a region of the memory blocks and
+copying all of the metadata.</p>
+<h1 id="span">Span</h1>
+<p>Spanning will merge together the data of 2 buffers into a new buffer</p>
+<h1 id="data-access">Data access</h1>
+<p>Accessing the data of the buffer can happen by retrieving the individual
+<code>GstMemory</code> objects in the <code>GstBuffer</code> or by using the <code>gst_buffer_map()</code> and
+<code>gst_buffer_unmap()</code> functions.</p>
+<p>The <code>_map()</code> and <code>_unmap()</code> functions will always return the memory of all
+blocks as one large contiguous region. Using these functions might be more
+convenient than accessing the individual memory blocks at the expense of
+being more expensive because it might perform memcpy operations.</p>
+<p>For buffers with only one <code>GstMemory</code> object (the most common case), <code>_map()</code>
+and <code>_unmap()</code> have no performance penalty at all.</p>
+<ul>
+<li>
+<p><strong>Read access with 1 memory block</strong>: The memory block is accessed and mapped
+for read access. The memory block is unmapped after usage</p>
+</li>
+<li>
+<p><strong>write access with 1 memory block</strong>: The buffer should be writable or this
+operation will fail. The memory block is accessed. If the memory block is
+readonly, a copy is made and the original memory block is replaced with this
+copy. Then the memory block is mapped in write mode and unmapped after usage.</p>
+</li>
+<li>
+<p><strong>Read access with multiple memory blocks</strong>: The memory blocks are combined
+into one large memory block. If the buffer is writable, the memory blocks are
+replaced with this new combined block. If the buffer is not writable, the
+memory is returned as is. The memory block is then mapped in read mode.
+When the memory is unmapped after usage and the buffer has multiple memory
+blocks, this means that the map operation was not able to store the combined
+buffer and it thus returned memory that should be freed. Otherwise, the memory
+is unmapped.</p>
+</li>
+<li>
+<p><strong>Write access with multiple memory blocks</strong>: The buffer should be writable
+or the operation fails. The memory blocks are combined into one large memory
+block and the existing blocks are replaced with this new block. The memory is
+then mapped in write mode and unmapped after usage.</p>
+</li>
+</ul>
+<h1 id="use-cases">Use cases</h1>
+<h2 id="generating-rtp-packets-from-h264-video">Generating RTP packets from h264 video</h2>
+<p>We receive as input a <code>GstBuffer</code> with an encoded h264 image and we need
+to create RTP packets containing this h264 data as the payload. We
+typically need to fragment the h264 data into multiple packets, each
+with their own RTP and payload specific header.</p>
+<pre><code>                     +-------+-------+---------------------------+--------+
+input H264 buffer:   | NALU1 | NALU2 |  .....                    | NALUx  |
+                     +-------+-------+---------------------------+--------+
+                           |
+                           V
+array of             +-+ +-------+  +-+ +-------+            +-+ +-------+
+output buffers:      | | | NALU1 |  | | | NALU2 |   ....     | | | NALUx |
+                     +-+ +-------+  +-+ +-------+            +-+ +-------+
+                     :           :  :           :
+                     \-----------/  \-----------/
+                       buffer 1        buffer 2
+</code></pre>
+<p>The output buffer array consists of x buffers consisting of an RTP
+payload header and a subbuffer of the original input H264 buffer. Since
+the rtp headers and the h264 data don’t need to be contiguous in memory,
+they are added to the buffer as separate <code>GstMemory</code> blocks and we can
+avoid to memcpy the h264 data into contiguous memory.</p>
+<p>A typical udpsink will then use something like sendmsg to send the
+memory regions on the network inside one UDP packet. This will further
+avoid having to memcpy data into contiguous memory.</p>
+<p>Using bufferlists, the complete array of output buffers can be pushed in
+one operation to the peer element.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

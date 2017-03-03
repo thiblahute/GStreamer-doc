@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Things to check when writing an element</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="plugin-development/appendix/checklist-element.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="checklist-element.md">
+<h1 id="things-to-check-when-writing-an-element">Things to check when writing an element</h1>
+<p>This chapter contains a fairly random selection of things to take care
+of when writing an element. It's up to you how far you're going to stick
+to those guidelines. However, keep in mind that when you're writing an
+element and hope for it to be included in the mainstream GStreamer
+distribution, it <em>has to</em> meet those requirements. As far as possible,
+we will try to explain why those requirements are set.</p>
+<h2 id="about-states">About states</h2>
+<ul>
+<li>
+<p>Make sure the state of an element gets reset when going to <code>NULL</code>.
+Ideally, this should set all object properties to their original
+state. This function should also be called from _init.</p>
+</li>
+<li>
+<p>Make sure an element forgets <em>everything</em> about its contained stream
+when going from <code>PAUSED</code> to <code>READY</code>. In <code>READY</code>, all stream states
+are reset. An element that goes from <code>PAUSED</code> to <code>READY</code> and back to
+<code>PAUSED</code> should start reading the stream from the start again.</p>
+</li>
+<li>
+<p>People that use <code>gst-launch</code> for testing have the tendency to not
+care about cleaning up. This is <em>wrong</em>. An element should be tested
+using various applications, where testing not only means to “make
+sure it doesn't crash”, but also to test for memory leaks using
+tools such as <code>valgrind</code>. Elements have to be reusable in a pipeline
+after having been reset.</p>
+</li>
+</ul>
+<h2 id="debugging">Debugging</h2>
+<ul>
+<li>
+<p>Elements should <em>never</em> use their standard output for debugging
+(using functions such as <code>printf ()</code> or <code>g_print ()</code>). Instead, elements should use the logging
+functions provided by GStreamer, named <code>GST_DEBUG ()</code>, <code>GST_LOG ()</code>,
+<code>GST_INFO ()</code>, <code>GST_WARNING ()</code> and <code>GST_ERROR ()</code>. The various
+logging levels can be turned on and off at runtime and can thus be
+used for solving issues as they turn up. Instead of <code>GST_LOG ()</code> (as
+an example), you can also use <code>GST_LOG_OBJECT ()</code> to print the object that you're logging output for.</p>
+</li>
+<li>
+<p>Ideally, elements should use their own debugging category. Most
+elements use the following code to do that:</p>
+<pre><code class="language-c">GST_DEBUG_CATEGORY_STATIC (myelement_debug);
+#define GST_CAT_DEFAULT myelement_debug
+
+[..]
+
+static void
+gst_myelement_class_init (GstMyelementClass *klass)
+{
+[..]
+  GST_DEBUG_CATEGORY_INIT (myelement_debug, "myelement",
+               0, "My own element");
+}
+
+</code></pre>
+<p>At runtime, you can turn on debugging using the commandline option
+<code>--gst-debug=myelement:5</code>.</p>
+</li>
+<li>
+<p>Elements should use GST_DEBUG_FUNCPTR when setting pad functions
+or overriding element class methods, for example:</p>
+<pre><code class="language-c">gst_pad_set_event_func (myelement-&gt;srcpad,
+    GST_DEBUG_FUNCPTR (my_element_src_event));
+
+</code></pre>
+<p>This makes debug output much easier to read later on.</p>
+</li>
+<li>
+<p>Elements that are aimed for inclusion into one of the GStreamer
+modules should ensure consistent naming of the element name,
+structures and function names. For example, if the element type is
+GstYellowFooDec, functions should be prefixed with
+gst_yellow_foo_dec_ and the element should be registered as
+'yellowfoodec'. Separate words should be separate in this scheme, so
+it should be GstFooDec and gst_foo_dec, and not GstFoodec and
+gst_foodec.</p>
+</li>
+</ul>
+<h2 id="querying-events-and-the-like">Querying, events and the like</h2>
+<ul>
+<li>
+<p>All elements to which it applies (sources, sinks, demuxers) should
+implement query functions on their pads, so that applications and
+neighbour elements can request the current position, the stream
+length (if known) and so on.</p>
+</li>
+<li>
+<p>Elements should make sure they forward events they do not handle
+with gst_pad_event_default (pad, parent, event) instead of just
+dropping them. Events should never be dropped unless specifically
+intended.</p>
+</li>
+<li>
+<p>Elements should make sure they forward queries they do not handle
+with gst_pad_query_default (pad, parent, query) instead of just
+dropping them.</p>
+</li>
+</ul>
+<h2 id="testing-your-element">Testing your element</h2>
+<ul>
+<li>
+<p><code>gst-launch</code> is <em>not</em> a good tool to show that your element is
+finished. Applications such as Rhythmbox and Totem (for GNOME) or
+AmaroK (for KDE) <em>are</em>. <code>gst-launch</code> will not test various things
+such as proper clean-up on reset, event handling, querying and so
+on.</p>
+</li>
+<li>
+<p>Parsers and demuxers should make sure to check their input. Input
+cannot be trusted. Prevent possible buffer overflows and the like.
+Feel free to error out on unrecoverable stream errors. Test your
+demuxer using stream corruption elements such as <code>breakmydata</code>
+(included in gst-plugins). It will randomly insert, delete and
+modify bytes in a stream, and is therefore a good test for
+robustness. If your element crashes when adding this element, your
+element needs fixing. If it errors out properly, it's good enough.
+Ideally, it'd just continue to work and forward data as much as
+possible.</p>
+</li>
+<li>
+<p>Demuxers should not assume that seeking works. Be prepared to work
+with unseekable input streams (e.g. network sources) as well.</p>
+</li>
+<li>
+<p>Sources and sinks should be prepared to be assigned another clock
+then the one they expose themselves. Always use the provided clock
+for synchronization, else you'll get A/V sync issues.</p>
+</li>
+</ul>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

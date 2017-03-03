@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Playback tutorial 8: Hardware-accelerated video decoding</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="tutorials/playback/hardware-accelerated-video-decoding.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="hardware-accelerated-video-decoding.md">
+<h1 id="playback-tutorial-8-hardwareaccelerated-video-decoding">Playback tutorial 8: Hardware-accelerated video decoding</h1>
+<h3 id="goal">Goal</h3>
+<p>Hardware-accelerated video decoding has rapidly become a necessity, as
+low-power devices grow more common. This tutorial (more of a lecture,
+actually) gives some background on hardware acceleration and explains
+how does GStreamer benefit from it.</p>
+<p>Sneak peek: if properly setup, you do not need to do anything special to
+activate hardware acceleration; GStreamer automatically takes advantage
+of it.</p>
+<h3 id="introduction">Introduction</h3>
+<p>Video decoding can be an extremely CPU-intensive task, especially for
+higher resolutions like 1080p HDTV. Fortunately, modern graphics cards,
+equipped with programmable GPUs, are able to take care of this job,
+allowing the CPU to concentrate on other duties. Having dedicated
+hardware becomes essential for low-power CPUs which are simply incapable
+of decoding such media fast enough.</p>
+<p>In the current state of things (June 2016) each GPU manufacturer offers
+a different method to access their hardware (a different API), and a
+strong industry standard has not emerged yet.</p>
+<p>As of June 2016, there exist at least 8 different video decoding
+acceleration APIs:</p>
+<ul>
+<li>
+<p><a href="http://en.wikipedia.org/wiki/Video_Acceleration_API">VAAPI</a> (<em>Video
+Acceleration API</em>): Initially designed by
+<a href="http://en.wikipedia.org/wiki/Intel">Intel</a> in 2007, targeted at the X
+Window System on Unix-based operating systems, now open-source. It now also
+supports Wayland through dmabuf. It is
+currently not limited to Intel GPUs as other manufacturers are free to
+use this API, for example, <a href="http://en.wikipedia.org/wiki/Imagination_Technologies">Imagination
+Technologies</a> or
+<a href="http://en.wikipedia.org/wiki/S3_Graphics">S3 Graphics</a>. Accessible to
+GStreamer through the <a href="https://cgit.freedesktop.org/gstreamer/gstreamer-vaapi/">gstreamer-vaapi</a> package.</p>
+</li>
+<li>
+<p><a href="http://en.wikipedia.org/wiki/VDPAU">VDPAU</a> (<em>Video Decode and
+Presentation API for UNIX</em>): Initially designed by
+<a href="http://en.wikipedia.org/wiki/NVidia">NVidia</a> in 2008, targeted at the X
+Window System on Unix-based operating systems, now open-source. Although
+it is also an open-source library, no manufacturer other than NVidia is
+using it yet. Accessible to GStreamer through
+the <a href="http://cgit.freedesktop.org/gstreamer/gst-plugins-bad/tree/sys/vdpau">vdpau</a> element in plugins-bad.</p>
+</li>
+<li>
+<p><a href="http://en.wikipedia.org/wiki/OpenMAX">OpenMAX</a> (<em>Open Media
+Acceleration</em>): Managed by the non-profit technology consortium <a href="http://en.wikipedia.org/wiki/Khronos_Group" title="Khronos Group">Khronos
+Group</a>,
+it is a "royalty-free, cross-platform set of C-language programming
+interfaces that provides abstractions for routines especially useful for
+audio, video, and still images". Accessible to GStreamer through
+the <a href="http://git.freedesktop.org/gstreamer/gst-omx">gst-omx</a> plugin.</p>
+</li>
+<li>
+<p><a href="http://developer.amd.com/sdks/AMDAPPSDK/assets/OpenVideo_Decode_API.PDF">OVD</a>
+(<em>Open Video Decode</em>): Another API from <a href="http://en.wikipedia.org/wiki/AMD_Graphics">AMD
+Graphics</a>, designed to be a
+platform agnostic method for softrware developers to leverage the
+<a href="http://en.wikipedia.org/wiki/Unified_Video_Decoder">Universal Video
+Decode</a> (UVD)
+hardware inside AMD Radeon graphics cards. Currently unavailable to
+GStreamer .</p>
+</li>
+<li>
+<p><a href="http://en.wikipedia.org/wiki/Distributed_Codec_Engine">DCE</a>
+(<em>Distributed Codec Engine</em>): An open source software library ("libdce")
+and API specification by <a href="http://en.wikipedia.org/wiki/Texas_Instruments">Texas
+Instruments</a>, targeted
+at Linux systems and ARM platforms. Accessible to GStreamer through
+the <a href="https://github.com/robclark/gst-ducati">gstreamer-ducati</a> plugin.</p>
+</li>
+<li>
+<p><a href="https://developer.android.com/reference/android/media/MediaCodec.html">Android
+MediaCodec</a>: This is Android's API to access the device's
+hardware decoder and encoder if available. This is accessible through the
+<code>androidmedia</code> plugin in gst-plugins-bad. This includes both encoding and
+decoding.</p>
+</li>
+<li>
+<p>Apple VideoTool Box Framework: Apple's API to access h is available
+through the <code>applemedia</code> plugin which includes both encoding through
+the <code>vtenc</code> element and decoding through the <code>vtdec</code> element.</p>
+</li>
+<li>
+<p>Video4Linux: Recent Linux kernels have a kernel API to expose
+hardware codecs in a standard way, this is now supported by the
+<code>v4l2</code> plugin in <code>gst-plugins-good</code>. This can support both decoding
+and encoding depending on the platform.</p>
+</li>
+</ul>
+<h3 id="inner-workings-of-hardwareaccelerated-video-decoding-plugins">Inner workings of hardware-accelerated video decoding plugins</h3>
+<p>These APIs generally offer a number of functionalities, like video
+decoding, post-processing, or presentation of the decoded
+frames. Correspondingly, plugins generally offer a different GStreamer
+element for each of these functions, so pipelines can be built to
+accommodate any need.</p>
+<p>For example, the <code>gstreamer-vaapi</code> plugin offers the <code>vaapidecode</code>,
+<code>vaapipostproc</code> and <code>vaapisink</code> elements that allow
+hardware-accelerated decoding through VAAPI, upload of raw video frames
+to GPU memory, download of GPU frames to system memory and presentation
+of GPU frames, respectively.</p>
+<p>It is important to distinguish between conventional GStreamer frames,
+which reside in system memory, and frames generated by
+hardware-accelerated APIs. The latter reside in GPU memory and cannot
+be touched by GStreamer. They can usually be downloaded to system
+memory and treated as conventional GStreamer frames when they are
+mapped, but it is far more efficient to leave them in the GPU and
+display them from there.</p>
+<p>GStreamer needs to keep track of where these “hardware buffers” are
+though, so conventional buffers still travel from element to
+element. They look like regular buffers, but mapping their content is
+much slower as it has to be retrieved from the special memory used by
+hardware accelerated elements. This special memory types are
+negotiated using the allocation query mechanism.</p>
+<p>This all means that, if a particular hardware acceleration API is
+present in the system, and the corresponding GStreamer plugin is also
+available, auto-plugging elements like <code>playbin</code> are free to use
+hardware acceleration to build their pipelines; the application does not
+need to do anything special to enable it. Almost:</p>
+<p>When <code>playbin</code> has to choose among different equally valid elements,
+like conventional software decoding (through <code>vp8dec</code>, for example) or
+hardware accelerated decoding (through <code>vaapidecode</code>, for example), it
+uses their <em>rank</em> to decide. The rank is a property of each element that
+indicates its priority; <code>playbin</code> will simply select the element that
+is able to build a complete pipeline and has the highest rank.</p>
+<p>So, whether <code>playbin</code> will use hardware acceleration or not will depend
+on the relative ranks of all elements capable of dealing with that media
+type. Therefore, the easiest way to make sure hardware acceleration is
+enabled or disabled is by changing the rank of the associated element,
+as shown in this code:</p>
+<pre><code class="language-c">static void enable_factory (const gchar *name, gboolean enable) {
+    GstRegistry *registry = NULL;
+    GstElementFactory *factory = NULL;
+
+    registry = gst_registry_get_default ();
+    if (!registry) return;
+
+    factory = gst_element_factory_find (name);
+    if (!factory) return;
+
+    if (enable) {
+        gst_plugin_feature_set_rank (GST_PLUGIN_FEATURE (factory), GST_RANK_PRIMARY + 1);
+    }
+    else {
+        gst_plugin_feature_set_rank (GST_PLUGIN_FEATURE (factory), GST_RANK_NONE);
+    }
+
+    gst_registry_add_feature (registry, GST_PLUGIN_FEATURE (factory));
+    return;
+}
+</code></pre>
+<p>The first parameter passed to this method is the name of the element to
+modify, for example, <code>vaapidecode</code> or <code>fluvadec</code>.</p>
+<p>The key method is <code>gst_plugin_feature_set_rank()</code>, which will set the
+rank of the requested element factory to the desired level. For
+convenience, ranks are divided in NONE, MARGINAL, SECONDARY and PRIMARY,
+but any number will do. When enabling an element, we set it to
+PRIMARY+1, so it has a higher rank than the rest of elements which
+commonly have PRIMARY rank. Setting an element’s rank to NONE will make
+the auto-plugging mechanism to never select it.</p>
+<blockquote>
+<p><img src="images/icons/emoticons/warning.png" alt="warning" id="warning"> The GStreamer developers often rank hardware decoders lower than
+the software ones when they are defective. This should act as a warning.</p>
+</blockquote>
+<h2 id="conclusion">Conclusion</h2>
+<p>This tutorial has shown a bit how GStreamer internally manages hardware
+accelerated video decoding. Particularly,</p>
+<ul>
+<li>Applications do not need to do anything special to enable hardware
+acceleration if a suitable API and the corresponding GStreamer
+plugin are available.</li>
+<li>Hardware acceleration can be enabled or disabled by changing the
+rank of the decoding element with <code>gst_plugin_feature_set_rank()</code>.</li>
+</ul>
+<p>It has been a pleasure having you here, and see you soon!</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

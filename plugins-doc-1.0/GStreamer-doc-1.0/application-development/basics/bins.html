@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Bins</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="application-development/basics/bins.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="bins.md">
+<h1 id="bins">Bins</h1>
+<p>A bin is a container element. You can add elements to a bin. Since a bin
+is an element itself, a bin can be handled in the same way as any other
+element. Therefore, the whole previous chapter (<a href="elements.html">Elements</a>) applies
+to bins as well.</p>
+<h2 id="what-are-bins">What are bins</h2>
+<p>Bins allow you to combine a group of linked elements into one logical
+element. You do not deal with the individual elements anymore but with
+just one element, the bin. We will see that this is extremely powerful
+when you are going to construct complex pipelines since it allows you to
+break up the pipeline in smaller chunks.</p>
+<p>The bin will also manage the elements contained in it. It will perform
+state changes on the elements as well as collect and forward bus
+messages.</p>
+<p><img src="images/bin-element.png" alt="Visualisation of a bin with some elements in it" title="fig:" id="visualisation-of-a-bin-with-some-elements-in-it"></p>
+<p>There is one specialized type of bin available to the GStreamer
+programmer:</p>
+<ul>
+<li>A pipeline: a generic container that manages the synchronization and
+bus messages of the contained elements. The toplevel bin has to be a
+pipeline, every application thus needs at least one of these.</li>
+</ul>
+<h2 id="creating-a-bin">Creating a bin</h2>
+<p>Bins are created in the same way that other elements are created, i.e.
+using an element factory. There are also convenience functions available
+(<code>gst_bin_new ()</code> and <code>gst_pipeline_new ()</code>). To add elements to a bin
+or remove elements from a bin, you can use <code>gst_bin_add ()</code> and
+<code>gst_bin_remove ()</code>. Note that the bin that you add an element to will
+take ownership of that element. If you destroy the bin, the element will
+be dereferenced with it. If you remove an element from a bin, it will be
+dereferenced automatically.</p>
+<pre><code>#include &lt;gst/gst.h&gt;
+
+int
+main (int   argc,
+      char *argv[])
+{
+  GstElement *bin, *pipeline, *source, *sink;
+
+  /* init */
+  gst_init (&amp;argc, &amp;argv);
+
+  /* create */
+  pipeline = gst_pipeline_new ("my_pipeline");
+  bin = gst_bin_new ("my_bin");
+  source = gst_element_factory_make ("fakesrc", "source");
+  sink = gst_element_factory_make ("fakesink", "sink");
+
+  /* First add the elements to the bin */
+  gst_bin_add_many (GST_BIN (bin), source, sink, NULL);
+  /* add the bin to the pipeline */
+  gst_bin_add (GST_BIN (pipeline), bin);
+
+  /* link the elements */
+  gst_element_link (source, sink);
+
+[..]
+
+}
+
+</code></pre>
+<p>There are various functions to lookup elements in a bin. The most
+commonly used are <code>gst_bin_get_by_name ()</code> and <code>gst_bin_get_by_interface ()</code>. You can also iterate over all elements that a bin contains using
+the function <code>gst_bin_iterate_elements ()</code>. See the API references of
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/stable/gstreamer/html/GstBin.html"><code>GstBin</code></a>
+for details.</p>
+<h2 id="custom-bins">Custom bins</h2>
+<p>The application programmer can create custom bins packed with elements
+to perform a specific task. This allows you, for example, to write an
+Ogg/Vorbis decoder with just the following lines of code:</p>
+<pre><code>int
+main (int   argc,
+      char *argv[])
+{
+  GstElement *player;
+
+  /* init */
+  gst_init (&amp;argc, &amp;argv);
+
+  /* create player */
+  player = gst_element_factory_make ("oggvorbisplayer", "player");
+
+  /* set the source audio file */
+  g_object_set (player, "location", "helloworld.ogg", NULL);
+
+  /* start playback */
+  gst_element_set_state (GST_ELEMENT (player), GST_STATE_PLAYING);
+[..]
+}
+
+</code></pre>
+<p>(This is a silly example of course, there already exists a much more
+powerful and versatile custom bin like this: the playbin element.)</p>
+<p>Custom bins can be created with a plugin or from the application. You
+will find more information about creating custom bin in the <a href="../../plugin-development/index.html">Plugin
+Writer's Guide</a></p>
+<p>Examples of such custom bins are the playbin and uridecodebin elements
+from<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-plugins/html/index.html">gst-plugins-base</a>.</p>
+<h2 id="bins-manage-states-of-their-children">Bins manage states of their children</h2>
+<p>Bins manage the state of all elements contained in them. If you set a
+bin (or a pipeline, which is a special top-level type of bin) to a
+certain target state using <code>gst_element_set_state ()</code>, it will make sure
+all elements contained within it will also be set to this state. This
+means it's usually only necessary to set the state of the top-level
+pipeline to start up the pipeline or shut it down.</p>
+<p>The bin will perform the state changes on all its children from the sink
+element to the source element. This ensures that the downstream element
+is ready to receive data when the upstream element is brought to PAUSED
+or PLAYING. Similarly when shutting down, the sink elements will be set
+to READY or NULL first, which will cause the upstream elements to
+receive a FLUSHING error and stop the streaming threads before the
+elements are set to the READY or NULL state.</p>
+<p>Note, however, that if elements are added to a bin or pipeline that's
+already running, , e.g. from within a "pad-added" signal callback, its
+state will not automatically be brought in line with the current state
+or target state of the bin or pipeline it was added to. Instead, you
+have to need to set it to the desired target state yourself using
+<code>gst_element_set_state ()</code> or <code>gst_element_sync_state_with_parent ()</code>
+when adding elements to an already-running pipeline.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

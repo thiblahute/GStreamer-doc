@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Decodebin design</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/decodebin.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="decodebin.md">
+<h1 id="decodebin-design">Decodebin design</h1>
+<h2 id="gstdecodebin">GstDecodeBin</h2>
+<h3 id="description">Description</h3>
+<ul>
+<li>
+<p>Autoplug and decode to raw media</p>
+</li>
+<li>
+<p>Input: single pad with ANY caps</p>
+</li>
+<li>
+<p>Output: Dynamic pads</p>
+</li>
+</ul>
+<h3 id="contents">Contents</h3>
+<ul>
+<li>
+<p>a GstTypeFindElement connected to the single sink pad</p>
+</li>
+<li>
+<p>optionally a demuxer/parser</p>
+</li>
+<li>
+<p>optionally one or more DecodeGroup</p>
+</li>
+</ul>
+<h3 id="autoplugging">Autoplugging</h3>
+<p>The goal is to reach 'target' caps (by default raw media).</p>
+<p>This is done by using the <code>GstCaps</code> of a source pad and finding the
+available demuxers/decoders <code>GstElement</code> that can be linked to that pad.</p>
+<p>The process starts with the source pad of typefind and stops when no
+more non-target caps are left. It is commonly done while pre-rolling,
+but can also happen whenever a new pad appears on any element.</p>
+<p>Once a target caps has been found, that pad is ghosted and the
+'pad-added' signal is emitted.</p>
+<p>If no compatible elements can be found for a <code>GstCaps</code>, the pad is ghosted
+and the 'unknown-type' signal is emitted.</p>
+<h3 id="assisted-autoplugging">Assisted auto-plugging</h3>
+<p>When starting the auto-plugging process for a given <code>GstCaps</code>, two signals
+are emitted in the following way in order to allow the application/user
+to assist or fine-tune the process.</p>
+<ul>
+<li>
+<p><strong>'autoplug-continue'</strong>:</p>
+<pre><code> gboolean user_function (GstElement * decodebin, GstPad *pad, GstCaps * caps)
+</code></pre>
+<p>This signal is fired at the very beginning with the source pad <code>GstCaps</code>. If
+the callback returns TRUE, the process continues normally. If the
+callback returns FALSE, then the <code>GstCaps</code> are considered as a target caps
+and the autoplugging process stops.</p>
+</li>
+<li>
+<p><strong>'autoplug-factories'</strong>:</p>
+<pre><code>GValueArray user_function (GstElement* decodebin, GstPad* pad, GstCaps* caps);
+</code></pre>
+<p>Get a list of elementfactories for @pad with @caps. This function is
+used to instruct decodebin2 of the elements it should try to
+autoplug. The default behaviour when this function is not overriden
+is to get all elements that can handle @caps from the registry
+sorted by rank.</p>
+</li>
+<li>
+<p><strong>'autoplug-select'</strong>:</p>
+<pre><code>gint user_function (GstElement* decodebin, GstPad* pad, GstCaps*caps, GValueArray* factories);
+</code></pre>
+<p>This signal is fired once autoplugging has got a list of compatible
+<code>GstElementFactory</code>. The signal is emitted with the <code>GstCaps</code> of the
+source pad and a pointer on the GValueArray of compatible factories.</p>
+<p>The callback should return the index of the elementfactory in
+@factories that should be tried next.</p>
+<p>If the callback returns -1, the autoplugging process will stop as if
+no compatible factories were found.</p>
+</li>
+</ul>
+<p>The default implementation of this function will try to autoplug the
+first factory of the list.</p>
+<h3 id="target-caps">Target Caps</h3>
+<p>The target caps are a read/write <code>GObject</code> property of decodebin.</p>
+<p>By default the target caps are:</p>
+<ul>
+<li>
+<p>Raw audio: audio/x-raw</p>
+</li>
+<li>
+<p>Raw video: video/x-raw</p>
+</li>
+<li>
+<p>Raw text: text/x-raw, format={utf8,pango-markup}</p>
+</li>
+</ul>
+<h3 id="media-chaingroup-handling">Media chain/group handling</h3>
+<p>When autoplugging, all streams coming out of a demuxer will be grouped
+in a DecodeGroup.</p>
+<p>All new source pads created on that demuxer after it has emitted the
+'no-more-pads' signal will be put in another DecodeGroup.</p>
+<p>Only one decodegroup can be active at any given time. If a new
+decodegroup is created while another one exists, that decodegroup will
+be set as blocking until the existing one has drained.</p>
+<h2 id="decodegroup">DecodeGroup</h2>
+<h3 id="description1">Description</h3>
+<p>Streams belonging to the same group/chain of a media file.</p>
+<h3 id="contents1">Contents</h3>
+<p>The DecodeGroup contains:</p>
+<ul>
+<li>
+<p>a <code>GstMultiQueue</code> to which all streams of the media group are connected.</p>
+</li>
+<li>
+<p>the eventual decoders which are autoplugged in order to produce the
+requested target pads.</p>
+</li>
+</ul>
+<h3 id="proper-group-draining">Proper group draining</h3>
+<p>The DecodeGroup takes care that all the streams in the group are
+completely drained (EOS has come through all source ghost pads).</p>
+<h3 id="preroll-and-block">Pre-roll and block</h3>
+<p>The DecodeGroup has a global blocking feature. If enabled, all the
+ghosted source pads for that group will be blocked.</p>
+<p>A method is available to unblock all blocked pads for that group.</p>
+<h2 id="gstmultiqueue">GstMultiQueue</h2>
+<p>Multiple input-output data queue.</p>
+<p><code>multiqueue</code> achieves the same functionality as <code>queue</code>, with a
+few differences:</p>
+<ul>
+<li>
+<p>Multiple streams handling.</p>
+<p>The element handles queueing data on more than one stream at once.
+To achieve such a feature it has request sink pads (sink_%u) and
+'sometimes' src pads (src_%u).</p>
+<p>When requesting a given sinkpad, the associated srcpad for that
+stream will be created. Ex: requesting sink_1 will generate src_1.</p>
+</li>
+<li>
+<p>Non-starvation on multiple streams.</p>
+<p>If more than one stream is used with the element, the streams'
+queues will be dynamically grown (up to a limit), in order to ensure
+that no stream is risking data starvation. This guarantees that at
+any given time there are at least N bytes queued and available for
+each individual stream.</p>
+<p>If an EOS event comes through a srcpad, the associated queue should
+be considered as 'not-empty' in the queue-size-growing algorithm.</p>
+</li>
+<li>
+<p>Non-linked srcpads graceful handling.</p>
+<p>A <code>GstTask</code> is started for all srcpads when going to
+<code>GST_STATE_PAUSED</code>.</p>
+<p>The task are blocking against a GCondition which will be fired in
+two different cases:</p>
+<ul>
+<li>
+<p>When the associated queue has received a buffer.</p>
+</li>
+<li>
+<p>When the associated queue was previously declared as 'not-linked'
+and the first buffer of the queue is scheduled to be pushed
+synchronously in relation to the order in which it arrived globally
+in the element (see 'Synchronous data pushing' below).</p>
+</li>
+</ul>
+<p>When woken up by the GCondition, the <code>GstTask</code> will try to push the
+next <code>GstBuffer</code>/<code>GstEvent</code> on the queue. If pushing the
+<code>GstBuffer</code>/<code>GstEvent</code> returns <code>GST_FLOW_NOT_LINKED</code>, then the
+associated queue is marked as 'not-linked'. If pushing the
+<code>GstBuffer</code>/<code>GstEvent</code> succeeded the queue will no longer be marked as
+'not-linked'.</p>
+<p>If pushing on all srcpads returns <code>GstFlowReturn</code> different from
+<code>GST_FLOW_OK</code>, then all the srcpads' tasks are stopped and
+subsequent pushes on sinkpads will return <code>GST_FLOW_NOT_LINKED</code>.</p>
+</li>
+<li>
+<p>Synchronous data pushing for non-linked pads.</p>
+<p>In order to better support dynamic switching between streams, the
+multiqueue (unlike the current GStreamer queue) continues to push
+buffers on non-linked pads rather than shutting down.</p>
+<p>In addition, to prevent a non-linked stream from very quickly
+consuming all available buffers and thus 'racing ahead' of the other
+streams, the element must ensure that buffers and inlined events for
+a non-linked stream are pushed in the same order as they were
+received, relative to the other streams controlled by the element.
+This means that a buffer cannot be pushed to a non-linked pad any
+sooner than buffers in any other stream which were received before
+it.</p>
+</li>
+</ul>
+<h2 id="parsers-decoders-and-autoplugging">Parsers, decoders and auto-plugging</h2>
+<p>This section has DRAFT status.</p>
+<p>Some media formats come in different "flavours" or "stream formats".
+These formats differ in the way the setup data and media data is
+signalled and/or packaged. An example for this is H.264 video, where
+there is a bytestream format (with codec setup data signalled inline and
+units prefixed by a sync code and packet length information) and a "raw"
+format where codec setup data is signalled out of band (via the caps)
+and the chunking is implicit in the way the buffers were muxed into a
+container, to mention just two of the possible variants.</p>
+<p>Especially on embedded platforms it is common that decoders can only
+handle one particular stream format, and not all of them.</p>
+<p>Where there are multiple stream formats, parsers are usually expected to
+be able to convert between the different formats. This will, if
+implemented correctly, work as expected in a static pipeline such as</p>
+<pre><code>... ! parser ! decoder ! sink
+</code></pre>
+<p>where the parser can query the decoder's capabilities even before
+processing the first piece of data, and configure itself to convert
+accordingly, if conversion is needed at all.</p>
+<p>In an auto-plugging context this is not so straight-forward though,
+because elements are plugged incrementally and not before the previous
+element has processed some data and decided what it will output exactly
+(unless the template caps are completely fixed, then it can continue
+right away, this is not always the case here though, see below). A
+parser will thus have to decide on <em>some</em> output format so auto-plugging
+can continue. It doesn't know anything about the available decoders and
+their capabilities though, so it's possible that it will choose a format
+that is not supported by any of the available decoders, or by the
+preferred decoder.</p>
+<p>If the parser had sufficiently concise but fixed source pad template
+caps, decodebin could continue to plug a decoder right away, allowing
+the parser to configure itself in the same way as it would with a static
+pipeline. This is not an option, unfortunately, because often the parser
+needs to process some data to determine e.g. the format's profile or
+other stream properties (resolution, sample rate, channel configuration,
+etc.), and there may be different decoders for different profiles (e.g.
+DSP codec for baseline profile, and software fallback for main/high
+profile; or a DSP codec only supporting certain resolutions, with a
+software fallback for unusual resolutions). So if decodebin just plugged
+the most highest-ranking decoder, that decoder might not be be able to
+handle the actual stream later on, which would yield an error (this is a
+data flow error then which would be hard to intercept and avoid in
+decodebin). In other words, we can't solve this issue by plugging a
+decoder right away with the parser.</p>
+<p>So decodebin needs to communicate to the parser the set of available
+decoder caps (which would contain the relevant capabilities/restrictions
+such as supported profiles, resolutions, etc.), after the usual
+"autoplug-*" signal filtering/sorting of course.</p>
+<p>This is done by plugging a capsfilter element right after the parser,
+and constructing set of filter caps from the list of available decoders
+(one appends at the end just the name(s) of the caps structures from the
+parser pad template caps to function as an 'ANY other' caps equivalent).
+This let the parser negotiate to a supported stream format in the same
+way as with the static pipeline mentioned above, but of course incur
+some overhead through the additional capsfilter element.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

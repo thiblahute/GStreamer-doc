@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Integration</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="application-development/appendix/integration.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="integration.md">
+<h1 id="integration">Integration</h1>
+<p>GStreamer tries to integrate closely with operating systems (such as
+Linux and UNIX-like operating systems, OS X or Windows) and desktop
+environments (such as GNOME or KDE). In this chapter, we'll mention some
+specific techniques to integrate your application with your operating
+system or desktop environment of choice.</p>
+<h2 id="linux-and-unixlike-operating-systems">Linux and UNIX-like operating systems</h2>
+<p>GStreamer provides a basic set of elements that are useful when
+integrating with Linux or a UNIX-like operating system.</p>
+<ul>
+<li>
+<p>For audio input and output, GStreamer provides input and output
+elements for several audio subsystems. Amongst others, GStreamer
+includes elements for ALSA (alsasrc, alsasink), OSS (osssrc,
+osssink) Pulesaudio (pulsesrc, pulsesink) and Sun audio
+(sunaudiosrc, sunaudiomixer, sunaudiosink).</p>
+</li>
+<li>
+<p>For video input, GStreamer contains source elements for Video4linux2
+(v4l2src, v4l2element, v4l2sink).</p>
+</li>
+<li>
+<p>For video output, GStreamer provides elements for output to
+X-windows (ximagesink), Xv-windows (xvimagesink; for
+hardware-accelerated video), direct-framebuffer (dfbimagesink) and
+openGL image contexts (glsink).</p>
+</li>
+</ul>
+<h2 id="gnome-desktop">GNOME desktop</h2>
+<p>GStreamer has been the media backend of the
+<a href="http://www.gnome.org/">GNOME</a> desktop since GNOME-2.2 onwards.
+Nowadays, a whole bunch of GNOME applications make use of GStreamer for
+media-processing, including (but not limited to)
+<a href="http://www.rhythmbox.org/">Rhythmbox</a>,
+<a href="https://wiki.gnome.org/Apps/Videos">Videos</a> and <a href="https://wiki.gnome.org/Apps/SoundJuicer">Sound
+Juicer</a>.</p>
+<p>Most of these GNOME applications make use of some specific techniques to
+integrate as closely as possible with the GNOME desktop:</p>
+<ul>
+<li>
+<p>GNOME applications usually call <code>gtk_init ()</code> to parse command-line
+options and initialize GTK. GStreamer applications would normally
+call <code>gst_init ()</code> to do the same for GStreamer. This would mean
+that only one of the two can parse command-line options. To work
+around this issue, GStreamer can provide a GLib <code>GOptionGroup</code> which
+can be passed to <code>gnome_program_init ()</code>. The following example
+requires GTK 2.6 or newer (previous GTK versions do not support
+command line parsing via GOption yet)</p>
+<pre><code class="language-c">#include &lt;gtk/gtk.h&gt;
+#include &lt;gst/gst.h&gt;
+
+static gchar **cmd_filenames = NULL;
+
+static GOptionEntries cmd_options[] = {
+  /* here you can add command line options for your application. Check
+   * the GOption section in the GLib API reference for a more elaborate
+   * example of how to add your own command line options here */
+
+  /* at the end we have a special option that collects all remaining
+   * command line arguments (like filenames) for us. If you don't
+   * need this, you can safely remove it */
+  { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &amp;cmd_filenames,
+    "Special option that collects any remaining arguments for us" },
+
+  /* mark the end of the options array with a NULL option */
+  { NULL, }
+};
+
+/* this should usually be defined in your config.h */
+#define VERSION "0.0.1"
+
+gint
+main (gint argc, gchar **argv)
+{
+  GOptionContext *context;
+  GOptionGroup *gstreamer_group, *gtk_group;
+  GError *err = NULL;
+
+  context = g_option_context_new ("gtk-demo-app");
+
+  /* get command line options from GStreamer and add them to the group */
+  gstreamer_group = gst_init_get_option_group ();
+  g_option_context_add_group (context, gstreamer_group);
+  gtk_group = gtk_get_option_group (TRUE);
+  g_option_context_add_group (context, gtk_group);
+
+  /* add our own options. If you are using gettext for translation of your
+   * strings, use GETTEXT_PACKAGE here instead of NULL */
+  g_option_context_add_main_entries (context, cmd_options, NULL);
+
+  /* now parse the commandline options, note that this already
+   * calls gtk_init() and gst_init() */
+  if (!g_option_context_parse (ctx, &amp;argc, &amp;argv, &amp;err)) {
+    g_print ("Error initializing: %s\n", err-&gt;message);
+    g_clear_error (&amp;err);
+    g_option_context_free (ctx);
+    exit (1);
+  }
+  g_option_context_free (ctx);
+
+  /* any filenames we got passed on the command line? parse them! */
+  if (cmd_filenames != NULL) {
+    guint i, num;
+
+    num = g_strv_length (cmd_filenames);
+    for (i = 0; i &lt; num; ++i) {
+      /* do something with the filename ... */
+      g_print ("Adding to play queue: %s\n", cmd_filenames[i]);
+    }
+
+    g_strfreev (cmd_filenames);
+    cmd_filenames = NULL;
+  }
+
+[..]
+
+}
+</code></pre>
+</li>
+<li>
+<p>GNOME uses Pulseaudio for audio, use the pulsesrc and pulsesink
+elements to have access to all the features.</p>
+</li>
+<li>
+<p>GStreamer provides data input/output elements for use with the GIO
+VFS system. These elements are called “giosrc” and “giosink”. The
+deprecated GNOME-VFS system is supported too but shouldn't be used
+for any new applications.</p>
+</li>
+</ul>
+<h2 id="kde-desktop">KDE desktop</h2>
+<p>GStreamer has been proposed for inclusion in KDE-4.0. Currently,
+GStreamer is included as an optional component, and it's used by several
+KDE applications, including <a href="http://amarok.kde.org/">AmaroK</a>,
+<a href="http://www.xs4all.nl/%7Ejjvrieze/kmplayer.html">KMPlayer</a> and
+<a href="http://kaffeine.sourceforge.net/">Kaffeine</a>.</p>
+<p>Although not yet as complete as the GNOME integration bits, there are
+already some KDE integration specifics available. This list will
+probably grow as GStreamer starts to be used in KDE-4.0:</p>
+<ul>
+<li>AmaroK contains a kiosrc element, which is a source element that
+integrates with the KDE VFS subsystem KIO.</li>
+</ul>
+<h2 id="os-x">OS X</h2>
+<p>GStreamer provides native video and audio output elements for OS X. It
+builds using the standard development tools for OS X.</p>
+<h2 id="windows">Windows</h2>
+<blockquote>
+<p><strong>Warning</strong></p>
+<p>Note: this section is out of date. GStreamer-1.0 has much better
+support for win32 than previous versions though and should usually
+compile and work out-of-the-box both using MSYS/MinGW or Microsoft
+compilers. The <a href="http://gstreamer.freedesktop.org">GStreamer web site</a>
+and the <a href="http://news.gmane.org/gmane.comp.video.gstreamer.devel">mailing list
+archives</a> are
+a good place to check the latest win32-related news.</p>
+</blockquote>
+<p>GStreamer builds using Microsoft Visual C .NET 2003 and using Cygwin.</p>
+<h3 id="building-gstreamer-under-win32">Building GStreamer under Win32</h3>
+<p>There are different makefiles that can be used to build GStreamer with
+the usual Microsoft compiling tools.</p>
+<p>The Makefile is meant to be used with the GNU make program and the free
+version of the Microsoft compiler
+(<a href="http://msdn.microsoft.com/visualc/vctoolkit2003/">http://msdn.microsoft.com/visualc/vctoolkit2003/</a>). You also have to
+modify your system environment variables to use it from the
+command-line. You will also need a working Platform SDK for Windows that
+is available for free from Microsoft.</p>
+<p>The projects/makefiles will generate automatically some source files
+needed to compile GStreamer. That requires that you have installed on
+your system some GNU tools and that they are available in your system
+PATH.</p>
+<p>The GStreamer project depends on other libraries, namely :</p>
+<ul>
+<li>
+<p>GLib</p>
+</li>
+<li>
+<p>libxml2</p>
+</li>
+<li>
+<p>libintl</p>
+</li>
+<li>
+<p>libiconv</p>
+</li>
+</ul>
+<p>Work is being done to provide pre-compiled GStreamer-1.0 libraries as a
+packages for win32. Check the <a href="http://gstreamer.freedesktop.org">GStreamer web
+site</a> and check our <a href="http://news.gmane.org/gmane.comp.video.gstreamer.devel">mailing
+list</a> for the
+latest developments in this respect.</p>
+<blockquote>
+<p><strong>Note</strong></p>
+<p>GNU tools needed that you can find on
+<a href="http://gnuwin32.sourceforge.net/">http://gnuwin32.sourceforge.net/</a></p>
+<ul>
+<li>
+<p>GNU flex (tested with 2.5.4)</p>
+</li>
+<li>
+<p>GNU bison (tested with 1.35)</p>
+</li>
+</ul>
+<p>and <a href="http://www.mingw.org/">http://www.mingw.org/</a></p>
+<ul>
+<li>GNU make (tested with 3.80)</li>
+</ul>
+<p>the generated files from the -auto makefiles will be available soon
+separately on the net for convenience (people who don't want to
+install GNU tools).</p>
+</blockquote>
+<h3 id="installation-on-the-system">Installation on the system</h3>
+<p>FIXME: This section needs be updated for GStreamer-1.0.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

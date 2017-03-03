@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstMemory</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/memory.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="memory.md">
+<h1 id="gstmemory">GstMemory</h1>
+<p>This document describes the design of the memory objects.</p>
+<p><code>GstMemory</code> objects are usually added to <code>GstBuffer</code> objects and contain the
+multimedia data passed around in the pipeline.</p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>It must be possible to have different memory allocators</li>
+<li>It must be possible to efficiently share memory objects, copy, span and trim.</li>
+</ul>
+<h2 id="memory-layout">Memory layout</h2>
+<p><code>GstMemory</code> manages a memory region. The accessible part of the managed region
+is defined by an offset relative to the start of the region and a size. This
+means that the managed region can be larger than what is visible to the user of
+<code>GstMemory</code> API.</p>
+<p>Schematically, <code>GstMemory</code> has a pointer to a memory region of <em>maxsize</em>. The
+area starting from <code>offset</code> and <code>size</code> is accessible.</p>
+<pre><code>           memory
+GstMemory  -&gt;*----------------------------------------------------*
+             ^----------------------------------------------------^
+                               maxsize
+                  ^--------------------------------------^
+                 offset            size
+</code></pre>
+<p>The current properties of the accessible memory can be retrieved with:</p>
+<pre><code class="language-c">gsize gst_memory_get_sizes (GstMemory *mem, gsize *offset, gsize *maxsize);
+</code></pre>
+<p>The offset and size can be changed with:</p>
+<pre><code class="language-c">void  gst_memory_resize (GstMemory *mem, gssize offset, gsize size);
+</code></pre>
+<h2 id="allocators">Allocators</h2>
+<p><code>GstMemory</code> objects are created by allocators. Allocators are a subclass
+of <code>GstObject</code> and can be subclassed to make custom allocators.</p>
+<pre><code class="language-c">struct _GstAllocator {
+  GstObject                 object;
+
+  const gchar               *mem_type;
+
+  GstMemoryMapFunction       mem_map;
+  GstMemoryUnmapFunction     mem_unmap;
+  GstMemoryCopyFunction      mem_copy;
+  GstMemoryShareFunction     mem_share;
+  GstMemoryIsSpanFunction    mem_is_span;
+
+  GstMemoryMapFullFunction   mem_map_full;
+  GstMemoryUnmapFullFunction mem_unmap_full;
+};
+</code></pre>
+<p>The allocator class has 2 virtual methods. One to create a <code>GstMemory</code>,
+another to free it.</p>
+<pre><code class="language-c">struct _GstAllocatorClass {
+  GstObjectClass object_class;
+
+  GstMemory *  (*alloc)      (GstAllocator *allocator, gsize size,
+                              GstAllocationParams *params);
+  void         (*free)       (GstAllocator *allocator, GstMemory *memory);
+};
+</code></pre>
+<p>Allocators are refcounted. It is also possible to register the allocator to the
+GStreamer system. This way, the allocator can be retrieved by name.</p>
+<p>After an allocator is created, new <code>GstMemory</code> can be created with</p>
+<pre><code class="language-c">GstMemory * gst_allocator_alloc (const GstAllocator * allocator,
+                                 gsize size, GstAllocationParams *params);
+</code></pre>
+<p><code>GstAllocationParams</code> contain extra info such as flags, alignment, prefix and
+padding.</p>
+<p>The <code>GstMemory</code> object is a refcounted object that must be freed with
+<code>gst_memory_unref()</code>.</p>
+<p>The <code>GstMemory</code> keeps a ref to the allocator that allocated it. Inside the
+allocator are the most common <code>GstMemory</code> operations listed. Custom
+<code>GstAllocator</code> implementations must implement the various operations on
+the memory they allocate.</p>
+<p>It is also possible to create a new <code>GstMemory</code> object that wraps existing
+memory with:</p>
+<pre><code class="language-c">GstMemory * gst_memory_new_wrapped  (GstMemoryFlags flags,
+                                     gpointer data, gsize maxsize,
+                                     gsize offset, gsize size,
+                                     gpointer user_data,
+                                     GDestroyNotify notify);
+</code></pre>
+<h2 id="lifecycle">Lifecycle</h2>
+<p><code>GstMemory</code> extends from <code>GstMiniObject</code> and therefore uses its lifecycle
+management (See <a href="miniobject.html">miniobject</a>).</p>
+<h2 id="data-access">Data Access</h2>
+<p>Access to the memory region is always controlled with a map and unmap method
+call. This allows the implementation to monitor the access patterns or set up
+the required memory mappings when needed.</p>
+<p>The access of the memory object is controlled with the locking mechanism on
+<code>GstMiniObject</code> (See <a href="miniobject.html">miniobject</a>).</p>
+<p>Mapping a memory region requires the caller to specify the access method: READ
+and/or WRITE. Mapping a memory region will first try to get a lock on the
+memory in the requested access mode. This means that the map operation can
+fail when WRITE access is requested on a non-writable memory object (it has
+an exclusive counter &gt; 1, the memory is already locked in an incompatible
+access mode or the memory is marked readonly).</p>
+<p>After the data has been accessed in the object, the <code>unmap()</code> call must be
+performed, which will unlock the memory again.</p>
+<p>It is allowed to recursively map multiple times with the same or narrower
+access modes. For each of the <code>map()</code> calls, a corresponding <code>unmap()</code> call
+needs to be made. WRITE-only memory cannot be mapped in READ mode and
+READ-only memory cannot be mapped in WRITE mode.</p>
+<p>The memory pointer returned from the <code>map()</code> call is guaranteed to remain
+valid in the requested mapping mode until the corresponding <code>unmap()</code> call is
+performed on the pointer.</p>
+<p>When multiple <code>map()</code> operations are nested and return the same pointer, the
+pointer is valid until the last <code>unmap()</code> call is done.</p>
+<p>When the final reference on a memory object is dropped, all outstanding
+mappings should have been unmapped.</p>
+<p>Resizing a <code>GstMemory</code> does not influence any current mappings in any way.</p>
+<h2 id="copy">Copy</h2>
+<p>A <code>GstMemory</code> copy can be made with the <code>gst_memory_copy()</code> call. Normally,
+allocators will implement a custom version of this function to make a copy of
+the same kind of memory as the original one. This is what the fallback version
+of the copy function does, albeit slower than what a custom implementation
+could do.</p>
+<p>The copy operation is only required to copy the visible range of the memory
+block.</p>
+<h2 id="share">Share</h2>
+<p>A memory region can be shared between <code>GstMemory</code> objects with the
+<code>gst_memory_share()</code> operation.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

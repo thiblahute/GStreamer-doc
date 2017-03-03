@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Events</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/events.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="events.md">
+<h1 id="events">Events</h1>
+<p>Events are objects passed around in parallel to the buffer dataflow to
+notify elements of various events.</p>
+<p>Events are received on pads using the event function. Some events should
+be interleaved with the data stream so they require taking the
+<code>STREAM_LOCK</code>, others don’t.</p>
+<p>Different types of events exist to implement various functionalities.</p>
+<ul>
+<li><code>GST_EVENT_FLUSH_START</code>: data is to be discarded</li>
+<li><code>GST_EVENT_FLUSH_STOP</code>: data is allowed again</li>
+<li><code>GST_EVENT_CAPS</code>: Format information about the following buffers</li>
+<li><code>GST_EVENT_SEGMENT</code>: Timing information for the following buffers</li>
+<li><code>GST_EVENT_TAG</code>: Stream metadata.</li>
+<li><code>GST_EVENT_BUFFERSIZE</code>: Buffer size requirements</li>
+<li><code>GST_EVENT_SINK_MESSAGE</code>: An event turned into a message by sinks</li>
+<li><code>GST_EVENT_EOS</code>: no more data is to be expected on a pad.</li>
+<li><code>GST_EVENT_QOS</code>: A notification of the quality of service of the stream</li>
+<li><code>GST_EVENT_SEEK</code>: A seek should be performed to a new position in the stream</li>
+<li><code>GST_EVENT_NAVIGATION</code>: A navigation event.</li>
+<li><code>GST_EVENT_LATENCY</code>: Configure the latency in a pipeline</li>
+<li><code>GST_EVENT_STEP</code>: Stepping event</li>
+<li><code>GST_EVENT_RECONFIGURE</code>: stream reconfigure event</li>
+</ul>
+<ul>
+<li><code>GST_EVENT_DRAIN</code>: Play all data downstream before returning.
+<blockquote>
+<p>not yet implemented, under investigation, might be needed to do
+still frames in DVD.</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="src-pads">src pads</h2>
+<p>A <code>gst_pad_push_event()</code> on a srcpad will first store the sticky event
+in the sticky array before sending the event to the peer pad. If there
+is no peer pad and the event was not stored in the sticky array, FALSE
+is returned.</p>
+<p>Flushing pads will refuse the events and will not store the sticky
+events.</p>
+<h2 id="sink-pads">sink pads</h2>
+<p>A <code>gst_pad_send_event()</code> on a sinkpad will call the event function on
+the pad. If the event function returns success, the sticky event is
+stored in the sticky event array and the event is marked for update.</p>
+<p>When the pad is flushing, the <code>_send_event()</code> function returns FALSE
+immediately.</p>
+<p>When the next data item is pushed, the pending events are pushed first.</p>
+<p>This ensures that the event function is never called for flushing pads
+and that the sticky array only contains events for which the event
+function returned success.</p>
+<h2 id="pad-link">pad link</h2>
+<p>When linking pads, the srcpad sticky events are marked for update when
+they are different from the sinkpad events. The next buffer push will
+push the events to the sinkpad.</p>
+<h2 id="flush_startstop">FLUSH_START/STOP</h2>
+<p>A flush event is sent both downstream and upstream to clear any pending
+data from the pipeline. This might be needed to make the graph more
+responsive when the normal dataflow gets interrupted by for example a
+seek event.</p>
+<p>Flushing happens in two stages.</p>
+<ol>
+<li>
+<p>a source element sends the <code>FLUSH_START</code> event to the downstream peer element.
+The downstream element starts rejecting buffers from the upstream elements. It
+sends the flush event further downstream and discards any buffers it is
+holding as well as return from the chain function as soon as possible.
+This makes sure that all upstream elements get unblocked.
+This event is not synchronized with the <code>STREAM_LOCK</code> and can be done in the
+application thread.</p>
+</li>
+<li>
+<p>a source element sends the <code>FLUSH_STOP</code> event to indicate
+that the downstream element can accept buffers again. The downstream
+element sends the flush event to its peer elements. After this step dataflow
+continues. The <code>FLUSH_STOP</code> call is synchronized with the <code>STREAM_LOCK</code> so any
+data used by the chain function can safely freed here if needed. Any
+pending EOS events should be discarded too.</p>
+</li>
+</ol>
+<p>After the flush completes the second stage, data is flowing again in the
+pipeline and all buffers are more recent than those before the flush.</p>
+<p>For elements that use the pullrange function, they send both flush
+events to the upstream pads in the same way to make sure that the
+pullrange function unlocks and any pending buffers are cleared in the
+upstream elements.</p>
+<p>A <code>FLUSH_START</code> may instruct the pipeline to distribute a new <code>base_time</code>
+to elements so that the <code>running_time</code> is reset to 0. (see
+<a href="clocks.html">clocks</a> and <a href="synchronisation.html">synchronisation</a>).</p>
+<h2 id="eos">EOS</h2>
+<p>The EOS event can only be sent on a sinkpad. It is typically emitted by
+the source element when it has finished sending data. This event is
+mainly sent in the streaming thread but can also be sent from the
+application thread.</p>
+<p>The downstream element should forward the EOS event to its downstream
+peer elements. This way the event will eventually reach the sinks which
+should then post an EOS message on the bus when in PLAYING.</p>
+<p>An element might want to flush its internally queued data before
+forwarding the EOS event downstream. This flushing can be done in the
+same thread as the one handling the EOS event.</p>
+<p>For elements with multiple sink pads it might be possible to wait for
+EOS on all the pads before forwarding the event.</p>
+<p>The EOS event should always be interleaved with the data flow, therefore
+the GStreamer core will take the <code>STREAM_LOCK</code>.</p>
+<p>Sometimes the EOS event is generated by another element than the source,
+for example a demuxer element can generate an EOS event before the
+source element. This is not a problem, the demuxer does not send an EOS
+event to the upstream element but returns <code>GST_FLOW_EOS</code>, causing the
+source element to stop sending data.</p>
+<p>An element that sends EOS on a pad should stop sending data on that pad.
+Source elements typically <code>pause()</code> their task for that purpose.</p>
+<p>By default, a GstBin collects all EOS messages from all its sinks before
+posting the EOS message to its parent.</p>
+<p>The EOS is only posted on the bus by the sink elements in the PLAYING
+state. If the EOS event is received in the PAUSED state, it is queued
+until the element goes to PLAYING.</p>
+<p>A <code>FLUSH_STOP</code> event on an element flushes the EOS state and all pending
+EOS messages.</p>
+<h2 id="segment">SEGMENT</h2>
+<p>A segment event is sent downstream by an element to indicate that the
+following group of buffers start and end at the specified positions. The
+newsegment event also contains the playback speed and the applied rate
+of the stream.</p>
+<p>Since the stream time is always set to 0 at start and after a seek, a 0
+point for all next buffer’s timestamps has to be propagated through the
+pipeline using the SEGMENT event.</p>
+<p>Before sending buffers, an element must send a SEGMENT event. An element
+is free to refuse buffers if they were not preceded by a SEGMENT event.</p>
+<p>Elements that sync to the clock should store the SEGMENT start and end
+values and subtract the start value from the buffer timestamp before
+comparing it against the stream time (see <a href="clocks.html">clocks</a>).</p>
+<p>An element is allowed to send out buffers with the SEGMENT start time
+already subtracted from the timestamp. If it does so, it needs to send a
+corrected SEGMENT downstream, ie, one with start time 0.</p>
+<p>A SEGMENT event should be generated as soon as possible in the pipeline
+and is usually generated by a demuxer or source. The event is generated
+before pushing the first buffer and after a seek, right before pushing
+the new buffer.</p>
+<p>The SEGMENT event should be sent from the streaming thread and should be
+serialized with the buffers.</p>
+<p>Buffers should be clipped within the range indicated by the newsegment
+event start and stop values. Sinks must drop buffers with timestamps out
+of the indicated segment range.</p>
+<h2 id="tag">TAG</h2>
+<p>The tag event is sent downstream when an element has discovered metadata
+tags in a media file. Encoders can use this event to adjust their
+tagging system. A tag is serialized with buffers.</p>
+<h2 id="buffersize">BUFFERSIZE</h2>
+<blockquote>
+<p><strong>Note</strong></p>
+<p>This event is not yet implemented.</p>
+</blockquote>
+<p>An element can suggest a buffersize for downstream elements. This is
+typically done by elements that produce data on multiple source pads
+such as demuxers.</p>
+<h2 id="qos">QOS</h2>
+<p>A QOS, or quality of service message, is generated in an element to
+report to the upstream elements about the current quality of real-time
+performance of the stream. This is typically done by the sinks that
+measure the amount of framedrops they have. (see <a href="qos.html">qos</a>)</p>
+<h2 id="seek">SEEK</h2>
+<p>A seek event is issued by the application to configure the playback
+range of a stream. It is called form the application thread and travels
+upstream.</p>
+<p>The seek event contains the new start and stop position of playback
+after the seek is performed. Optionally the stop position can be left at
+-1 to continue playback to the end of the stream. The seek event also
+contains the new playback rate of the stream, 1.0 is normal playback,
+2.0 double speed and negative values mean backwards playback.</p>
+<p>A seek usually flushes the graph to minimize latency after the seek.
+This behaviour is triggered by using the <code>SEEK_FLUSH</code> flag on the seek
+event.</p>
+<p>The seek event usually starts from the sink elements and travels
+upstream from element to element until it reaches an element that can
+perform the seek. No intermediate element is allowed to assume that a
+seek to this location will happen. It is allowed to modify the start and
+stop times if it needs to do so. this is typically the case if a seek is
+requested for a non-time position.</p>
+<p>The actual seek is performed in the application thread so that success
+or failure can be reported as a return value of the seek event. It is
+therefore important that before executing the seek, the element acquires
+the <code>STREAM_LOCK</code> so that the streaming thread and the seek get
+serialized.</p>
+<p>The general flow of executing the seek with FLUSH is as follows:</p>
+<ol>
+<li>
+<p>unblock the streaming threads, they could be blocked in a chain
+function. This is done by sending a <code>FLUSH_START</code> on all srcpads or by pausing
+the streaming task, depending on the seek FLUSH flag.
+The flush will make sure that all downstream elements unlock and
+that control will return to this element chain/loop function.
+We cannot lock the <code>STREAM_LOCK</code> before doing this since it might
+cause a deadlock.</p>
+</li>
+<li>
+<p>acquire the <code>STREAM_LOCK</code>. This will work since the chain/loop function
+was unlocked/paused in step 1).</p>
+</li>
+<li>
+<p>perform the seek. since the <code>STREAM_LOCK</code> is held, the streaming thread
+will wait for the seek to complete. Most likely, the stream thread
+will pause because the peer elements are flushing.</p>
+</li>
+<li>
+<p>send a <code>FLUSH_STOP</code> event to all peer elements to allow streaming again.</p>
+</li>
+<li>
+<p>create a SEGMENT event to signal the new buffer timestamp base time.
+This event must be queued to be sent by the streaming thread.</p>
+</li>
+<li>
+<p>start stopped tasks and unlock the <code>STREAM_LOCK</code>, dataflow will continue
+now from the new position.</p>
+</li>
+</ol>
+<p>More information about the different seek types can be found in
+<a href="seeking.html">seeking</a>.</p>
+<h2 id="navigation">NAVIGATION</h2>
+<p>A navigation event is generated by a sink element to signal the elements
+of a navigation event such as a mouse movement or button click.
+Navigation events travel upstream.</p>
+<h2 id="latency">LATENCY</h2>
+<p>A latency event is used to configure a certain latency in the pipeline.
+It contains a single GstClockTime with the required latency. The latency
+value is calculated by the pipeline and distributed to all sink elements
+before they are set to PLAYING. The sinks will add the configured
+latency value to the timestamps of the buffer in order to delay their
+presentation. (See also <a href="latency.html">latency</a>).</p>
+<h2 id="drain">DRAIN</h2>
+<blockquote>
+<p><strong>Note</strong></p>
+<p>This event is not yet implemented.</p>
+</blockquote>
+<p>Drain event indicates that upstream is about to perform a real-time
+event, such as pausing to present an interactive menu or such, and needs
+to wait for all data it has sent to be played-out in the sink.</p>
+<p>Drain should only be used by live elements, as it may otherwise occur
+during prerolling.</p>
+<p>Usually after draining the pipeline, an element either needs to modify
+timestamps, or FLUSH to prevent subsequent data being discarded at the
+sinks for arriving late (only applies during playback scenarios).</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

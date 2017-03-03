@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Stream Status</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/stream-status.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="stream-status.md">
+<h1 id="stream-status">Stream Status</h1>
+<p>This document describes the design and use cases for the stream status
+messages.</p>
+<p><code>STREAM_STATUS</code> messages are posted on the bus when the state of a
+streaming thread changes. The purpose of this messages is to allow the
+application to interact with the streaming thread properties, such as
+the thread priority or the threadpool to use.</p>
+<h2 id="requirements-and-scenarios">Requirements and scenarios</h2>
+<p>We accommodate for the following requirements:</p>
+<ul>
+<li>
+<p>Application is informed when a streaming thread is about to be
+created. It should be possible for the application to suggest a
+custom <code>GstTaskPool</code>.</p>
+</li>
+<li>
+<p>Application is informed when the status of a streaming thread is
+changed. This can be interesting for GUI application that want to
+visualize the status of the streaming threads
+(playing/paused/stopped)</p>
+</li>
+<li>
+<p>Application is informed when a streaming thread is destroyed.</p>
+</li>
+</ul>
+<p>We allow for the following scenarios:</p>
+<ul>
+<li>
+<p>Elements require a specific (internal) streaming thread to operate
+or the application can create/specify a thread for the element.</p>
+</li>
+<li>
+<p>Elements allow the application to configure a priority on the
+threads.</p>
+</li>
+</ul>
+<h2 id="use-cases">Use cases</h2>
+<ul>
+<li>boost the priority of the udp receiver streaming thread</li>
+</ul>
+<pre><code>.--------.    .-------.    .------.    .-------.
+| udpsrc |    | depay |    | adec |    | asink |
+|       src-&gt;sink    src-&gt;sink   src-&gt;sink     |
+'--------'    '-------'    '------'    '-------'
+</code></pre>
+<ul>
+<li>
+<p>when going from <code>READY</code> to <code>PAUSED</code> state, udpsrc will require a
+streaming thread for pushing data into the depayloader. It will
+post a <code>STREAM_STATUS</code> message indicating its requirement for a
+streaming thread.</p>
+</li>
+<li>
+<p>The application will usually react to the <code>STREAM_STATUS</code>
+messages with a sync bus handler.</p>
+</li>
+<li>
+<p>The application can configure the <code>GstTask</code> with a custom
+<code>GstTaskPool</code> to manage the streaming thread or it can ignore the
+message which will make the element use its default <code>GstTaskPool</code>.</p>
+</li>
+<li>
+<p>The application can react to the <code>ENTER/LEAVE</code> stream status
+message to configure the thread right before it is
+started/stopped. This can be used to configure the thread
+priority.</p>
+</li>
+<li>
+<p>Before the <code>GstTask</code> is changed state (start/pause/stop) a
+<code>STREAM_STATUS</code> message is posted that can be used by the
+application to keep track of the running streaming threads.</p>
+</li>
+</ul>
+<h2 id="messages">Messages</h2>
+<p>The existing <code>STREAM_STATUS</code> message will be further defined and implemented in
+(selected) elements. The following fields will be contained in the message:</p>
+<ul>
+<li>
+<p><strong><code>type</code></strong>, <code>GST_TYPE_STREAM_STATUS_TYPE</code>:</p>
+<ul>
+<li>
+<p>a set of types to control the lifecycle of the thread:
+<code>GST_STREAM_STATUS_TYPE_CREATE</code>: a new streaming thread is going
+to be created. The application has the chance to configure a custom
+thread. <code>GST_STREAM_STATUS_TYPE_ENTER</code>: the streaming thread is
+about to enter its loop function for the first time.
+<code>GST_STREAM_STATUS_TYPE_LEAVE</code>: the streaming thread is about to
+leave its loop. <code>GST_STREAM_STATUS_TYPE_DESTROY</code>: a streaming
+thread is destroyed</p>
+</li>
+<li>
+<p>A set of types to control the state of the threads:
+<code>GST_STREAM_STATUS_TYPE_START</code>: a streaming thread is started
+<code>GST_STREAM_STATUS_TYPE_PAUSE</code>: a streaming thread is paused
+<code>GST_STREAM_STATUS_TYPE_STOP</code>: a streaming thread is stopped</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong><code>owner</code></strong>: <code>GST_TYPE_ELEMENT</code>: The owner element of the thread. The
+message source will contain the pad (or one of the pads) that will
+produce data by this thread. If this thread does not produce data on
+a pad, the message source will contain the owner as well. The idea
+is that the application should be able to see from the element/pad
+what function this thread has in the context of the application and
+configure the thread appropriatly.</p>
+</li>
+<li>
+<p><strong><code>object</code></strong>: <code>G_TYPE</code>, <code>GstTask/GThread</code>: A <code>GstTask/GThread</code> controlling
+this streaming thread.</p>
+</li>
+<li>
+<p><strong><code>flow-return</code></strong>: <code>GstFlowReturn</code>: A status code for why the thread state
+changed. when threads are created and started, this is usually
+<code>GST_FLOW_OK</code> but when they are stopping it contains the reason code
+why it stopped.</p>
+</li>
+<li>
+<p><strong><code>reason</code></strong>: <code>G_TYPE_STRING</code>: A string describing the reason why the
+thread started/stopped/paused. Can be NULL if no reason is given.</p>
+</li>
+</ul>
+<h2 id="events">Events</h2>
+<p>FIXME</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

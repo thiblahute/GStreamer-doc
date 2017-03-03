@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Design principles</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="application-development/introduction/motivation.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="motivation.md">
+<h1 id="design-principles">Design principles</h1>
+<h2 id="clean-and-powerful">Clean and powerful</h2>
+<p>GStreamer provides a clean interface to:</p>
+<ul>
+<li>
+<p>The application programmer who wants to build a media pipeline. The
+programmer can use an extensive set of powerful tools to create
+media pipelines without writing a single line of code. Performing
+complex media manipulations becomes very easy.</p>
+</li>
+<li>
+<p>The plugin programmer. Plugin programmers are provided a clean and
+simple API to create self-contained plugins. An extensive debugging
+and tracing mechanism has been integrated. GStreamer also comes with
+an extensive set of real-life plugins that serve as examples too.</p>
+</li>
+</ul>
+<h2 id="object-oriented">Object oriented</h2>
+<p>GStreamer adheres to GObject, the GLib 2.0 object model. A programmer
+familiar with GLib 2.0 or GTK+ will be comfortable with GStreamer.</p>
+<p>GStreamer uses the mechanism of signals and object properties.</p>
+<p>All objects can be queried at runtime for their various properties and
+capabilities.</p>
+<p>GStreamer intends to be similar in programming methodology to GTK+. This
+applies to the object model, ownership of objects, reference counting,
+etc.</p>
+<h2 id="extensible">Extensible</h2>
+<p>All GStreamer Objects can be extended using the GObject inheritance
+methods.</p>
+<p>All plugins are loaded dynamically and can be extended and upgraded
+independently.</p>
+<h2 id="allow-binaryonly-plugins">Allow binary-only plugins</h2>
+<p>Plugins are shared libraries that are loaded at runtime. Since all the
+properties of the plugin can be set using the GObject properties, there
+is no need (and in fact no way) to have any header files installed for
+the plugins.</p>
+<p>Special care has been taken to make plugins completely self-contained.
+All relevant aspects of plugins can be queried at run-time.</p>
+<h2 id="high-performance">High performance</h2>
+<p>High performance is obtained by:</p>
+<ul>
+<li>
+<p>using GLib's <code>GSlice</code> allocator</p>
+</li>
+<li>
+<p>extremely light-weight links between plugins. Data can travel the
+pipeline with minimal overhead. Data passing between plugins only
+involves a pointer dereference in a typical pipeline.</p>
+</li>
+<li>
+<p>providing a mechanism to directly work on the target memory. A
+plugin can for example directly write to the X server's shared
+memory space. Buffers can also point to arbitrary memory, such as a
+sound card's internal hardware buffer.</p>
+</li>
+<li>
+<p>refcounting and copy on write minimize usage of memcpy. Sub-buffers
+efficiently split buffers into manageable pieces.</p>
+</li>
+<li>
+<p>dedicated streaming threads, with scheduling handled by the kernel.</p>
+</li>
+<li>
+<p>allowing hardware acceleration by using specialized plugins.</p>
+</li>
+<li>
+<p>using a plugin registry with the specifications of the plugins so
+that the plugin loading can be delayed until the plugin is actually
+used.</p>
+</li>
+</ul>
+<h2 id="clean-coreplugins-separation">Clean core/plugins separation</h2>
+<p>The core of GStreamer is essentially media-agnostic. It only knows about
+bytes and blocks, and only contains basic elements. The core of
+GStreamer is functional enough to even implement low-level system tools,
+like cp.</p>
+<p>All of the media handling functionality is provided by plugins external
+to the core. These tell the core how to handle specific types of media.</p>
+<h2 id="provide-a-framework-for-codec-experimentation">Provide a framework for codec experimentation</h2>
+<p>GStreamer also wants to be an easy framework where codec developers can
+experiment with different algorithms, speeding up the development of
+open and free multimedia codecs like those developed by the <a href="http://www.xiph.org">Xiph.Org
+Foundation</a> (such as Theora and Vorbis).</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

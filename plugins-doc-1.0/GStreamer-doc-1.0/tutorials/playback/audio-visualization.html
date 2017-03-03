@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Playback tutorial 6: Audio visualization</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="tutorials/playback/audio-visualization.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="audio-visualization.md">
+<h1 id="playback-tutorial-6-audio-visualization">Playback tutorial 6: Audio visualization</h1>
+<h2 id="goal">Goal</h2>
+<p>GStreamer comes with a set of elements that turn audio into video. They
+can be used for scientific visualization or to spice up your music
+player, for example. This tutorial shows:</p>
+<ul>
+<li>How to enable audio visualization</li>
+<li>How to select the visualization element</li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p>Enabling audio visualization in <code>playbin</code> is actually very easy. Just
+set the appropriate <code>playbin</code> flag and, when an audio-only stream is
+found, it will instantiate the necessary elements to create and display
+the visualization.</p>
+<p>If you want to specify the actual element that you want to use to
+generate the visualization, you instantiate it yourself and then tell
+<code>playbin</code> about it through the <code>vis-plugin</code> property.</p>
+<p>This tutorial searches the GStreamer registry for all the elements of
+the Visualization class, tries to select <code>goom</code> (or another one if it is
+not available) and passes it to <code>playbin</code>.</p>
+<h2 id="a-fancy-music-player">A fancy music player</h2>
+<p>Copy this code into a text file named <code>playback-tutorial-6.c</code>.</p>
+<p><strong>playback-tutorial-6.c</strong></p>
+<pre><code class="language-c">#include &lt;gst/gst.h&gt;
+
+/* playbin flags */
+typedef enum {
+  GST_PLAY_FLAG_VIS           = (1 &lt;&lt; 3) /* Enable rendering of visualizations when there is no video stream. */
+} GstPlayFlags;
+
+/* Return TRUE if this is a Visualization element */
+static gboolean filter_vis_features (GstPluginFeature *feature, gpointer data) {
+  GstElementFactory *factory;
+
+  if (!GST_IS_ELEMENT_FACTORY (feature))
+    return FALSE;
+  factory = GST_ELEMENT_FACTORY (feature);
+  if (!g_strrstr (gst_element_factory_get_klass (factory), "Visualization"))
+    return FALSE;
+
+  return TRUE;
+}
+
+int main(int argc, char *argv[]) {
+  GstElement *pipeline, *vis_plugin;
+  GstBus *bus;
+  GstMessage *msg;
+  GList *list, *walk;
+  GstElementFactory *selected_factory = NULL;
+  guint flags;
+
+  /* Initialize GStreamer */
+  gst_init (&amp;argc, &amp;argv);
+
+  /* Get a list of all visualization plugins */
+  list = gst_registry_feature_filter (gst_registry_get (), filter_vis_features, FALSE, NULL);
+
+  /* Print their names */
+  g_print("Available visualization plugins:\n");
+  for (walk = list; walk != NULL; walk = g_list_next (walk)) {
+    const gchar *name;
+    GstElementFactory *factory;
+
+    factory = GST_ELEMENT_FACTORY (walk-&gt;data);
+    name = gst_element_factory_get_longname (factory);
+    g_print("  %s\n", name);
+
+    if (selected_factory == NULL || g_str_has_prefix (name, "GOOM")) {
+      selected_factory = factory;
+    }
+  }
+
+  /* Don't use the factory if it's still empty */
+  /* e.g. no visualization plugins found */
+  if (!selected_factory) {
+    g_print ("No visualization plugins found!\n");
+    return -1;
+  }
+
+  /* We have now selected a factory for the visualization element */
+  g_print ("Selected '%s'\n", gst_element_factory_get_longname (selected_factory));
+  vis_plugin = gst_element_factory_create (selected_factory, NULL);
+  if (!vis_plugin)
+    return -1;
+
+  /* Build the pipeline */
+  pipeline = gst_parse_launch ("playbin uri=http://radio.hbr1.com:19800/ambient.ogg", NULL);
+
+  /* Set the visualization flag */
+  g_object_get (pipeline, "flags", &amp;flags, NULL);
+  flags |= GST_PLAY_FLAG_VIS;
+  g_object_set (pipeline, "flags", flags, NULL);
+
+  /* set vis plugin for playbin */
+  g_object_set (pipeline, "vis-plugin", vis_plugin, NULL);
+
+  /* Start playing */
+  gst_element_set_state (pipeline, GST_STATE_PLAYING);
+
+  /* Wait until error or EOS */
+  bus = gst_element_get_bus (pipeline);
+  msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
+
+  /* Free resources */
+  if (msg != NULL)
+    gst_message_unref (msg);
+  gst_plugin_feature_list_free (list);
+  gst_object_unref (bus);
+  gst_element_set_state (pipeline, GST_STATE_NULL);
+  gst_object_unref (pipeline);
+  return 0;
+}
+</code></pre>
+<blockquote>
+<p><img src="images/icons/emoticons/information.png" alt="information" id="information"> If you need help to compile this code, refer to the
+<strong>Building the tutorials</strong> section for your platform: <a href="../../installing/on-mac-osx.html">Mac</a> or
+<a href="../../installing/on-windows.html">Windows</a> or use this specific command on Linux:</p>
+<p><code>gcc playback-tutorial-6.c -o playback-tutorial-6 `pkg-config --cflags --libs gstreamer-1.0`</code></p>
+<p>If you need help to run this code, refer to the <strong>Running the
+tutorials</strong> section for your platform: <a href="../../installing/on-mac-osx.html#building-the-tutorials">Mac OS X</a>, <a href="../../installing/on-windows.html#running-the-tutorials">Windows</a>, for
+<a href="../../installing/for-ios-development.html#building-the-tutorials">iOS</a> or for <a href="../../installing/for-android-development.html#building-the-tutorials">android</a>.</p>
+<p>This tutorial plays music streamed from the <a href="http://www.hbr1.com/">HBR1</a> Internet radio station. A window should open displaying somewhat psychedelic color patterns moving with the music. The media is fetched from the Internet, so the window might take a few seconds to appear, depending on your connection speed.</p>
+<p>Required libraries: <code>gstreamer-1.0</code></p>
+</blockquote>
+<h2 id="walkthrough">Walkthrough</h2>
+<p>First off, we indicate <code>playbin</code> that we want an audio visualization by
+setting the <code>GST_PLAY_FLAG_VIS</code> flag. If the media already contains
+video, this flag has no effect.</p>
+<pre><code class="language-c">/* Set the visualization flag */
+g_object_get (pipeline, "flags", &amp;flags, NULL);
+flags |= GST_PLAY_FLAG_VIS;
+g_object_set (pipeline, "flags", flags, NULL);
+</code></pre>
+<p>If no visualization plugin is enforced by the user, <code>playbin</code> will use
+<code>goom</code> (audio visualization will be disabled if <code>goom</code> is not
+available). The rest of the tutorial shows how to find out the available
+visualization elements and enforce one to <code>playbin</code>.</p>
+<pre><code class="language-c">/* Get a list of all visualization plugins */
+list = gst_registry_feature_filter (gst_registry_get (), filter_vis_features, FALSE, NULL);
+</code></pre>
+<p><code>gst_registry_feature_filter()</code> examines all elements currently in the
+GStreamer registry and selects those for which
+the <code>filter_vis_features</code> function returns TRUE. This function selects
+only the Visualization plugins:</p>
+<pre><code class="language-c">/* Return TRUE if this is a Visualization element */
+static gboolean filter_vis_features (GstPluginFeature *feature, gpointer data) {
+  GstElementFactory *factory;
+
+  if (!GST_IS_ELEMENT_FACTORY (feature))
+    return FALSE;
+  factory = GST_ELEMENT_FACTORY (feature);
+  if (!g_strrstr (gst_element_factory_get_klass (factory), "Visualization"))
+    return FALSE;
+
+  return TRUE;
+}
+</code></pre>
+<p>A bit of theory regarding the organization of GStreamer elements is in
+place: Each of the files that GStreamer loads at runtime is known as a
+Plugin (<code>GstPlugin</code>). A Plugin can contain many Features
+(<code>GstPluginFeature</code>). There are different kinds of Features, among them,
+the Element Factories (<code>GstElementFactory</code>) that we have been using to
+build Elements (<code>GstElement</code>).</p>
+<p>This function simply disregards all Features which are not Factories,
+and then all Factories whose class (obtained with
+<code>gst_element_factory_get_klass()</code>) does not include “Visualization”.  As
+stated in the documentation for <code>GstElementFactory</code>, a Factory’s class
+is a “string describing the type of element, as an unordered list
+separated with slashes (/)”. Examples of classes are “Source/Network”,
+“Codec/Decoder/Video”, “Codec/Encoder/Audio” or “Visualization”.</p>
+<pre><code class="language-c">/* Print their names */
+g_print("Available visualization plugins:\n");
+for (walk = list; walk != NULL; walk = g_list_next (walk)) {
+  const gchar *name;
+  GstElementFactory *factory;
+
+  factory = GST_ELEMENT_FACTORY (walk-&gt;data);
+  name = gst_element_factory_get_longname (factory);
+  g_print("  %s\n", name);
+
+  if (selected_factory == NULL || g_str_has_prefix (name, "GOOM")) {
+    selected_factory = factory;
+  }
+}
+</code></pre>
+<p>Once we have the list of Visualization plugins, we print their names
+(<code>gst_element_factory_get_longname()</code>) and choose one (in this case,
+GOOM).</p>
+<pre><code class="language-c">/* We have now selected a factory for the visualization element */
+g_print ("Selected '%s'\n", gst_element_factory_get_longname (selected_factory));
+vis_plugin = gst_element_factory_create (selected_factory, NULL);
+if (!vis_plugin)
+  return -1;
+</code></pre>
+<p>The selected factory is used to instantiate an actual <code>GstElement</code> which
+is then passed to <code>playbin</code> through the <code>vis-plugin</code> property:</p>
+<pre><code class="language-c">/* set vis plugin for playbin */
+g_object_set (pipeline, "vis-plugin", vis_plugin, NULL);
+</code></pre>
+<p>And we are done.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This tutorial has shown:</p>
+<ul>
+<li>How to enable Audio Visualization in <code>playbin</code> with the
+<code>GST_PLAY_FLAG_VIS</code> flag</li>
+<li>How to enforce one particular visualization element with the
+<code>vis-plugin</code> <code>playbin</code> property</li>
+</ul>
+<p>It has been a pleasure having you here, and see you soon!</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

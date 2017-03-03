@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Android tutorial 1: Link against GStreamer</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="tutorials/android/link-against-gstreamer.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="link-against-gstreamer.md">
+<h1 id="android-tutorial-1-link-against-gstreamer">Android tutorial 1: Link against GStreamer</h1>
+<h2 id="goal">Goal!</h2>
+<p><img src="images/tutorials/android-link-against-gstreamer-screenshot.png" alt="screenshot" id="screenshot"></p>
+<p>This first Android tutorial is extremely simple: it just retrieves the
+GStreamer version and displays it on the screen. It exemplifies how to
+access GStreamer C code from Java and verifies that there have been no
+linkage problems.</p>
+<h2 id="hello-gstreamer-java-code">Hello GStreamer [Java code]</h2>
+<p>The tutorial code is in the <a href="https://cgit.freedesktop.org/gstreamer/gst-docs/">gst-docs</a> in the <code>tutorials/android-tutorial-1</code> subdirectory. This directories contains the usual Android NDK structure: a <code>src</code> folder for the Java code,
+a <code>jni</code> folder for the C code and a <code>res</code> folder for UI resources.</p>
+<p>We recommend that you open this project in Eclipse (as explained
+in <a href="../../installing/for-android-development.html">Installing for Android development</a>) so you can
+easily see how all the pieces fit together.</p>
+<p>Let’s first introduce the Java code, then the C code and finally the
+makefile that allows GStreamer integration.</p>
+<p><strong>src/org/freedesktop/gstreamer/tutorials/tutorial_1/Tutorial1.java</strong></p>
+<pre><code class="language-java">package org.freedesktop.gstreamer.tutorials.tutorial_1;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.freedesktop.gstreamer.GStreamer;
+
+public class Tutorial1 extends Activity {
+    private native String nativeGetGStreamerInfo();
+
+    // Called when the activity is first created.
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        try {
+            GStreamer.init(this);
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        setContentView(R.layout.main);
+
+        TextView tv = (TextView)findViewById(R.id.textview_info);
+        tv.setText("Welcome to " + nativeGetGStreamerInfo() + " !");
+    }
+
+    static {
+        System.loadLibrary("gstreamer_android");
+        System.loadLibrary("tutorial-1");
+    }
+
+}
+</code></pre>
+<p>Calls from Java to C happen through native methods, like the one
+declared here:</p>
+<pre><code class="language-java">private native String nativeGetGStreamerInfo();
+</code></pre>
+<p>This tells Java that there exists a method with this signature somewhere
+so it compiles happily. It is your responsibility to ensure that, <strong>at
+runtime</strong>, this method is accessible. This is accomplished by the C code
+shown later.</p>
+<p>The first bit of code that gets actually executed is the static
+initializer of the class:</p>
+<pre><code class="language-java">static {
+    System.loadLibrary("gstreamer_android");
+    System.loadLibrary("tutorial-1");
+}
+</code></pre>
+<p>It loads <code>libgstreamer_android.so</code>, which contains all GStreamer
+methods, and <code>libtutorial-1.so</code>, which contains the C part of this
+tutorial, explained below.</p>
+<p>Upon loading, each of these libraries’ <code>JNI_OnLoad()</code> method is
+executed. It basically registers the native methods that these libraries
+expose. The GStreamer library only exposes a <code>init()</code> method, which
+initializes GStreamer and registers all plugins (The tutorial library is
+explained later below).</p>
+<pre><code class="language-java">try {
+    GStreamer.init(this);
+} catch (Exception e) {
+    Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+    finish();
+    return;
+}
+</code></pre>
+<p>Next, in the <code>OnCreate()</code> method of the
+<a href="http://developer.android.com/reference/android/app/Activity.html">Activity</a>
+we actually initialize GStreamer by calling <code>GStreamer.init()</code>. This
+method requires a
+<a href="http://developer.android.com/reference/android/content/Context.html">Context</a>
+so it cannot be called from the static initializer, but there is no
+danger in calling it multiple times, as all but the first time the calls
+will be ignored.</p>
+<p>Should initialization fail, the <code>init()</code> method would throw an
+<a href="http://developer.android.com/reference/java/lang/Exception.html">Exception</a>
+with the details provided by the GStreamer library.</p>
+<pre><code class="language-java">TextView tv = (TextView)findViewById(R.id.textview_info);
+tv.setText("Welcome to " + nativeGetGStreamerInfo() + " !");
+</code></pre>
+<p>Then, the native method <code>nativeGetGStreamerInfo()</code> is called and a
+string is retrieved, which is used to format the content of the
+<a href="http://developer.android.com/reference/android/widget/TextView.html">TextView</a>
+in the UI.</p>
+<p>This finishes the UI part of this tutorial. Let’s take a look at the C
+code:</p>
+<h2 id="hello-gstreamer-c-code">Hello GStreamer [C code]</h2>
+<p><strong>jni/tutorial-1.c</strong></p>
+<pre><code class="language-c">#include &lt;string.h&gt;
+#include &lt;jni.h&gt;
+#include &lt;android/log.h&gt;
+#include &lt;gst/gst.h&gt;
+
+/*
+ * Java Bindings
+ */
+static jstring gst_native_get_gstreamer_info (JNIEnv* env, jobject thiz) {
+  char *version_utf8 = gst_version_string();
+  jstring *version_jstring = (*env)-&gt;NewStringUTF(env, version_utf8);
+  g_free (version_utf8);
+  return version_jstring;
+}
+
+static JNINativeMethod native_methods[] = {
+  { "nativeGetGStreamerInfo", "()Ljava/lang/String;", (void *) gst_native_get_gstreamer_info}
+};
+
+jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+  JNIEnv *env = NULL;
+
+  if ((*vm)-&gt;GetEnv(vm, (void**) &amp;env, JNI_VERSION_1_4) != JNI_OK) {
+    __android_log_print (ANDROID_LOG_ERROR, "tutorial-1", "Could not retrieve JNIEnv");
+    return 0;
+  }
+  jclass klass = (*env)-&gt;FindClass (env, "org/freedesktop/gstreamer/tutorials/tutorial_1/Tutorial1");
+  (*env)-&gt;RegisterNatives (env, klass, native_methods, G_N_ELEMENTS(native_methods));
+
+  return JNI_VERSION_1_4;
+}
+</code></pre>
+<p>The <code>JNI_OnLoad()</code> method is executed every time the Java Virtual
+Machine (VM) loads a library.</p>
+<p>Here, we retrieve the JNI environment needed to make calls that interact
+with Java:</p>
+<pre><code class="language-c">JNIEnv *env = NULL;
+
+if ((*vm)-&gt;GetEnv(vm, (void**) &amp;env, JNI_VERSION_1_4) != JNI_OK) {
+  __android_log_print (ANDROID_LOG_ERROR, "tutorial-1", "Could not retrieve JNIEnv");
+  return 0;
+}
+</code></pre>
+<p>And then locate the class containing the UI part of this tutorial using
+<code>FindClass()</code>:</p>
+<pre><code class="language-c">jclass klass = (*env)-&gt;FindClass (env, "org/freedesktop/gstreamer/tutorials/tutorial_1/Tutorial1");
+</code></pre>
+<p>Finally, we register our native methods with <code>RegisterNatives()</code>, this
+is, we provide the code for the methods we advertised in Java using the
+<strong><code>native</code></strong>
+keyword:</p>
+<pre><code class="language-c">(*env)-&gt;RegisterNatives (env, klass, native_methods, G_N_ELEMENTS(native_methods));
+</code></pre>
+<p>The <code>native_methods</code> array describes each one of the methods to register
+(only one in this tutorial).  For each method, it provides its Java
+name, its <a href="http://docs.oracle.com/javase/1.5.0/docs/guide/jni/spec/types.html#wp276">type
+signature</a>
+and a pointer to the C function implementing it:</p>
+<pre><code class="language-c">static JNINativeMethod native_methods[] = {
+  { "nativeGetGStreamerInfo", "()Ljava/lang/String;", (void *) gst_native_get_gstreamer_info}
+};
+</code></pre>
+<p>The only native method used in this tutorial
+is <code>nativeGetGStreamerInfo()</code>:</p>
+<pre><code class="language-c">jstring gst_native_get_gstreamer_info (JNIEnv* env, jobject thiz) {
+  char *version_utf8 = gst_version_string();
+  jstring *version_jstring = (*env)-&gt;NewStringUTF(env, version_utf8);
+  g_free (version_utf8);
+  return version_jstring;
+}
+</code></pre>
+<p>It simply calls <code>gst_version_string()</code> to obtain a string describing
+this version of GStreamer. This <a href="http://en.wikipedia.org/wiki/UTF-8#Modified_UTF-8">Modified
+UTF8</a> string is then
+converted to <a href="http://en.wikipedia.org/wiki/UTF-16">UTF16</a> by <code>NewStringUTF()</code> as required by Java and returned. Java will be
+responsible for freeing the memory used by the new UTF16 String, but we
+must free the <code>char *</code> returned by <code>gst_version_string()</code>.</p>
+<h2 id="hello-gstreamer-androidmk">Hello GStreamer [Android.mk]</h2>
+<p><strong>jni/Android.mk</strong></p>
+<pre><code class="language-ruby">LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE    := tutorial-1
+LOCAL_SRC_FILES := tutorial-1.c
+LOCAL_SHARED_LIBRARIES := gstreamer_android
+LOCAL_LDLIBS := -llog
+include $(BUILD_SHARED_LIBRARY)
+
+ifndef GSTREAMER_ROOT
+ifndef GSTREAMER_ROOT_ANDROID
+$(error GSTREAMER_ROOT_ANDROID is not defined!)
+endif
+GSTREAMER_ROOT        := $(GSTREAMER_ROOT_ANDROID)
+endif
+GSTREAMER_NDK_BUILD_PATH  := $(GSTREAMER_ROOT)/share/gst-android/ndk-build/
+GSTREAMER_PLUGINS         := coreelements
+include $(GSTREAMER_NDK_BUILD_PATH)/gstreamer-1.0.mk
+</code></pre>
+<p>This is a barebones makefile for a project with GStreamer support. It
+simply states that it depends on the <code>libgstreamer_android.so</code> library
+(line 7), and requires the <code>coreelements</code> plugin (line 18). More complex
+applications will probably add more libraries and plugins
+to <code>Android.mk</code></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This ends the first Android tutorial. It has shown that, besides the
+interconnection between Java and C (which abides to the standard JNI
+procedure), adding GStreamer support to an Android application is not
+any more complicated than adding it to a desktop application.</p>
+<p>The following tutorials detail the few places in which care has to be
+taken when developing specifically for the Android platform.</p>
+<p>As usual, it has been a pleasure having you here, and see you soon!</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

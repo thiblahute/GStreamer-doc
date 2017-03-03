@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Using GStreamer</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="frequently-asked-questions/using.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="using.md">
+<h1 id="using-gstreamer">Using GStreamer</h1>
+<h2 id="ok-ive-installed-gstreamer-what-can-i-do-next-">Ok, I've installed GStreamer. What can I do next ?</h2>
+<p>First of all, verify that you have a working installation and that
+you can inspect plugins by typing</p>
+<pre><code>$ gst-inspect-1.0 fakesrc
+</code></pre>
+<p>This should print out a bunch of information about this particular
+element. If this tells you that there is "no such element or plugin",
+you haven't installed GStreamer correctly. Please check <a href="../../#chapter-getting">how to get
+GStreamer</a> If this fails with any other message, we
+would appreciate a <a href="../../#using-bugs-where">bug report</a>.</p>
+<p>It's time to try out a few things. Start with gst-launch and two
+plug-ins that you really should have : fakesrc and fakesink. They do
+nothing except pass empty buffers. Type this at the command-line
+:</p>
+<pre><code>$ gst-launch-1.0 -v fakesrc silent=false num-buffers=3 ! fakesink silent=false
+</code></pre>
+<p>This will print out output that looks similar to this :</p>
+<pre><code>RUNNING pipeline ...
+fakesrc0: last-message = "get      ******* (fakesrc0:src)gt; (0 bytes, 0) 0x8057510"
+fakesink0: last-message = "chain   ******* (fakesink0:sink)lt; (0 bytes, 0) 0x8057510"
+fakesrc0: last-message = "get      ******* (fakesrc0:src)gt; (0 bytes, 1) 0x8057510"
+fakesink0: last-message = "chain   ******* (fakesink0:sink)lt; (0 bytes, 1) 0x8057510"
+fakesrc0: last-message = "get      ******* (fakesrc0:src)gt; (0 bytes, 2) 0x8057510"
+fakesink0: last-message = "chain   ******* (fakesink0:sink)lt; (0 bytes, 2) 0x8057510"
+execution ended after 5 iterations (sum 301479000 ns, average 60295800 ns, min 3000 ns, max 105482000 ns)
+</code></pre>
+<p>(Some parts of output have been removed for clarity) If it looks
+similar, then GStreamer itself is running correctly.</p>
+<p>To get a test video displayed, try:</p>
+<pre><code>$ gst-launch-1.0 videotestsrc ! videoconvert ! autovideosink
+</code></pre>
+<p>If <code>autovideosink</code> doesn't work, try an element that's specific for your
+operating system and windowing system, such as <code>ximagesink</code> or <code>glimagesink</code>
+or (on windows) <code>d3dvideosink</code>.</p>
+<h2 id="can-my-system-play-sound-through-gstreamer-">Can my system play sound through GStreamer ?</h2>
+<p>You can test this by trying to play a sine tone. For this, you
+need to link the audiotestsrc element to an output element that matches
+your hardware. A (non-complete) list of output plug-ins for audio is</p>
+<ul>
+<li>
+<p><code>pulsesink</code> for Pulseaudio output</p>
+</li>
+<li>
+<p><code>alsasink</code> for ALSA output</p>
+</li>
+<li>
+<p><code>osssink</code> and <code>oss4sink</code> for OSS/OSSv4 output</p>
+</li>
+<li>
+<p><code>jackaudiosink</code> for JACK output</p>
+</li>
+<li>
+<p><code>autoaudiosink</code> for automatic audio output selection</p>
+</li>
+</ul>
+<p>First of all, run gst-inspect-1.0 on the output plug-in you want to use
+to make sure you have it installed. For example, if you use Pulseaudio,
+run</p>
+<pre><code>$ gst-inspect-1.0 pulsesink
+</code></pre>
+<p>and see if that prints out a bunch of properties for the plug-in.</p>
+<p>Then try to play the sine tone by
+running</p>
+<pre><code>$ gst-launch-1.0 audiotestsrc ! audioconvert ! audioresample ! pulsesink
+</code></pre>
+<p>and see if you hear something. Make sure your volume is turned up, but
+also make sure it is not too loud and you are not wearing your
+headphones.</p>
+<h2 id="how-can-i-see-what-gstreamer-plugins-i-have-on-my-system-">How can I see what GStreamer plugins I have on my system ?</h2>
+<p>To do this you use the gst-inspect command-line tool, which comes
+standard with GStreamer. Invoked without any arguments,</p>
+<pre><code>$ gst-inspect-1.0
+</code></pre>
+<p>will print out a listing of installed plugins. To learn more about a
+particular plugin, pass its name on the command line. For example,</p>
+<pre><code>$ gst-inspect-1.0 volume
+</code></pre>
+<p>will give you information about the volume plugin.</p>
+<h2 id="where-should-i-report-bugs-">Where should I report bugs ?</h2>
+<p>Bugs are tracked in GNOME's Bugzilla at <a href="http://bugzilla.gnome.org">http://bugzilla.gnome.org</a>, under
+the product GStreamer. Using bugzilla you can view past bug history, report
+new bugs, submit patches etc. Bugzilla requires you to create an account there,
+which might seem cumbersome, but allows us to at least have a chance at
+contacting you for further information, as we will often have to do.</p>
+<h2 id="how-should-i-report-bugs-">How should I report bugs ?</h2>
+<p>When doing a bug report, you should at least describe</p>
+<ul>
+<li>
+<p>your distribution, distribution version and GStreamer version</p>
+</li>
+<li>
+<p>how you installed GStreamer (from git, source, packages, which ?)</p>
+</li>
+<li>
+<p>if you installed GStreamer before</p>
+</li>
+</ul>
+<p>If the application you are having problems with is segfaulting, then
+provide us with the necessary gdb output. See
+<a href="../../#troubleshooting-segfault">???</a></p>
+<h2 id="how-do-i-use-the-gstreamer-command-line-interface-">How do I use the GStreamer command line interface ?</h2>
+<p>You access the GStreamer command line interface using the command
+<code>gst-launch-1.0</code>. To play a file you could just use</p>
+<pre><code>gst-play-1.0 song.mp3
+</code></pre>
+<p>or</p>
+<pre><code>gst-launch-1.0 playbin uri=file:///path/to/song.mp3
+</code></pre>
+<p>To decode an mp3 audio file and play it through Pulseaudio, you could also use</p>
+<pre><code>gst-launch-1.0 filesrc location=thesong.mp3 ! decodebin ! audioconvert ! pulsesink
+</code></pre>
+<p>or</p>
+<pre><code>gst-launch-1.0 filesrc location=thesong.mp3 ! mpegaudioparse ! mpg123audiodec ! audioconvert ! pulsesink
+</code></pre>
+<p>. More examples can be found in the gst-launch man page.</p>
+<p>To automatically detect the right codec in a pipeline,
+try</p>
+<pre><code>gst-launch-1.0 filesrc location=my-random-media-file.mpeg ! decodebin !
+ pulsesink
+</code></pre>
+<p>.
+or</p>
+<pre><code>gst-launch-1.0 filesrc location=my-random-media-file.mpeg ! decodebin !
+ videoconvert ! xvimagesink
+</code></pre>
+<p>Something more
+complicated:</p>
+<pre><code>gst-launch-1.0 filesrc location=my-random-media-file.mpeg ! decodebin name=decoder
+   decoder. ! queue ! videoconvert ! xvimagesink
+   decoder. ! queue ! audioconvert ! pulsesink
+</code></pre>
+<p>We also have a basic media playing plugin that will take care of most
+things for you. This plugin is called playbin. Try
+this:</p>
+<pre><code>gst-launch-1.0 playbin uri=file:///home/joe/my-random-media-file.mpeg
+</code></pre>
+<p>This should play the file if the format is supported, ie. you have all
+the necessary demuxing and decoding and some output plugins installed.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

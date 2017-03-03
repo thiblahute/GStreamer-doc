@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Stream selection</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/stream-selection.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="stream-selection.md">
+<h1 id="stream-selection">Stream selection</h1>
+<p>History</p>
+<pre><code>v0.1: Jun 11th 2015
+   Initial Draft
+v0.2: Sep 18th 2015
+   Update to reflect design changes
+v1.0: Jun 28th 2016
+   Pre-commit revision
+</code></pre>
+<p>This document describes the events and objects involved in stream
+selection in GStreamer pipelines, elements and applications</p>
+<h2 id="background">Background</h2>
+<p>This new API is intended to address the use cases described in
+this section:</p>
+<ol>
+<li>
+<p>As a user/app I want an overview and control of the media streams
+that can be configured within a pipeline for processing, even
+when some streams are mutually exclusive or logical constructs only.</p>
+</li>
+<li>
+<p>The user/app can disable entirely streams it's not interested
+in so they don't occupy memory or processing power - discarded
+as early as possible in the pipeline. The user/app can also
+(re-)enable them at a later time.</p>
+</li>
+<li>
+<p>If the set of possible stream configurations is changing,
+the user/app should be aware of the pending change and
+be able to make configuration choices for the new set of streams,
+as well as possibly still reconfiguring the old set</p>
+</li>
+<li>
+<p>Elements that have some other internal mechanism for triggering
+stream selections (DVD, or maybe some scripted playback
+playlist) should be able to trigger 'selection' of some particular
+stream.</p>
+</li>
+<li>
+<p>Indicate known relationships between streams - for example that
+2 separate video feeds represent the 2 views of a stereoscopic
+view, or that certain streams are mutually exclusive.</p>
+</li>
+</ol>
+<blockquote>
+<p>Note: the streams that are "available" are not automatically
+the ones active, or present in the pipeline as pads. Think HLS/DASH
+alternate streams.</p>
+</blockquote>
+<h2 id="example-use-cases">Example use cases</h2>
+<ol>
+<li>
+<p>Playing an MPEG-TS multi-program stream, we want to tell the
+app that there are multiple programs that could be extracted
+from the incoming feed. Further, we want to provide a mechanism
+for the app to select which program(s) to decode, and once
+that is known to further tell the app which elementary streams
+are then available within those program(s) so the app/user can
+choose which audio track(s) to decode and/or use.</p>
+</li>
+<li>
+<p>A new PMT arrives for an MPEG-TS stream, due to a codec or
+channel change. The pipeline will need to reconfigure to
+play the desired streams from new program. Equally, there
+may be multiple seconds of content buffered from the old
+program and it should still be possible to switch (for example)
+subtitle tracks responsively in the draining out data, as
+well as selecting which subs track to play from the new feed.
+This same scenario applies when doing gapless transition to a
+new source file/URL, except that likely the element providing
+the list of streams also changes as a new demuxer is installed.</p>
+</li>
+<li>
+<p>When playing a multi-angle DVD, the DVD Virtual Machine needs to
+extract 1 angle from the data for presentation. It can publish
+the available angles as logical streams, even though only one
+stream can be chosen.</p>
+</li>
+<li>
+<p>When playing a DVD, the user can make stream selections from the
+DVD menu to choose audio or sub-picture tracks, or the DVD VM
+can trigger automatic selections. In addition, the player UI
+should be able to show which audio/subtitle tracks are available
+and allow direct selection in a GUI the same as for normal
+files with subtitle tracks in them.</p>
+</li>
+<li>
+<p>Playing a SCHC (3DTV) feed, where one view is MPEG-2 and the other
+is H.264 and they should be combined for 3D presentation, or
+not bother decoding 1 stream if displaying 2D.
+(bug https://bugzilla.gnome.org/show_bug.cgi?id=719333)</p>
+</li>
+</ol>
+<p>FIXME - need some use cases indicating what alternate streams in
+HLS might require - what are the possibilities?</p>
+<h2 id="design-overview">Design Overview</h2>
+<p>Stream selection in GStreamer is implemented in several parts:</p>
+<ol>
+<li>Objects describing streams : <code>GstStream</code></li>
+<li>Objects describing a collection of streams : <code>GstStreamCollection</code></li>
+<li>Events from the app allowing selection and activation of some streams:
+<code>GST_EVENT_SELECT_STREAMS</code></li>
+<li>Messages informing the user/application about the available
+streams and current status: <code>GST_MESSAGE_STREAM_COLLECTION</code> and
+<code>GST_MESSAGE_STREAMS_SELECTED</code></li>
+</ol>
+<h2 id="gststream-objects">GstStream objects</h2>
+<pre><code>API:
+
+GstStream
+gst_stream_new(..)
+gst_stream_get_\*(...)
+gst_stream_set_\*()
+gst_event_set_stream(...)
+gst_event_parse_stream(...)
+</code></pre>
+<p><code>GstStream</code> objects are a high-level convenience object containing
+information regarding a possible data stream that can be exposed by
+GStreamer elements.</p>
+<p>They are mostly the aggregation of information present in other
+GStreamer components (<code>STREAM_START</code>, <code>CAPS</code>, <code>TAGS</code> events) but are not
+tied to the presence of a <code>GstPad</code>, and for some use-cases provide
+information that the existing components don't provide.</p>
+<p>The various properties of a <code>GstStream</code> object are:</p>
+<ul>
+<li>stream_id (from the <code>STREAM_START</code> event)</li>
+<li>flags (from the <code>STREAM_START</code> event)</li>
+<li>caps</li>
+<li>tags</li>
+<li>type (high-level type of stream: Audio, Video, Container,...)</li>
+</ul>
+<p><code>GstStream</code> objects can be subclassed so that they can be re-used by
+elements already using the notion of stream (which is common for
+example in demuxers).</p>
+<p>Elements that create GstStream should also set it on the
+<code>GST_EVENT_STREAM_START</code> event of the relevant pad. This helps
+downstream elements to have all information in one location.</p>
+<h2 id="exposing-collections-of-streams">Exposing collections of streams</h2>
+<pre><code>API:
+
+GstStreamCollection
+gst_stream_collection_new(...)
+gst_stream_collection_add_stream(...)
+gst_stream_collection_get_size(...)
+gst_stream_collection_get_stream(...)
+GST_MESSAGE_STREAM_COLLECTION
+gst_message_new_stream_collection(...)
+gst_message_parse_stream_collection(...)
+GST_EVENT_STREAM_COLLECTION
+gst_event_new_stream_collection(...)
+gst_event_parse_stream_collection(...)
+</code></pre>
+<p>Elements that create new streams (such as demuxers) or can create
+new streams (like the HLS/DASH alternative streams) can list the
+streams they can make available with the GstStreamCollection object.</p>
+<p>Other elements that might generate <code>GstStreamCollections</code> are the
+DVD-VM, which handles internal switching of tracks, or parsebin and
+decodebin3 when it aggregates and presents multiple internal stream
+sources as a single configurable collection.</p>
+<p>The <code>GstStreamCollection</code> object is a flat listing of <code>GstStream</code> objects.</p>
+<p>The various properties of a <code>GstStreamCollection</code> are:</p>
+<ul>
+<li>'identifier'
+<ul>
+<li>the identifier of the collection (unique name)</li>
+<li>Generated from the 'upstream stream id' (or stream ids, plural)</li>
+</ul>
+</li>
+<li>the list of <code>GstStreams</code> in the collection.</li>
+<li>(Not implemented) : Flags -
+For now, the only flag is <code>INFORMATIONAL</code> - used by container parsers to
+publish information about detected streams without allowing selection of
+the streams.</li>
+<li>(Not implemented yet) : The relationship between the various streams
+This specifies which streams are exclusive (can not be selected at the
+same time), are related (such as <code>LINKED_VIEW</code> or <code>ENHANCEMENT</code>), or need to
+be selected together.</li>
+</ul>
+<p>An element will inform outside components about that collection via:</p>
+<ul>
+<li>a <code>GST_MESSAGE_STREAM_COLLECTION</code> message on the bus.</li>
+<li>a <code>GST_EVENT_STREAM_COLLECTION</code> on each source pads.</li>
+</ul>
+<p>Applications and container bin elements can listen and collect the
+various stream collections to know the full range of streams
+available within a bin/pipeline.</p>
+<p>Once posted on the bus, a <code>GstStreamCollection</code> is immutable. It is
+updated by subsequent messages with a matching identifier.</p>
+<p>If the element that provided the collection goes away, there is no way
+to know that the streams are no longer valid (without having the
+user/app track that element). The exception to that is if the bin
+containing that element (such as parsebin or decodebin3) informs that
+the next collection is a replacement of the former one.</p>
+<p>The mutual exclusion and relationship lists use stream-ids
+rather than <code>GstStream</code> references in order to avoid circular
+referencing problems.</p>
+<h3 id="usage-from-elements">Usage from elements</h3>
+<p>When a demuxer knows the list of streams it can expose, it
+creates a new GstStream for each stream it can provide with the
+appropriate information (stream id, flag, tags, caps, ...).</p>
+<p>The demuxer then creates a GstStreamCollection object in which it
+will put the list of GstStream it can expose.  That collection is
+then both posted on the bus (via a <code>GST_MESSAGE_COLLECTION</code>) and on
+each pad (via a <code>GST_EVENT_STREAM_COLLECTION</code>).</p>
+<p>That new collection must be posted on the bus <em>before</em> the changes
+are made available. i.e. before pads corresponding to that selection
+are added/removed.</p>
+<p>In order to be backwards-compatible and support elements that don't
+create streams/collection yet, the new 'parsebin' element used by
+decodebin3 will automatically create those if not provided.</p>
+<h3 id="usage-from-application">Usage from application</h3>
+<p>Applications can know what streams are available by listening to the
+<code>GST_MESSAGE_STREAM_COLLECTION</code> messages posted on the bus.</p>
+<p>The application can list the available streams per-type (such as all
+the audio streams, or all the video streams) by iterating the
+streams available in the collection by <code>GST_STREAM_TYPE</code>.</p>
+<p>The application will also be able to use these stream information to
+decide which streams should be activated or not (see the stream
+selection event below).</p>
+<h3 id="backwards-compatibility">Backwards compatibility</h3>
+<p>Not all demuxers will create the various <code>GstStream</code> and
+<code>GstStreamCollection</code> objects. In order to remain backwards
+compatible, a parent bin (parsebin in decodebin3) will create the
+<code>GstStream</code> and <code>GstStreamCollection</code> based on the pads being
+added/removed from an element.</p>
+<p>This allows providing stream listing/selection for any demuxer-like
+element even if it doesn't implement the <code>GstStreamCollection</code> usage.</p>
+<h2 id="stream-selection-event">Stream selection event</h2>
+<pre><code>API:
+
+GST_EVENT_SELECT_STREAMS
+gst_event_new_select_streams(...)
+gst_event_parse_select_streams(...)
+</code></pre>
+<p>Stream selection events are generated by the application and sent into the
+pipeline to configure the streams.</p>
+<p>The event carries:</p>
+<ul>
+<li>List of <code>GstStreams</code> to activate - a subset of the <code>GstStreamCollection</code></li>
+<li>(Not implemented) - List of <code>GstStreams</code> to be kept discarded - a
+subset of streams for which hot-swapping will not be desired,
+allowing elements (such as decodebin3, demuxers, ...) to not parse or
+buffer those streams at all.</li>
+</ul>
+<h3 id="usage-from-application1">Usage from application</h3>
+<p>There are two use-cases where an application needs to specify in a
+generic fashion which streams it wants in output:</p>
+<ol>
+<li>When there are several present streams of which it only wants a
+subset (such as one audio, one video and one subtitle
+stream). Those streams are demuxed and present in the pipeline.</li>
+<li>When the stream the user wants require some element to undertake
+some action to expose that stream in the pipeline (such as
+DASH/HLS alternative streams).</li>
+</ol>
+<p>From the point of view of the application, those two use-cases are
+treated identically.  The streams are all available through the
+<code>GstStreamCollection</code> posted on the bus, and it will select a subset.</p>
+<p>The application can select the streams it wants by creating a
+<code>GST_EVENT_SELECT_STREAMS</code> event with the list of stream-id of the
+streams it wants. That event is then sent on the pipeline,
+eventually traveling all the way upstream from each sink.</p>
+<p>In some cases, selecting one stream may trigger the availability of
+other dependent streams, resulting in new <code>GstStreamCollection</code>
+messages. This can happen in the case where choosing a different DVB
+channel would create a new single-program collection.</p>
+<h3 id="usage-in-elements">Usage in elements</h3>
+<p>Elements that receive the <code>GST_EVENT_SELECT_STREAMS</code> event and that
+can activate/deactivate streams need to look at the list of
+stream-id contained in the event and decide if they need to do some
+action.</p>
+<p>In the standard demuxer case (demuxing and exposing all streams),
+there is nothing to do by default.</p>
+<p>In decodebin3, activating or deactivating streams is taken care of by
+linking only the streams present in the event to decoders and output
+ghostpad.</p>
+<p>In the case of elements that can expose alternate streams that are
+not present in the pipeline as pads, they will take the appropriate
+action to add/remove those streams.</p>
+<p>Containers that receive the event should pass it to any elements
+with no downstream peers, so that streams can be configured during
+pre-roll before a pipeline is completely linked down to sinks.</p>
+<h2 id="decodebin3-usage-and-example">decodebin3 usage and example</h2>
+<p>This is an example of how decodebin3 works by using the
+above-mentioned objects/events/messages.</p>
+<p>For clarity/completeness, we will consider a mpeg-ts stream that has
+multiple audio streams. Furthermore that stream might have changes
+at some point (switching video codec, or adding/removing audio
+streams).</p>
+<h3 id="initial-differences">Initial differences</h3>
+<p>decodebin3 is different, compared to decodebin2, in the sense that, by
+default:</p>
+<ul>
+<li>it will only expose as output ghost source pads one stream of each
+type (one audio, one video, ..).</li>
+<li>It will only decode the exposed streams</li>
+</ul>
+<p>The multiqueue element is still used and takes in all elementary
+(non-decoded) streams. If parsers are needed/present they are placed
+before the multiqueue. This is needed in order for multiqueue to
+work only with packetized and properly timestamped streams.</p>
+<p>Note that the whole typefinding of streams, and optional depayloading,
+demuxing and parsing are done in a new 'parsebin' element.</p>
+<p>Just like the current implementation, demuxers will expose all
+streams present within a program as source pads. They will connect
+to parsers and multiqueue.</p>
+<p>Initial setup. 1 video stream, 2 audio streams.</p>
+<pre><code>  +---------------------+
+  | parsebin            |
+  | ---------           | +-------------+
+  | | demux |--[parser]-+-| multiqueue  |--[videodec]---[
+]-+-|       |--[parser]-+-|             |
+  | |       |--[parser]-+-|             |--[audiodec]---[
+  | ---------           | +-------------+
+  +---------------------+
+</code></pre>
+<h3 id="gststreamcollection">GstStreamCollection</h3>
+<p>When parsing the initial PAT/PMT, the demuxer will:</p>
+<ol>
+<li>create the various GstStream objects for each stream.</li>
+<li>create the GstStreamCollection for that initial PMT</li>
+<li>post the <code>GST_MESSAGE_STREAM_COLLECTION</code> Decodebin will intercept that
+message and know what the demuxer will be exposing.</li>
+<li>The demuxer creates the various pads and sends the corresponding
+<code>STREAM_START</code> event (with the same stream-id as the corresponding
+<code>GstStream</code> objects), <code>CAPS</code> event, and <code>TAGS</code> event.</li>
+</ol>
+<ul>
+<li>
+<p>parsebin will add all relevant parsers and expose those streams.</p>
+</li>
+<li>
+<p>Decodebin will be able to correlate, based on <code>STREAM_START</code> event
+stream-id, what pad corresponds to which stream. It links each stream
+from parsebin to multiqueue.</p>
+</li>
+<li>
+<p>Decodebin knows all the streams that will be available. Since by
+default it is configured to only expose a stream of each type, it
+will pick a stream of each for which it will complete the
+auto-plugging (finding a decoder and then exposing that stream as a
+source ghostpad.</p>
+</li>
+</ul>
+<blockquote>
+<p>Note: If the demuxer doesn't create/post the <code>GstStreamCollection</code>,
+parsebin will create it on itself, as explained in section 2.3
+above.</p>
+</blockquote>
+<h3 id="changing-the-active-selection-from-the-application">Changing the active selection from the application</h3>
+<p>The user wants to change the audio track. The application received
+the <code>GST_MESSAGE_STREAM_COLLECTION</code> containing the list of available
+streams. For clarity, we will assume those stream-ids are
+"video-main", "audio-english" and "audio-french".</p>
+<p>The user prefers to use the french soundtrack (which it knows based
+on the language tag contained in the <code>GstStream</code> objects).</p>
+<p>The application will create and send a <code>GST_EVENT_SELECT_STREAM</code> event
+containing the list of streams: "video-main", "audio-french".</p>
+<p>That event gets sent on the pipeline, the sinks send it upstream and
+eventually reach decodebin.</p>
+<p>Decodebin compares:</p>
+<ul>
+<li>The currently active selection ("video-main", "audio-english")</li>
+<li>The available stream collection ("video-main", "audio-english",
+"audio-french")</li>
+<li>The list of streams in the event ("video-main", "audio-french")</li>
+</ul>
+<p>Decodebin determines that no change is required for "video-main",
+but sees that it needs to deactivate "audio-english" and activate
+"audio-french".</p>
+<p>It unlinks the multiqueue source pad connected to the audiodec. Then
+it queries audiodec, using the <code>GST_QUERY_ACCEPT_CAPS</code>, whether it can
+accept as-is the caps from the "audio-french" stream.</p>
+<ol>
+<li>If it does, the multiqueue source pad corresponding to
+"audio-french" is linked to the decoder.</li>
+<li>If it does not, the existing audio decoder is removed,
+a new decoder is selected (like during initial
+auto-plugging), and replaces the old audio decoder element.</li>
+</ol>
+<p>The newly selected stream gets decoded and output through the same
+pad as the previous audio stream.</p>
+<p>Note:
+The default behaviour would be to only expose one stream of each
+type. But nothing prevents decodebin from outputting more/less of
+each type if the <code>GST_EVENT_SELECT_STREAM</code> event specifies that. This
+allows covering more use-case than the simple playback one.
+Such examples could be :</p>
+<ul>
+<li>Wanting just a video stream or just an audio stream</li>
+<li>Wanting all decoded streams</li>
+<li>Wanting all audio streams
+...</li>
+</ul>
+<h3 id="changes-coming-from-upstream">Changes coming from upstream</h3>
+<p>At some point in time, a PMT change happens. Let's assume a change
+in video-codec and/or PID.</p>
+<p>The demuxer creates a new <code>GstStream</code> for the changed/new stream,
+creates a new GstStreamCollection for the updated PMT and posts it.</p>
+<p>Decodebin sees the new <code>GstStreamCollection</code> message.</p>
+<p>The demuxer (and parsebin) then adds and removes pads.</p>
+<ol>
+<li>decodebin will match the new pads to <code>GstStream</code> in the "new"
+<code>GstStreamCollection</code> the same way it did for the initial pads in
+section 4.2 above.</li>
+<li>decodebin will see whether the new stream can re-use a multiqueue
+slot used by a stream of the same type no longer present (it
+compares the old collection to the new collection).
+In this case, decodebin sees that the new video stream can re-use
+the same slot as the previous video stream.</li>
+<li>If the new stream is going to be active by default (in this case
+it does because we are replacing the only video stream, which was
+active), it will check whether the caps are compatible with the
+existing videodec (in the same way it was done for the audio
+decoder switch in section 4.3).</li>
+</ol>
+<p>Eventually, the stream that switched will be decoded and output
+through the same pad as the previous video stream in a gapless fashion.</p>
+<h3 id="further-examples">Further examples</h3>
+<h5 id="hls-alternates">HLS alternates</h5>
+<p>There is a main (multi-bitrate or not) stream with audio and
+video interleaved in mpeg-ts. The manifest also indicates the
+presence of alternate language audio-only streams.
+HLS would expose one collection containing:</p>
+<ol>
+<li>The main A+V CONTAINER stream (mpeg-ts), initially active,
+downloaded and exposed as a pad</li>
+<li>The alternate A-only streams, initially inactive and not exposed as pads
+the tsdemux element connected to the first stream will also expose
+a collection containing
+1.1) A video stream
+1.2) An audio stream</li>
+</ol>
+<pre><code>    [ Collection 1 ]         [ Collection 2 ]
+    [  (hlsdemux)  ]         [   (tsdemux)  ]
+    [ upstream:nil ]    /----[ upstream:main]
+    [              ]   /     [              ]
+    [ "main" (A+V) ]&lt;-/      [ "video"  (V) ]  viddec1 : "video"
+    [ "fre"  (A)   ]         [ "eng"    (A) ]  auddec1 : "eng"
+    [ "kor"  (A)   ]         [              ]
+</code></pre>
+<p>The user might want to use the korean audio track instead of the
+default english one.</p>
+<pre><code>  =&gt; SELECT_STREAMS ("video", "kor")
+</code></pre>
+<ol>
+<li>decodebin3 receives and sends the event further upstream</li>
+<li>tsdemux sees that "video" is part of its current upstream,
+so adds the corresponding stream-id ("main") to the event
+and sends it upstream ("main", "video", "kor")</li>
+<li>hlsdemux receives the event
+=&gt; It activates "kor" in addition to "main"</li>
+<li>The event travels back to decodebin3 which will remember the
+requested selection. If "kor" is already present it will switch
+the "eng" stream from the audio decoder to the "kor" stream.
+If it appears a bit later, it will wait until that "kor" stream
+is available before switching</li>
+</ol>
+<h4 id="multiprogram-mpegts">multi-program MPEG-TS</h4>
+<p>Assuming the case of a mpeg-ts stream which contains multiple
+programs.
+There would be three "levels" of collection:</p>
+<ol>
+<li>The collection of programs presents in the stream</li>
+<li>The collection of elementary streams presents in a stream</li>
+<li>The collection of streams decodebin can expose</li>
+</ol>
+<p>Initially tsdemux exposes the first program present (default)</p>
+<pre><code>    [ Collection 1 ]         [ Collection 2     ]        [ Collection 3    ]
+    [  (tsdemux)   ]         [   (tsdemux)      ]        [ (decodebin)     ]
+    [ id:Programs  ]&lt;-\      [ id:BBC1          ]&lt;-\     [ id:BBC1-decoded ]
+    [ upstream:nil ]   \-----[ upstream:Programs]   \----[ upstream:BBC1   ]
+    [              ]         [                  ]        [                 ]
+    [ "BBC1" (C)   ]         [ id:"bbcvideo"(V) ]        [ id:"bbcvideo"(V)]
+    [ "ITV"  (C)   ]         [ id:"bbcaudio"(A) ]        [ id:"bbcaudio"(A)]
+    [ "NBC"  (C)   ]         [                  ]        [                 ]
+</code></pre>
+<p>At some point the user wants to switch to ITV (of which we do not
+know the topology at this point in time. A <code>SELECT_STREAMS</code> event
+is sent with "ITV" in it and the pointer to the Collection1.</p>
+<ol>
+<li>The event travels up the pipeline until tsdemux receives it
+and begins the switch.</li>
+<li>tsdemux publishes a new 'Collection 2a/ITV' and marks 'Collection 2/BBC'
+as replaced.
+2a) App may send a <code>SELECT_STREAMS</code> event configuring which demuxer output
+streams should be selected (parsed)</li>
+<li>tsdemux adds/removes pads as needed (flushing pads as it removes them?)</li>
+<li>Decodebin feeds new pad streams through existing parsers/decoders as
+needed. As data from the new collection arrives out each decoder,
+decodebin sends new <code>GstStreamCollection</code> messages to the app so it
+can know that the new streams are now switchable at that level.
+4a) As new <code>GstStreamCollections</code> are published, the app may override
+the default decodebin stream selection to expose more/fewer streams.
+The default is to decode and output 1 stream of each type.</li>
+</ol>
+<p>Final state:</p>
+<pre><code>    [ Collection 1 ]         [ Collection 4     ]        [ Collection 5    ]
+    [  (tsdemux)   ]         [   (tsdemux)      ]        [ (decodebin)     ]
+    [ id:Programs  ]&lt;-\      [ id:ITV           ]&lt;-\     [ id:ITV-decoded  ]
+    [ upstream:nil ]   \-----[ upstream:Programs]   \----[ upstream:ITV    ]
+    [              ]         [                  ]        [                 ]
+    [ "BBC1" (C)   ]         [ id:"itvvideo"(V) ]        [ id:"itvvideo"(V)]
+    [ "ITV"  (C)   ]         [ id:"itvaudio"(A) ]        [ id:"itvaudio"(A)]
+    [ "NBC"  (C)   ]         [                  ]        [                 ]
+</code></pre>
+<h3 id="todo">TODO</h3>
+<ul>
+<li>
+<p>Add missing implementation</p>
+<ul>
+<li>
+<p>Add flags to <code>GstStreamCollection</code></p>
+</li>
+<li>
+<p>Add mutual-exclusion and relationship API to <code>GstStreamCollection</code></p>
+</li>
+</ul>
+</li>
+<li>
+<p>Add helper API to figure out whether a collection is a replacement
+of another or a completely new one. This will require a more generic
+system to know whether a certain stream-id is a replacement of
+another or not.</p>
+</li>
+</ul>
+<h3 id="open-questions">OPEN QUESTIONS</h3>
+<ul>
+<li>
+<p>Is a <code>FLUSHING</code> flag for stream-selection required or not ? This would
+make the handler of the <code>SELECT_STREAMS</code> event send <code>FLUSH START/STOP</code>
+before switching to the other streams. This is tricky when dealing
+where situations where we keep some streams and only switch some
+others. Do we flush all streams ? Do we only flush the new streams,
+potentially resulting in delay to fully switch ? Furthermore, due to
+efficient buffering in decodebin3, the switching time has been
+minimized extensively, to the point where flushing might not bring a
+noticeable improvement.</p>
+</li>
+<li>
+<p>Store the stream collection in bins/pipelines ? A Bin/Pipeline could
+store all active collection internally, so that it could be queried
+later on. This could be useful to then get, on any pipeline, at any
+point in time, the full list of collections available without having
+to listen to all COLLECTION messages on the bus. This would require
+fixing the "is a collection a replacement or not" issue first.</p>
+</li>
+<li>
+<p>When switching to new collections, should decodebin3 make any effort
+to <em>map</em> corresponding streams from the old to new PMT - that is,
+try and stick to the <em>english</em> language audio track, for example?
+Alternatively, rely on the app to do such smarts with stream-select
+messages ?</p>
+</li>
+</ul>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

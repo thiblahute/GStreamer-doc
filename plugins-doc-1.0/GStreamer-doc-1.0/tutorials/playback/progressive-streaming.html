@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Playback tutorial 4: Progressive streaming</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="tutorials/playback/progressive-streaming.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="progressive-streaming.md">
+<h1 id="playback-tutorial-4-progressive-streaming">Playback tutorial 4: Progressive streaming</h1>
+<h2 id="goal">Goal</h2>
+<p><a href="../basic/streaming.html">Basic tutorial 12: Streaming</a> showed how to
+enhance the user experience in poor network conditions, by taking
+buffering into account. This tutorial further expands
+<a href="../basic/streaming.html">Basic tutorial 12: Streaming</a> by enabling
+the local storage of the streamed media, and describes the advantages of
+this technique. In particular, it shows:</p>
+<ul>
+<li>How to enable progressive downloading</li>
+<li>How to know what has been downloaded</li>
+<li>How to know where it has been downloaded</li>
+<li>How to limit the amount of downloaded data that is kept</li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p>When streaming, data is fetched from the network and a small buffer of
+future-data is kept to ensure smooth playback (see
+<a href="../basic/streaming.html">Basic tutorial 12: Streaming</a>). However, data
+is discarded as soon as it is displayed or rendered (there is no
+past-data buffer). This means, that if a user wants to jump back and
+continue playback from a point in the past, data needs to be
+re-downloaded.</p>
+<p>Media players tailored for streaming, like YouTube, usually keep all
+downloaded data stored locally for this contingency. A graphical widget
+is also normally used to show how much of the file has already been
+downloaded.</p>
+<p><code>playbin</code> offers similar functionalities through the <code>DOWNLOAD</code> flag
+which stores the media in a local temporary file for faster playback of
+already-downloaded chunks.</p>
+<p>This code also shows how to use the Buffering Query, which allows
+knowing what parts of the file are available.</p>
+<h2 id="a-networkresilient-example-with-local-storage">A network-resilient example with local storage</h2>
+<p>Copy this code into a text file named <code>playback-tutorial-4.c</code>.</p>
+<p><strong>playback-tutorial-4.c</strong></p>
+<pre><code class="language-c">#include &lt;gst/gst.h&gt;
+#include &lt;string.h&gt;
+
+#define GRAPH_LENGTH 78
+
+/* playbin flags */
+typedef enum {
+  GST_PLAY_FLAG_DOWNLOAD      = (1 &lt;&lt; 7) /* Enable progressive download (on selected formats) */
+} GstPlayFlags;
+
+typedef struct _CustomData {
+  gboolean is_live;
+  GstElement *pipeline;
+  GMainLoop *loop;
+  gint buffering_level;
+} CustomData;
+
+static void got_location (GstObject *gstobject, GstObject *prop_object, GParamSpec *prop, gpointer data) {
+  gchar *location;
+  g_object_get (G_OBJECT (prop_object), "temp-location", &amp;location, NULL);
+  g_print ("Temporary file: %s\n", location);
+  g_free (location);
+  /* Uncomment this line to keep the temporary file after the program exits */
+  /* g_object_set (G_OBJECT (prop_object), "temp-remove", FALSE, NULL); */
+}
+
+static void cb_message (GstBus *bus, GstMessage *msg, CustomData *data) {
+
+  switch (GST_MESSAGE_TYPE (msg)) {
+    case GST_MESSAGE_ERROR: {
+      GError *err;
+      gchar *debug;
+
+      gst_message_parse_error (msg, &amp;err, &amp;debug);
+      g_print ("Error: %s\n", err-&gt;message);
+      g_error_free (err);
+      g_free (debug);
+
+      gst_element_set_state (data-&gt;pipeline, GST_STATE_READY);
+      g_main_loop_quit (data-&gt;loop);
+      break;
+    }
+    case GST_MESSAGE_EOS:
+      /* end-of-stream */
+      gst_element_set_state (data-&gt;pipeline, GST_STATE_READY);
+      g_main_loop_quit (data-&gt;loop);
+      break;
+    case GST_MESSAGE_BUFFERING:
+      /* If the stream is live, we do not care about buffering. */
+      if (data-&gt;is_live) break;
+
+      gst_message_parse_buffering (msg, &amp;data-&gt;buffering_level);
+
+      /* Wait until buffering is complete before start/resume playing */
+      if (data-&gt;buffering_level &lt; 100)
+        gst_element_set_state (data-&gt;pipeline, GST_STATE_PAUSED);
+      else
+        gst_element_set_state (data-&gt;pipeline, GST_STATE_PLAYING);
+      break;
+    case GST_MESSAGE_CLOCK_LOST:
+      /* Get a new clock */
+      gst_element_set_state (data-&gt;pipeline, GST_STATE_PAUSED);
+      gst_element_set_state (data-&gt;pipeline, GST_STATE_PLAYING);
+      break;
+    default:
+      /* Unhandled message */
+      break;
+    }
+}
+
+static gboolean refresh_ui (CustomData *data) {
+  GstQuery *query;
+  gboolean result;
+
+  query = gst_query_new_buffering (GST_FORMAT_PERCENT);
+  result = gst_element_query (data-&gt;pipeline, query);
+  if (result) {
+    gint n_ranges, range, i;
+    gchar graph[GRAPH_LENGTH + 1];
+    gint64 position = 0, duration = 0;
+
+    memset (graph, ' ', GRAPH_LENGTH);
+    graph[GRAPH_LENGTH] = '\0';
+
+    n_ranges = gst_query_get_n_buffering_ranges (query);
+    for (range = 0; range &lt; n_ranges; range++) {
+      gint64 start, stop;
+      gst_query_parse_nth_buffering_range (query, range, &amp;start, &amp;stop);
+      start = start * GRAPH_LENGTH / (stop - start);
+      stop = stop * GRAPH_LENGTH / (stop - start);
+      for (i = (gint)start; i &lt; stop; i++)
+        graph [i] = '-';
+    }
+    if (gst_element_query_position (data-&gt;pipeline, GST_TIME_FORMAT, &amp;position) &amp;&amp;
+        GST_CLOCK_TIME_IS_VALID (position) &amp;&amp;
+        gst_element_query_duration (data-&gt;pipeline, GST_TIME_FORMAT, &amp;duration) &amp;&amp;
+        GST_CLOCK_TIME_IS_VALID (duration)) {
+      i = (gint)(GRAPH_LENGTH * (double)position / (double)(duration + 1));
+      graph [i] = data-&gt;buffering_level &lt; 100 ? 'X' : '&gt;';
+    }
+    g_print ("[%s]", graph);
+    if (data-&gt;buffering_level &lt; 100) {
+      g_print (" Buffering: %3d%%", data-&gt;buffering_level);
+    } else {
+      g_print ("                ");
+    }
+    g_print ("\r");
+  }
+
+  return TRUE;
+
+}
+
+int main(int argc, char *argv[]) {
+  GstElement *pipeline;
+  GstBus *bus;
+  GstStateChangeReturn ret;
+  GMainLoop *main_loop;
+  CustomData data;
+  guint flags;
+
+  /* Initialize GStreamer */
+  gst_init (&amp;argc, &amp;argv);
+
+  /* Initialize our data structure */
+  memset (&amp;data, 0, sizeof (data));
+  data.buffering_level = 100;
+
+  /* Build the pipeline */
+  pipeline = gst_parse_launch ("playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm", NULL);
+  bus = gst_element_get_bus (pipeline);
+
+  /* Set the download flag */
+  g_object_get (pipeline, "flags", &amp;flags, NULL);
+  flags |= GST_PLAY_FLAG_DOWNLOAD;
+  g_object_set (pipeline, "flags", flags, NULL);
+
+  /* Uncomment this line to limit the amount of downloaded data */
+  /* g_object_set (pipeline, "ring-buffer-max-size", (guint64)4000000, NULL); */
+
+  /* Start playing */
+  ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
+  if (ret == GST_STATE_CHANGE_FAILURE) {
+    g_printerr ("Unable to set the pipeline to the playing state.\n");
+    gst_object_unref (pipeline);
+    return -1;
+  } else if (ret == GST_STATE_CHANGE_NO_PREROLL) {
+    data.is_live = TRUE;
+  }
+
+  main_loop = g_main_loop_new (NULL, FALSE);
+  data.loop = main_loop;
+  data.pipeline = pipeline;
+
+  gst_bus_add_signal_watch (bus);
+  g_signal_connect (bus, "message", G_CALLBACK (cb_message), &amp;data);
+  g_signal_connect (pipeline, "deep-notify::temp-location", G_CALLBACK (got_location), NULL);
+
+  /* Register a function that GLib will call every second */
+  g_timeout_add_seconds (1, (GSourceFunc)refresh_ui, &amp;data);
+
+  g_main_loop_run (main_loop);
+
+  /* Free resources */
+  g_main_loop_unref (main_loop);
+  gst_object_unref (bus);
+  gst_element_set_state (pipeline, GST_STATE_NULL);
+  gst_object_unref (pipeline);
+  g_print ("\n");
+  return 0;
+}
+</code></pre>
+<blockquote>
+<p><img src="images/icons/emoticons/information.png" alt="information" id="information"> If you need help to compile this code, refer to the
+<strong>Building the tutorials</strong> section for your platform: <a href="../../installing/on-mac-osx.html">Mac</a> or
+<a href="../../installing/on-windows.html">Windows</a> or use this specific command on Linux:</p>
+<p><code>gcc playback-tutorial-4.c -o playback-tutorial-4 `pkg-config --cflags --libs gstreamer-1.0`</code></p>
+<p>If you need help to run this code, refer to the <strong>Running the
+tutorials</strong> section for your platform: <a href="../../installing/on-mac-osx.html#building-the-tutorials">Mac OS X</a>, <a href="../../installing/on-windows.html#running-the-tutorials">Windows</a>, for
+<a href="../../installing/for-ios-development.html#building-the-tutorials">iOS</a> or for <a href="../../installing/for-android-development.html#building-the-tutorials">android</a>.</p>
+<p>This tutorial opens a window and displays a movie, with accompanying
+audio. The media is fetched from the Internet, so the window might
+take a few seconds to appear, depending on your connection
+speed. In the console window, you should see a message indicating
+where the media is being stored, and a text graph representing the
+downloaded portions and the current position. A buffering message
+appears whenever buffering is required, which might never happen is
+your network connection is fast enough</p>
+<p>Required libraries: <code>gstreamer-1.0</code></p>
+</blockquote>
+<h2 id="walkthrough">Walkthrough</h2>
+<p>This code is based on that of <a href="../basic/streaming.html">Basic tutorial 12: Streaming</a>. Let’s review
+only the differences.</p>
+<h3 id="setup">Setup</h3>
+<pre><code class="language-c">/* Set the download flag */
+g_object_get (pipeline, "flags", &amp;flags, NULL);
+flags |= GST_PLAY_FLAG_DOWNLOAD;
+g_object_set (pipeline, "flags", flags, NULL);
+</code></pre>
+<p>By setting this flag, <code>playbin</code> instructs its internal queue (a
+<code>queue2</code> element, actually) to store all downloaded
+data.</p>
+<pre><code class="language-c">g_signal_connect (pipeline, "deep-notify::temp-location", G_CALLBACK (got_location), NULL);
+</code></pre>
+<p><code>deep-notify</code> signals are emitted by <code>GstObject</code> elements (like
+<code>playbin</code>) when the properties of any of their children elements
+change. In this case we want to know when the <code>temp-location</code> property
+changes, indicating that the <code>queue2</code> has decided where to store the
+downloaded
+data.</p>
+<pre><code class="language-c">static void got_location (GstObject *gstobject, GstObject *prop_object, GParamSpec *prop, gpointer data) {
+  gchar *location;
+  g_object_get (G_OBJECT (prop_object), "temp-location", &amp;location, NULL);
+  g_print ("Temporary file: %s\n", location);
+  g_free (location);
+  /* Uncomment this line to keep the temporary file after the program exits */
+  /* g_object_set (G_OBJECT (prop_object), "temp-remove", FALSE, NULL); */
+}
+</code></pre>
+<p>The <code>temp-location</code> property is read from the element that triggered the
+signal (the <code>queue2</code>) and printed on screen.</p>
+<p>When the pipeline state changes from <code>PAUSED</code> to <code>READY</code>, this file is
+removed. As the comment reads, you can keep it by setting the
+<code>temp-remove</code> property of the <code>queue2</code> to <code>FALSE</code>.</p>
+<blockquote>
+<p><img src="images/icons/emoticons/warning.png" alt="warning" id="warning">
+On Windows this file is usually created inside the <code>Temporary Internet Files</code> folder, which might hide it from Windows Explorer. If you cannot find the downloaded files, try to use the console.</p>
+</blockquote>
+<h3 id="user-interface">User Interface</h3>
+<p>In <code>main</code> we also install a timer which we use to refresh the UI every
+second.</p>
+<pre><code class="language-c">/* Register a function that GLib will call every second */
+g_timeout_add_seconds (1, (GSourceFunc)refresh_ui, &amp;data);
+</code></pre>
+<p>The <code>refresh_ui</code> method queries the pipeline to find out which parts of
+the file have been downloaded and what the currently playing position
+is. It builds a graph to display this information (sort of a text-mode
+user interface) and prints it on screen, overwriting the previous one so
+it looks like it is animated:</p>
+<pre><code>[----&gt;-------                ]
+</code></pre>
+<p>The dashes ‘<code>-</code>’ indicate the downloaded parts, and the greater-than
+sign ‘<code>&gt;</code>’ shows the current position (turning into an ‘<code>X</code>’ when the
+pipeline is paused). Keep in mind that if your network is fast enough,
+you will not see the download bar (the dashes) advance at all; it will
+be completely full from the beginning.</p>
+<pre><code class="language-c">static gboolean refresh_ui (CustomData *data) {
+  GstQuery *query;
+  gboolean result;
+  query = gst_query_new_buffering (GST_FORMAT_PERCENT);
+  result = gst_element_query (data-&gt;pipeline, query);
+</code></pre>
+<p>The first thing we do in <code>refresh_ui</code> is construct a new Buffering
+<code>GstQuery</code> with <code>gst_query_new_buffering()</code> and pass it to the pipeline
+(<code>playbin</code>) with <code>gst_element_query()</code>. In <a href="../basic/time-management.html">Basic tutorial 4: Time management</a> we have
+already seen how to perform simple queries like Position and Duration
+using specific methods. More complex queries, like Buffering, need to
+use the more general <code>gst_element_query()</code>.</p>
+<p>The Buffering query can be made in different <code>GstFormat</code> (TIME, BYTES,
+PERCENTAGE and a few more). Not all elements can answer the query in all
+the formats, so you need to check which ones are supported in your
+particular pipeline. If <code>gst_element_query()</code> returns <code>TRUE</code>, the query
+succeeded. The answer to the query is contained in the same
+<code>GstQuery</code> structure we created, and can be retrieved using multiple
+parse methods:</p>
+<pre><code class="language-c">n_ranges = gst_query_get_n_buffering_ranges (query);
+for (range = 0; range &lt; n_ranges; range++) {
+  gint64 start, stop;
+  gst_query_parse_nth_buffering_range (query, range, &amp;start, &amp;stop);
+  start = start * GRAPH_LENGTH / (stop - start);
+  stop = stop * GRAPH_LENGTH / (stop - start);
+  for (i = (gint)start; i &lt; stop; i++)
+    graph [i] = '-';
+}
+</code></pre>
+<p>Data does not need to be downloaded in consecutive pieces from the
+beginning of the file: Seeking, for example, might force to start
+downloading from a new position and leave a downloaded chunk behind.
+Therefore, <code>gst_query_get_n_buffering_ranges()</code> returns the number of
+chunks, or <em>ranges</em> of downloaded data, and then, the position and size
+of each range is retrieved with <code>gst_query_parse_nth_buffering_range()</code>.</p>
+<p>The format of the returned values (start and stop position for each
+range) depends on what we requested in the
+<code>gst_query_new_buffering()</code> call. In this case, PERCENTAGE. These
+values are used to generate the graph.</p>
+<pre><code class="language-c">if (gst_element_query_position (data-&gt;pipeline, &amp;format, &amp;position) &amp;&amp;
+    GST_CLOCK_TIME_IS_VALID (position) &amp;&amp;
+    gst_element_query_duration (data-&gt;pipeline, &amp;format, &amp;duration) &amp;&amp;
+    GST_CLOCK_TIME_IS_VALID (duration)) {
+  i = (gint)(GRAPH_LENGTH * (double)position / (double)(duration + 1));
+  graph [i] = data-&gt;buffering_level &lt; 100 ? 'X' : '&gt;';
+}
+</code></pre>
+<p>Next, the current position is queried. It could be queried in the
+PERCENT format, so code similar to the one used for the ranges is used,
+but currently this format is not well supported for position queries.
+Instead, we use the TIME format and also query the duration to obtain a
+percentage.</p>
+<p>The current position is indicated with either a ‘<code>&gt;</code>’ or an ‘<code>X</code>’
+depending on the buffering level. If it is below 100%, the code in the
+<code>cb_message</code> method will have set the pipeline to <code>PAUSED</code>, so we print
+an ‘<code>X</code>’. If the buffering level is 100% the pipeline is in the
+<code>PLAYING</code> state and we print a ‘<code>&gt;</code>’.</p>
+<pre><code class="language-c">if (data-&gt;buffering_level &lt; 100) {
+  g_print (" Buffering: %3d%%", data-&gt;buffering_level);
+} else {
+  g_print ("                ");
+}
+</code></pre>
+<p>Finally, if the buffering level is below 100%, we report this
+information (and delete it otherwise).</p>
+<h3 id="limiting-the-size-of-the-downloaded-file">Limiting the size of the downloaded file</h3>
+<pre><code class="language-c">/* Uncomment this line to limit the amount of downloaded data */
+/* g_object_set (pipeline, "ring-buffer-max-size", (guint64)4000000, NULL); */
+</code></pre>
+<p>Uncomment line 139 to see how this can be achieved. This reduces the
+size of the temporary file, by overwriting already played regions.
+Observe the download bar to see which regions are kept available in the
+file.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This tutorial has shown:</p>
+<ul>
+<li>How to enable progressive downloading with the
+<code>GST_PLAY_FLAG_DOWNLOAD</code> <code>playbin</code> flag</li>
+<li>How to know what has been downloaded using a Buffering <code>GstQuery</code></li>
+<li>How to know where it has been downloaded with the
+<code>deep-notify::temp-location</code> signal</li>
+<li>How to limit the size of the temporary file with
+the <code>ring-buffer-max-size</code> property of <code>playbin</code>.</li>
+</ul>
+<p>It has been a pleasure having you here, and see you soon!</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

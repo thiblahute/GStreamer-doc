@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Playback tutorial 7: Custom playbin sinks</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="tutorials/playback/custom-playbin-sinks.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="custom-playbin-sinks.md">
+<h1 id="playback-tutorial-7-custom-playbin-sinks">Playback tutorial 7: Custom playbin sinks</h1>
+<h2 id="goal">Goal</h2>
+<p><code>playbin</code> can be further customized by manually selecting its audio and
+video sinks. This allows applications to rely on <code>playbin</code> to retrieve
+and decode the media and then manage the final render/display
+themselves. This tutorial shows:</p>
+<ul>
+<li>How to replace the sinks selected by <code>playbin</code>.</li>
+<li>How to use a complex pipeline as a sink.</li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p>Two properties of <code>playbin</code> allow selecting the desired audio and video
+sinks: <code>audio-sink</code> and <code>video-sink</code> (respectively). The application
+only needs to instantiate the appropriate <code>GstElement</code> and pass it to
+<code>playbin</code> through these properties.</p>
+<p>This method, though, only allows using a single Element as sink. If a
+more complex pipeline is required, for example, an equalizer plus an
+audio sink, it needs to be wrapped in a Bin, so it looks to
+<code>playbin</code> as if it was a single Element.</p>
+<p>A Bin (<code>GstBin</code>) is a container that encapsulates partial pipelines so
+they can be managed as single elements. As an example, the
+<code>GstPipeline</code> we have been using in all tutorials is a type of
+<code>GstBin</code>, which does not interact with external Elements. Elements
+inside a Bin connect to external elements through Ghost Pads
+(<code>GstGhostPad</code>), this is, Pads on the surface of the Bin which simply
+forward data from an external Pad to a given Pad on an internal Element.</p>
+<p><img src="images/bin-element-ghost.png" alt=""></p>
+<p><strong>Figure 1:</strong> A Bin with two Elements and one Ghost Pad.</p>
+<p><code>GstBin</code>s are also a type of <code>GstElement</code>, so they can be used wherever
+an Element is required, in particular, as sinks for <code>playbin</code> (and they
+are then known as <strong>sink-bins</strong>).</p>
+<h2 id="an-equalized-player">An equalized player</h2>
+<p>Copy this code into a text file named <code>playback-tutorial-7.c</code>.</p>
+<p><strong>playback-tutorial7.c</strong></p>
+<pre><code class="language-c">#include &lt;gst/gst.h&gt;
+
+int main(int argc, char *argv[]) {
+  GstElement *pipeline, *bin, *equalizer, *convert, *sink;
+  GstPad *pad, *ghost_pad;
+  GstBus *bus;
+  GstMessage *msg;
+
+  /* Initialize GStreamer */
+  gst_init (&amp;argc, &amp;argv);
+
+  /* Build the pipeline */
+  pipeline = gst_parse_launch ("playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm", NULL);
+
+  /* Create the elements inside the sink bin */
+  equalizer = gst_element_factory_make ("equalizer-3bands", "equalizer");
+  convert = gst_element_factory_make ("audioconvert", "convert");
+  sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
+  if (!equalizer || !convert || !sink) {
+    g_printerr ("Not all elements could be created.\n");
+    return -1;
+  }
+
+  /* Create the sink bin, add the elements and link them */
+  bin = gst_bin_new ("audio_sink_bin");
+  gst_bin_add_many (GST_BIN (bin), equalizer, convert, sink, NULL);
+  gst_element_link_many (equalizer, convert, sink, NULL);
+  pad = gst_element_get_static_pad (equalizer, "sink");
+  ghost_pad = gst_ghost_pad_new ("sink", pad);
+  gst_pad_set_active (ghost_pad, TRUE);
+  gst_element_add_pad (bin, ghost_pad);
+  gst_object_unref (pad);
+
+  /* Configure the equalizer */
+  g_object_set (G_OBJECT (equalizer), "band1", (gdouble)-24.0, NULL);
+  g_object_set (G_OBJECT (equalizer), "band2", (gdouble)-24.0, NULL);
+
+  /* Set playbin's audio sink to be our sink bin */
+  g_object_set (GST_OBJECT (pipeline), "audio-sink", bin, NULL);
+
+  /* Start playing */
+  gst_element_set_state (pipeline, GST_STATE_PLAYING);
+
+  /* Wait until error or EOS */
+  bus = gst_element_get_bus (pipeline);
+  msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
+
+  /* Free resources */
+  if (msg != NULL)
+    gst_message_unref (msg);
+  gst_object_unref (bus);
+  gst_element_set_state (pipeline, GST_STATE_NULL);
+  gst_object_unref (pipeline);
+  return 0;
+}
+</code></pre>
+<blockquote>
+<p><img src="images/icons/emoticons/information.png" alt="information" id="information"> If you need help to compile this code, refer to the
+<strong>Building the tutorials</strong> section for your platform: <a href="../../installing/on-mac-osx.html">Mac</a> or
+<a href="../../installing/on-windows.html">Windows</a> or use this specific command on Linux:</p>
+<p><code>gcc playback-tutorial-7.c -o playback-tutorial-7 `pkg-config --cflags --libs gstreamer-1.0`</code></p>
+<p>If you need help to run this code, refer to the <strong>Running the
+tutorials</strong> section for your platform: <a href="../../installing/on-mac-osx.html#building-the-tutorials">Mac OS X</a>, <a href="../../installing/on-windows.html#running-the-tutorials">Windows</a>, for
+<a href="../../installing/for-ios-development.html#building-the-tutorials">iOS</a> or for <a href="../../installing/for-android-development.html#building-the-tutorials">android</a>.</p>
+<p>This tutorial opens a window and displays a movie, with accompanying audio. The media is fetched from the Internet, so the window might take a few seconds to appear, depending on your connection speed. The higher frequency bands have been attenuated, so the movie sound should have a more powerful bass component.&lt;</p>
+<p>Required libraries: <code>gstreamer-1.0</code></p>
+</blockquote>
+<h2 id="walkthrough">Walkthrough</h2>
+<pre><code class="language-c">/* Create the elements inside the sink bin */
+equalizer = gst_element_factory_make ("equalizer-3bands", "equalizer");
+convert = gst_element_factory_make ("audioconvert", "convert");
+sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
+if (!equalizer || !convert || !sink) {
+  g_printerr ("Not all elements could be created.\n");
+  return -1;
+}
+</code></pre>
+<p>All the Elements that compose our sink-bin are instantiated. We use an
+<code>equalizer-3bands</code> and an <code>autoaudiosink</code>, with an <code>audioconvert</code> in
+between, because we are not sure of the capabilities of the audio sink
+(since they are hardware-dependant).</p>
+<pre><code class="language-c">/* Create the sink bin, add the elements and link them */
+bin = gst_bin_new ("audio_sink_bin");
+gst_bin_add_many (GST_BIN (bin), equalizer, convert, sink, NULL);
+gst_element_link_many (equalizer, convert, sink, NULL);
+</code></pre>
+<p>This adds the new Elements to the Bin and links them just as we would do
+if this was a pipeline.</p>
+<pre><code class="language-c">pad = gst_element_get_static_pad (equalizer, "sink");
+ghost_pad = gst_ghost_pad_new ("sink", pad);
+gst_pad_set_active (ghost_pad, TRUE);
+gst_element_add_pad (bin, ghost_pad);
+gst_object_unref (pad);
+</code></pre>
+<p>Now we need to create a Ghost Pad so this partial pipeline inside the
+Bin can be connected to the outside. This Ghost Pad will be connected to
+a Pad in one of the internal Elements (the sink pad of the equalizer),
+so we retrieve this Pad with <code>gst_element_get_static_pad()</code>. Remember
+from <a href="../basic/multithreading-and-pad-availability.html">Basic tutorial 7: Multithreading and Pad Availability</a> that
+if this was a Request Pad instead of an Always Pad, we would need to use
+<code>gst_element_request_pad()</code>.</p>
+<p>The Ghost Pad is created with <code>gst_ghost_pad_new()</code> (pointing to the
+inner Pad we just acquired), and activated with <code>gst_pad_set_active()</code>.
+It is then added to the Bin with <code>gst_element_add_pad()</code>, transferring
+ownership of the Ghost Pad to the bin, so we do not have to worry about
+releasing it.</p>
+<p>Finally, the sink Pad we obtained from the equalizer needs to be release
+with <code>gst_object_unref()</code>.</p>
+<p>At this point, we have a functional sink-bin, which we can use as the
+audio sink in <code>playbin</code>. We just need to instruct <code>playbin</code> to use it:</p>
+<pre><code class="language-c">/* Set playbin's audio sink to be our sink bin */
+g_object_set (GST_OBJECT (pipeline), "audio-sink", bin, NULL);
+</code></pre>
+<p>It is as simple as setting the <code>audio-sink</code> property on <code>playbin</code> to
+the newly created sink.</p>
+<pre><code class="language-c">/* Configure the equalizer */
+g_object_set (G_OBJECT (equalizer), "band1", (gdouble)-24.0, NULL);
+g_object_set (G_OBJECT (equalizer), "band2", (gdouble)-24.0, NULL);
+</code></pre>
+<p>The only bit remaining is to configure the equalizer. For this example,
+the two higher frequency bands are set to the maximum attenuation so the
+bass is boosted. Play a bit with the values to feel the difference (Look
+at the documentation for the <code>equalizer-3bands</code> element for the allowed
+range of values).</p>
+<h2 id="exercise">Exercise</h2>
+<p>Build a video bin instead of an audio bin, using one of the many
+interesting video filters GStreamer offers, like <code>solarize</code>,
+<code>vertigotv</code> or any of the Elements in the <code>effectv</code> plugin. Remember to
+use the color space conversion element <code>videoconvert</code> if your
+pipeline fails to link due to incompatible caps.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This tutorial has shown:</p>
+<ul>
+<li>How to set your own sinks to <code>playbin</code> using the audio-sink and
+video-sink properties.</li>
+<li>How to wrap a piece of pipeline into a <code>GstBin</code> so it can be used as
+a <strong>sink-bin</strong> by <code>playbin</code>.</li>
+</ul>
+<p>It has been a pleasure having you here, and see you soon!</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

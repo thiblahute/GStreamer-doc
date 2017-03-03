@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Negotiation</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/negotiation.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="negotiation.md">
+<h1 id="negotiation">Negotiation</h1>
+<p>Capabilities negotiation is the process of deciding on an adequate
+format for dataflow within a GStreamer pipeline. Ideally, negotiation
+(also known as "capsnego") transfers information from those parts of the
+pipeline that have information to those parts of the pipeline that are
+flexible, constrained by those parts of the pipeline that are not
+flexible.</p>
+<h2 id="basic-rules">Basic rules</h2>
+<p>These simple rules must be followed:</p>
+<ol>
+<li>downstream suggests formats</li>
+<li>upstream decides on format</li>
+</ol>
+<p>There are 4 queries/events used in caps negotiation:</p>
+<ol>
+<li><code>GST_QUERY_CAPS</code>: get possible formats</li>
+<li><code>GST_QUERY_ACCEPT_CAPS</code>: check if format is possible</li>
+<li><code>GST_EVENT_CAPS</code>: configure format (downstream)</li>
+<li><code>GST_EVENT_RECONFIGURE</code>: inform upstream of possibly new caps</li>
+</ol>
+<h2 id="queries">Queries</h2>
+<p>A pad can ask the peer pad for its supported <code>GstCaps</code>. It does this with
+the CAPS query. The list of supported caps can be used to choose an
+appropriate <code>GstCaps</code> for the data transfer. The CAPS query works
+recursively, elements should take their peers into consideration when
+constructing the possible caps. Because the result caps can be very
+large, a filter can be used to restrict the caps. Only the caps that
+match the filter will be returned as the result caps. The order of the
+filter caps gives the order of preference of the caller and should be
+taken into account for the returned caps.</p>
+<ul>
+<li><strong><code>filter</code></strong> (in) <code>GST_TYPE_CAPS</code> (default NULL): - a <code>GstCaps</code> to filter the results against</li>
+<li><strong><code>caps</code></strong> (out) <code>GST_TYPE_CAPS</code> (default NULL): - the result caps</li>
+</ul>
+<p>A pad can ask the peer pad if it supports a given caps. It does this
+with the <code>ACCEPT_CAPS</code> query. The caps must be fixed. The <code>ACCEPT_CAPS</code>
+query is not required to work recursively, it can simply return TRUE if
+a subsequent CAPS event with those caps would return success.</p>
+<ul>
+<li><strong><code>caps</code></strong> (in) <code>GST_TYPE_CAPS</code>: - a <code>GstCaps</code> to check, must be fixed</li>
+<li><strong><code>result</code></strong> (out) <code>G_TYPE_BOOLEAN</code> (default FALSE): - TRUE if the caps are accepted</li>
+</ul>
+<h2 id="events">Events</h2>
+<p>When a media format is negotiated, peer elements are notified of the
+<code>GstCaps</code> with the CAPS event. The caps must be fixed.</p>
+<ul>
+<li><strong><code>caps</code></strong> <code>GST_TYPE_CAPS</code>: - the negotiated <code>GstCaps</code>, must be fixed</li>
+</ul>
+<h2 id="operation">Operation</h2>
+<p>GStreamer’s two scheduling modes, push mode and pull mode, lend
+themselves to different mechanisms to achieve this goal. As it is more
+common we describe push mode negotiation first.</p>
+<h3 id="pushmode-negotiation">Push-mode negotiation</h3>
+<p>Push-mode negotiation happens when elements want to push buffers and
+need to decide on the format. This is called downstream negotiation
+because the upstream element decides the format for the downstream
+element. This is the most common case.</p>
+<p>Negotiation can also happen when a downstream element wants to receive
+another data format from an upstream element. This is called upstream
+negotiation.</p>
+<p>The basics of negotiation are as follows:</p>
+<ul>
+<li>
+<p><code>GstCaps</code> (see <a href="caps.html">caps</a>) are refcounted before they are pushed as
+an event to describe the contents of the following buffer.</p>
+</li>
+<li>
+<p>An element should reconfigure itself to the new format received as a
+CAPS event before processing the following buffers. If the data type
+in the caps event is not acceptable, the element should refuse the
+event. The element should also refuse the next buffers by returning
+an appropriate <code>GST_FLOW_NOT_NEGOTIATED</code> return value from the
+chain function.</p>
+</li>
+<li>
+<p>Downstream elements can request a format change of the stream by
+sending a RECONFIGURE event upstream. Upstream elements will
+renegotiate a new format when they receive a RECONFIGURE event.</p>
+</li>
+</ul>
+<p>The general flow for a source pad starting the negotiation.</p>
+<pre><code>            src              sink
+             |                 |
+             |  querycaps?     |
+             |----------------&gt;|
+             |     caps        |
+select caps  |&lt; - - - - - - - -|
+from the     |                 |
+candidates   |                 |
+             |                 |-.
+             |  accepts?       | |
+ type A      |----------------&gt;| | optional
+             |      yes        | |
+             |&lt; - - - - - - - -| |
+             |                 |-'
+             |  send_event()   |
+send CAPS    |----------------&gt;| Receive type A, reconfigure to
+event A      |                 | process type A.
+             |                 |
+             |  push           |
+push buffer  |----------------&gt;| Process buffer of type A
+             |                 |
+</code></pre>
+<p>One possible implementation in pseudo code:</p>
+<pre><code>    [element wants to create a buffer]
+    if not format
+      # see what we can do
+      ourcaps = gst_pad_query_caps (srcpad)
+      # see what the peer can do filtered against our caps
+      candidates = gst_pad_peer_query_caps (srcpad, ourcaps)
+
+    foreach candidate in candidates
+      # make sure the caps is fixed
+      fixedcaps = gst_pad_fixate_caps (srcpad, candidate)
+
+    # see if the peer accepts it
+    if gst_pad_peer_accept_caps (srcpad, fixedcaps)
+      # store the caps as the negotiated caps, this will
+      # call the setcaps function on the pad
+      gst_pad_push_event (srcpad, gst_event_new_caps (fixedcaps))
+      break
+    endif
+  done
+endif
+</code></pre>
+<h4 id="negotiate-allocatorbufferpool-with-the-allocation-query">Negotiate allocator/bufferpool with the ALLOCATION query</h4>
+<pre><code>    buffer = gst_buffer_new_allocate (NULL, size, 0);
+    # fill buffer and push
+</code></pre>
+<p>The general flow for a sink pad starting a renegotiation.</p>
+<pre><code>            src              sink
+             |                 |
+             |  accepts?       |
+             |&lt;----------------| type B
+             |      yes        |
+             |- - - - - - - - &gt;|-.
+             |                 | | suggest B caps next
+             |                 |&lt;'
+             |                 |
+             |   push_event()  |
+ mark      .-|&lt;----------------| send RECONFIGURE event
+renegotiate| |                 |
+           '&gt;|                 |
+             |  querycaps()    |
+renegotiate  |----------------&gt;|
+             |  suggest B      |
+             |&lt; - - - - - - - -|
+             |                 |
+             |  send_event()   |
+send CAPS    |----------------&gt;| Receive type B, reconfigure to
+event B      |                 | process type B.
+             |                 |
+             |  push           |
+push buffer  |----------------&gt;| Process buffer of type B
+             |                 |
+</code></pre>
+<h4 id="use-cases">Use cases:</h4>
+<h5 id="videotestsrc-xvimagesink"><code>videotestsrc ! xvimagesink</code></h5>
+<ul>
+<li>
+<p>Who decides what format to use?</p>
+<ul>
+<li>src pad always decides, by convention. sinkpad can suggest a format
+by putting it high in the caps query result <code>GstCaps</code>.</li>
+<li>since the src decides, it can always choose something that it can do,
+so this step can only fail if the sinkpad stated it could accept
+something while later on it couldn't.</li>
+</ul>
+</li>
+<li>
+<p>When does negotiation happen?</p>
+<ul>
+<li>before srcpad does a push, it figures out a type as stated in 1), then
+it pushes a caps event with the type. The sink checks the media type and
+configures itself for this type.</li>
+<li>the source then usually does an <code>ALLOCATION</code> query to negotiate a
+bufferpool with the sink. It then allocates a buffer from the pool and
+pushes it to the sink. Since the sink accepted the caps, it can create a
+pool for the format.</li>
+<li>since the sink stated in 1) it could accept the type, it will be able to
+handle it.</li>
+</ul>
+</li>
+<li>
+<p>How can sink request another format?</p>
+<ul>
+<li>sink asks if new format is possible for the source.</li>
+<li>sink pushes <code>RECONFIGURE</code> event upstream</li>
+<li>src receives the <code>RECONFIGURE</code> event and marks renegotiation</li>
+<li>On the next buffer push, the source renegotiates the caps and the
+bufferpool. The sink will put the new new preferred format high in the list
+of caps it returns from its caps query.</li>
+</ul>
+</li>
+</ul>
+<h5 id="videotestsrc-queue-xvimagesink"><code>videotestsrc ! queue ! xvimagesink</code></h5>
+<ul>
+<li>queue proxies all accept and caps queries to the other peer pad.</li>
+<li>queue proxies the bufferpool</li>
+<li>queue proxies the <code>RECONFIGURE</code> event</li>
+<li>queue stores <code>CAPS</code> event in the queue. This means that the queue can
+contain buffers with different types.</li>
+</ul>
+<h3 id="pullmode-negotiation">Pull-mode negotiation</h3>
+<p>A pipeline in pull mode has different negotiation needs than one
+activated in push mode. Push mode is optimized for two use cases:</p>
+<ul>
+<li>
+<p>Playback of media files, in which the demuxers and the decoders are
+the points from which format information should disseminate to the
+rest of the pipeline; and</p>
+</li>
+<li>
+<p>Recording from live sources, in which users are accustomed to
+putting a capsfilter directly after the source element; thus the
+caps information flow proceeds from the user, through the potential
+caps of the source, to the sinks of the pipeline.</p>
+</li>
+</ul>
+<p>In contrast, pull mode has other typical use cases:</p>
+<ul>
+<li>
+<p>Playback from a lossy source, such as RTP, in which more knowledge
+about the latency of the pipeline can increase quality; or</p>
+</li>
+<li>
+<p>Audio synthesis, in which audio APIs are tuned to produce only the
+necessary number of samples, typically driven by a hardware
+interrupt to fill a DMA buffer or a Jack[0] port buffer.</p>
+</li>
+<li>
+<p>Low-latency effects processing, whereby filters should be applied as
+data is transferred from a ring buffer to a sink instead of
+beforehand. For example, instead of using the internal alsasink
+ringbuffer thread in push-mode wavsrc ! volume ! alsasink, placing
+the volume inside the sound card writer thread via wavsrc !
+audioringbuffer ! volume ! alsasink.</p>
+</li>
+</ul>
+<p>[0] <a href="http://jackit.sf.net">http://jackit.sf.net</a></p>
+<p>The problem with pull mode is that the sink has to know the format in
+order to know how many bytes to pull via <code>gst_pad_pull_range()</code>. This
+means that before pulling, the sink must initiate negotation to decide
+on a format.</p>
+<p>Recalling the principles of capsnego, whereby information must flow from
+those that have it to those that do not, we see that the three named use
+cases have different negotiation requirements:</p>
+<ul>
+<li>
+<p>RTP and low-latency playback are both like the normal playback case,
+in which information flows downstream.</p>
+</li>
+<li>
+<p>In audio synthesis, the part of the pipeline that has the most
+information is the sink, constrained by the capabilities of the
+graph that feeds it. However the caps are not completely specified;
+at some point the user has to intervene to choose the sample rate,
+at least. This can be done externally to gstreamer, as in the jack
+elements, or internally via a capsfilter, as is customary with live
+sources.</p>
+</li>
+</ul>
+<p>Given that sinks potentially need the input of sources, as in the RTP
+case and at least as a filter in the synthesis case, there must be a
+negotiation phase before the pull thread is activated. Also, given the
+low latency offered by pull mode, we want to avoid capsnego from within
+the pulling thread, in case it causes us to miss our scheduling
+deadlines.</p>
+<p>The pull thread is usually started in the <code>PAUSED→PLAYING</code> state change.
+We must be able to complete the negotiation before this state change
+happens.</p>
+<p>The time to do capsnego, then, is after the <code>SCHEDULING</code> query has
+succeeded, but before the sink has spawned the pulling thread.</p>
+<h4 id="mechanism">Mechanism</h4>
+<p>The sink determines that the upstream elements support pull based
+scheduling by doing a <code>SCHEDULING</code> query.</p>
+<p>The sink initiates the negotiation process by intersecting the results
+of <code>gst_pad_query_caps()</code> on its sink pad and its peer src pad. This is
+the operation performed by <code>gst_pad_get_allowed_caps()</code> In the simple
+passthrough case, the peer pad’s caps query should return the
+intersection of calling <code>get_allowed_caps()</code> on all of its sink pads. In
+this way the sink element knows the capabilities of the entire pipeline.</p>
+<p>The sink element then fixates the resulting caps, if necessary,
+resulting in the flow caps. From now on, the caps query of the sinkpad
+will only return these fixed caps meaning that upstream elements will
+only be able to produce this format.</p>
+<p>If the sink element could not set caps on its sink pad, it should post
+an error message on the bus indicating that negotiation was not
+possible.</p>
+<p>When negotiation succeeded, the sinkpad and all upstream internally
+linked pads are activated in pull mode. Typically, this operation will
+trigger negotiation on the downstream elements, which will now be forced
+to negotiate to the final fixed desired caps of the sinkpad.</p>
+<p>After these steps, the sink element returns <code>ASYNC</code> from the state change
+function. The state will commit to <code>PAUSED</code> when the first buffer is
+received in the sink. This is needed to provide a consistent API to the
+applications that expect <code>ASYNC</code> return values from sinks but it also
+allows us to perform the remainder of the negotiation outside of the
+context of the pulling thread.</p>
+<h3 id="patterns">Patterns</h3>
+<p>We can identify 3 patterns in negotiation:</p>
+<ul>
+<li>
+<p>Fixed : Can't choose the output format</p>
+<ul>
+<li>Caps encoded in the stream</li>
+<li>A video/audio decoder</li>
+<li>usually uses <code>gst_pad_use_fixed_caps()</code></li>
+</ul>
+</li>
+<li>
+<p>Transform</p>
+<ul>
+<li>Caps not modified (passthrough)</li>
+<li>can do caps transform based on element property</li>
+<li>fixed caps get transformed into fixed caps</li>
+<li>videobox</li>
+</ul>
+</li>
+<li>
+<p>Dynamic : can choose output format</p>
+<ul>
+<li>A converter element</li>
+<li>depends on downstream caps, needs to do a CAPS query to find
+transform.</li>
+<li>usually prefers to use the identity transform</li>
+<li>fixed caps can be transformed into unfixed caps.</li>
+</ul>
+</li>
+</ul>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

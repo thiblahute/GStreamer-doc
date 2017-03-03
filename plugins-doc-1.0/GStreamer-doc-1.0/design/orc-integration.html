@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Orc Integration</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/orc-integration.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="orc-integration.md">
+<h1 id="orc-integration">Orc Integration</h1>
+<h2 id="about-orc">About Orc</h2>
+<p>Orc code can be in one of two forms: in .orc files that is converted by
+orcc to C code that calls liborc functions, or C code that calls liborc
+to create complex operations at runtime. The former is mostly for
+functions with predetermined functionality. The latter is for
+functionality that is determined at runtime, where writing .orc
+functions for all combinations would be prohibitive. Orc also has a fast
+memcpy and memset which are useful independently.</p>
+<h2 id="fast-memcpy">Fast memcpy()</h2>
+<p>*** This part is not integrated yet. ***</p>
+<p>Orc has built-in functions <code>orc_memcpy()</code> and <code>orc_memset()</code> that work
+like <code>memcpy()</code> and <code>memset()</code>. These are meant for large copies only. A
+reasonable cutoff for using <code>orc_memcpy()</code> instead of <code>memcpy()</code> is if the
+number of bytes is generally greater than 100. <strong>DO NOT</strong> use <code>orc_memcpy()</code>
+if the typical is size is less than 20 bytes, especially if the size is
+known at compile time, as these cases are inlined by the compiler.</p>
+<p>(Example: sys/ximage/ximagesink.c)</p>
+<p>Add $(ORC_CFLAGS) to libgstximagesink_la_CFLAGS and $(ORC_LIBS) to
+libgstximagesink_la_LIBADD. Then, in the source file, add:</p>
+<p>#ifdef HAVE_ORC #include &lt;orc/orc.h&gt; #else #define
+orc_memcpy(a,b,c) memcpy(a,b,c) #endif</p>
+<p>Then switch relevant uses of <code>memcpy()</code> to <code>orc_memcpy()</code>.</p>
+<p>The above example works whether or not Orc is enabled at compile time.</p>
+<h2 id="normal-usage">Normal Usage</h2>
+<p>The following lines are added near the top of Makefile.am for plugins
+that use Orc code in .orc files (this is for the volume plugin):</p>
+<pre><code>ORC_BASE=volume include $(top_srcdir)/common/orc.mk
+</code></pre>
+<p>Also add the generated source file to the plugin build:</p>
+<pre><code>nodist_libgstvolume_la_SOURCES = $(ORC_SOURCES)
+</code></pre>
+<p>And of course, add <code>$(ORC_CFLAGS)</code> to <code>libgstvolume_la_CFLAGS</code>, and
+<code>$(ORC_LIBS)</code> to <code>libgstvolume_la_LIBADD</code>.</p>
+<p>The value assigned to <code>ORC_BASE</code> does not need to be related to the name
+of the plugin.</p>
+<h2 id="advanced-usage">Advanced Usage</h2>
+<p>The Holy Grail of Orc usage is to programmatically generate Orc code at
+runtime, have liborc compile it into binary code at runtime, and then
+execute this code. Currently, the best example of this is in
+Schroedinger. An example of how this would be used is audioconvert:
+given an input format, channel position manipulation, dithering and
+quantizing configuration, and output format, a Orc code generator would
+create an OrcProgram, add the appropriate instructions to do each step
+based on the configuration, and then compile the program. Successfully
+compiling the program would return a function pointer that can be called
+to perform the operation.</p>
+<p>This sort of advanced usage requires structural changes to current
+plugins (e.g., audioconvert) and will probably be developed
+incrementally. Moreover, if such code is intended to be used without Orc
+as strict build/runtime requirement, two codepaths would need to be
+developed and tested. For this reason, until GStreamer requires Orc, I
+think it's a good idea to restrict such advanced usage to the cog plugin
+in -bad, which requires Orc.</p>
+<h2 id="build-process">Build Process</h2>
+<p>The goal of the build process is to make Orc non-essential for most
+developers and users. This is not to say you shouldn't have Orc
+installed -- without it, you will get slow backup C code, just that
+people compiling GStreamer are not forced to switch from Liboil to Orc
+immediately.</p>
+<p>With Orc installed, the build process will use the Orc Compiler (orcc)
+to convert each .orc file into a temporary C source (tmp-orc.c) and a
+temporary header file (${name}orc.h if constructed from ${base}.orc).
+The C source file is compiled and linked to the plugin, and the header
+file is included by other source files in the plugin.</p>
+<p>If 'make orc-update' is run in the source directory, the files tmp-orc.c
+and ${base}orc.h are copied to ${base}orc-dist.c and ${base}orc-dist.h
+respectively. The -dist.[ch] files are automatically disted via
+orc.mk. The -dist.[ch] files should be checked in to git whenever the
+.orc source is changed and checked in. Example workflow:</p>
+<p>edit .orc file ... make, test, etc. make orc-update git add volume.orc
+volumeorc-dist.c volumeorc-dist.h git commit</p>
+<p>At 'make dist' time, all of the .orc files are compiled, and then copied
+to their -dist.[ch] counterparts, and then the -dist.[ch] files are
+added to the dist directory.</p>
+<p>Without Orc installed (or --disable-orc given to configure), the
+-dist.[ch] files are copied to tmp-orc.c and ${name}orc.h. When
+compiled Orc disabled, DISABLE_ORC is defined in config.h, and the C
+backup code is compiled. This backup code is pure C, and does not
+include orc headers or require linking against liborc.</p>
+<p>The common/orc.mk build method is limited by the inflexibility of
+automake. The file tmp-orc.c must be a fixed filename, using ORC_NAME
+to generate the filename does not work because it conflicts with
+automake's dependency generation. Building multiple .orc files is not
+possible due to this restriction.</p>
+<h2 id="testing">Testing</h2>
+<p>If you create another .orc file, please add it to tests/orc/Makefile.am.
+This causes automatic test code to be generated and run during 'make
+check'. Each function in the .orc file is tested by comparing the
+results of executing the run-time compiled code and the C backup
+function.</p>
+<h2 id="orc-limitations">Orc Limitations</h2>
+<h3 id="audioconvert">audioconvert</h3>
+<p>Orc doesn't have a mechanism for generating random numbers, which
+prevents its use as-is for dithering. One way around this is to generate
+suitable dithering values in one pass, then use those values in a second
+Orc-based pass.</p>
+<p>Orc doesn't handle 64-bit float, for no good reason.</p>
+<p>Irrespective of Orc handling 64-bit float, it would be useful to have a
+direct 32-bit float to 16-bit integer conversion.</p>
+<p>audioconvert is a good candidate for programmatically generated Orc code.</p>
+<p>audioconvert enumerates functions in terms of big-endian vs.
+little-endian. Orc's functions are "native" and "swapped".
+Programmatically generating code removes the need to worry about this.</p>
+<p>Orc doesn't handle 24-bit samples. Fixing this is not a priority (for ds).</p>
+<h3 id="videoscale">videoscale</h3>
+<p>Orc doesn't handle horizontal resampling yet. The plan is to add special
+sampling opcodes, for nearest, bilinear, and cubic interpolation.</p>
+<h3 id="videotestsrc">videotestsrc</h3>
+<p>Lots of code in videotestsrc needs to be rewritten to be SIMD (and Orc)
+friendly, e.g., stuff that uses <code>oil_splat_u8()</code>.</p>
+<p>A fast low-quality random number generator in Orc would be useful here.</p>
+<h3 id="volume">volume</h3>
+<p>Many of the comments on audioconvert apply here as well.</p>
+<p>There are a bunch of FIXMEs in here that are due to misapplied patches.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

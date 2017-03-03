@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Request and Sometimes pads</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="plugin-development/advanced/request.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="request.md">
+<h1 id="request-and-sometimes-pads">Request and Sometimes pads</h1>
+<p>Until now, we've only dealt with pads that are always available.
+However, there's also pads that are only being created in some cases, or
+only if the application requests the pad. The first is called a
+<em>sometimes</em>; the second is called a <em>request</em> pad. The availability of a
+pad (always, sometimes or request) can be seen in a pad's template. This
+chapter will discuss when each of the two is useful, how they are
+created and when they should be disposed.</p>
+<h2 id="sometimes-pads">Sometimes pads</h2>
+<p>A “sometimes” pad is a pad that is created under certain conditions, but
+not in all cases. This mostly depends on stream content: demuxers will
+generally parse the stream header, decide what elementary (video, audio,
+subtitle, etc.) streams are embedded inside the system stream, and will
+then create a sometimes pad for each of those elementary streams. At its
+own choice, it can also create more than one instance of each of those
+per element instance. The only limitation is that each newly created pad
+should have a unique name. Sometimes pads are disposed when the stream
+data is disposed, too (i.e. when going from PAUSED to the READY state).
+You should <em>not</em> dispose the pad on EOS, because someone might
+re-activate the pipeline and seek back to before the end-of-stream
+point. The stream should still stay valid after EOS, at least until the
+stream data is disposed. In any case, the element is always the owner of
+such a pad.</p>
+<p>The example code below will parse a text file, where the first line is a
+number (n). The next lines all start with a number (0 to n-1), which is
+the number of the source pad over which the data should be sent.</p>
+<pre><code>3
+0: foo
+1: bar
+0: boo
+2: bye
+
+</code></pre>
+<p>The code to parse this file and create the dynamic “sometimes” pads,
+looks like this:</p>
+<pre><code class="language-c">
+typedef struct _GstMyFilter {
+[..]
+  gboolean firstrun;
+  GList *srcpadlist;
+} GstMyFilter;
+
+static GstStaticPadTemplate src_factory =
+GST_STATIC_PAD_TEMPLATE (
+  "src_%u",
+  GST_PAD_SRC,
+  GST_PAD_SOMETIMES,
+  GST_STATIC_CAPS ("ANY")
+);
+
+static void
+gst_my_filter_class_init (GstMyFilterClass *klass)
+{
+  GstElementClass *element_class = GST_ELEMENT_CLASS (klass);
+[..]
+  gst_element_class_add_pad_template (element_class,
+    gst_static_pad_template_get (&amp;src_factory));
+[..]
+}
+
+static void
+gst_my_filter_init (GstMyFilter *filter)
+{
+[..]
+  filter-&gt;firstrun = TRUE;
+  filter-&gt;srcpadlist = NULL;
+}
+
+/*
+ * Get one line of data - without newline.
+ */
+
+static GstBuffer *
+gst_my_filter_getline (GstMyFilter *filter)
+{
+  guint8 *data;
+  gint n, num;
+
+  /* max. line length is 512 characters - for safety */
+  for (n = 0; n &lt; 512; n++) {
+    num = gst_bytestream_peek_bytes (filter-&gt;bs, &amp;data, n + 1);
+    if (num != n + 1)
+      return NULL;
+
+    /* newline? */
+    if (data[n] == '\n') {
+      GstBuffer *buf = gst_buffer_new_allocate (NULL, n + 1, NULL);
+
+      gst_bytestream_peek_bytes (filter-&gt;bs, &amp;data, n);
+      gst_buffer_fill (buf, 0, data, n);
+      gst_buffer_memset (buf, n, '\0', 1);
+      gst_bytestream_flush_fast (filter-&gt;bs, n + 1);
+
+      return buf;
+    }
+  }
+}
+
+static void
+gst_my_filter_loopfunc (GstElement *element)
+{
+  GstMyFilter *filter = GST_MY_FILTER (element);
+  GstBuffer *buf;
+  GstPad *pad;
+  GstMapInfo map;
+  gint num, n;
+
+  /* parse header */
+  if (filter-&gt;firstrun) {
+    gchar *padname;
+    guint8 id;
+
+    if (!(buf = gst_my_filter_getline (filter))) {
+      gst_element_error (element, STREAM, READ, (NULL),
+             ("Stream contains no header"));
+      return;
+    }
+    gst_buffer_extract (buf, 0, &amp;id, 1);
+    num = atoi (id);
+    gst_buffer_unref (buf);
+
+    /* for each of the streams, create a pad */
+    for (n = 0; n &lt; num; n++) {
+      padname = g_strdup_printf ("src_%u", n);
+      pad = gst_pad_new_from_static_template (src_factory, padname);
+      g_free (padname);
+
+      /* here, you would set _event () and _query () functions */
+
+      /* need to activate the pad before adding */
+      gst_pad_set_active (pad, TRUE);
+
+      gst_element_add_pad (element, pad);
+      filter-&gt;srcpadlist = g_list_append (filter-&gt;srcpadlist, pad);
+    }
+  }
+
+  /* and now, simply parse each line and push over */
+  if (!(buf = gst_my_filter_getline (filter))) {
+    GstEvent *event = gst_event_new (GST_EVENT_EOS);
+    GList *padlist;
+
+    for (padlist = srcpadlist;
+         padlist != NULL; padlist = g_list_next (padlist)) {
+      pad = GST_PAD (padlist-&gt;data);
+      gst_pad_push_event (pad, gst_event_ref (event));
+    }
+    gst_event_unref (event);
+    /* pause the task here */
+    return;
+  }
+
+  /* parse stream number and go beyond the ':' in the data */
+  gst_buffer_map (buf, &amp;map, GST_MAP_READ);
+  num = atoi (map.data[0]);
+  if (num &gt;= 0 &amp;&amp; num &lt; g_list_length (filter-&gt;srcpadlist)) {
+    pad = GST_PAD (g_list_nth_data (filter-&gt;srcpadlist, num);
+
+    /* magic buffer parsing foo */
+    for (n = 0; map.data[n] != ':' &amp;&amp;
+                map.data[n] != '\0'; n++) ;
+    if (map.data[n] != '\0') {
+      GstBuffer *sub;
+
+      /* create region copy that starts right past the space. The reason
+       * that we don't just forward the data pointer is because the
+       * pointer is no longer the start of an allocated block of memory,
+       * but just a pointer to a position somewhere in the middle of it.
+       * That cannot be freed upon disposal, so we'd either crash or have
+       * a memleak. Creating a region copy is a simple way to solve that. */
+      sub = gst_buffer_copy_region (buf, GST_BUFFER_COPY_ALL,
+          n + 1, map.size - n - 1);
+      gst_pad_push (pad, sub);
+    }
+  }
+  gst_buffer_unmap (buf, &amp;map);
+  gst_buffer_unref (buf);
+}
+
+
+</code></pre>
+<p>Note that we use a lot of checks everywhere to make sure that the
+content in the file is valid. This has two purposes: first, the file
+could be erroneous, in which case we prevent a crash. The second and
+most important reason is that - in extreme cases - the file could be
+used maliciously to cause undefined behaviour in the plugin, which might
+lead to security issues. <em>Always</em> assume that the file could be used to
+do bad things.</p>
+<h2 id="request-pads">Request pads</h2>
+<p>“Request” pads are similar to sometimes pads, except that request are
+created on demand of something outside of the element rather than
+something inside the element. This concept is often used in muxers,
+where - for each elementary stream that is to be placed in the output
+system stream - one sink pad will be requested. It can also be used in
+elements with a variable number of input or outputs pads, such as the
+<code>tee</code> (multi-output) or <code>input-selector</code> (multi-input) elements.</p>
+<p>To implement request pads, you need to provide a padtemplate with a
+GST_PAD_REQUEST presence and implement the <code>request_new_pad</code> virtual
+method in <code>GstElement</code>. To clean up, you will need to implement the
+<code>release_pad</code> virtual method.</p>
+<pre><code class="language-c">
+static GstPad * gst_my_filter_request_new_pad   (GstElement     *element,
+                         GstPadTemplate *templ,
+                                                 const gchar    *name,
+                                                 const GstCaps  *caps);
+
+static void gst_my_filter_release_pad (GstElement *element,
+                                       GstPad *pad);
+
+static GstStaticPadTemplate sink_factory =
+GST_STATIC_PAD_TEMPLATE (
+  "sink_%u",
+  GST_PAD_SINK,
+  GST_PAD_REQUEST,
+  GST_STATIC_CAPS ("ANY")
+);
+
+static void
+gst_my_filter_class_init (GstMyFilterClass *klass)
+{
+  GstElementClass *element_class = GST_ELEMENT_CLASS (klass);
+[..]
+  gst_element_class_add_pad_template (klass,
+    gst_static_pad_template_get (&amp;sink_factory));
+[..]
+  element_class-&gt;request_new_pad = gst_my_filter_request_new_pad;
+  element_class-&gt;release_pad = gst_my_filter_release_pad;
+}
+
+static GstPad *
+gst_my_filter_request_new_pad (GstElement     *element,
+                   GstPadTemplate *templ,
+                   const gchar    *name,
+                               const GstCaps  *caps)
+{
+  GstPad *pad;
+  GstMyFilterInputContext *context;
+
+  context = g_new0 (GstMyFilterInputContext, 1);
+  pad = gst_pad_new_from_template (templ, name);
+  gst_pad_set_element_private (pad, context);
+
+  /* normally, you would set _chain () and _event () functions here */
+
+  gst_element_add_pad (element, pad);
+
+  return pad;
+}
+
+static void
+gst_my_filter_release_pad (GstElement *element,
+                           GstPad *pad)
+{
+  GstMyFilterInputContext *context;
+
+  context = gst_pad_get_element_private (pad);
+  g_free (context);
+
+  gst_element_remove_pad (element, pad);
+}
+
+
+
+</code></pre>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

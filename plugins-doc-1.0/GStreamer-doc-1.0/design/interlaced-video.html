@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Interlaced Video</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/interlaced-video.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="interlaced-video.md">
+<h1 id="interlaced-video">Interlaced Video</h1>
+<p>Video buffers have a number of states identifiable through a combination
+of caps and buffer flags.</p>
+<p>Possible states:</p>
+<ul>
+<li>Progressive</li>
+<li>Interlaced</li>
+<li>Plain</li>
+<li>One field</li>
+<li>Two fields</li>
+<li>Three fields - this should be a progressive buffer with a repeated 'first'
+field that can be used for telecine pulldown</li>
+<li>Telecine
+<ul>
+<li>One field</li>
+<li>Two fields</li>
+<li>Progressive</li>
+<li>Interlaced (a.k.a. 'mixed'; the fields are from different frames)</li>
+<li>Three fields - this should be a progressive buffer with a repeated 'first'
+field that can be used for telecine pulldown</li>
+</ul>
+</li>
+</ul>
+<p>Note: It can be seen that the difference between the plain interlaced
+and telecine states is that in the latter, buffers containing
+two fields may be progressive.</p>
+<p>Tools for identification:</p>
+<ul>
+<li><code>GstVideoInfo</code></li>
+<li><code>GstVideoInterlaceMode</code> - enum <code>GST_VIDEO_INTERLACE_MODE_...</code></li>
+<li>PROGRESSIVE</li>
+<li>INTERLEAVED</li>
+<li>MIXED</li>
+<li>Buffers flags - <code>GST_VIDEO_BUFFER_FLAG_...</code>
+<ul>
+<li>TFF</li>
+<li>RFF</li>
+<li>ONEFIELD</li>
+<li>INTERLACED</li>
+</ul>
+</li>
+</ul>
+<h2 id="identification-of-buffer-states">Identification of Buffer States</h2>
+<p>Note that flags are not necessarily interpreted in the same way for all
+different states nor are they necessarily required nor make sense in all
+cases.</p>
+<h3 id="progressive">Progressive</h3>
+<p>If the interlace mode in the video info corresponding to a buffer is
+<strong>"progressive"</strong>, then the buffer is progressive.</p>
+<h3 id="plain-interlaced">Plain Interlaced</h3>
+<p>If the video info interlace mode is <strong>"interleaved"</strong>, then the buffer is
+plain interlaced.</p>
+<p><code>GST_VIDEO_BUFFER_FLAG_TFF</code> indicates whether the top or bottom field
+is to be displayed first. The timestamp on the buffer corresponds to the
+first field.</p>
+<p><code>GST_VIDEO_BUFFER_FLAG_RFF</code> indicates that the first field (indicated
+by the TFF flag) should be repeated. This is generally only used for
+telecine purposes but as the telecine state was added long after the
+interlaced state was added and defined, this flag remains valid for
+plain interlaced buffers.</p>
+<p><code>GST_VIDEO_BUFFER_FLAG_ONEFIELD</code> means that only the field indicated
+through the TFF flag is to be used. The other field should be ignored.</p>
+<h3 id="telecine">Telecine</h3>
+<p>If video info interlace mode is <strong>"mixed"</strong> then the buffers are in some
+form of telecine state.</p>
+<p>The <code>TFF</code> and <code>ONEFIELD</code> flags have the same semantics as for the plain
+interlaced state.</p>
+<p><code>GST_VIDEO_BUFFER_FLAG_RFF</code> in the telecine state indicates that the
+buffer contains only repeated fields that are present in other buffers
+and are as such unneeded. For example, in a sequence of three telecined
+frames, we might have:</p>
+<pre><code>AtAb AtBb BtBb
+</code></pre>
+<p>In this situation, we only need the first and third buffers as the
+second buffer contains fields present in the first and third.</p>
+<p>Note that the following state can have its second buffer identified
+using the <code>ONEFIELD</code> flag (and <code>TFF</code> not set):</p>
+<pre><code>AtAb AtBb BtCb
+</code></pre>
+<p>The telecine state requires one additional flag to be able to identify
+progressive buffers.</p>
+<p>The presence of the <code>GST_VIDEO_BUFFER_FLAG_INTERLACED</code> means that the
+buffer is an 'interlaced' or 'mixed' buffer that contains two fields
+that, when combined with fields from adjacent buffers, allow
+reconstruction of progressive frames. The absence of the flag implies
+the buffer containing two fields is a progressive frame.</p>
+<p>For example in the following sequence, the third buffer would be mixed
+(yes, it is a strange pattern, but it can happen):</p>
+<pre><code>AtAb AtBb BtCb CtDb DtDb
+</code></pre>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>
