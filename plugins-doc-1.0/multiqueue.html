@@ -11,7 +11,6 @@
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -87,7 +86,7 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="multiqueue">
-<h1 id="multiqueue">multiqueue</h1><p>Multiqueue is similar to a normal <a href="queue.html#GstQueue">queue</a> with the following additional
+<h1 id="multiqueue1">multiqueue</h1><p>Multiqueue is similar to a normal <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-plugins/html/gstreamer-plugins-queue.html#GstQueue-struct">GstQueue</a> with the following additional
 features:</p>
 <ol>
 <li>Multiple streamhandling</li>
@@ -135,8 +134,8 @@ currently unused.</p>
 two second worth of data, whichever is reached first. Note that the number
 of buffers will dynamically grow depending on the fill level of
 other queues.</p>
-<p>The <a href="multiqueue.html#GstMultiQueue::underrun">underrun</a> signal is emitted when all of the queues
-are empty. The <a href="multiqueue.html#GstMultiQueue::overrun">overrun</a> signal is emitted when one of the
+<p>The <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-plugins/html/gstreamer-plugins-multiqueue.html#GstMultiQueue-underrun">GstMultiQueue::underrun</a> signal is emitted when all of the queues
+are empty. The <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-plugins/html/gstreamer-plugins-multiqueue.html#GstMultiQueue-overrun">GstMultiQueue::overrun</a> signal is emitted when one of the
 queues is filled.
 Both signals are emitted from the context of the streaming thread.</p>
 <p>When using <a href="multiqueue.html#GstMultiQueue:sync-by-running-time">sync-by-running-time</a> the unlinked streams will
@@ -155,8 +154,8 @@ in time within that group.</p>
 <h2 class="symbol_section" id="Classes">Classes</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue">
-		<h3 id="multiqueue1">
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue">
+		<h3 id="multiqueue2">
 	multiqueue
 </h3>
 
@@ -175,7 +174,67 @@ in time within that group.</p>
 </div>
 
 <div class="class_details">
-	<p>Opaque <a href="multiqueue.html#GstMultiQueue">multiqueue</a> structure.</p>
+	<p>Multiqueue is similar to a normal <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-plugins/html/gstreamer-plugins-queue.html#GstQueue-struct">GstQueue</a> with the following additional
+features:</p>
+<ol>
+<li>Multiple streamhandling</li>
+</ol>
+<ul>
+<li>The element handles queueing data on more than one stream at once. To
+achieve such a feature it has request sink pads (sink%u) and
+'sometimes' src pads (src%u). When requesting a given sinkpad with <a href="../libgstreamer-doc-1.0/c/gstelement.html#gst_element_request_pad">gst_element_request_pad</a>,
+the associated srcpad for that stream will be created.
+Example: requesting sink1 will generate src1.</li>
+</ul>
+<ol start="2">
+<li>Non-starvation on multiple stream</li>
+</ol>
+<ul>
+<li>If more than one stream is used with the element, the streams' queues
+will be dynamically grown (up to a limit), in order to ensure that no
+stream is risking data starvation. This guarantees that at any given
+time there are at least N bytes queued and available for each individual
+stream. If an EOS event comes through a srcpad, the associated queue will be
+considered as 'not-empty' in the queue-size-growing algorithm.</li>
+</ul>
+<ol start="3">
+<li>Non-linked srcpads graceful handling</li>
+</ol>
+<ul>
+<li>In order to better support dynamic switching between streams, the multiqueue
+(unlike the current GStreamer queue) continues to push buffers on non-linked
+pads rather than shutting down. In addition, to prevent a non-linked stream from very quickly consuming all
+available buffers and thus 'racing ahead' of the other streams, the element
+must ensure that buffers and inlined events for a non-linked stream are pushed
+in the same order as they were received, relative to the other streams
+controlled by the element. This means that a buffer cannot be pushed to a
+non-linked pad any sooner than buffers in any other stream which were received
+before it.</li>
+</ul>
+<p>Data is queued until one of the limits specified by the
+<a href="multiqueue.html#GstMultiQueue:max-size-buffers">max-size-buffers</a>, <a href="multiqueue.html#GstMultiQueue:max-size-bytes">max-size-bytes</a> and/or
+<a href="multiqueue.html#GstMultiQueue:max-size-time">max-size-time</a> properties has been reached. Any attempt to push
+more buffers into the queue will block the pushing thread until more space
+becomes available. <a href="multiqueue.html#GstMultiQueue:extra-size-buffers">extra-size-buffers</a>,</p>
+<p><a href="multiqueue.html#GstMultiQueue:extra-size-bytes">extra-size-bytes</a> and <a href="multiqueue.html#GstMultiQueue:extra-size-time">extra-size-time</a> are
+currently unused.</p>
+<p>The default queue size limits are 5 buffers, 10MB of data, or
+two second worth of data, whichever is reached first. Note that the number
+of buffers will dynamically grow depending on the fill level of
+other queues.</p>
+<p>The <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-plugins/html/gstreamer-plugins-multiqueue.html#GstMultiQueue-underrun">GstMultiQueue::underrun</a> signal is emitted when all of the queues
+are empty. The <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-plugins/html/gstreamer-plugins-multiqueue.html#GstMultiQueue-overrun">GstMultiQueue::overrun</a> signal is emitted when one of the
+queues is filled.
+Both signals are emitted from the context of the streaming thread.</p>
+<p>When using <a href="multiqueue.html#GstMultiQueue:sync-by-running-time">sync-by-running-time</a> the unlinked streams will
+be throttled by the highest running-time of linked streams. This allows
+further relinking of those unlinked streams without them being in the
+future (i.e. to achieve gapless playback).
+When dealing with streams which have got different consumption requirements
+downstream (ex: video decoders which will consume more buffer (in time) than
+audio decoders), it is recommended to group streams of the same type
+by using the pad "group-id" property. This will further throttle streams
+in time within that group.</p>
 
 </div>
 
@@ -185,26 +244,9 @@ in time within that group.</p>
 <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue-&gt;sink_%u">
-		<h3 id="sink_u">
-    sink_%u:
-</h3>
-<table>
-    <tbody>
-        <tr><td><b>Presence:</b></td><td>request</td></tr>
-        <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>ANY</td></tr>
-    </tbody>
-</table>
-
-			
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue-&gt;src_%u">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue-&gt;src_%%u">
 		<h3 id="src_u">
-    src_%u:
+    src_%%u:
 </h3>
 <table>
     <tbody>
@@ -218,24 +260,39 @@ in time within that group.</p>
 </div>
 
 
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue-&gt;sink_%%u">
+		<h3 id="sink_u">
+    sink_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>ANY</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
 <h2 class="symbol_section" id="Signals">Signals</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue::underrun">
-		<h3 id="underrun">
-	<span><code>underrun</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue::pad-added">
+		<h3 id="padadded">
+	<span><code>pad-added</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-underrun_callback (GstMultiQueue * multiqueue,
-                   gpointer udata)</pre>
+pad_added_callback (multiqueue * param_0,
+                    GstPad * param_1,
+                    gpointer udata)</pre>
 
-<p>This signal is emitted from the streaming thread when there is
-no data in any of the queues inside the multiqueue instance (underrun).</p>
-<p>This indicates either starvation or EOS from the upstream data sources.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters">Parameters</h4>
@@ -244,11 +301,19 @@ no data in any of the queues inside the multiqueue instance (underrun).</p>
 									<tr>
 		<td>
 		<p>
-		<i><em><code>multiqueue:</code></em></i>
+		<i><em><code>param_0:</code></em></i>
 		</p>
 	</td>
-		<td><p>the multiqueue instance</p>
-</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
 </tr>
 
 									<tr>
@@ -297,23 +362,19 @@ no data in any of the queues inside the multiqueue instance (underrun).</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue::overrun">
-		<h3 id="overrun">
-	<span><code>overrun</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue::pad-removed">
+		<h3 id="padremoved">
+	<span><code>pad-removed</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-overrun_callback (GstMultiQueue * multiqueue,
-                  gpointer udata)</pre>
+pad_removed_callback (multiqueue * param_0,
+                      GstPad * param_1,
+                      gpointer udata)</pre>
 
-<p>Reports that one of the queues in the multiqueue is full (overrun).
-A queue is full if the total amount of data inside it (num-buffers, time,
-size) is higher than the boundary values which can be set through the
-GObject properties.</p>
-<p>This can be used as an indicator of pre-roll.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters1">Parameters</h4>
@@ -322,11 +383,19 @@ GObject properties.</p>
 									<tr>
 		<td>
 		<p>
-		<i><em><code>multiqueue:</code></em></i>
+		<i><em><code>param_0:</code></em></i>
 		</p>
 	</td>
-		<td><p>the multiqueue instance</p>
-</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
 </tr>
 
 									<tr>
@@ -375,18 +444,17 @@ GObject properties.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue::pad-added">
-		<h3 id="padadded">
-	<span><code>pad-added</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue::no-more-pads">
+		<h3 id="nomorepads">
+	<span><code>no-more-pads</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-pad_added_callback (GstMultiQueue * param_0,
-                    GstPad * param_1,
-                    gpointer udata)</pre>
+no_more_pads_callback (multiqueue * param_0,
+                       gpointer udata)</pre>
 
 
 	<div class="parameter_container">
@@ -397,15 +465,6 @@ pad_added_callback (GstMultiQueue * param_0,
 		<td>
 		<p>
 		<i><em><code>param_0:</code></em></i>
-		</p>
-	</td>
-		<td></td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>param_1:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -457,18 +516,17 @@ pad_added_callback (GstMultiQueue * param_0,
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue::pad-removed">
-		<h3 id="padremoved">
-	<span><code>pad-removed</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue::underrun">
+		<h3 id="underrun">
+	<span><code>underrun</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-pad_removed_callback (GstMultiQueue * param_0,
-                      GstPad * param_1,
-                      gpointer udata)</pre>
+underrun_callback (multiqueue * param_0,
+                   gpointer udata)</pre>
 
 
 	<div class="parameter_container">
@@ -479,15 +537,6 @@ pad_removed_callback (GstMultiQueue * param_0,
 		<td>
 		<p>
 		<i><em><code>param_0:</code></em></i>
-		</p>
-	</td>
-		<td></td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>param_1:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -539,17 +588,17 @@ pad_removed_callback (GstMultiQueue * param_0,
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue::no-more-pads">
-		<h3 id="nomorepads">
-	<span><code>no-more-pads</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue::overrun">
+		<h3 id="overrun">
+	<span><code>overrun</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-no_more_pads_callback (GstMultiQueue * param_0,
-                       gpointer udata)</pre>
+overrun_callback (multiqueue * param_0,
+                  gpointer udata)</pre>
 
 
 	<div class="parameter_container">
@@ -613,13 +662,13 @@ no_more_pads_callback (GstMultiQueue * param_0,
 <h2 class="symbol_section" id="Properties">Properties</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:extra-size-bytes">
-		<h3 class="method" id="extrasizebytes">
-	<span><code>extra-size-bytes</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
 </h3>
 
 		<pre class="property_signature">
-“extra-size-bytes” <span class="type">guint</span>
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
 </pre>
 
 
@@ -633,6 +682,67 @@ no_more_pads_callback (GstMultiQueue * param_0,
 				/		
 				Write
 			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	multiqueue0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:extra-size-bytes">
+		<h3 class="method" id="extrasizebytes">
+	<span><code>extra-size-bytes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“extra-size-bytes” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	10485760
 </p>
 
 </div>
@@ -645,7 +755,7 @@ no_more_pads_callback (GstMultiQueue * param_0,
 </h3>
 
 		<pre class="property_signature">
-“extra-size-buffers” <span class="type">guint</span>
+“extra-size-buffers” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
 </pre>
 
 
@@ -659,6 +769,9 @@ no_more_pads_callback (GstMultiQueue * param_0,
 				/		
 				Write
 			
+</p>
+<p>
+	Default value :	5
 </p>
 
 </div>
@@ -671,7 +784,7 @@ no_more_pads_callback (GstMultiQueue * param_0,
 </h3>
 
 		<pre class="property_signature">
-“extra-size-time” <span class="type">guint64</span>
+“extra-size-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
 </pre>
 
 
@@ -685,6 +798,9 @@ no_more_pads_callback (GstMultiQueue * param_0,
 				/		
 				Write
 			
+</p>
+<p>
+	Default value :	3000000000
 </p>
 
 </div>
@@ -697,7 +813,7 @@ no_more_pads_callback (GstMultiQueue * param_0,
 </h3>
 
 		<pre class="property_signature">
-“max-size-bytes” <span class="type">guint</span>
+“max-size-bytes” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
 </pre>
 
 
@@ -711,6 +827,9 @@ no_more_pads_callback (GstMultiQueue * param_0,
 				/		
 				Write
 			
+</p>
+<p>
+	Default value :	10485760
 </p>
 
 </div>
@@ -723,7 +842,7 @@ no_more_pads_callback (GstMultiQueue * param_0,
 </h3>
 
 		<pre class="property_signature">
-“max-size-buffers” <span class="type">guint</span>
+“max-size-buffers” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
 </pre>
 
 
@@ -737,6 +856,9 @@ no_more_pads_callback (GstMultiQueue * param_0,
 				/		
 				Write
 			
+</p>
+<p>
+	Default value :	5
 </p>
 
 </div>
@@ -749,7 +871,7 @@ no_more_pads_callback (GstMultiQueue * param_0,
 </h3>
 
 		<pre class="property_signature">
-“max-size-time” <span class="type">guint64</span>
+“max-size-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
 </pre>
 
 
@@ -764,6 +886,9 @@ no_more_pads_callback (GstMultiQueue * param_0,
 				Write
 			
 </p>
+<p>
+	Default value :	2000000000
+</p>
 
 </div>
 
@@ -775,7 +900,7 @@ no_more_pads_callback (GstMultiQueue * param_0,
 </h3>
 
 		<pre class="property_signature">
-“use-buffering” <span class="type">gboolean</span>
+“use-buffering” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
 </pre>
 
 <p>Enable the buffering option in multiqueue so that BUFFERING messages are
@@ -792,6 +917,9 @@ emitted based on low-/high-percent thresholds.</p>
 				Write
 			
 </p>
+<p>
+	Default value :	false
+</p>
 
 </div>
 
@@ -803,7 +931,7 @@ emitted based on low-/high-percent thresholds.</p>
 </h3>
 
 		<pre class="property_signature">
-“low-percent” <span class="type">gint</span>
+“low-percent” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
 </pre>
 
 <p>Low threshold percent for buffering to start.</p>
@@ -819,6 +947,9 @@ emitted based on low-/high-percent thresholds.</p>
 				Write
 			
 </p>
+<p>
+	Default value :	1
+</p>
 
 </div>
 
@@ -830,7 +961,7 @@ emitted based on low-/high-percent thresholds.</p>
 </h3>
 
 		<pre class="property_signature">
-“high-percent” <span class="type">gint</span>
+“high-percent” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
 </pre>
 
 <p>High threshold percent for buffering to finish.</p>
@@ -846,6 +977,9 @@ emitted based on low-/high-percent thresholds.</p>
 				Write
 			
 </p>
+<p>
+	Default value :	99
+</p>
 
 </div>
 
@@ -857,7 +991,7 @@ emitted based on low-/high-percent thresholds.</p>
 </h3>
 
 		<pre class="property_signature">
-“low-watermark” <span class="type">gdouble</span>
+“low-watermark” <span class="type"><a title="gdouble" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a></span>
 </pre>
 
 <p>Low threshold watermark for buffering to start.</p>
@@ -873,6 +1007,9 @@ emitted based on low-/high-percent thresholds.</p>
 				Write
 			
 </p>
+<p>
+	Default value :	           0.01
+</p>
 
 </div>
 
@@ -884,7 +1021,7 @@ emitted based on low-/high-percent thresholds.</p>
 </h3>
 
 		<pre class="property_signature">
-“high-watermark” <span class="type">gdouble</span>
+“high-watermark” <span class="type"><a title="gdouble" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a></span>
 </pre>
 
 <p>High threshold watermark for buffering to finish.</p>
@@ -900,6 +1037,9 @@ emitted based on low-/high-percent thresholds.</p>
 				Write
 			
 </p>
+<p>
+	Default value :	           0.99
+</p>
 
 </div>
 
@@ -911,7 +1051,7 @@ emitted based on low-/high-percent thresholds.</p>
 </h3>
 
 		<pre class="property_signature">
-“sync-by-running-time” <span class="type">gboolean</span>
+“sync-by-running-time” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
 </pre>
 
 <p>If enabled multiqueue will synchronize deactivated or not-linked streams
@@ -931,6 +1071,9 @@ to active and linked streams.</p>
 				Write
 			
 </p>
+<p>
+	Default value :	false
+</p>
 
 </div>
 
@@ -942,7 +1085,7 @@ to active and linked streams.</p>
 </h3>
 
 		<pre class="property_signature">
-“use-interleave” <span class="type">gboolean</span>
+“use-interleave” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
 </pre>
 
 
@@ -957,6 +1100,9 @@ to active and linked streams.</p>
 				Write
 			
 </p>
+<p>
+	Default value :	false
+</p>
 
 </div>
 
@@ -968,7 +1114,7 @@ to active and linked streams.</p>
 </h3>
 
 		<pre class="property_signature">
-“unlinked-cache-time” <span class="type">guint64</span>
+“unlinked-cache-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
 </pre>
 
 
@@ -982,6 +1128,9 @@ to active and linked streams.</p>
 				/		
 				Write
 			
+</p>
+<p>
+	Default value :	250000000
 </p>
 
 </div>

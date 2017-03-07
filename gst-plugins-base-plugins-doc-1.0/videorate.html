@@ -11,7 +11,6 @@
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -87,7 +86,7 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="videorate">
-<h1 id="videorate">videorate</h1><p>This element takes an incoming stream of timestamped video frames.
+<h1 id="videorate1">videorate</h1><p>This element takes an incoming stream of timestamped video frames.
 It will produce a perfect stream that matches the source pad's framerate.</p>
 <p>The correction is performed by dropping and duplicating frames, no fancy
 algorithm is used to interpolate frames (yet).</p>
@@ -133,8 +132,8 @@ encoding to Ogg/Theora.</p>
 <h2 class="symbol_section" id="Classes">Classes</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate">
-		<h3 id="videorate1">
+<div class="base_symbol_container" data-hotdoc-tags="" id="videorate">
+		<h3 id="videorate2">
 	videorate
 </h3>
 
@@ -154,7 +153,45 @@ encoding to Ogg/Theora.</p>
 </div>
 
 <div class="class_details">
-	<p>Opaque data structure.</p>
+	<p>This element takes an incoming stream of timestamped video frames.
+It will produce a perfect stream that matches the source pad's framerate.</p>
+<p>The correction is performed by dropping and duplicating frames, no fancy
+algorithm is used to interpolate frames (yet).</p>
+<p>By default the element will simply negotiate the same framerate on its
+source and sink pad.</p>
+<p>This operation is useful to link to elements that require a perfect stream.
+Typical examples are formats that do not store timestamps for video frames,
+but only store a framerate, like Ogg and AVI.</p>
+<p>A conversion to a specific framerate can be forced by using filtered caps on
+the source pad.</p>
+<p>The properties <a href="videorate.html#GstVideoRate:in">in</a>, <a href="videorate.html#GstVideoRate:out">out</a>, <a href="videorate.html#GstVideoRate:duplicate">duplicate</a>
+and <a href="videorate.html#GstVideoRate:drop">drop</a> can be read to obtain information about number of
+input frames, output frames, dropped frames (i.e. the number of unused input
+frames) and duplicated frames (i.e. the number of times an input frame was
+duplicated, beside being used normally).</p>
+<p>An input stream that needs no adjustments will thus never have dropped or
+duplicated frames.</p>
+<p>When the <a href="videorate.html#GstVideoRate:silent">silent</a> property is set to FALSE, a GObject property
+notification will be emitted whenever one of the <a href="videorate.html#GstVideoRate:duplicate">duplicate</a> or
+<a href="videorate.html#GstVideoRate:drop">drop</a> values changes.
+This can potentially cause performance degradation.
+Note that property notification will happen from the streaming thread, so
+applications should be prepared for this.</p>
+<p>The property <a href="videorate.html#GstVideoRate:rate">rate</a> allows the modification of video speed by a
+certain factor. It must not be confused with framerate. Think of rate as
+speed and framerate as flow.</p>
+<h2 id="example-pipelines1">Example pipelines</h2>
+<pre><code>gst-launch-1.0 -v uridecodebin uri=file:///path/to/video.ogg ! videoconvert ! videoscale ! videorate ! video/x-raw,framerate=15/1 ! autovideosink
+</code></pre>
+<p>Decode a video file and adjust the framerate to 15 fps before playing.
+To create a test Ogg/Theora file refer to the documentation of theoraenc.</p>
+<pre><code>gst-launch-1.0 -v v4l2src ! videorate ! video/x-raw,framerate=25/2 ! theoraenc ! oggmux ! filesink location=recording.ogg
+</code></pre>
+<p>Capture video from a V4L device, and adjust the stream to 12.5 fps before
+encoding to Ogg/Theora.</p>
+<pre><code>gst-launch-1.0 -v uridecodebin uri=file:///path/to/video.ogg ! videoconvert ! videoscale ! videorate ! video/x-raw,framerate=1/5 ! jpegenc ! multifilesink location=snapshot-%05d.jpg
+</code></pre>
+<p>Decode a video file and save a snapshot every 5 seconds as consecutively numbered jpeg file.</p>
 
 </div>
 
@@ -162,23 +199,6 @@ encoding to Ogg/Theora.</p>
 
 
 <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate-&gt;sink">
-		<h3 id="sink">
-    sink:
-</h3>
-<table>
-    <tbody>
-        <tr><td><b>Presence:</b></td><td>always</td></tr>
-        <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>video/x-raw(ANY); video/x-bayer(ANY); image/jpeg(ANY); image/png(ANY)</td></tr>
-    </tbody>
-</table>
-
-			
-</div>
-
 
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate-&gt;src">
@@ -197,16 +217,33 @@ encoding to Ogg/Theora.</p>
 </div>
 
 
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate-&gt;sink">
+		<h3 id="sink">
+    sink:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/x-raw(ANY); video/x-bayer(ANY); image/jpeg(ANY); image/png(ANY)</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
 <h2 class="symbol_section" id="Properties">Properties</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:in">
-		<h3 class="method" id="in">
-	<span><code>in</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
 </h3>
 
 		<pre class="property_signature">
-“in” <span class="type">guint64</span>
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
 </pre>
 
 
@@ -217,6 +254,96 @@ encoding to Ogg/Theora.</p>
 		
 				Read
 			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	videorate0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:qos">
+		<h3 class="method" id="qos">
+	<span><code>qos</code></span>
+</h3>
+
+		<pre class="property_signature">
+“qos” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:in">
+		<h3 class="method" id="in">
+	<span><code>in</code></span>
+</h3>
+
+		<pre class="property_signature">
+“in” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
 </p>
 
 </div>
@@ -229,7 +356,7 @@ encoding to Ogg/Theora.</p>
 </h3>
 
 		<pre class="property_signature">
-“out” <span class="type">guint64</span>
+“out” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
 </pre>
 
 
@@ -240,6 +367,9 @@ encoding to Ogg/Theora.</p>
 		
 				Read
 			
+</p>
+<p>
+	Default value :	0
 </p>
 
 </div>
@@ -252,7 +382,7 @@ encoding to Ogg/Theora.</p>
 </h3>
 
 		<pre class="property_signature">
-“duplicate” <span class="type">guint64</span>
+“duplicate” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
 </pre>
 
 
@@ -263,6 +393,9 @@ encoding to Ogg/Theora.</p>
 		
 				Read
 			
+</p>
+<p>
+	Default value :	0
 </p>
 
 </div>
@@ -275,7 +408,7 @@ encoding to Ogg/Theora.</p>
 </h3>
 
 		<pre class="property_signature">
-“drop” <span class="type">guint64</span>
+“drop” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
 </pre>
 
 
@@ -286,6 +419,9 @@ encoding to Ogg/Theora.</p>
 		
 				Read
 			
+</p>
+<p>
+	Default value :	0
 </p>
 
 </div>
@@ -298,7 +434,7 @@ encoding to Ogg/Theora.</p>
 </h3>
 
 		<pre class="property_signature">
-“silent” <span class="type">gboolean</span>
+“silent” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
 </pre>
 
 
@@ -312,6 +448,9 @@ encoding to Ogg/Theora.</p>
 				/		
 				Write
 			
+</p>
+<p>
+	Default value :	true
 </p>
 
 </div>
@@ -324,7 +463,7 @@ encoding to Ogg/Theora.</p>
 </h3>
 
 		<pre class="property_signature">
-“new-pref” <span class="type">gdouble</span>
+“new-pref” <span class="type"><a title="gdouble" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a></span>
 </pre>
 
 
@@ -339,6 +478,9 @@ encoding to Ogg/Theora.</p>
 				Write
 			
 </p>
+<p>
+	Default value :	              1
+</p>
 
 </div>
 
@@ -350,7 +492,7 @@ encoding to Ogg/Theora.</p>
 </h3>
 
 		<pre class="property_signature">
-“skip-to-first” <span class="type">gboolean</span>
+“skip-to-first” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
 </pre>
 
 <p>Don't produce buffers before the first one we receive.</p>
@@ -366,6 +508,9 @@ encoding to Ogg/Theora.</p>
 				Write
 			
 </p>
+<p>
+	Default value :	false
+</p>
 
 </div>
 
@@ -377,7 +522,7 @@ encoding to Ogg/Theora.</p>
 </h3>
 
 		<pre class="property_signature">
-“drop-only” <span class="type">gboolean</span>
+“drop-only” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
 </pre>
 
 <p>Only drop frames, no duplicates are produced.</p>
@@ -393,6 +538,9 @@ encoding to Ogg/Theora.</p>
 				Write
 			
 </p>
+<p>
+	Default value :	false
+</p>
 
 </div>
 
@@ -404,7 +552,7 @@ encoding to Ogg/Theora.</p>
 </h3>
 
 		<pre class="property_signature">
-“average-period” <span class="type">guint64</span>
+“average-period” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
 </pre>
 
 <p>Arrange for maximum framerate by dropping frames beyond a certain framerate,
@@ -422,6 +570,9 @@ configured.</p>
 				Write
 			
 </p>
+<p>
+	Default value :	0
+</p>
 
 </div>
 
@@ -433,7 +584,7 @@ configured.</p>
 </h3>
 
 		<pre class="property_signature">
-“max-rate” <span class="type">gint</span>
+“max-rate” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
 </pre>
 
 <p>maximum framerate to pass through</p>
@@ -452,6 +603,9 @@ configured.</p>
 				Construct
 			
 </p>
+<p>
+	Default value :	2147483647
+</p>
 
 </div>
 
@@ -463,7 +617,7 @@ configured.</p>
 </h3>
 
 		<pre class="property_signature">
-“rate” <span class="type">gdouble</span>
+“rate” <span class="type"><a title="gdouble" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a></span>
 </pre>
 
 <p>Factor of speed for frame displaying</p>
@@ -478,6 +632,9 @@ configured.</p>
 				/		
 				Write
 			
+</p>
+<p>
+	Default value :	              1
 </p>
 
 </div>
