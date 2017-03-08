@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>srtpenc</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gst-extension" data-hotdoc-project="gst-plugins-bad-plugins-doc-1.0" data-hotdoc-ref="srtpenc.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="srtpenc">
+<h1 id="srtpenc1">srtpenc</h1><p>gstrtpenc acts as an encoder that adds security to RTP and RTCP
+packets in the form of encryption and authentication. It outs SRTP
+and SRTCP.</p>
+<p>An application can request multiple RTP and RTCP pads to protect,
+but every sink pad requested must receive packets from the same
+source (identical SSRC). If a packet received contains a different
+SSRC, a warning is emited and the valid SSRC is forced on the packet.</p>
+<p>This element uses libsrtp library. When receiving the first packet,
+the library is initialized with a new stream (based on the SSRC). It
+uses the default RTP and RTCP encryption and authentication mechanisms,
+unless the user has set the relevant properties first. It also uses
+a master key that MUST be set by property (key) at the beginning. The
+master key must be of a maximum length of 46 characters (14 characters
+for the salt plus the key). The encryption and authentication mecanisms
+available are :</p>
+<p>Encryption (properties rtp-cipher and rtcp-cipher)</p>
+<ul>
+<li>AES_ICM 256 bits (maximum security)</li>
+<li>AES_ICM 128 bits (default)</li>
+<li>NULL</li>
+</ul>
+<p>Authentication (properties rtp-auth and rtcp-auth)</p>
+<ul>
+<li>HMAC_SHA1 80 bits (default, maximum protection)</li>
+<li>HMAC_SHA1 32 bits</li>
+<li>NULL</li>
+</ul>
+<p>Note that for SRTP protection, authentication is mandatory (non-null)
+if encryption is used (non-null).</p>
+<p>When requested to create a sink pad, a linked source pad is created.
+Each packet received is first analysed (checked for valid SSRC) then
+its buffer is protected with libsrtp, then pushed on the source pad.
+If protection failed or the stream could not be created, the buffer
+is dropped and a warning is emitted. The packets pushed on the source
+pad are of type 'application/x-srtp' or 'application/x-srtcp'.</p>
+<p>When the maximum usage of the master key is reached, a soft-limit
+signal is sent to the user. The user must then set a new master key
+by property. If the hard limit is reached, a flag is set and every
+subsequent packet is dropped, until a new key is set and the stream
+has been updated.</p>
+<p>If a stream is to be shared between multiple clients it is also
+possible to request the internal SRTP rollover counter for a given
+SSRC. The rollover counter should be then transmitted and used by the
+clients to authenticate and decrypt the packets. Failing to do that
+the clients will start with a rollover counter of 0 which will
+probably be incorrect if the stream has been transmitted for a
+while to other clients.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="srtpenc">
+		<h3 id="srtpenc2">
+	srtpenc
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../libgstreamer-doc-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span>srtpenc
+</pre>
+
+</div>
+
+</div>
+
+<div class="class_details">
+	<p>gstrtpenc acts as an encoder that adds security to RTP and RTCP
+packets in the form of encryption and authentication. It outs SRTP
+and SRTCP.</p>
+<p>An application can request multiple RTP and RTCP pads to protect,
+but every sink pad requested must receive packets from the same
+source (identical SSRC). If a packet received contains a different
+SSRC, a warning is emited and the valid SSRC is forced on the packet.</p>
+<p>This element uses libsrtp library. When receiving the first packet,
+the library is initialized with a new stream (based on the SSRC). It
+uses the default RTP and RTCP encryption and authentication mechanisms,
+unless the user has set the relevant properties first. It also uses
+a master key that MUST be set by property (key) at the beginning. The
+master key must be of a maximum length of 46 characters (14 characters
+for the salt plus the key). The encryption and authentication mecanisms
+available are :</p>
+<p>Encryption (properties rtp-cipher and rtcp-cipher)</p>
+<ul>
+<li>AES_ICM 256 bits (maximum security)</li>
+<li>AES_ICM 128 bits (default)</li>
+<li>NULL</li>
+</ul>
+<p>Authentication (properties rtp-auth and rtcp-auth)</p>
+<ul>
+<li>HMAC_SHA1 80 bits (default, maximum protection)</li>
+<li>HMAC_SHA1 32 bits</li>
+<li>NULL</li>
+</ul>
+<p>Note that for SRTP protection, authentication is mandatory (non-null)
+if encryption is used (non-null).</p>
+<p>When requested to create a sink pad, a linked source pad is created.
+Each packet received is first analysed (checked for valid SSRC) then
+its buffer is protected with libsrtp, then pushed on the source pad.
+If protection failed or the stream could not be created, the buffer
+is dropped and a warning is emitted. The packets pushed on the source
+pad are of type 'application/x-srtp' or 'application/x-srtcp'.</p>
+<p>When the maximum usage of the master key is reached, a soft-limit
+signal is sent to the user. The user must then set a new master key
+by property. If the hard limit is reached, a flag is set and every
+subsequent packet is dropped, until a new key is set and the stream
+has been updated.</p>
+<p>If a stream is to be shared between multiple clients it is also
+possible to request the internal SRTP rollover counter for a given
+SSRC. The rollover counter should be then transmitted and used by the
+clients to authenticate and decrypt the packets. Failing to do that
+the clients will start with a rollover counter of 0 which will
+probably be incorrect if the stream has been transmitted for a
+while to other clients.</p>
+
+</div>
+
+</div>
+
+
+<h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc-&gt;rtp_src_%%u">
+		<h3 id="rtp_src_u">
+    rtp_src_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>sometimes</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-srtp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc-&gt;rtp_sink_%%u">
+		<h3 id="rtp_sink_u">
+    rtp_sink_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-rtp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc-&gt;rtcp_src_%%u">
+		<h3 id="rtcp_src_u">
+    rtcp_src_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>sometimes</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-srtcp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc-&gt;rtcp_sink_%%u">
+		<h3 id="rtcp_sink_u">
+    rtcp_sink_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-rtcp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+<h2 class="symbol_section" id="Signals">Signals</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="srtpenc::pad-added">
+		<h3 id="padadded">
+	<span><code>pad-added</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+pad_added_callback (srtpenc * param_0,
+                    GstPad * param_1,
+                    gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="srtpenc::pad-removed">
+		<h3 id="padremoved">
+	<span><code>pad-removed</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+pad_removed_callback (srtpenc * param_0,
+                      GstPad * param_1,
+                      gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="srtpenc::no-more-pads">
+		<h3 id="nomorepads">
+	<span><code>no-more-pads</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+no_more_pads_callback (srtpenc * param_0,
+                       gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="srtpenc::soft-limit">
+		<h3 id="softlimit">
+	<span><code>soft-limit</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+soft_limit_callback (srtpenc * param_0,
+                     gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	srtpenc1
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc:key">
+		<h3 class="method" id="key">
+	<span><code>key</code></span>
+</h3>
+
+		<pre class="property_signature">
+“key” <span class="type"><a title="GstBuffer" href="../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc:rtp-cipher">
+		<h3 class="method" id="rtpcipher">
+	<span><code>rtp-cipher</code></span>
+</h3>
+
+		<pre class="property_signature">
+“rtp-cipher” <span class="type"><a title="GstSrtpCipherType" href="../GstSrtpCipherType">GstSrtpCipherType</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	aes-128-icm (1)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc:rtp-auth">
+		<h3 class="method" id="rtpauth">
+	<span><code>rtp-auth</code></span>
+</h3>
+
+		<pre class="property_signature">
+“rtp-auth” <span class="type"><a title="GstSrtpAuthType" href="../GstSrtpAuthType">GstSrtpAuthType</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	hmac-sha1-80 (2)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc:rtcp-cipher">
+		<h3 class="method" id="rtcpcipher">
+	<span><code>rtcp-cipher</code></span>
+</h3>
+
+		<pre class="property_signature">
+“rtcp-cipher” <span class="type"><a title="GstSrtpCipherType" href="../GstSrtpCipherType">GstSrtpCipherType</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	aes-128-icm (1)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc:rtcp-auth">
+		<h3 class="method" id="rtcpauth">
+	<span><code>rtcp-auth</code></span>
+</h3>
+
+		<pre class="property_signature">
+“rtcp-auth” <span class="type"><a title="GstSrtpAuthType" href="../GstSrtpAuthType">GstSrtpAuthType</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	hmac-sha1-80 (2)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc:random-key">
+		<h3 class="method" id="randomkey">
+	<span><code>random-key</code></span>
+</h3>
+
+		<pre class="property_signature">
+“random-key” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc:replay-window-size">
+		<h3 class="method" id="replaywindowsize">
+	<span><code>replay-window-size</code></span>
+</h3>
+
+		<pre class="property_signature">
+“replay-window-size” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	128
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc:allow-repeat-tx">
+		<h3 class="method" id="allowrepeattx">
+	<span><code>allow-repeat-tx</code></span>
+</h3>
+
+		<pre class="property_signature">
+“allow-repeat-tx” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc:stats">
+		<h3 class="method" id="stats">
+	<span><code>stats</code></span>
+</h3>
+
+		<pre class="property_signature">
+“stats” <span class="type"><a title="GstStructure" href="../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	application/x-srtp-encoder-stats, streams=(int)&lt;  &gt;;
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpCipherType">
+		<h3 id="enum-gstsrtpciphertype">
+		enum GstSrtpCipherType
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>null</td>
+            <td>GST_SRTP_CIPHER_NULL</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>aes-128-icm</td>
+            <td>GST_SRTP_CIPHER_AES_128_ICM</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>aes-256-icm</td>
+            <td>GST_SRTP_CIPHER_AES_256_ICM</td>
+            <td>0x00000002</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpAuthType">
+		<h3 id="enum-gstsrtpauthtype">
+		enum GstSrtpAuthType
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>null</td>
+            <td>GST_SRTP_AUTH_NULL</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>hmac-sha1-32</td>
+            <td>GST_SRTP_AUTH_HMAC_SHA1_32</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>hmac-sha1-80</td>
+            <td>GST_SRTP_AUTH_HMAC_SHA1_80</td>
+            <td>0x00000002</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>
