@@ -86,58 +86,7 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="srtpdec">
-<h1 id="srtpdec1">srtpdec</h1><p>gstrtpdec acts as a decoder that removes security from SRTP and SRTCP
-packets (encryption and authentication) and out RTP and RTCP. It
-receives packet of type 'application/x-srtp' or 'application/x-srtcp'
-on its sink pad, and outs packets of type 'application/x-rtp' or
-'application/x-rtcp' on its source pad.</p>
-<p>For each packet received, it checks if the internal SSRC is in the list
-of streams already in use. If this is not the case, it sends a signal to
-the user to get the needed parameters to create a new stream : master
-key, encryption and authentication mecanisms for both RTP and RTCP. If
-the user can't provide those parameters, the buffer is dropped and a
-warning is emitted.</p>
-<p>This element uses libsrtp library. The encryption and authentication
-mecanisms available are :</p>
-<p>Encryption</p>
-<ul>
-<li>AES_ICM 256 bits (maximum security)</li>
-<li>AES_ICM 128 bits (default)</li>
-<li>NULL</li>
-</ul>
-<p>Authentication</p>
-<ul>
-<li>HMAC_SHA1 80 bits (default, maximum protection)</li>
-<li>HMAC_SHA1 32 bits</li>
-<li>NULL</li>
-</ul>
-<p>Note that for SRTP protection, authentication is mandatory (non-null)
-if encryption is used (non-null).</p>
-<p>Each packet received is first analysed (checked for valid SSRC) then
-its buffer is unprotected with libsrtp, then pushed on the source pad.
-If protection failed or the stream could not be created, the buffer
-is dropped and a warning is emitted.</p>
-<p>When the maximum usage of the master key is reached, a soft-limit
-signal is sent to the user, and new parameters (master key) are needed
-in return. If the hard limit is reached, a flag is set and every
-subsequent packet is dropped, until a new key is set and the stream
-has been updated.</p>
-<p>If a stream is to be shared between multiple clients the SRTP
-rollover counter for a given SSRC must be set in the caps "roc" field
-when the request-key signal is emitted by the decoder. The rollover
-counters should have been transmitted by a signaling protocol by some
-other means. If no rollover counter is provided by the user, 0 is
-used by default.</p>
-<h2 id="example-pipelines">Example pipelines</h2>
-<pre><code>gst-launch-1.0 udpsrc port=5004 caps='application/x-srtp, payload=(int)8, ssrc=(uint)1356955624, srtp-key=(buffer)012345678901234567890123456789012345678901234567890123456789, srtp-cipher=(string)aes-128-icm, srtp-auth=(string)hmac-sha1-80, srtcp-cipher=(string)aes-128-icm, srtcp-auth=(string)hmac-sha1-80' !  srtpdec ! rtppcmadepay ! alawdec ! pulsesink
-</code></pre>
-<p>Receive PCMA SRTP packets through UDP using caps to specify
-master key and protection.</p>
-<pre><code>gst-launch-1.0 audiotestsrc ! alawenc ! rtppcmapay ! 'application/x-rtp, payload=(int)8, ssrc=(uint)1356955624' ! srtpenc key="012345678901234567890123456789012345678901234567890123456789" ! udpsink port=5004
-</code></pre>
-<p>Send PCMA SRTP packets through UDP, nothing how the SSRC is forced so
-that the receiver will recognize it.</p>
-
+<h1 id="srtpdec1">srtpdec</h1>
 </div>
 
 
@@ -163,60 +112,6 @@ that the receiver will recognize it.</p>
 
 </div>
 
-<div class="class_details">
-	<p>gstrtpdec acts as a decoder that removes security from SRTP and SRTCP
-packets (encryption and authentication) and out RTP and RTCP. It
-receives packet of type 'application/x-srtp' or 'application/x-srtcp'
-on its sink pad, and outs packets of type 'application/x-rtp' or
-'application/x-rtcp' on its source pad.</p>
-<p>For each packet received, it checks if the internal SSRC is in the list
-of streams already in use. If this is not the case, it sends a signal to
-the user to get the needed parameters to create a new stream : master
-key, encryption and authentication mecanisms for both RTP and RTCP. If
-the user can't provide those parameters, the buffer is dropped and a
-warning is emitted.</p>
-<p>This element uses libsrtp library. The encryption and authentication
-mecanisms available are :</p>
-<p>Encryption</p>
-<ul>
-<li>AES_ICM 256 bits (maximum security)</li>
-<li>AES_ICM 128 bits (default)</li>
-<li>NULL</li>
-</ul>
-<p>Authentication</p>
-<ul>
-<li>HMAC_SHA1 80 bits (default, maximum protection)</li>
-<li>HMAC_SHA1 32 bits</li>
-<li>NULL</li>
-</ul>
-<p>Note that for SRTP protection, authentication is mandatory (non-null)
-if encryption is used (non-null).</p>
-<p>Each packet received is first analysed (checked for valid SSRC) then
-its buffer is unprotected with libsrtp, then pushed on the source pad.
-If protection failed or the stream could not be created, the buffer
-is dropped and a warning is emitted.</p>
-<p>When the maximum usage of the master key is reached, a soft-limit
-signal is sent to the user, and new parameters (master key) are needed
-in return. If the hard limit is reached, a flag is set and every
-subsequent packet is dropped, until a new key is set and the stream
-has been updated.</p>
-<p>If a stream is to be shared between multiple clients the SRTP
-rollover counter for a given SSRC must be set in the caps "roc" field
-when the request-key signal is emitted by the decoder. The rollover
-counters should have been transmitted by a signaling protocol by some
-other means. If no rollover counter is provided by the user, 0 is
-used by default.</p>
-<h2 id="example-pipelines1">Example pipelines</h2>
-<pre><code>gst-launch-1.0 udpsrc port=5004 caps='application/x-srtp, payload=(int)8, ssrc=(uint)1356955624, srtp-key=(buffer)012345678901234567890123456789012345678901234567890123456789, srtp-cipher=(string)aes-128-icm, srtp-auth=(string)hmac-sha1-80, srtcp-cipher=(string)aes-128-icm, srtcp-auth=(string)hmac-sha1-80' !  srtpdec ! rtppcmadepay ! alawdec ! pulsesink
-</code></pre>
-<p>Receive PCMA SRTP packets through UDP using caps to specify
-master key and protection.</p>
-<pre><code>gst-launch-1.0 audiotestsrc ! alawenc ! rtppcmapay ! 'application/x-rtp, payload=(int)8, ssrc=(uint)1356955624' ! srtpenc key="012345678901234567890123456789012345678901234567890123456789" ! udpsink port=5004
-</code></pre>
-<p>Send PCMA SRTP packets through UDP, nothing how the SSRC is forced so
-that the receiver will recognize it.</p>
-
-</div>
 
 </div>
 
@@ -224,32 +119,15 @@ that the receiver will recognize it.</p>
 <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtp_src">
-		<h3 id="rtp_src">
-    rtp_src:
-</h3>
-<table>
-    <tbody>
-        <tr><td><b>Presence:</b></td><td>always</td></tr>
-        <tr><td><b>Direction:</b></td><td>src</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>application/x-rtp</td></tr>
-    </tbody>
-</table>
-
-			
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtp_sink">
-		<h3 id="rtp_sink">
-    rtp_sink:
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtcp_sink">
+		<h3 id="rtcp_sink">
+    rtcp_sink:
 </h3>
 <table>
     <tbody>
         <tr><td><b>Presence:</b></td><td>always</td></tr>
         <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>application/x-srtp</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-srtcp</td></tr>
     </tbody>
 </table>
 
@@ -275,15 +153,32 @@ that the receiver will recognize it.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtcp_sink">
-		<h3 id="rtcp_sink">
-    rtcp_sink:
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtp_sink">
+		<h3 id="rtp_sink">
+    rtp_sink:
 </h3>
 <table>
     <tbody>
         <tr><td><b>Presence:</b></td><td>always</td></tr>
         <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>application/x-srtcp</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-srtp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtp_src">
+		<h3 id="rtp_src">
+    rtp_src:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-rtp</td></tr>
     </tbody>
 </table>
 
@@ -294,18 +189,18 @@ that the receiver will recognize it.</p>
 <h2 class="symbol_section" id="Signals">Signals</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="srtpdec::soft-limit">
-		<h3 id="softlimit">
-	<span><code>soft-limit</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="srtpdec::request-key">
+		<h3 id="requestkey">
+	<span><code>request-key</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 GstCaps
-soft_limit_callback (srtpdec * param_0,
-                     guint param_1,
-                     gpointer udata)</pre>
+request_key_callback (srtpdec * param_0,
+                      guint param_1,
+                      gpointer udata)</pre>
 
 
 	<div class="parameter_container">
@@ -376,18 +271,18 @@ soft_limit_callback (srtpdec * param_0,
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="srtpdec::request-key">
-		<h3 id="requestkey">
-	<span><code>request-key</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="srtpdec::soft-limit">
+		<h3 id="softlimit">
+	<span><code>soft-limit</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 GstCaps
-request_key_callback (srtpdec * param_0,
-                      guint param_1,
-                      gpointer udata)</pre>
+soft_limit_callback (srtpdec * param_0,
+                     guint param_1,
+                     gpointer udata)</pre>
 
 
 	<div class="parameter_container">
@@ -721,7 +616,7 @@ remove_key_callback (srtpdec * param_0,
 			
 </p>
 <p>
-	Default value :	srtpdec1
+	Default value :	srtpdec0
 </p>
 
 </div>

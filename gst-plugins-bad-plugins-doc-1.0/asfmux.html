@@ -86,41 +86,7 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="asfmux">
-<h1 id="asfmux1">asfmux</h1><p>Muxes media into an ASF file/stream.</p>
-<p>Pad names are either video_xx or audio_xx, where 'xx' is the
-stream number of the stream that goes through that pad. Stream numbers
-are assigned sequentially, starting from 1.</p>
-<h2 id="example-launch-lines">Example launch lines</h2>
-<p>(write everything in one line, without the backslash characters)</p>
-<pre><code>gst-launch-1.0 videotestsrc num-buffers=250 \
-! "video/x-raw,format=(string)I420,framerate=(fraction)25/1" ! avenc_wmv2 \
-! asfmux name=mux ! filesink location=test.asf \
-audiotestsrc num-buffers=440 ! audioconvert \
-! "audio/x-raw,rate=44100" ! avenc_wmav2 ! mux.
-</code></pre>
-<p>This creates an ASF file containing an WMV video stream
-with a test picture and WMA audio stream of a test sound.</p>
-<h2 id="live-streaming">Live streaming</h2>
-<p>asfmux and rtpasfpay are capable of generating a live asf stream.
-asfmux has to set its 'streamable' property to true, because in this
-mode it won't try to seek back to the start of the file to replace
-some fields that couldn't be known at the file start. In this mode,
-it won't also send indexes at the end of the data packets (the actual
-media content)
-the following pipelines are an example of this usage.
-(write everything in one line, without the backslash characters)
-Server (sender)</p>
-<pre><code>gst-launch-1.0 -ve videotestsrc ! avenc_wmv2 ! asfmux name=mux streamable=true \
-! rtpasfpay ! udpsink host=127.0.0.1 port=3333 \
-audiotestsrc ! avenc_wmav2 ! mux.
-</code></pre>
-<p>Client (receiver)</p>
-<pre><code>gst-launch-1.0 udpsrc port=3333 ! "caps_from_rtpasfpay_at_sender" \
-! rtpasfdepay ! decodebin name=d ! queue \
-! videoconvert ! autovideosink \
-d. ! queue ! audioconvert ! autoaudiosink
-</code></pre>
-
+<h1 id="asfmux1">asfmux</h1>
 </div>
 
 
@@ -146,43 +112,6 @@ d. ! queue ! audioconvert ! autoaudiosink
 
 </div>
 
-<div class="class_details">
-	<p>Muxes media into an ASF file/stream.</p>
-<p>Pad names are either video_xx or audio_xx, where 'xx' is the
-stream number of the stream that goes through that pad. Stream numbers
-are assigned sequentially, starting from 1.</p>
-<h2 id="example-launch-lines1">Example launch lines</h2>
-<p>(write everything in one line, without the backslash characters)</p>
-<pre><code>gst-launch-1.0 videotestsrc num-buffers=250 \
-! "video/x-raw,format=(string)I420,framerate=(fraction)25/1" ! avenc_wmv2 \
-! asfmux name=mux ! filesink location=test.asf \
-audiotestsrc num-buffers=440 ! audioconvert \
-! "audio/x-raw,rate=44100" ! avenc_wmav2 ! mux.
-</code></pre>
-<p>This creates an ASF file containing an WMV video stream
-with a test picture and WMA audio stream of a test sound.</p>
-<h2 id="live-streaming1">Live streaming</h2>
-<p>asfmux and rtpasfpay are capable of generating a live asf stream.
-asfmux has to set its 'streamable' property to true, because in this
-mode it won't try to seek back to the start of the file to replace
-some fields that couldn't be known at the file start. In this mode,
-it won't also send indexes at the end of the data packets (the actual
-media content)
-the following pipelines are an example of this usage.
-(write everything in one line, without the backslash characters)
-Server (sender)</p>
-<pre><code>gst-launch-1.0 -ve videotestsrc ! avenc_wmv2 ! asfmux name=mux streamable=true \
-! rtpasfpay ! udpsink host=127.0.0.1 port=3333 \
-audiotestsrc ! avenc_wmav2 ! mux.
-</code></pre>
-<p>Client (receiver)</p>
-<pre><code>gst-launch-1.0 udpsrc port=3333 ! "caps_from_rtpasfpay_at_sender" \
-! rtpasfdepay ! decodebin name=d ! queue \
-! videoconvert ! autovideosink \
-d. ! queue ! audioconvert ! autoaudiosink
-</code></pre>
-
-</div>
 
 </div>
 
@@ -190,15 +119,15 @@ d. ! queue ! audioconvert ! autoaudiosink
 <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAsfMux-&gt;src">
-		<h3 id="src">
-    src:
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAsfMux-&gt;video_%%u">
+		<h3 id="video_u">
+    video_%%u:
 </h3>
 <table>
     <tbody>
-        <tr><td><b>Presence:</b></td><td>always</td></tr>
-        <tr><td><b>Direction:</b></td><td>src</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>video/x-ms-asf, parsed=(boolean)true</td></tr>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/x-wmv, wmvversion=(int)[ 1, 3 ]</td></tr>
     </tbody>
 </table>
 
@@ -224,15 +153,15 @@ d. ! queue ! audioconvert ! autoaudiosink
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAsfMux-&gt;video_%%u">
-		<h3 id="video_u">
-    video_%%u:
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAsfMux-&gt;src">
+		<h3 id="src">
+    src:
 </h3>
 <table>
     <tbody>
-        <tr><td><b>Presence:</b></td><td>request</td></tr>
-        <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>video/x-wmv, wmvversion=(int)[ 1, 3 ]</td></tr>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/x-ms-asf, parsed=(boolean)true</td></tr>
     </tbody>
 </table>
 

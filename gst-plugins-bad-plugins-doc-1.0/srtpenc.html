@@ -86,54 +86,7 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="srtpenc">
-<h1 id="srtpenc1">srtpenc</h1><p>gstrtpenc acts as an encoder that adds security to RTP and RTCP
-packets in the form of encryption and authentication. It outs SRTP
-and SRTCP.</p>
-<p>An application can request multiple RTP and RTCP pads to protect,
-but every sink pad requested must receive packets from the same
-source (identical SSRC). If a packet received contains a different
-SSRC, a warning is emited and the valid SSRC is forced on the packet.</p>
-<p>This element uses libsrtp library. When receiving the first packet,
-the library is initialized with a new stream (based on the SSRC). It
-uses the default RTP and RTCP encryption and authentication mechanisms,
-unless the user has set the relevant properties first. It also uses
-a master key that MUST be set by property (key) at the beginning. The
-master key must be of a maximum length of 46 characters (14 characters
-for the salt plus the key). The encryption and authentication mecanisms
-available are :</p>
-<p>Encryption (properties rtp-cipher and rtcp-cipher)</p>
-<ul>
-<li>AES_ICM 256 bits (maximum security)</li>
-<li>AES_ICM 128 bits (default)</li>
-<li>NULL</li>
-</ul>
-<p>Authentication (properties rtp-auth and rtcp-auth)</p>
-<ul>
-<li>HMAC_SHA1 80 bits (default, maximum protection)</li>
-<li>HMAC_SHA1 32 bits</li>
-<li>NULL</li>
-</ul>
-<p>Note that for SRTP protection, authentication is mandatory (non-null)
-if encryption is used (non-null).</p>
-<p>When requested to create a sink pad, a linked source pad is created.
-Each packet received is first analysed (checked for valid SSRC) then
-its buffer is protected with libsrtp, then pushed on the source pad.
-If protection failed or the stream could not be created, the buffer
-is dropped and a warning is emitted. The packets pushed on the source
-pad are of type 'application/x-srtp' or 'application/x-srtcp'.</p>
-<p>When the maximum usage of the master key is reached, a soft-limit
-signal is sent to the user. The user must then set a new master key
-by property. If the hard limit is reached, a flag is set and every
-subsequent packet is dropped, until a new key is set and the stream
-has been updated.</p>
-<p>If a stream is to be shared between multiple clients it is also
-possible to request the internal SRTP rollover counter for a given
-SSRC. The rollover counter should be then transmitted and used by the
-clients to authenticate and decrypt the packets. Failing to do that
-the clients will start with a rollover counter of 0 which will
-probably be incorrect if the stream has been transmitted for a
-while to other clients.</p>
-
+<h1 id="srtpenc1">srtpenc</h1>
 </div>
 
 
@@ -159,56 +112,6 @@ while to other clients.</p>
 
 </div>
 
-<div class="class_details">
-	<p>gstrtpenc acts as an encoder that adds security to RTP and RTCP
-packets in the form of encryption and authentication. It outs SRTP
-and SRTCP.</p>
-<p>An application can request multiple RTP and RTCP pads to protect,
-but every sink pad requested must receive packets from the same
-source (identical SSRC). If a packet received contains a different
-SSRC, a warning is emited and the valid SSRC is forced on the packet.</p>
-<p>This element uses libsrtp library. When receiving the first packet,
-the library is initialized with a new stream (based on the SSRC). It
-uses the default RTP and RTCP encryption and authentication mechanisms,
-unless the user has set the relevant properties first. It also uses
-a master key that MUST be set by property (key) at the beginning. The
-master key must be of a maximum length of 46 characters (14 characters
-for the salt plus the key). The encryption and authentication mecanisms
-available are :</p>
-<p>Encryption (properties rtp-cipher and rtcp-cipher)</p>
-<ul>
-<li>AES_ICM 256 bits (maximum security)</li>
-<li>AES_ICM 128 bits (default)</li>
-<li>NULL</li>
-</ul>
-<p>Authentication (properties rtp-auth and rtcp-auth)</p>
-<ul>
-<li>HMAC_SHA1 80 bits (default, maximum protection)</li>
-<li>HMAC_SHA1 32 bits</li>
-<li>NULL</li>
-</ul>
-<p>Note that for SRTP protection, authentication is mandatory (non-null)
-if encryption is used (non-null).</p>
-<p>When requested to create a sink pad, a linked source pad is created.
-Each packet received is first analysed (checked for valid SSRC) then
-its buffer is protected with libsrtp, then pushed on the source pad.
-If protection failed or the stream could not be created, the buffer
-is dropped and a warning is emitted. The packets pushed on the source
-pad are of type 'application/x-srtp' or 'application/x-srtcp'.</p>
-<p>When the maximum usage of the master key is reached, a soft-limit
-signal is sent to the user. The user must then set a new master key
-by property. If the hard limit is reached, a flag is set and every
-subsequent packet is dropped, until a new key is set and the stream
-has been updated.</p>
-<p>If a stream is to be shared between multiple clients it is also
-possible to request the internal SRTP rollover counter for a given
-SSRC. The rollover counter should be then transmitted and used by the
-clients to authenticate and decrypt the packets. Failing to do that
-the clients will start with a rollover counter of 0 which will
-probably be incorrect if the stream has been transmitted for a
-while to other clients.</p>
-
-</div>
 
 </div>
 
@@ -216,32 +119,15 @@ while to other clients.</p>
 <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc-&gt;rtp_src_%%u">
-		<h3 id="rtp_src_u">
-    rtp_src_%%u:
-</h3>
-<table>
-    <tbody>
-        <tr><td><b>Presence:</b></td><td>sometimes</td></tr>
-        <tr><td><b>Direction:</b></td><td>src</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>application/x-srtp</td></tr>
-    </tbody>
-</table>
-
-			
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc-&gt;rtp_sink_%%u">
-		<h3 id="rtp_sink_u">
-    rtp_sink_%%u:
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc-&gt;rtcp_sink_%%u">
+		<h3 id="rtcp_sink_u">
+    rtcp_sink_%%u:
 </h3>
 <table>
     <tbody>
         <tr><td><b>Presence:</b></td><td>request</td></tr>
         <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>application/x-rtp</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-rtcp</td></tr>
     </tbody>
 </table>
 
@@ -267,15 +153,32 @@ while to other clients.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc-&gt;rtcp_sink_%%u">
-		<h3 id="rtcp_sink_u">
-    rtcp_sink_%%u:
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc-&gt;rtp_sink_%%u">
+		<h3 id="rtp_sink_u">
+    rtp_sink_%%u:
 </h3>
 <table>
     <tbody>
         <tr><td><b>Presence:</b></td><td>request</td></tr>
         <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>application/x-rtcp</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-rtp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpEnc-&gt;rtp_src_%%u">
+		<h3 id="rtp_src_u">
+    rtp_src_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>sometimes</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-srtp</td></tr>
     </tbody>
 </table>
 
@@ -621,7 +524,7 @@ soft_limit_callback (srtpenc * param_0,
 			
 </p>
 <p>
-	Default value :	srtpenc1
+	Default value :	srtpenc0
 </p>
 
 </div>

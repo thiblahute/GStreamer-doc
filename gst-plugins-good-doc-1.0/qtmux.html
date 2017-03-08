@@ -86,51 +86,7 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="qtmux">
-<h1 id="qtmux1">qtmux</h1><p>This element merges streams (audio and video) into QuickTime(.mov) files.</p>
-<p>The following background intends to explain why various similar muxers
-are present in this plugin.</p>
-<p>The <ulink url="http://www.apple.com/quicktime/resources/qtfileformat.pdf">
-QuickTime file format specification</ulink> served as basis for the MP4 file
-format specification (mp4mux), and as such the QuickTime file structure is
-nearly identical to the so-called ISO Base Media file format defined in
-ISO 14496-12 (except for some media specific parts).
-In turn, the latter ISO Base Media format was further specialized as a
-Motion JPEG-2000 file format in ISO 15444-3 (mj2mux)
-and in various 3GPP(2) specs (gppmux).
-The fragmented file features defined (only) in ISO Base Media are used by
-ISMV files making up (a.o.) Smooth Streaming (ismlmux).</p>
-<p>A few properties (#GstQTMux:movie-timescale, <a href="qtmux.html#GstQTMux:trak-timescale">trak-timescale</a>) allow
-adjusting some technical parameters, which might be useful in (rare) cases to
-resolve compatibility issues in some situations.</p>
-<p>Some other properties influence the result more fundamentally.
-A typical mov/mp4 file's metadata (aka moov) is located at the end of the
-file, somewhat contrary to this usually being called "the header".
-However, a <a href="qtmux.html#GstQTMux:faststart">faststart</a> file will (with some effort) arrange this to
-be located near start of the file, which then allows it e.g. to be played
-while downloading. Alternatively, rather than having one chunk of metadata at
-start (or end), there can be some metadata at start and most of the other
-data can be spread out into fragments of <a href="qtmux.html#GstQTMux:fragment-duration">fragment-duration</a>.
-If such fragmented layout is intended for streaming purposes, then
-<a href="qtmux.html#GstQTMux:streamable">streamable</a> allows foregoing to add index metadata (at the end of
-file).</p>
-<p>When the maximum duration to be recorded can be known in advance, <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-qtmux.html#GstQTMux-struct">GstQTMux</a>
-also supports a 'Robust Muxing' mode. In robust muxing mode,  space for the
-headers are reserved at the start of muxing, and rewritten at a configurable
-interval, so that the output file is always playable, even if the recording
-is interrupted uncleanly by a crash. Robust muxing mode requires a seekable
-output, such as filesink, because it needs to rewrite the start of the file.</p>
-<p>To enable robust muxing mode, set the GstQTMux::reserved-moov-update-period
-and GstQTMux::reserved-max-duration property. Also present is the
-GstQTMux::reserved-bytes-per-sec property, which can be increased if
-for some reason the default is not large enough and the initial reserved
-space for headers is too small. Applications can monitor the
-GstQTMux::reserved-duration-remaining property to see how close to full
-the reserved space is becoming.</p>
-<h2 id="example-pipelines">Example pipelines</h2>
-<pre><code>gst-launch-1.0 v4l2src num-buffers=500 ! video/x-raw,width=320,height=240 ! videoconvert ! qtmux ! filesink location=video.mov
-</code></pre>
-<p>Records a video stream captured from a v4l2 device and muxes it into a qt file.</p>
-
+<h1 id="qtmux1">qtmux</h1>
 </div>
 
 
@@ -156,53 +112,6 @@ the reserved space is becoming.</p>
 
 </div>
 
-<div class="class_details">
-	<p>This element merges streams (audio and video) into QuickTime(.mov) files.</p>
-<p>The following background intends to explain why various similar muxers
-are present in this plugin.</p>
-<p>The <ulink url="http://www.apple.com/quicktime/resources/qtfileformat.pdf">
-QuickTime file format specification</ulink> served as basis for the MP4 file
-format specification (mp4mux), and as such the QuickTime file structure is
-nearly identical to the so-called ISO Base Media file format defined in
-ISO 14496-12 (except for some media specific parts).
-In turn, the latter ISO Base Media format was further specialized as a
-Motion JPEG-2000 file format in ISO 15444-3 (mj2mux)
-and in various 3GPP(2) specs (gppmux).
-The fragmented file features defined (only) in ISO Base Media are used by
-ISMV files making up (a.o.) Smooth Streaming (ismlmux).</p>
-<p>A few properties (#GstQTMux:movie-timescale, <a href="qtmux.html#GstQTMux:trak-timescale">trak-timescale</a>) allow
-adjusting some technical parameters, which might be useful in (rare) cases to
-resolve compatibility issues in some situations.</p>
-<p>Some other properties influence the result more fundamentally.
-A typical mov/mp4 file's metadata (aka moov) is located at the end of the
-file, somewhat contrary to this usually being called "the header".
-However, a <a href="qtmux.html#GstQTMux:faststart">faststart</a> file will (with some effort) arrange this to
-be located near start of the file, which then allows it e.g. to be played
-while downloading. Alternatively, rather than having one chunk of metadata at
-start (or end), there can be some metadata at start and most of the other
-data can be spread out into fragments of <a href="qtmux.html#GstQTMux:fragment-duration">fragment-duration</a>.
-If such fragmented layout is intended for streaming purposes, then
-<a href="qtmux.html#GstQTMux:streamable">streamable</a> allows foregoing to add index metadata (at the end of
-file).</p>
-<p>When the maximum duration to be recorded can be known in advance, <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-qtmux.html#GstQTMux-struct">GstQTMux</a>
-also supports a 'Robust Muxing' mode. In robust muxing mode,  space for the
-headers are reserved at the start of muxing, and rewritten at a configurable
-interval, so that the output file is always playable, even if the recording
-is interrupted uncleanly by a crash. Robust muxing mode requires a seekable
-output, such as filesink, because it needs to rewrite the start of the file.</p>
-<p>To enable robust muxing mode, set the GstQTMux::reserved-moov-update-period
-and GstQTMux::reserved-max-duration property. Also present is the
-GstQTMux::reserved-bytes-per-sec property, which can be increased if
-for some reason the default is not large enough and the initial reserved
-space for headers is too small. Applications can monitor the
-GstQTMux::reserved-duration-remaining property to see how close to full
-the reserved space is becoming.</p>
-<h2 id="example-pipelines1">Example pipelines</h2>
-<pre><code>gst-launch-1.0 v4l2src num-buffers=500 ! video/x-raw,width=320,height=240 ! videoconvert ! qtmux ! filesink location=video.mov
-</code></pre>
-<p>Records a video stream captured from a v4l2 device and muxes it into a qt file.</p>
-
-</div>
 
 </div>
 
@@ -210,32 +119,15 @@ the reserved space is becoming.</p>
 <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstQTMux-&gt;src">
-		<h3 id="src">
-    src:
-</h3>
-<table>
-    <tbody>
-        <tr><td><b>Presence:</b></td><td>always</td></tr>
-        <tr><td><b>Direction:</b></td><td>src</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>video/quicktime, variant=(string)apple; video/quicktime</td></tr>
-    </tbody>
-</table>
-
-			
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstQTMux-&gt;audio_%%u">
-		<h3 id="audio_u">
-    audio_%%u:
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQTMux-&gt;subtitle_%%u">
+		<h3 id="subtitle_u">
+    subtitle_%%u:
 </h3>
 <table>
     <tbody>
         <tr><td><b>Presence:</b></td><td>request</td></tr>
         <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>audio/x-raw, format=(string){ S32LE, S32BE, S24LE, S24BE, S16LE, S16BE, S8, U8 }, layout=(string)interleaved, channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]; audio/x-raw, format=(string){ S32LE, S32BE, S24LE, S24BE, S16LE, S16BE, S8, U8 }, layout=(string)interleaved, channel-mask=(bitmask)0x0000000000000000, channels=(int)[ 1, 16 ], rate=(int)[ 1, 2147483647 ]; audio/mpeg, mpegversion=(int)1, layer=(int)3, channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]; audio/mpeg, mpegversion=(int)4, stream-format=(string)raw, channels=(int)[ 1, 8 ], rate=(int)[ 1, 2147483647 ]; audio/x-adpcm, layout=(string)dvi, block_align=(int)[ 64, 8096 ], channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]; audio/x-alaw, channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]; audio/x-mulaw, channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]; audio/AMR, rate=(int)8000, channels=(int)[ 1, 2 ]; audio/AMR-WB, rate=(int)16000, channels=(int)[ 1, 2 ]; audio/x-alac, channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>text/x-raw, format=(string)utf8</td></tr>
     </tbody>
 </table>
 
@@ -261,15 +153,32 @@ the reserved space is becoming.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstQTMux-&gt;subtitle_%%u">
-		<h3 id="subtitle_u">
-    subtitle_%%u:
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQTMux-&gt;audio_%%u">
+		<h3 id="audio_u">
+    audio_%%u:
 </h3>
 <table>
     <tbody>
         <tr><td><b>Presence:</b></td><td>request</td></tr>
         <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>text/x-raw, format=(string)utf8</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>audio/x-raw, format=(string){ S32LE, S32BE, S24LE, S24BE, S16LE, S16BE, S8, U8 }, layout=(string)interleaved, channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]; audio/x-raw, format=(string){ S32LE, S32BE, S24LE, S24BE, S16LE, S16BE, S8, U8 }, layout=(string)interleaved, channel-mask=(bitmask)0x0000000000000000, channels=(int)[ 1, 16 ], rate=(int)[ 1, 2147483647 ]; audio/mpeg, mpegversion=(int)1, layer=(int)3, channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]; audio/mpeg, mpegversion=(int)4, stream-format=(string)raw, channels=(int)[ 1, 8 ], rate=(int)[ 1, 2147483647 ]; audio/x-adpcm, layout=(string)dvi, block_align=(int)[ 64, 8096 ], channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]; audio/x-alaw, channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]; audio/x-mulaw, channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]; audio/AMR, rate=(int)8000, channels=(int)[ 1, 2 ]; audio/AMR-WB, rate=(int)16000, channels=(int)[ 1, 2 ]; audio/x-alac, channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQTMux-&gt;src">
+		<h3 id="src">
+    src:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/quicktime, variant=(string)apple; video/quicktime</td></tr>
     </tbody>
 </table>
 
@@ -456,7 +365,7 @@ the reserved space is becoming.</p>
 			
 </p>
 <p>
-	Default value :	/tmp/qtmux2043952066
+	Default value :	/tmp/qtmux-542571845
 </p>
 
 </div>
@@ -681,7 +590,7 @@ the reserved space is becoming.</p>
 </h3>
 
 		<pre class="property_signature">
-“dts-method” <span class="type"><a title="GstQTMuxDtsMethods" href="mj2mux.html#GstQTMuxDtsMethods">GstQTMuxDtsMethods</a></span>
+“dts-method” <span class="type"><a title="GstQTMuxDtsMethods" href="qtmux.html#GstQTMuxDtsMethods">GstQTMuxDtsMethods</a></span>
 </pre>
 
 

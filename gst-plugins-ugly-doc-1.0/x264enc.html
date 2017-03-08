@@ -86,70 +86,7 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="x264enc">
-<h1 id="x264enc1">x264enc</h1><p>This element encodes raw video into H264 compressed data,
-also otherwise known as MPEG-4 AVC (Advanced Video Codec).</p>
-<p>The <a href="x264enc.html#GstX264Enc:pass">pass</a> property controls the type of encoding.  In case of Constant
-Bitrate Encoding (actually ABR), the <a href="x264enc.html#GstX264Enc:bitrate">bitrate</a> will determine the quality
-of the encoding.  This will similarly be the case if this target bitrate
-is to obtained in multiple (2 or 3) pass encoding.
-Alternatively, one may choose to perform Constant Quantizer or Quality encoding,
-in which case the <a href="x264enc.html#GstX264Enc:quantizer">quantizer</a> property controls much of the outcome, in that case <a href="x264enc.html#GstX264Enc:bitrate">bitrate</a> is the maximum bitrate.</p>
-<p>The H264 profile that is eventually used depends on a few settings.
-If <a href="x264enc.html#GstX264Enc:dct8x8">dct8x8</a> is enabled, then High profile is used.
-Otherwise, if <a href="x264enc.html#GstX264Enc:cabac">cabac</a> entropy coding is enabled or <a href="x264enc.html#GstX264Enc:bframes">bframes</a>
-are allowed, then Main Profile is in effect, and otherwise Baseline profile
-applies.  The high profile is imposed by default,
-which is fine for most software players and settings,
-but in some cases (e.g. hardware platforms) a more restricted profile/level
-may be necessary. The recommended way to set a profile is to set it in the
-downstream caps.</p>
-<p>If a preset/tuning are specified then these will define the default values and
-the property defaults will be ignored. After this the option-string property is
-applied, followed by the user-set properties, fast first pass restrictions and
-finally the profile restrictions.</p>
-<blockquote>
-<p>Some settings, including the default settings, may lead to quite
-some latency (i.e. frame buffering) in the encoder. This may cause problems
-with pipeline stalling in non-trivial pipelines, because the encoder latency
-is often considerably higher than the default size of a simple queue
-element. Such problems are caused by one of the queues in the other
-non-x264enc streams/branches filling up and blocking upstream. They can
-be fixed by relaxing the default time/size/buffer limits on the queue
-elements in the non-x264 branches, or using a (single) multiqueue element
-for all branches. Also see the last example below. You can also work around
-this problem by setting the tune=zerolatency property, but this will affect
-overall encoding quality so may not be appropriate for your use case.</p>
-</blockquote>
-<h2 id="example-pipeline">Example pipeline</h2>
-<pre><code>gst-launch-1.0 -v videotestsrc num-buffers=1000 ! x264enc qp-min=18 ! \
-  avimux ! filesink location=videotestsrc.avi
-</code></pre>
-<p>This example pipeline will encode a test video source to H264 muxed in an
-AVI container, while ensuring a sane minimum quantization factor to avoid
-some (excessive) waste. You should ideally never put H264 into an AVI
-container (or really anything else, for that matter) - use Matroska or
-MP4/QuickTime or MPEG-TS instead.</p>
-<pre><code>gst-launch-1.0 -v videotestsrc num-buffers=1000 ! x264enc pass=quant ! \
-  matroskamux ! filesink location=videotestsrc.mkv
-</code></pre>
-<p>This example pipeline will encode a test video source to H264 using fixed
-quantization, and muxes it in a Matroska container.</p>
-<pre><code>gst-launch-1.0 -v videotestsrc num-buffers=1000 ! x264enc pass=5 quantizer=25 speed-preset=6 ! video/x-h264, profile=baseline ! \
-  qtmux ! filesink location=videotestsrc.mov
-</code></pre>
-<p>This example pipeline will encode a test video source to H264 using
-constant quality at around Q25 using the 'medium' speed/quality preset and
-restricting the options used so that the output is H.264 Baseline Profile
-compliant and finally multiplexing the output in Quicktime mov format.</p>
-<pre><code>gst-launch-1.0 -v videotestsrc num-buffers=1000 ! tee name=t ! queue ! videoconvert ! autovideosink \
-  t. ! queue ! x264enc rc-lookahead=5 ! fakesink
-</code></pre>
-<p>This example pipeline will encode a test video source to H264 while
-displaying the input material at the same time.  As mentioned above,
-specific settings are needed in this case to avoid pipeline stalling.
-Depending on goals and context, other approaches are possible, e.g.
-tune=zerolatency might be configured, or queue sizes increased.</p>
-
+<h1 id="x264enc1">x264enc</h1>
 </div>
 
 
@@ -176,94 +113,11 @@ tune=zerolatency might be configured, or queue sizes increased.</p>
 
 </div>
 
-<div class="class_details">
-	<p>This element encodes raw video into H264 compressed data,
-also otherwise known as MPEG-4 AVC (Advanced Video Codec).</p>
-<p>The <a href="x264enc.html#GstX264Enc:pass">pass</a> property controls the type of encoding.  In case of Constant
-Bitrate Encoding (actually ABR), the <a href="x264enc.html#GstX264Enc:bitrate">bitrate</a> will determine the quality
-of the encoding.  This will similarly be the case if this target bitrate
-is to obtained in multiple (2 or 3) pass encoding.
-Alternatively, one may choose to perform Constant Quantizer or Quality encoding,
-in which case the <a href="x264enc.html#GstX264Enc:quantizer">quantizer</a> property controls much of the outcome, in that case <a href="x264enc.html#GstX264Enc:bitrate">bitrate</a> is the maximum bitrate.</p>
-<p>The H264 profile that is eventually used depends on a few settings.
-If <a href="x264enc.html#GstX264Enc:dct8x8">dct8x8</a> is enabled, then High profile is used.
-Otherwise, if <a href="x264enc.html#GstX264Enc:cabac">cabac</a> entropy coding is enabled or <a href="x264enc.html#GstX264Enc:bframes">bframes</a>
-are allowed, then Main Profile is in effect, and otherwise Baseline profile
-applies.  The high profile is imposed by default,
-which is fine for most software players and settings,
-but in some cases (e.g. hardware platforms) a more restricted profile/level
-may be necessary. The recommended way to set a profile is to set it in the
-downstream caps.</p>
-<p>If a preset/tuning are specified then these will define the default values and
-the property defaults will be ignored. After this the option-string property is
-applied, followed by the user-set properties, fast first pass restrictions and
-finally the profile restrictions.</p>
-<blockquote>
-<p>Some settings, including the default settings, may lead to quite
-some latency (i.e. frame buffering) in the encoder. This may cause problems
-with pipeline stalling in non-trivial pipelines, because the encoder latency
-is often considerably higher than the default size of a simple queue
-element. Such problems are caused by one of the queues in the other
-non-x264enc streams/branches filling up and blocking upstream. They can
-be fixed by relaxing the default time/size/buffer limits on the queue
-elements in the non-x264 branches, or using a (single) multiqueue element
-for all branches. Also see the last example below. You can also work around
-this problem by setting the tune=zerolatency property, but this will affect
-overall encoding quality so may not be appropriate for your use case.</p>
-</blockquote>
-<h2 id="example-pipeline1">Example pipeline</h2>
-<pre><code>gst-launch-1.0 -v videotestsrc num-buffers=1000 ! x264enc qp-min=18 ! \
-  avimux ! filesink location=videotestsrc.avi
-</code></pre>
-<p>This example pipeline will encode a test video source to H264 muxed in an
-AVI container, while ensuring a sane minimum quantization factor to avoid
-some (excessive) waste. You should ideally never put H264 into an AVI
-container (or really anything else, for that matter) - use Matroska or
-MP4/QuickTime or MPEG-TS instead.</p>
-<pre><code>gst-launch-1.0 -v videotestsrc num-buffers=1000 ! x264enc pass=quant ! \
-  matroskamux ! filesink location=videotestsrc.mkv
-</code></pre>
-<p>This example pipeline will encode a test video source to H264 using fixed
-quantization, and muxes it in a Matroska container.</p>
-<pre><code>gst-launch-1.0 -v videotestsrc num-buffers=1000 ! x264enc pass=5 quantizer=25 speed-preset=6 ! video/x-h264, profile=baseline ! \
-  qtmux ! filesink location=videotestsrc.mov
-</code></pre>
-<p>This example pipeline will encode a test video source to H264 using
-constant quality at around Q25 using the 'medium' speed/quality preset and
-restricting the options used so that the output is H.264 Baseline Profile
-compliant and finally multiplexing the output in Quicktime mov format.</p>
-<pre><code>gst-launch-1.0 -v videotestsrc num-buffers=1000 ! tee name=t ! queue ! videoconvert ! autovideosink \
-  t. ! queue ! x264enc rc-lookahead=5 ! fakesink
-</code></pre>
-<p>This example pipeline will encode a test video source to H264 while
-displaying the input material at the same time.  As mentioned above,
-specific settings are needed in this case to avoid pipeline stalling.
-Depending on goals and context, other approaches are possible, e.g.
-tune=zerolatency might be configured, or queue sizes increased.</p>
-
-</div>
 
 </div>
 
 
 <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc-&gt;sink">
-		<h3 id="sink">
-    sink:
-</h3>
-<table>
-    <tbody>
-        <tr><td><b>Presence:</b></td><td>always</td></tr>
-        <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>video/x-raw, framerate=(fraction)[ 0/1, 2147483647/1 ], width=(int)[ 16, 2147483647 ], height=(int)[ 16, 2147483647 ], format=(string){ Y444, Y42B, I420, YV12, NV12 }</td></tr>
-    </tbody>
-</table>
-
-			
-</div>
-
 
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc-&gt;src">
@@ -275,6 +129,23 @@ tune=zerolatency might be configured, or queue sizes increased.</p>
         <tr><td><b>Presence:</b></td><td>always</td></tr>
         <tr><td><b>Direction:</b></td><td>src</td></tr>
         <tr><td><b>Capabilities:</b></td><td>video/x-h264, framerate=(fraction)[ 0/1, 2147483647/1 ], width=(int)[ 1, 2147483647 ], height=(int)[ 1, 2147483647 ], stream-format=(string){ avc, byte-stream }, alignment=(string)au, profile=(string){ high-4:4:4, high-4:2:2, high-10, high, main, baseline, constrained-baseline, high-4:4:4-intra, high-4:2:2-intra, high-10-intra }</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc-&gt;sink">
+		<h3 id="sink">
+    sink:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/x-raw, framerate=(fraction)[ 0/1, 2147483647/1 ], width=(int)[ 16, 2147483647 ], height=(int)[ 16, 2147483647 ], format=(string){ Y444, Y42B, I420, YV12, NV12 }</td></tr>
     </tbody>
 </table>
 

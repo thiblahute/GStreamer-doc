@@ -86,67 +86,7 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="cairooverlay">
-<h1 id="cairooverlay1">cairooverlay</h1><p>cairooverlay renders an overlay using a application provided render function.</p>
-<p>The full example can be found in tests/examples/cairo/cairo_overlay.c</p>
-<h2 id="example-code">Example code</h2>
-<pre><code>
-#include &lt;gst/gst.h&gt;
-#include &lt;gst/video/video.h&gt;
-
-...
-
-typedef struct {
-  gboolean valid;
-  int width;
-  int height;
-} CairoOverlayState;
-
-...
-
-static void
-prepare_overlay (GstElement * overlay, GstCaps * caps, gpointer user_data)
-{
-  CairoOverlayState *state = (CairoOverlayState *)user_data;
-
-  gst_video_format_parse_caps (caps, NULL, &amp;amp;state-&gt;width, &amp;amp;state-&gt;height);
-  state-&gt;valid = TRUE;
-}
-
-static void
-draw_overlay (GstElement * overlay, cairo_t * cr, guint64 timestamp,
-  guint64 duration, gpointer user_data)
-{
-  CairoOverlayState *s = (CairoOverlayState *)user_data;
-  double scale;
-
-  if (!s-&gt;valid)
-    return;
-
-  scale = 2*(((timestamp/(int)1e7) % 70)+30)/100.0;
-  cairo_translate(cr, s-&gt;width/2, (s-&gt;height/2)-30);
-  cairo_scale (cr, scale, scale);
-
-  cairo_move_to (cr, 0, 0);
-  cairo_curve_to (cr, 0,-30, -50,-30, -50,0);
-  cairo_curve_to (cr, -50,30, 0,35, 0,60 );
-  cairo_curve_to (cr, 0,35, 50,30, 50,0 ); *
-  cairo_curve_to (cr, 50,-30, 0,-30, 0,0 );
-  cairo_set_source_rgba (cr, 0.9, 0.0, 0.1, 0.7);
-  cairo_fill (cr);
-}
-
-...
-
-cairo_overlay = gst_element_factory_make ("cairooverlay", "overlay");
-
-g_signal_connect (cairo_overlay, "draw", G_CALLBACK (draw_overlay),
-  overlay_state);
-g_signal_connect (cairo_overlay, "caps-changed",
-  G_CALLBACK (prepare_overlay), overlay_state);
-...
-
-</code></pre>
-
+<h1 id="cairooverlay1">cairooverlay</h1>
 </div>
 
 
@@ -174,91 +114,11 @@ g_signal_connect (cairo_overlay, "caps-changed",
 
 </div>
 
-<div class="class_details">
-	<p>cairooverlay renders an overlay using a application provided render function.</p>
-<p>The full example can be found in tests/examples/cairo/cairo_overlay.c</p>
-<h2 id="example-code1">Example code</h2>
-<pre><code>
-#include &lt;gst/gst.h&gt;
-#include &lt;gst/video/video.h&gt;
-
-...
-
-typedef struct {
-  gboolean valid;
-  int width;
-  int height;
-} CairoOverlayState;
-
-...
-
-static void
-prepare_overlay (GstElement * overlay, GstCaps * caps, gpointer user_data)
-{
-  CairoOverlayState *state = (CairoOverlayState *)user_data;
-
-  gst_video_format_parse_caps (caps, NULL, &amp;amp;state-&gt;width, &amp;amp;state-&gt;height);
-  state-&gt;valid = TRUE;
-}
-
-static void
-draw_overlay (GstElement * overlay, cairo_t * cr, guint64 timestamp,
-  guint64 duration, gpointer user_data)
-{
-  CairoOverlayState *s = (CairoOverlayState *)user_data;
-  double scale;
-
-  if (!s-&gt;valid)
-    return;
-
-  scale = 2*(((timestamp/(int)1e7) % 70)+30)/100.0;
-  cairo_translate(cr, s-&gt;width/2, (s-&gt;height/2)-30);
-  cairo_scale (cr, scale, scale);
-
-  cairo_move_to (cr, 0, 0);
-  cairo_curve_to (cr, 0,-30, -50,-30, -50,0);
-  cairo_curve_to (cr, -50,30, 0,35, 0,60 );
-  cairo_curve_to (cr, 0,35, 50,30, 50,0 ); *
-  cairo_curve_to (cr, 50,-30, 0,-30, 0,0 );
-  cairo_set_source_rgba (cr, 0.9, 0.0, 0.1, 0.7);
-  cairo_fill (cr);
-}
-
-...
-
-cairo_overlay = gst_element_factory_make ("cairooverlay", "overlay");
-
-g_signal_connect (cairo_overlay, "draw", G_CALLBACK (draw_overlay),
-  overlay_state);
-g_signal_connect (cairo_overlay, "caps-changed",
-  G_CALLBACK (prepare_overlay), overlay_state);
-...
-
-</code></pre>
-
-</div>
 
 </div>
 
 
 <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstCairoOverlay-&gt;sink">
-		<h3 id="sink">
-    sink:
-</h3>
-<table>
-    <tbody>
-        <tr><td><b>Presence:</b></td><td>always</td></tr>
-        <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>video/x-raw, format=(string){ BGRx, BGRA, RGB16 }, width=(int)[ 1, 2147483647 ], height=(int)[ 1, 2147483647 ], framerate=(fraction)[ 0/1, 2147483647/1 ]</td></tr>
-    </tbody>
-</table>
-
-			
-</div>
-
 
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstCairoOverlay-&gt;src">
@@ -269,6 +129,23 @@ g_signal_connect (cairo_overlay, "caps-changed",
     <tbody>
         <tr><td><b>Presence:</b></td><td>always</td></tr>
         <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/x-raw, format=(string){ BGRx, BGRA, RGB16 }, width=(int)[ 1, 2147483647 ], height=(int)[ 1, 2147483647 ], framerate=(fraction)[ 0/1, 2147483647/1 ]</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstCairoOverlay-&gt;sink">
+		<h3 id="sink">
+    sink:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
         <tr><td><b>Capabilities:</b></td><td>video/x-raw, format=(string){ BGRx, BGRA, RGB16 }, width=(int)[ 1, 2147483647 ], height=(int)[ 1, 2147483647 ], framerate=(fraction)[ 0/1, 2147483647/1 ]</td></tr>
     </tbody>
 </table>

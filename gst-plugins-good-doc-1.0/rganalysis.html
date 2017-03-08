@@ -86,43 +86,7 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="rganalysis">
-<h1 id="rganalysis1">rganalysis</h1><p>This element analyzes raw audio sample data in accordance with the proposed
-<ulink url="http://replaygain.org">ReplayGain standard</ulink> for
-calculating the ideal replay gain for music tracks and albums.  The element
-is designed as a pass-through filter that never modifies any data.  As it
-receives an EOS event, it finalizes the ongoing analysis and generates a tag
-list containing the results.  It is sent downstream with a tag event and
-posted on the message bus with a tag message.  The EOS event is forwarded as
-normal afterwards.  Result tag lists at least contain the tags
-<a href="../libgstreamer-doc-1.0/c/gsttaglist.html#GST_TAG_TRACK_GAIN">GST_TAG_TRACK_GAIN</a>, <a href="../libgstreamer-doc-1.0/c/gsttaglist.html#GST_TAG_TRACK_PEAK">GST_TAG_TRACK_PEAK</a> and <a href="../libgstreamer-doc-1.0/c/gsttaglist.html#GST_TAG_REFERENCE_LEVEL">GST_TAG_REFERENCE_LEVEL</a>.</p>
-<p>Because the generated metadata tags become available at the end of streams,
-downstream muxer and encoder elements are normally unable to save them in
-their output since they generally save metadata in the file header.
-Therefore, it is often necessary that applications read the results in a bus
-event handler for the tag message.  Obtaining the values this way is always
-needed for album processing (see <a href="rganalysis.html#GstRgAnalysis:num-tracks">num-tracks</a> property) since
-the album gain and peak values need to be associated with all tracks of an
-album, not just the last one.</p>
-<h2 id="example-launch-lines">Example launch lines</h2>
-<pre><code>gst-launch-1.0 -t audiotestsrc wave=sine num-buffers=512 ! rganalysis ! fakesink
-</code></pre>
-<p>Analyze a simple test waveform</p>
-<pre><code>gst-launch-1.0 -t filesrc location=filename.ext ! decodebin \
-    ! audioconvert ! audioresample ! rganalysis ! fakesink
-</code></pre>
-<p>Analyze a given file</p>
-<pre><code>gst-launch-1.0 -t gnomevfssrc location=http://replaygain.hydrogenaudio.org/ref_pink.wav \
-    ! wavparse ! rganalysis ! fakesink
-</code></pre>
-<p>Analyze the pink noise reference file</p>
-<p>The above launch line yields a result gain of +6 dB (instead of the expected
-+0 dB).  This is not in error, refer to the <a href="rganalysis.html#GstRgAnalysis:reference-level">reference-level</a>
-property documentation for more information.</p>
-<h2 id="acknowledgements">Acknowledgements</h2>
-<p>This element is based on code used in the <ulink url="http://sjeng.org/vorbisgain.html">vorbisgain</ulink> program and many
-others.  The relevant parts are copyrighted by David Robinson, Glen Sawyer
-and Frank Klemm.</p>
-
+<h1 id="rganalysis1">rganalysis</h1>
 </div>
 
 
@@ -149,67 +113,11 @@ and Frank Klemm.</p>
 
 </div>
 
-<div class="class_details">
-	<p>This element analyzes raw audio sample data in accordance with the proposed
-<ulink url="http://replaygain.org">ReplayGain standard</ulink> for
-calculating the ideal replay gain for music tracks and albums.  The element
-is designed as a pass-through filter that never modifies any data.  As it
-receives an EOS event, it finalizes the ongoing analysis and generates a tag
-list containing the results.  It is sent downstream with a tag event and
-posted on the message bus with a tag message.  The EOS event is forwarded as
-normal afterwards.  Result tag lists at least contain the tags
-<a href="../libgstreamer-doc-1.0/c/gsttaglist.html#GST_TAG_TRACK_GAIN">GST_TAG_TRACK_GAIN</a>, <a href="../libgstreamer-doc-1.0/c/gsttaglist.html#GST_TAG_TRACK_PEAK">GST_TAG_TRACK_PEAK</a> and <a href="../libgstreamer-doc-1.0/c/gsttaglist.html#GST_TAG_REFERENCE_LEVEL">GST_TAG_REFERENCE_LEVEL</a>.</p>
-<p>Because the generated metadata tags become available at the end of streams,
-downstream muxer and encoder elements are normally unable to save them in
-their output since they generally save metadata in the file header.
-Therefore, it is often necessary that applications read the results in a bus
-event handler for the tag message.  Obtaining the values this way is always
-needed for album processing (see <a href="rganalysis.html#GstRgAnalysis:num-tracks">num-tracks</a> property) since
-the album gain and peak values need to be associated with all tracks of an
-album, not just the last one.</p>
-<h2 id="example-launch-lines1">Example launch lines</h2>
-<pre><code>gst-launch-1.0 -t audiotestsrc wave=sine num-buffers=512 ! rganalysis ! fakesink
-</code></pre>
-<p>Analyze a simple test waveform</p>
-<pre><code>gst-launch-1.0 -t filesrc location=filename.ext ! decodebin \
-    ! audioconvert ! audioresample ! rganalysis ! fakesink
-</code></pre>
-<p>Analyze a given file</p>
-<pre><code>gst-launch-1.0 -t gnomevfssrc location=http://replaygain.hydrogenaudio.org/ref_pink.wav \
-    ! wavparse ! rganalysis ! fakesink
-</code></pre>
-<p>Analyze the pink noise reference file</p>
-<p>The above launch line yields a result gain of +6 dB (instead of the expected
-+0 dB).  This is not in error, refer to the <a href="rganalysis.html#GstRgAnalysis:reference-level">reference-level</a>
-property documentation for more information.</p>
-<h2 id="acknowledgements1">Acknowledgements</h2>
-<p>This element is based on code used in the <ulink url="http://sjeng.org/vorbisgain.html">vorbisgain</ulink> program and many
-others.  The relevant parts are copyrighted by David Robinson, Glen Sawyer
-and Frank Klemm.</p>
-
-</div>
 
 </div>
 
 
 <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstRgAnalysis-&gt;src">
-		<h3 id="src">
-    src:
-</h3>
-<table>
-    <tbody>
-        <tr><td><b>Presence:</b></td><td>always</td></tr>
-        <tr><td><b>Direction:</b></td><td>src</td></tr>
-        <tr><td><b>Capabilities:</b></td><td>audio/x-raw, format=(string){ F32LE, S16LE }, layout=(string)interleaved, channels=(int)1, rate=(int){ 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000 }; audio/x-raw, format=(string){ F32LE, S16LE }, layout=(string)interleaved, channels=(int)2, channel-mask=(bitmask)0x0000000000000003, rate=(int){ 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000 }</td></tr>
-    </tbody>
-</table>
-
-			
-</div>
-
 
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstRgAnalysis-&gt;sink">
@@ -220,6 +128,23 @@ and Frank Klemm.</p>
     <tbody>
         <tr><td><b>Presence:</b></td><td>always</td></tr>
         <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>audio/x-raw, format=(string){ F32LE, S16LE }, layout=(string)interleaved, channels=(int)1, rate=(int){ 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000 }; audio/x-raw, format=(string){ F32LE, S16LE }, layout=(string)interleaved, channels=(int)2, channel-mask=(bitmask)0x0000000000000003, rate=(int){ 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000 }</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRgAnalysis-&gt;src">
+		<h3 id="src">
+    src:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
         <tr><td><b>Capabilities:</b></td><td>audio/x-raw, format=(string){ F32LE, S16LE }, layout=(string)interleaved, channels=(int)1, rate=(int){ 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000 }; audio/x-raw, format=(string){ F32LE, S16LE }, layout=(string)interleaved, channels=(int)2, channel-mask=(bitmask)0x0000000000000003, rate=(int){ 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000 }</td></tr>
     </tbody>
 </table>

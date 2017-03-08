@@ -86,66 +86,7 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="gdkpixbufsink">
-<h1 id="gdkpixbufsink1">gdkpixbufsink</h1><p>This sink element takes RGB or RGBA images as input and wraps them into
-<a href="http://library.gnome.org/devel/gdk-pixbuf/unstable/gdk-pixbuf-The-GdkPixbuf-Structure.html#GdkPixbuf-struct">GdkPixbuf</a> objects, for easy saving to file via the
-GdkPixbuf library API or displaying in Gtk+ applications (e.g. using
-the <a href="http://developer.gnome.org/gtk3/GtkImage.html#GtkImage-struct">GtkImage</a> widget).</p>
-<p>There are two ways to use this element and obtain the <a href="http://library.gnome.org/devel/gdk-pixbuf/unstable/gdk-pixbuf-The-GdkPixbuf-Structure.html#GdkPixbuf-struct">GdkPixbuf</a> objects
-created:</p>
-<ul>
-<li>
-<p>Watching for element messages named <code>"preroll-pixbuf"</code> or <code>"pixbuf"</code> on the bus, which
-will be posted whenever an image would usually be rendered. See below for
-more details on these messages and how to extract the pixbuf object
-contained in them.</p>
-</li>
-<li>
-<p>Retrieving the current pixbuf via the <a href="gdkpixbufsink.html#GstGdkPixbufSink:last-pixbuf">last-pixbuf</a> property
-when needed. This is the easiest way to get at pixbufs for snapshotting
-purposes - just wait until the pipeline is prerolled (ASYNC_DONE message
-on the bus), then read the property. If you use this method, you may want
-to disable message posting by setting the <a href="gdkpixbufsink.html#GstGdkPixbufSink:post-messages">post-messages</a>
-property to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>. This avoids unnecessary memory overhead.</p>
-</li>
-</ul>
-<p>The primary purpose of this element is to abstract away the <a href="../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> to
-<a href="http://library.gnome.org/devel/gdk-pixbuf/unstable/gdk-pixbuf-The-GdkPixbuf-Structure.html#GdkPixbuf-struct">GdkPixbuf</a> conversion. Other than that it's very similar to the fakesink
-element.</p>
-<p>This element is meant for easy no-hassle video snapshotting. It is not
-suitable for video playback or video display at high framerates. Use
-ximagesink, xvimagesink or some other suitable video sink in connection
-with the GstXOverlay interface instead if you want to do video playback.</p>
-<h2 id="message-details">Message details</h2>
-<p>As mentioned above, this element will by default post element messages
-containing structures named <code>"preroll-pixbuf"</code> or <code>"pixbuf"</code> on the bus (this
-can be disabled by setting the <a href="gdkpixbufsink.html#GstGdkPixbufSink:post-messages">post-messages</a> property
-to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> though). The element message structure has the following fields:</p>
-<ul>
-<li>
-<p><code>"pixbuf"</code>: the <a href="http://library.gnome.org/devel/gdk-pixbuf/unstable/gdk-pixbuf-The-GdkPixbuf-Structure.html#GdkPixbuf-struct">GdkPixbuf</a> object</p>
-</li>
-<li>
-<p><code>"pixel-aspect-ratio"</code>: the pixel aspect
-ratio (PAR) of the input image (this field contains a GstFraction); the
-PAR is usually 1:1 for images, but is often something non-1:1 in the case
-of video input. In this case the image may be distorted and you may need
-to rescale it accordingly before saving it to file or displaying it. This
-can easily be done using <a href="http://library.gnome.org/devel/gdk-pixbuf/unstable/gdk-pixbuf-Scaling.html#gdk-pixbuf-scale">gdk_pixbuf_scale</a> (the reason this is not done
-automatically is that the application will often scale the image anyway
-according to the size of the output window, in which case it is much more
-efficient to only scale once rather than twice). You can put a videoscale
-element and a capsfilter element with
-<code>video/x-raw-rgb,pixel-aspect-ratio=(fraction)1/1</code> caps
-in front of this element to make sure the pixbufs always have a 1:1 PAR.</p>
-</li>
-</ul>
-<h2 id="example-pipeline">Example pipeline</h2>
-<pre><code>gst-launch-1.0 -m -v videotestsrc num-buffers=1 ! gdkpixbufsink
-</code></pre>
-<p>Process one single test image as pixbuf (note that the output you see will
-be slightly misleading. The message structure does contain a valid pixbuf
-object even if the structure string says '(NULL)').</p>
-
+<h1 id="gdkpixbufsink1">gdkpixbufsink</h1>
 </div>
 
 
@@ -173,68 +114,6 @@ object even if the structure string says '(NULL)').</p>
 
 </div>
 
-<div class="class_details">
-	<p>This sink element takes RGB or RGBA images as input and wraps them into
-<a href="http://library.gnome.org/devel/gdk-pixbuf/unstable/gdk-pixbuf-The-GdkPixbuf-Structure.html#GdkPixbuf-struct">GdkPixbuf</a> objects, for easy saving to file via the
-GdkPixbuf library API or displaying in Gtk+ applications (e.g. using
-the <a href="http://developer.gnome.org/gtk3/GtkImage.html#GtkImage-struct">GtkImage</a> widget).</p>
-<p>There are two ways to use this element and obtain the <a href="http://library.gnome.org/devel/gdk-pixbuf/unstable/gdk-pixbuf-The-GdkPixbuf-Structure.html#GdkPixbuf-struct">GdkPixbuf</a> objects
-created:</p>
-<ul>
-<li>
-<p>Watching for element messages named <code>"preroll-pixbuf"</code> or <code>"pixbuf"</code> on the bus, which
-will be posted whenever an image would usually be rendered. See below for
-more details on these messages and how to extract the pixbuf object
-contained in them.</p>
-</li>
-<li>
-<p>Retrieving the current pixbuf via the <a href="gdkpixbufsink.html#GstGdkPixbufSink:last-pixbuf">last-pixbuf</a> property
-when needed. This is the easiest way to get at pixbufs for snapshotting
-purposes - just wait until the pipeline is prerolled (ASYNC_DONE message
-on the bus), then read the property. If you use this method, you may want
-to disable message posting by setting the <a href="gdkpixbufsink.html#GstGdkPixbufSink:post-messages">post-messages</a>
-property to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>. This avoids unnecessary memory overhead.</p>
-</li>
-</ul>
-<p>The primary purpose of this element is to abstract away the <a href="../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> to
-<a href="http://library.gnome.org/devel/gdk-pixbuf/unstable/gdk-pixbuf-The-GdkPixbuf-Structure.html#GdkPixbuf-struct">GdkPixbuf</a> conversion. Other than that it's very similar to the fakesink
-element.</p>
-<p>This element is meant for easy no-hassle video snapshotting. It is not
-suitable for video playback or video display at high framerates. Use
-ximagesink, xvimagesink or some other suitable video sink in connection
-with the GstXOverlay interface instead if you want to do video playback.</p>
-<h2 id="message-details1">Message details</h2>
-<p>As mentioned above, this element will by default post element messages
-containing structures named <code>"preroll-pixbuf"</code> or <code>"pixbuf"</code> on the bus (this
-can be disabled by setting the <a href="gdkpixbufsink.html#GstGdkPixbufSink:post-messages">post-messages</a> property
-to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> though). The element message structure has the following fields:</p>
-<ul>
-<li>
-<p><code>"pixbuf"</code>: the <a href="http://library.gnome.org/devel/gdk-pixbuf/unstable/gdk-pixbuf-The-GdkPixbuf-Structure.html#GdkPixbuf-struct">GdkPixbuf</a> object</p>
-</li>
-<li>
-<p><code>"pixel-aspect-ratio"</code>: the pixel aspect
-ratio (PAR) of the input image (this field contains a GstFraction); the
-PAR is usually 1:1 for images, but is often something non-1:1 in the case
-of video input. In this case the image may be distorted and you may need
-to rescale it accordingly before saving it to file or displaying it. This
-can easily be done using <a href="http://library.gnome.org/devel/gdk-pixbuf/unstable/gdk-pixbuf-Scaling.html#gdk-pixbuf-scale">gdk_pixbuf_scale</a> (the reason this is not done
-automatically is that the application will often scale the image anyway
-according to the size of the output window, in which case it is much more
-efficient to only scale once rather than twice). You can put a videoscale
-element and a capsfilter element with
-<code>video/x-raw-rgb,pixel-aspect-ratio=(fraction)1/1</code> caps
-in front of this element to make sure the pixbufs always have a 1:1 PAR.</p>
-</li>
-</ul>
-<h2 id="example-pipeline1">Example pipeline</h2>
-<pre><code>gst-launch-1.0 -m -v videotestsrc num-buffers=1 ! gdkpixbufsink
-</code></pre>
-<p>Process one single test image as pixbuf (note that the output you see will
-be slightly misleading. The message structure does contain a valid pixbuf
-object even if the structure string says '(NULL)').</p>
-
-</div>
 
 </div>
 
