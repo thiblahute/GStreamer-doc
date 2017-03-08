@@ -33,13 +33,6 @@ for f in os.listdir(args.built_doc):
     else:
         shutil.copy(ndir, ldir)
 
-
-for f in ['index.html', 'dumped.trie']:
-    try:
-        os.remove(os.path.join(SDIR, f))
-    except FileNotFoundError:
-        pass
-
 subprocess.check_output(['git', 'add', '*'])
 print("Cached changes stats:")
 subprocess.check_output(['git', 'diff', '--cached', '--stat'])
