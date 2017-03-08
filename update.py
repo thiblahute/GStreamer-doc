@@ -27,6 +27,7 @@ for f in os.listdir(args.built_doc):
     if os.path.isdir(ldir):
         shutil.rmtree(ldir)
 
+    print("Copying %s" % f)
     if os.path.isdir(ndir):
         shutil.copytree(ndir, ldir, symlinks=True)
     else:

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>audiochebband</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gst-extension" data-hotdoc-project="gst-plugins-good-doc-1.0" data-hotdoc-ref="audiochebband.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="audiochebband">
+<h1 id="audiochebband1">audiochebband</h1><p>Attenuates all frequencies outside (bandpass) or inside (bandreject) of a frequency
+band. The number of poles and the ripple parameter control the rolloff.</p>
+<p>This element has the advantage over the windowed sinc bandpass and bandreject filter that it is
+much faster and produces almost as good results. It's only disadvantages are the highly
+non-linear phase and the slower rolloff compared to a windowed sinc filter with a large kernel.</p>
+<p>For type 1 the ripple parameter specifies how much ripple in dB is allowed in the passband, i.e.
+some frequencies in the passband will be amplified by that value. A higher ripple value will allow
+a faster rolloff.</p>
+<p>For type 2 the ripple parameter specifies the stopband attenuation. In the stopband the gain will
+be at most this value. A lower ripple value will allow a faster rolloff.</p>
+<p>As a special case, a Chebyshev type 1 filter with no ripple is a Butterworth filter.</p>
+<blockquote>
+<p>Be warned that a too large number of poles can produce noise. The most poles are possible with
+a cutoff frequency at a quarter of the sampling rate.</p>
+</blockquote>
+<h2 id="example-launch-line">Example launch line</h2>
+<pre><code>gst-launch-1.0 audiotestsrc freq=1500 ! audioconvert ! audiochebband mode=band-pass lower-frequency=1000 upper-frequency=6000 poles=4 ! audioconvert ! alsasink
+gst-launch-1.0 filesrc location="melo1.ogg" ! oggdemux ! vorbisdec ! audioconvert ! audiochebband mode=band-reject lower-frequency=1000 upper-frequency=4000 ripple=0.2 ! audioconvert ! alsasink
+gst-launch-1.0 audiotestsrc wave=white-noise ! audioconvert ! audiochebband mode=band-pass lower-frequency=1000 upper-frequency=4000 type=2 ! audioconvert ! alsasink
+</code></pre>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="audiochebband">
+		<h3 id="audiochebband2">
+	audiochebband
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+GObject
+    <span class="lineart">╰──</span>GInitiallyUnowned
+        <span class="lineart">╰──</span><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../libgstreamer-doc-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span><a title="GstBaseTransform" href="../libgstbase-doc-1.0/c/gstbasetransform.html#GstBaseTransform">GstBaseTransform</a>
+                    <span class="lineart">╰──</span><a title="GstAudioFilter" href="../gst-plugins-base-audio-doc-1.0/c/gstaudiofilter.html#GstAudioFilter">GstAudioFilter</a>
+                        <span class="lineart">╰──</span>GstAudioFXBaseIIRFilter
+                            <span class="lineart">╰──</span>audiochebband
+</pre>
+
+</div>
+
+</div>
+
+<div class="class_details">
+	<p>Attenuates all frequencies outside (bandpass) or inside (bandreject) of a frequency
+band. The number of poles and the ripple parameter control the rolloff.</p>
+<p>This element has the advantage over the windowed sinc bandpass and bandreject filter that it is
+much faster and produces almost as good results. It's only disadvantages are the highly
+non-linear phase and the slower rolloff compared to a windowed sinc filter with a large kernel.</p>
+<p>For type 1 the ripple parameter specifies how much ripple in dB is allowed in the passband, i.e.
+some frequencies in the passband will be amplified by that value. A higher ripple value will allow
+a faster rolloff.</p>
+<p>For type 2 the ripple parameter specifies the stopband attenuation. In the stopband the gain will
+be at most this value. A lower ripple value will allow a faster rolloff.</p>
+<p>As a special case, a Chebyshev type 1 filter with no ripple is a Butterworth filter.</p>
+<blockquote>
+<p>Be warned that a too large number of poles can produce noise. The most poles are possible with
+a cutoff frequency at a quarter of the sampling rate.</p>
+</blockquote>
+<h2 id="example-launch-line1">Example launch line</h2>
+<pre><code>gst-launch-1.0 audiotestsrc freq=1500 ! audioconvert ! audiochebband mode=band-pass lower-frequency=1000 upper-frequency=6000 poles=4 ! audioconvert ! alsasink
+gst-launch-1.0 filesrc location="melo1.ogg" ! oggdemux ! vorbisdec ! audioconvert ! audiochebband mode=band-reject lower-frequency=1000 upper-frequency=4000 ripple=0.2 ! audioconvert ! alsasink
+gst-launch-1.0 audiotestsrc wave=white-noise ! audioconvert ! audiochebband mode=band-pass lower-frequency=1000 upper-frequency=4000 type=2 ! audioconvert ! alsasink
+</code></pre>
+
+</div>
+
+</div>
+
+
+<h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBand-&gt;sink">
+		<h3 id="sink">
+    sink:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>audio/x-raw, format=(string){ F32LE, F64LE }, rate=(int)[ 1, 2147483647 ], channels=(int)[ 1, 2147483647 ], layout=(string)interleaved</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBand-&gt;src">
+		<h3 id="src">
+    src:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>audio/x-raw, format=(string){ F32LE, F64LE }, rate=(int)[ 1, 2147483647 ], channels=(int)[ 1, 2147483647 ], layout=(string)interleaved</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBand:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type">gchar*</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	audiochebband0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBand:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBand:qos">
+		<h3 class="method" id="qos">
+	<span><code>qos</code></span>
+</h3>
+
+		<pre class="property_signature">
+“qos” <span class="type">gboolean</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBand:mode">
+		<h3 class="method" id="mode">
+	<span><code>mode</code></span>
+</h3>
+
+		<pre class="property_signature">
+“mode” <span class="type"><a title="GstAudioChebBandMode" href="audiochebband.html#GstAudioChebBandMode">GstAudioChebBandMode</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	band-pass (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBand:type">
+		<h3 class="method" id="type">
+	<span><code>type</code></span>
+</h3>
+
+		<pre class="property_signature">
+“type” <span class="type">gint</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	1
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBand:lower-frequency">
+		<h3 class="method" id="lowerfrequency">
+	<span><code>lower-frequency</code></span>
+</h3>
+
+		<pre class="property_signature">
+“lower-frequency” <span class="type">gfloat</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBand:upper-frequency">
+		<h3 class="method" id="upperfrequency">
+	<span><code>upper-frequency</code></span>
+</h3>
+
+		<pre class="property_signature">
+“upper-frequency” <span class="type">gfloat</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBand:ripple">
+		<h3 class="method" id="ripple">
+	<span><code>ripple</code></span>
+</h3>
+
+		<pre class="property_signature">
+“ripple” <span class="type">gfloat</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0.25
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBand:poles">
+		<h3 class="method" id="poles">
+	<span><code>poles</code></span>
+</h3>
+
+		<pre class="property_signature">
+“poles” <span class="type">gint</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	4
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioChebBandMode">
+		<h3 id="enum-gstaudiochebbandmode">
+		enum GstAudioChebBandMode
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>band-pass</td>
+            <td>Band pass (default)</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>band-reject</td>
+            <td>Band reject</td>
+            <td>0x00000001</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

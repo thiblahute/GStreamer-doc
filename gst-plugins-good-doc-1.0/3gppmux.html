@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>3gppmux</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gst-extension" data-hotdoc-project="gst-plugins-good-doc-1.0" data-hotdoc-ref="3gppmux.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="3gppmux">
+<h1 id="3gppmux1">3gppmux</h1><p>This element merges streams (audio and video) into 3GPP (.3gp) files.</p>
+<p>The following background intends to explain why various similar muxers
+are present in this plugin.</p>
+<p>The <ulink url="http://www.apple.com/quicktime/resources/qtfileformat.pdf">
+QuickTime file format specification</ulink> served as basis for the MP4 file
+format specification (mp4mux), and as such the QuickTime file structure is
+nearly identical to the so-called ISO Base Media file format defined in
+ISO 14496-12 (except for some media specific parts).
+In turn, the latter ISO Base Media format was further specialized as a
+Motion JPEG-2000 file format in ISO 15444-3 (mj2mux)
+and in various 3GPP(2) specs (3gppmux).
+The fragmented file features defined (only) in ISO Base Media are used by
+ISMV files making up (a.o.) Smooth Streaming (ismlmux).</p>
+<p>A few properties (#Gst3GPPMux:movie-timescale, <a href="3gppmux.html#Gst3GPPMux:trak-timescale">trak-timescale</a>)
+allow adjusting some technical parameters, which might be useful in (rare)
+cases to resolve compatibility issues in some situations.</p>
+<p>Some other properties influence the result more fundamentally.
+A typical mov/mp4 file's metadata (aka moov) is located at the end of the file,
+somewhat contrary to this usually being called "the header". However, a
+<a href="3gppmux.html#Gst3GPPMux:faststart">faststart</a> file will (with some effort) arrange this to be located
+near start of the file, which then allows it e.g. to be played while
+downloading. Alternatively, rather than having one chunk of metadata at start
+(or end), there can be some metadata at start and most of the other data can
+be spread out into fragments of <a href="3gppmux.html#Gst3GPPMux:fragment-duration">fragment-duration</a>. If such
+fragmented layout is intended for streaming purposes, then
+<a href="3gppmux.html#Gst3GPPMux:streamable">streamable</a> allows foregoing to add index metadata (at the end of
+file).</p>
+<h2 id="example-pipelines">Example pipelines</h2>
+<pre><code>gst-launch-1.0 v4l2src num-buffers=50 ! queue ! ffenc_h263 ! 3gppmux ! filesink location=video.3gp
+</code></pre>
+<p>Records a video stream captured from a v4l2 device, encodes it into H.263
+and muxes it into an 3gp file.</p>
+<p>Documentation last reviewed on 2011-04-21</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="3gppmux">
+		<h3 id="3gppmux2">
+	3gppmux
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+GObject
+    <span class="lineart">╰──</span>GInitiallyUnowned
+        <span class="lineart">╰──</span><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../libgstreamer-doc-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span>3gppmux
+</pre>
+
+</div>
+
+</div>
+
+<div class="class_details">
+	<p>This element merges streams (audio and video) into 3GPP (.3gp) files.</p>
+<p>The following background intends to explain why various similar muxers
+are present in this plugin.</p>
+<p>The <ulink url="http://www.apple.com/quicktime/resources/qtfileformat.pdf">
+QuickTime file format specification</ulink> served as basis for the MP4 file
+format specification (mp4mux), and as such the QuickTime file structure is
+nearly identical to the so-called ISO Base Media file format defined in
+ISO 14496-12 (except for some media specific parts).
+In turn, the latter ISO Base Media format was further specialized as a
+Motion JPEG-2000 file format in ISO 15444-3 (mj2mux)
+and in various 3GPP(2) specs (3gppmux).
+The fragmented file features defined (only) in ISO Base Media are used by
+ISMV files making up (a.o.) Smooth Streaming (ismlmux).</p>
+<p>A few properties (#Gst3GPPMux:movie-timescale, <a href="3gppmux.html#Gst3GPPMux:trak-timescale">trak-timescale</a>)
+allow adjusting some technical parameters, which might be useful in (rare)
+cases to resolve compatibility issues in some situations.</p>
+<p>Some other properties influence the result more fundamentally.
+A typical mov/mp4 file's metadata (aka moov) is located at the end of the file,
+somewhat contrary to this usually being called "the header". However, a
+<a href="3gppmux.html#Gst3GPPMux:faststart">faststart</a> file will (with some effort) arrange this to be located
+near start of the file, which then allows it e.g. to be played while
+downloading. Alternatively, rather than having one chunk of metadata at start
+(or end), there can be some metadata at start and most of the other data can
+be spread out into fragments of <a href="3gppmux.html#Gst3GPPMux:fragment-duration">fragment-duration</a>. If such
+fragmented layout is intended for streaming purposes, then
+<a href="3gppmux.html#Gst3GPPMux:streamable">streamable</a> allows foregoing to add index metadata (at the end of
+file).</p>
+<h2 id="example-pipelines1">Example pipelines</h2>
+<pre><code>gst-launch-1.0 v4l2src num-buffers=50 ! queue ! ffenc_h263 ! 3gppmux ! filesink location=video.3gp
+</code></pre>
+<p>Records a video stream captured from a v4l2 device, encodes it into H.263
+and muxes it into an 3gp file.</p>
+<p>Documentation last reviewed on 2011-04-21</p>
+
+</div>
+
+</div>
+
+
+<h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux-&gt;subtitle_%%u">
+		<h3 id="subtitle_u">
+    subtitle_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>text/x-raw, format=(string)utf8</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux-&gt;video_%%u">
+		<h3 id="video_u">
+    video_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/x-h263, width=(int)[ 16, 2147483647 ], height=(int)[ 16, 2147483647 ]; video/mpeg, mpegversion=(int)4, systemstream=(boolean)false, width=(int)[ 16, 2147483647 ], height=(int)[ 16, 2147483647 ]; video/x-divx, divxversion=(int)5, width=(int)[ 16, 2147483647 ], height=(int)[ 16, 2147483647 ]; video/x-h264, stream-format=(string)avc, alignment=(string)au, width=(int)[ 16, 2147483647 ], height=(int)[ 16, 2147483647 ]</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux-&gt;audio_%%u">
+		<h3 id="audio_u">
+    audio_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>audio/AMR, rate=(int)8000, channels=(int)[ 1, 2 ]; audio/AMR-WB, rate=(int)16000, channels=(int)[ 1, 2 ]; audio/mpeg, mpegversion=(int)1, layer=(int)3, channels=(int)[ 1, 2 ], rate=(int)[ 1, 2147483647 ]; audio/mpeg, mpegversion=(int)4, stream-format=(string)raw, channels=(int)[ 1, 8 ], rate=(int)[ 1, 2147483647 ]; audio/x-ac3, channels=(int)[ 1, 6 ], rate=(int)[ 1, 2147483647 ]</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux-&gt;src">
+		<h3 id="src">
+    src:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/quicktime, variant=(string)3gpp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type">gchar*</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	3gppmux0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:movie-timescale">
+		<h3 class="method" id="movietimescale">
+	<span><code>movie-timescale</code></span>
+</h3>
+
+		<pre class="property_signature">
+“movie-timescale” <span class="type">guint</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:trak-timescale">
+		<h3 class="method" id="traktimescale">
+	<span><code>trak-timescale</code></span>
+</h3>
+
+		<pre class="property_signature">
+“trak-timescale” <span class="type">guint</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:faststart">
+		<h3 class="method" id="faststart">
+	<span><code>faststart</code></span>
+</h3>
+
+		<pre class="property_signature">
+“faststart” <span class="type">gboolean</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:faststart-file">
+		<h3 class="method" id="faststartfile">
+	<span><code>faststart-file</code></span>
+</h3>
+
+		<pre class="property_signature">
+“faststart-file” <span class="type">gchar*</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	/tmp/qtmux-1915570932
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:moov-recovery-file">
+		<h3 class="method" id="moovrecoveryfile">
+	<span><code>moov-recovery-file</code></span>
+</h3>
+
+		<pre class="property_signature">
+“moov-recovery-file” <span class="type">gchar*</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	(NULL)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:fragment-duration">
+		<h3 class="method" id="fragmentduration">
+	<span><code>fragment-duration</code></span>
+</h3>
+
+		<pre class="property_signature">
+“fragment-duration” <span class="type">guint</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:streamable">
+		<h3 class="method" id="streamable">
+	<span><code>streamable</code></span>
+</h3>
+
+		<pre class="property_signature">
+“streamable” <span class="type">gboolean</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:reserved-max-duration">
+		<h3 class="method" id="reservedmaxduration">
+	<span><code>reserved-max-duration</code></span>
+</h3>
+
+		<pre class="property_signature">
+“reserved-max-duration” <span class="type">guint64</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	18446744073709551615
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:reserved-duration-remaining">
+		<h3 class="method" id="reserveddurationremaining">
+	<span><code>reserved-duration-remaining</code></span>
+</h3>
+
+		<pre class="property_signature">
+“reserved-duration-remaining” <span class="type">guint64</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	18446744073709551615
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:reserved-moov-update-period">
+		<h3 class="method" id="reservedmoovupdateperiod">
+	<span><code>reserved-moov-update-period</code></span>
+</h3>
+
+		<pre class="property_signature">
+“reserved-moov-update-period” <span class="type">guint64</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	18446744073709551615
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:reserved-bytes-per-sec">
+		<h3 class="method" id="reservedbytespersec">
+	<span><code>reserved-bytes-per-sec</code></span>
+</h3>
+
+		<pre class="property_signature">
+“reserved-bytes-per-sec” <span class="type">guint</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	550
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:dts-method">
+		<h3 class="method" id="dtsmethod">
+	<span><code>dts-method</code></span>
+</h3>
+
+		<pre class="property_signature">
+“dts-method” <span class="type"><a title="GstQTMuxDtsMethods" href="qtmux.html#GstQTMuxDtsMethods">GstQTMuxDtsMethods</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	reorder (1)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:presentation-time">
+		<h3 class="method" id="presentationtime">
+	<span><code>presentation-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“presentation-time” <span class="type">gboolean</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:interleave-bytes">
+		<h3 class="method" id="interleavebytes">
+	<span><code>interleave-bytes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“interleave-bytes” <span class="type">guint64</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="Gst3GPPMux:interleave-time">
+		<h3 class="method" id="interleavetime">
+	<span><code>interleave-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“interleave-time” <span class="type">guint64</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	250000000
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQTMuxDtsMethods">
+		<h3 id="enum-gstqtmuxdtsmethods">
+		enum GstQTMuxDtsMethods
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>dd</td>
+            <td>delta/duration</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>reorder</td>
+            <td>reorder</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>asc</td>
+            <td>ascending</td>
+            <td>0x00000002</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>
