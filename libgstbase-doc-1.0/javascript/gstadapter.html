@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>GstAdapterClass</title>
+<title>GstAdapter</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
@@ -86,7 +86,7 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="gstadapter.h">
-<h1 id="gstadapterclass">GstAdapterClass</h1><p>This class is for elements that receive buffers in an undesired size.
+<h1 id="gstadapter">GstAdapter</h1><p>This class is for elements that receive buffers in an undesired size.
 While for example raw video contains one image per buffer, the same is not
 true for a lot of other formats, especially those that come directly from
 a file. So if you have undefined buffer sizes and require a specific size,
@@ -103,30 +103,30 @@ combine <a href="../../libgstbase-doc-1.0/javascript/gstadapter.html#gst_adapter
 potentially more convenient for some use cases.</p>
 <p>For example, a sink pad's chain function that needs to pass data to a library
 in 512-byte chunks could be implemented like this:</p>
-<pre><code class="language-c">static GstFlowReturn
-sink_pad_chain (GstPad *pad, GstObject *parent, GstBuffer *buffer)
-{
-  MyElement *this;
-  GstAdapter *adapter;
-  GstFlowReturn ret = GST_FLOW_OK;
+<pre><code class="language-[&lt;!--"> static GstFlowReturn
+ sink_pad_chain (GstPad *pad, GstObject *parent, GstBuffer *buffer)
+ {
+   MyElement *this;
+   GstAdapter *adapter;
+   GstFlowReturn ret = GST_FLOW_OK;
 
-  this = MY_ELEMENT (parent);
+   this = MY_ELEMENT (parent);
 
-  adapter = this-&gt;adapter;
+   adapter = this-&gt;adapter;
 
-  // put buffer into adapter
-  gst_adapter_push (adapter, buffer);
+   // put buffer into adapter
+   gst_adapter_push (adapter, buffer);
 
-  // while we can read out 512 bytes, process them
-  while (gst_adapter_available (adapter) &gt;= 512 &amp;&amp; ret == GST_FLOW_OK) {
-    const guint8 *data = gst_adapter_map (adapter, 512);
-    // use flowreturn as an error value
-    ret = my_library_foo (data);
-    gst_adapter_unmap (adapter);
-    gst_adapter_flush (adapter, 512);
-  }
-  return ret;
-}
+   // while we can read out 512 bytes, process them
+   while (gst_adapter_available (adapter) &gt;= 512 &amp;&amp; ret == GST_FLOW_OK) {
+     const guint8 *data = gst_adapter_map (adapter, 512);
+     // use flowreturn as an error value
+     ret = my_library_foo (data);
+     gst_adapter_unmap (adapter);
+     gst_adapter_flush (adapter, 512);
+   }
+   return ret;
+ }
 </code></pre>
 <p>For another example, a simple element inside GStreamer that uses <a href="../../libgstbase-doc-1.0/javascript/gstadapter.html#GstAdapter">GstBase.Adapter</a>
 is the libvisual element.</p>
@@ -2550,22 +2550,22 @@ the last scanned position.</p>
 	<td>
 		<p>offset of the first match, or -1 if no match was found.</p>
 <p>Example:</p>
-<pre><code>// Assume the adapter contains 0x00 0x01 0x02 ... 0xfe 0xff
+<pre><code class="language-["> // Assume the adapter contains 0x00 0x01 0x02 ... 0xfe 0xff
 
-gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x00010203, 0, 256);
-// -&gt; returns 0
-gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x00010203, 1, 255);
-// -&gt; returns -1
-gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x01020304, 1, 255);
-// -&gt; returns 1
-gst_adapter_masked_scan_uint32 (adapter, 0xffff, 0x0001, 0, 256);
-// -&gt; returns -1
-gst_adapter_masked_scan_uint32 (adapter, 0xffff, 0x0203, 0, 256);
-// -&gt; returns 0
-gst_adapter_masked_scan_uint32 (adapter, 0xffff0000, 0x02030000, 0, 256);
-// -&gt; returns 2
-gst_adapter_masked_scan_uint32 (adapter, 0xffff0000, 0x02030000, 0, 4);
-// -&gt; returns -1
+ gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x00010203, 0, 256);
+ // -&gt; returns 0
+ gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x00010203, 1, 255);
+ // -&gt; returns -1
+ gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x01020304, 1, 255);
+ // -&gt; returns 1
+ gst_adapter_masked_scan_uint32 (adapter, 0xffff, 0x0001, 0, 256);
+ // -&gt; returns -1
+ gst_adapter_masked_scan_uint32 (adapter, 0xffff, 0x0203, 0, 256);
+ // -&gt; returns 0
+ gst_adapter_masked_scan_uint32 (adapter, 0xffff0000, 0x02030000, 0, 256);
+ // -&gt; returns 2
+ gst_adapter_masked_scan_uint32 (adapter, 0xffff0000, 0x02030000, 0, 4);
+ // -&gt; returns -1
 </code></pre>
 
 	</td>

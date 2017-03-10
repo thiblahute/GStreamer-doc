@@ -92,14 +92,14 @@ interface, for example <a href="../../gst-editing-services-doc-1.0/python/ges-cl
 This means that assets will represent for example a <a href="../../gst-editing-services-doc-1.0/python/ges-uri-clip.html#GESUriClip">GES.UriClip</a>, <a href="../../gst-editing-services-doc-1.0/python/ges-base-effect.html#GESBaseEffect">GES.BaseEffect</a> etc,
 and then you can extract objects of those types with the appropriate parameters from the asset
 using the <a href="../../gst-editing-services-doc-1.0/python/ges-asset.html#ges_asset_extract">GES.Asset.extract</a> method:</p>
-<pre><code>GESAsset *effect_asset;
-GESEffect *effect;
+<pre><code class="language-["> GESAsset *effect_asset;
+ GESEffect *effect;
 
-// You create an asset for an effect
-effect_asset = ges_asset_request (GES_TYPE_EFFECT, "agingtv", NULL);
+ // You create an asset for an effect
+ effect_asset = ges_asset_request (GES_TYPE_EFFECT, "agingtv", NULL);
 
-// And now you can extract an instance of GESEffect from that asset
-effect = GES_EFFECT (ges_asset_extract (effect_asset));
+ // And now you can extract an instance of GESEffect from that asset
+ effect = GES_EFFECT (ges_asset_extract (effect_asset));
 
 </code></pre>
 <p>In that example, the advantages of having a <a href="../../gst-editing-services-doc-1.0/python/ges-asset.html#GESAsset">GES.Asset</a> are that you can know what effects
@@ -119,19 +119,19 @@ will be used).</p>
 <p>Each and every <a href="../../gst-editing-services-doc-1.0/python/ges-asset.html#GESAsset">GES.Asset</a> is cached into GES, and you can query those with the <a href="../../gst-editing-services-doc-1.0/python/ges-asset.html#ges_list_assets">GES.list_assets</a> function.
 Also the system will automatically register <a href="../../gst-editing-services-doc-1.0/python/ges-asset.html#GESAsset">GES.Asset</a> for <a href="../../gst-editing-services-doc-1.0/python/ges-formatter.html#GESFormatter">GES.Formatter</a> and <a href="../../gst-editing-services-doc-1.0/python/ges-transition-clip.html#GESTransitionClip">GES.TransitionClip</a>
 and standard effects (actually not implemented yet) and you can simply query those calling:</p>
-<pre><code>   GList *formatter_assets, *tmp;
+<pre><code class="language-[">    GList *formatter_assets, *tmp;
 
-   //  List all  the transitions
-   formatter_assets = ges_list_assets (GES_TYPE_FORMATTER);
+    //  List all  the transitions
+    formatter_assets = ges_list_assets (GES_TYPE_FORMATTER);
 
-   // Print some infos about the formatter GESAsset
-   for (tmp = formatter_assets; tmp; tmp = tmp-&gt;next) {
-     g_print ("Name of the formatter: %s, file extension it produces: %s",
-       ges_meta_container_get_string (GES_META_CONTAINER (tmp-&gt;data), GES_META_FORMATTER_NAME),
-       ges_meta_container_get_string (GES_META_CONTAINER (tmp-&gt;data), GES_META_FORMATTER_EXTENSION));
-   }
+    // Print some infos about the formatter GESAsset
+    for (tmp = formatter_assets; tmp; tmp = tmp-&gt;next) {
+      g_print ("Name of the formatter: %s, file extension it produces: %s",
+        ges_meta_container_get_string (GES_META_CONTAINER (tmp-&gt;data), GES_META_FORMATTER_NAME),
+        ges_meta_container_get_string (GES_META_CONTAINER (tmp-&gt;data), GES_META_FORMATTER_EXTENSION));
+    }
 
-   g_list_free (transition_assets);
+    g_list_free (transition_assets);
 
 </code></pre>
 <p>You can request the creation of <a href="../../gst-editing-services-doc-1.0/python/ges-asset.html#GESAsset">GES.Asset</a> using either <a href="../../gst-editing-services-doc-1.0/python/ges-asset.html#ges_asset_request_async">GES.Asset.request_async</a> or
@@ -248,28 +248,28 @@ def GES.Asset.request_async (extractable_type, id, cancellable, callback, user_d
 <p>Request a new <a href="../../gst-editing-services-doc-1.0/python/ges-asset.html#GESAsset">GES.Asset</a> asyncronously, <em>callback</em> will be called when the materail is
 ready to be used or if an error occured.</p>
 <p>Example of request of a GESAsset async:</p>
-<pre><code>// The request callback
-static void
-asset_loaded_cb (GESAsset * source, GAsyncResult * res, gpointer user_data)
-{
-  GESAsset *asset;
-  GError *error = NULL;
+<pre><code class="language-["> // The request callback
+ static void
+ asset_loaded_cb (GESAsset * source, GAsyncResult * res, gpointer user_data)
+ {
+   GESAsset *asset;
+   GError *error = NULL;
 
-  asset = ges_asset_request_finish (res, &amp;error);
-  if (asset) {
-   g_print ("The file: %s is usable as a FileSource",
-       ges_asset_get_id (asset));
-  } else {
-   g_print ("The file: %s is *not* usable as a FileSource because: %s",
-       ges_asset_get_id (source), error-&gt;message);
-  }
+   asset = ges_asset_request_finish (res, &amp;error);
+   if (asset) {
+    g_print ("The file: %s is usable as a FileSource",
+        ges_asset_get_id (asset));
+   } else {
+    g_print ("The file: %s is *not* usable as a FileSource because: %s",
+        ges_asset_get_id (source), error-&gt;message);
+   }
 
-  gst_object_unref (mfs);
-}
+   gst_object_unref (mfs);
+ }
 
-// The request:
-ges_asset_request_async (GES_TYPE_URI_CLIP, some_uri, NULL,
-   (GAsyncReadyCallback) asset_loaded_cb, user_data);
+ // The request:
+ ges_asset_request_async (GES_TYPE_URI_CLIP, some_uri, NULL,
+    (GAsyncReadyCallback) asset_loaded_cb, user_data);
 </code></pre>
 
 	<div class="parameter_container">

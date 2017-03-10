@@ -1,0 +1,3781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>rtpbin</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gst-extension" data-hotdoc-project="gst-plugins-good-doc-1.0" data-hotdoc-ref="element-rtpbin.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="element-rtpbin">
+<h1 id="rtpbin1">rtpbin</h1><p>RTP bin combines the functions of <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpsession.html#GstRtpSession-struct">GstRtpSession</a>, <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpssrcdemux.html#GstRtpSsrcDemux-struct">GstRtpSsrcDemux</a>,
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpjitterbuffer.html#GstRtpJitterBuffer-struct">GstRtpJitterBuffer</a> and <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpptdemux.html#GstRtpPtDemux-struct">GstRtpPtDemux</a> in one element. It allows for multiple
+RTP sessions that will be synchronized together using RTCP SR packets.</p>
+<p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-struct">GstRtpBin</a> is configured with a number of request pads that define the
+functionality that is activated, similar to the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpsession.html#GstRtpSession-struct">GstRtpSession</a> element.</p>
+<p>To use <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-struct">GstRtpBin</a> as an RTP receiver, request a recv_rtp_sink_%u pad. The session
+number must be specified in the pad name.
+Data received on the recv_rtp_sink_%u pad will be processed in the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpsession.html#GstRtpSession-struct">GstRtpSession</a>
+manager and after being validated forwarded on <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpssrcdemux.html#GstRtpSsrcDemux-struct">GstRtpSsrcDemux</a> element. Each
+RTP stream is demuxed based on the SSRC and send to a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpjitterbuffer.html#GstRtpJitterBuffer-struct">GstRtpJitterBuffer</a>. After
+the packets are released from the jitterbuffer, they will be forwarded to a
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpptdemux.html#GstRtpPtDemux-struct">GstRtpPtDemux</a> element. The <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpptdemux.html#GstRtpPtDemux-struct">GstRtpPtDemux</a> element will demux the packets based
+on the payload type and will create a unique pad recv_rtp_src_%u_%u_%u on
+rtpbin with the session number, SSRC and payload type respectively as the pad
+name.</p>
+<p>To also use <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-struct">GstRtpBin</a> as an RTCP receiver, request a recv_rtcp_sink_%u pad. The
+session number must be specified in the pad name.</p>
+<p>If you want the session manager to generate and send RTCP packets, request
+the send_rtcp_src_%u pad with the session number in the pad name. Packet pushed
+on this pad contain SR/RR RTCP reports that should be sent to all participants
+in the session.</p>
+<p>To use <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-struct">GstRtpBin</a> as a sender, request a send_rtp_sink_%u pad, which will
+automatically create a send_rtp_src_%u pad. If the session number is not provided,
+the pad from the lowest available session will be returned. The session manager will modify the
+SSRC in the RTP packets to its own SSRC and wil forward the packets on the
+send_rtp_src_%u pad after updating its internal state.</p>
+<p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-struct">GstRtpBin</a> can also demultiplex incoming bundled streams. The first
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpsession.html#GstRtpSession-struct">GstRtpSession</a> will have a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpssrcdemux.html#GstRtpSsrcDemux-struct">GstRtpSsrcDemux</a> element splitting the streams
+based on their SSRC and potentially dispatched to a different <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpsession.html#GstRtpSession-struct">GstRtpSession</a>.
+Because retransmission SSRCs need to be merged with the corresponding media
+stream the GstRtpBin::on-bundled-ssrc signal is emitted so that the
+application can find out to which session the SSRC belongs.</p>
+<p>The session manager needs the clock-rate of the payload types it is handling
+and will signal the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpsession.html#GstRtpSession-request-pt-map">GstRtpSession::request-pt-map</a> signal when it needs such a
+mapping. One can clear the cached values with the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpsession.html#GstRtpSession-clear-pt-map">GstRtpSession::clear-pt-map</a>
+signal.</p>
+<p>Access to the internal statistics of rtpbin is provided with the
+get-internal-session property. This action signal gives access to the
+RTPSession object which further provides action signals to retrieve the
+internal source and other sources.</p>
+<p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-struct">GstRtpBin</a> also has signals (#GstRtpBin::request-rtp-encoder,
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-request-rtp-decoder">GstRtpBin::request-rtp-decoder</a>, <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-request-rtcp-encoder">GstRtpBin::request-rtcp-encoder</a> and
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-request-rtp-decoder">GstRtpBin::request-rtp-decoder</a>) to dynamically request for RTP and RTCP encoders
+and decoders in order to support SRTP. The encoders must provide the pads
+rtp_sink_%u and rtp_src_%u for RTP and rtcp_sink_%u and rtcp_src_%u for
+RTCP. The session number will be used in the pad name. The decoders must provide
+rtp_sink and rtp_src for RTP and rtcp_sink and rtcp_src for RTCP. The decoders will
+be placed before the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpsession.html#GstRtpSession-struct">GstRtpSession</a> element, thus they must support SSRC demuxing
+internally.</p>
+<p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-struct">GstRtpBin</a> has signals (#GstRtpBin::request-aux-sender and
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-request-aux-receiver">GstRtpBin::request-aux-receiver</a> to dynamically request an element that can be
+used to create or merge additional RTP streams. AUX elements are needed to
+implement FEC or retransmission (such as RFC 4588). An AUX sender must have one
+sink_%u pad that matches the sessionid in the signal and it should have 1 or
+more src_%u pads. For each src_%\u pad, a session will be made (if needed)
+and the pad will be linked to the session send_rtp_sink pad. Each session will
+then expose its source pad as send_rtp_src_%u on <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-struct">GstRtpBin</a>.
+An AUX receiver has 1 src_%u pad that much match the sessionid in the signal
+and 1 or more sink_%u pads. A session will be made for each sink_%u pad
+when the corresponding recv_rtp_sink_%u pad is requested on <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-struct">GstRtpBin</a>.</p>
+<h2 id="example-pipelines">Example pipelines</h2>
+<pre><code class="language-["> gst-launch-1.0 udpsrc port=5000 caps="application/x-rtp, ..." ! .recv_rtp_sink_0 \
+     rtpbin ! rtptheoradepay ! theoradec ! xvimagesink
+ ]| Receive RTP data from port 5000 and send to the session 0 in rtpbin.
+ |[
+ gst-launch-1.0 rtpbin name=rtpbin \
+         v4l2src ! videoconvert ! ffenc_h263 ! rtph263ppay ! rtpbin.send_rtp_sink_0 \
+                   rtpbin.send_rtp_src_0 ! udpsink port=5000                            \
+                   rtpbin.send_rtcp_src_0 ! udpsink port=5001 sync=false async=false    \
+                   udpsrc port=5005 ! rtpbin.recv_rtcp_sink_0                           \
+         audiotestsrc ! amrnbenc ! rtpamrpay ! rtpbin.send_rtp_sink_1                   \
+                   rtpbin.send_rtp_src_1 ! udpsink port=5002                            \
+                   rtpbin.send_rtcp_src_1 ! udpsink port=5003 sync=false async=false    \
+                   udpsrc port=5007 ! rtpbin.recv_rtcp_sink_1
+ ]| Encode and payload H263 video captured from a v4l2src. Encode and payload AMR
+ audio generated from audiotestsrc. The video is sent to session 0 in rtpbin
+ and the audio is sent to session 1. Video packets are sent on UDP port 5000
+ and audio packets on port 5002. The video RTCP packets for session 0 are sent
+ on port 5001 and the audio RTCP packets for session 0 are sent on port 5003.
+ RTCP packets for session 0 are received on port 5005 and RTCP for session 1
+ is received on port 5007. Since RTCP packets from the sender should be sent
+ as soon as possible and do not participate in preroll, sync=false and
+ async=false is configured on udpsink
+ |[
+ gst-launch-1.0 -v rtpbin name=rtpbin                                          \
+     udpsrc caps="application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)H263-1998" \
+             port=5000 ! rtpbin.recv_rtp_sink_0                                \
+         rtpbin. ! rtph263pdepay ! ffdec_h263 ! xvimagesink                    \
+      udpsrc port=5001 ! rtpbin.recv_rtcp_sink_0                               \
+      rtpbin.send_rtcp_src_0 ! udpsink port=5005 sync=false async=false        \
+     udpsrc caps="application/x-rtp,media=(string)audio,clock-rate=(int)8000,encoding-name=(string)AMR,encoding-params=(string)1,octet-align=(string)1" \
+             port=5002 ! rtpbin.recv_rtp_sink_1                                \
+         rtpbin. ! rtpamrdepay ! amrnbdec ! alsasink                           \
+      udpsrc port=5003 ! rtpbin.recv_rtcp_sink_1                               \
+      rtpbin.send_rtcp_src_1 ! udpsink port=5007 sync=false async=false
+ ]| Receive H263 on port 5000, send it through rtpbin in session 0, depayload,
+ decode and display the video.
+ Receive AMR on port 5002, send it through rtpbin in session 1, depayload,
+ decode and play the audio.
+ Receive server RTCP packets for session 0 on port 5001 and RTCP packets for
+ session 1 on port 5003. These packets will be used for session management and
+ synchronisation.
+ Send RTCP reports for session 0 on port 5005 and RTCP reports for session 1
+ on port 5007.
+</code></pre>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin">
+		<h3 id="rtpbin2">
+	rtpbin
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../libgstreamer-doc-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span><a title="GstBin" href="../libgstreamer-doc-1.0/c/gstbin.html#GstBin">GstBin</a>
+                    <span class="lineart">╰──</span>rtpbin
+</pre>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin-&gt;recv_rtp_sink_%%u">
+		<h3 id="recv_rtp_sink_u">
+    recv_rtp_sink_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-rtp; application/x-srtp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin-&gt;recv_rtcp_sink_%%u">
+		<h3 id="recv_rtcp_sink_u">
+    recv_rtcp_sink_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-rtcp; application/x-srtcp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin-&gt;send_rtp_sink_%%u">
+		<h3 id="send_rtp_sink_u">
+    send_rtp_sink_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-rtp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin-&gt;recv_rtp_src_%%u_%%u_%%u">
+		<h3 id="recv_rtp_src_u_u_u">
+    recv_rtp_src_%%u_%%u_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>sometimes</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-rtp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin-&gt;send_rtcp_src_%%u">
+		<h3 id="send_rtcp_src_u">
+    send_rtcp_src_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-rtcp; application/x-srtcp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin-&gt;send_rtp_src_%%u">
+		<h3 id="send_rtp_src_u">
+    send_rtp_src_%%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>sometimes</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>application/x-rtp; application/x-srtp</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+<h2 class="symbol_section" id="Signals">Signals</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::pad-added">
+		<h3 id="padadded">
+	<span><code>pad-added</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+pad_added_callback (rtpbin * param_0,
+                    GstPad * param_1,
+                    gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::pad-removed">
+		<h3 id="padremoved">
+	<span><code>pad-removed</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+pad_removed_callback (rtpbin * param_0,
+                      GstPad * param_1,
+                      gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::no-more-pads">
+		<h3 id="nomorepads">
+	<span><code>no-more-pads</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+no_more_pads_callback (rtpbin * param_0,
+                       gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::request-pt-map">
+		<h3 id="requestptmap">
+	<span><code>request-pt-map</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstCaps
+request_pt_map_callback (rtpbin * param_0,
+                         guint param_1,
+                         guint param_2,
+                         gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstCaps
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::payload-type-change">
+		<h3 id="payloadtypechange">
+	<span><code>payload-type-change</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+payload_type_change_callback (rtpbin * param_0,
+                              guint param_1,
+                              guint param_2,
+                              gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-new-ssrc">
+		<h3 id="onnewssrc">
+	<span><code>on-new-ssrc</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_new_ssrc_callback (rtpbin * param_0,
+                      guint param_1,
+                      guint param_2,
+                      gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-ssrc-collision">
+		<h3 id="onssrccollision">
+	<span><code>on-ssrc-collision</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_ssrc_collision_callback (rtpbin * param_0,
+                            guint param_1,
+                            guint param_2,
+                            gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-ssrc-validated">
+		<h3 id="onssrcvalidated">
+	<span><code>on-ssrc-validated</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_ssrc_validated_callback (rtpbin * param_0,
+                            guint param_1,
+                            guint param_2,
+                            gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-ssrc-active">
+		<h3 id="onssrcactive">
+	<span><code>on-ssrc-active</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_ssrc_active_callback (rtpbin * param_0,
+                         guint param_1,
+                         guint param_2,
+                         gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-ssrc-sdes">
+		<h3 id="onssrcsdes">
+	<span><code>on-ssrc-sdes</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_ssrc_sdes_callback (rtpbin * param_0,
+                       guint param_1,
+                       guint param_2,
+                       gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-bye-ssrc">
+		<h3 id="onbyessrc">
+	<span><code>on-bye-ssrc</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_bye_ssrc_callback (rtpbin * param_0,
+                      guint param_1,
+                      guint param_2,
+                      gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-bye-timeout">
+		<h3 id="onbyetimeout">
+	<span><code>on-bye-timeout</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_bye_timeout_callback (rtpbin * param_0,
+                         guint param_1,
+                         guint param_2,
+                         gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-timeout">
+		<h3 id="ontimeout">
+	<span><code>on-timeout</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_timeout_callback (rtpbin * param_0,
+                     guint param_1,
+                     guint param_2,
+                     gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-sender-timeout">
+		<h3 id="onsendertimeout">
+	<span><code>on-sender-timeout</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_sender_timeout_callback (rtpbin * param_0,
+                            guint param_1,
+                            guint param_2,
+                            gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-npt-stop">
+		<h3 id="onnptstop">
+	<span><code>on-npt-stop</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_npt_stop_callback (rtpbin * param_0,
+                      guint param_1,
+                      guint param_2,
+                      gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::request-rtp-encoder">
+		<h3 id="requestrtpencoder">
+	<span><code>request-rtp-encoder</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstElement
+request_rtp_encoder_callback (rtpbin * param_0,
+                              guint param_1,
+                              gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstElement
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::request-rtp-decoder">
+		<h3 id="requestrtpdecoder">
+	<span><code>request-rtp-decoder</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstElement
+request_rtp_decoder_callback (rtpbin * param_0,
+                              guint param_1,
+                              gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstElement
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::request-rtcp-encoder">
+		<h3 id="requestrtcpencoder">
+	<span><code>request-rtcp-encoder</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstElement
+request_rtcp_encoder_callback (rtpbin * param_0,
+                               guint param_1,
+                               gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns17">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstElement
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::request-rtcp-decoder">
+		<h3 id="requestrtcpdecoder">
+	<span><code>request-rtcp-decoder</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstElement
+request_rtcp_decoder_callback (rtpbin * param_0,
+                               guint param_1,
+                               gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns18">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstElement
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::new-jitterbuffer">
+		<h3 id="newjitterbuffer">
+	<span><code>new-jitterbuffer</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+new_jitterbuffer_callback (rtpbin * param_0,
+                           GstElement * param_1,
+                           guint param_2,
+                           guint param_3,
+                           gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_3:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns19">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::request-aux-sender">
+		<h3 id="requestauxsender">
+	<span><code>request-aux-sender</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstElement
+request_aux_sender_callback (rtpbin * param_0,
+                             guint param_1,
+                             gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns20">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstElement
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::request-aux-receiver">
+		<h3 id="requestauxreceiver">
+	<span><code>request-aux-receiver</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstElement
+request_aux_receiver_callback (rtpbin * param_0,
+                               guint param_1,
+                               gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns21">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstElement
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-new-sender-ssrc">
+		<h3 id="onnewsenderssrc">
+	<span><code>on-new-sender-ssrc</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_new_sender_ssrc_callback (rtpbin * param_0,
+                             guint param_1,
+                             guint param_2,
+                             gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns22">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-sender-ssrc-active">
+		<h3 id="onsenderssrcactive">
+	<span><code>on-sender-ssrc-active</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+on_sender_ssrc_active_callback (rtpbin * param_0,
+                                guint param_1,
+                                guint param_2,
+                                gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters23">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns23">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::on-bundled-ssrc">
+		<h3 id="onbundledssrc">
+	<span><code>on-bundled-ssrc</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+guint
+on_bundled_ssrc_callback (rtpbin * param_0,
+                          guint param_1,
+                          gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns24">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		guint
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::clear-pt-map">
+		<h3 id="clearptmap">
+	<span><code>clear-pt-map</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+clear_pt_map_callback (rtpbin * param_0,
+                       gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns25">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::reset-sync">
+		<h3 id="resetsync">
+	<span><code>reset-sync</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+reset_sync_callback (rtpbin * param_0,
+                     gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns26">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::get-session">
+		<h3 id="getsession">
+	<span><code>get-session</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstElement
+get_session_callback (rtpbin * param_0,
+                      guint param_1,
+                      gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters27">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns27">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstElement
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="rtpbin::get-internal-session">
+		<h3 id="getinternalsession">
+	<span><code>get-internal-session</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+RTPSession
+get_internal_session_callback (rtpbin * param_0,
+                               guint param_1,
+                               gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters28">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns28">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		RTPSession
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	rtpbin0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:async-handling">
+		<h3 class="method" id="asynchandling">
+	<span><code>async-handling</code></span>
+</h3>
+
+		<pre class="property_signature">
+“async-handling” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:message-forward">
+		<h3 class="method" id="messageforward">
+	<span><code>message-forward</code></span>
+</h3>
+
+		<pre class="property_signature">
+“message-forward” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:latency">
+		<h3 class="method" id="latency">
+	<span><code>latency</code></span>
+</h3>
+
+		<pre class="property_signature">
+“latency” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	200
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:drop-on-latency">
+		<h3 class="method" id="droponlatency">
+	<span><code>drop-on-latency</code></span>
+</h3>
+
+		<pre class="property_signature">
+“drop-on-latency” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:sdes">
+		<h3 class="method" id="sdes">
+	<span><code>sdes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“sdes” <span class="type"><a title="GstStructure" href="../libgstreamer-doc-1.0/c/gststructure.html#GstStructure">GstStructure</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	application/x-rtp-source-sdes, cname=(string)"user1342141322\@host-e32cc1ef", tool=(string)GStreamer;
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:do-lost">
+		<h3 class="method" id="dolost">
+	<span><code>do-lost</code></span>
+</h3>
+
+		<pre class="property_signature">
+“do-lost” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:ignore-pt">
+		<h3 class="method" id="ignorept">
+	<span><code>ignore-pt</code></span>
+</h3>
+
+		<pre class="property_signature">
+“ignore-pt” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:ntp-sync">
+		<h3 class="method" id="ntpsync">
+	<span><code>ntp-sync</code></span>
+</h3>
+
+		<pre class="property_signature">
+“ntp-sync” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Set the NTP time from the sender reports as the running-time on the
+buffers. When both the sender and receiver have sychronized
+running-time, i.e. when the clock and base-time is shared
+between the receivers and the and the senders, this option can be
+used to synchronize receivers on multiple machines.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:rtcp-sync">
+		<h3 class="method" id="rtcpsync">
+	<span><code>rtcp-sync</code></span>
+</h3>
+
+		<pre class="property_signature">
+“rtcp-sync” <span class="type"><a title="GstRTCPSync" href="element-rtpbin.html#GstRTCPSync">GstRTCPSync</a></span>
+</pre>
+
+<p>If not synchronizing (directly) to the NTP clock, determines how to sync
+the various streams.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	always (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:rtcp-sync-interval">
+		<h3 class="method" id="rtcpsyncinterval">
+	<span><code>rtcp-sync-interval</code></span>
+</h3>
+
+		<pre class="property_signature">
+“rtcp-sync-interval” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Determines how often to sync streams using RTCP data.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:autoremove">
+		<h3 class="method" id="autoremove">
+	<span><code>autoremove</code></span>
+</h3>
+
+		<pre class="property_signature">
+“autoremove” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:buffer-mode">
+		<h3 class="method" id="buffermode">
+	<span><code>buffer-mode</code></span>
+</h3>
+
+		<pre class="property_signature">
+“buffer-mode” <span class="type"><a title="RTPJitterBufferMode" href="element-rtpjitterbuffer.html#RTPJitterBufferMode">RTPJitterBufferMode</a></span>
+</pre>
+
+<p>Control the buffering and timestamping mode used by the jitterbuffer.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	slave (1)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:use-pipeline-clock">
+		<h3 class="method" id="usepipelineclock">
+	<span><code>use-pipeline-clock</code></span>
+</h3>
+
+		<pre class="property_signature">
+“use-pipeline-clock” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:do-sync-event">
+		<h3 class="method" id="dosyncevent">
+	<span><code>do-sync-event</code></span>
+</h3>
+
+		<pre class="property_signature">
+“do-sync-event” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:do-retransmission">
+		<h3 class="method" id="doretransmission">
+	<span><code>do-retransmission</code></span>
+</h3>
+
+		<pre class="property_signature">
+“do-retransmission” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Enables RTP retransmission on all streams. To control retransmission on
+a per-SSRC basis, connect to the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpbin.html#GstRtpBin-new-jitterbuffer">GstRtpBin::new-jitterbuffer</a> signal and
+set the GstRtpJitterBuffer::do-retransmission property on the
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtpjitterbuffer.html#GstRtpJitterBuffer-struct">GstRtpJitterBuffer</a> object instead.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:rtp-profile">
+		<h3 class="method" id="rtpprofile">
+	<span><code>rtp-profile</code></span>
+</h3>
+
+		<pre class="property_signature">
+“rtp-profile” <span class="type"><a title="GstRTPProfile" href="c/element-rtpsession.html#GstRTPProfile">GstRTPProfile</a></span>
+</pre>
+
+<p>Sets the default RTP profile of newly created RTP sessions. The
+profile can be changed afterwards on a per-session basis.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	avp (1)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:ntp-time-source">
+		<h3 class="method" id="ntptimesource">
+	<span><code>ntp-time-source</code></span>
+</h3>
+
+		<pre class="property_signature">
+“ntp-time-source” <span class="type"><a title="GstRtpNtpTimeSource" href="element-rtpsession.html#GstRtpNtpTimeSource">GstRtpNtpTimeSource</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	ntp (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:rtcp-sync-send-time">
+		<h3 class="method" id="rtcpsyncsendtime">
+	<span><code>rtcp-sync-send-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“rtcp-sync-send-time” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:max-rtcp-rtp-time-diff">
+		<h3 class="method" id="maxrtcprtptimediff">
+	<span><code>max-rtcp-rtp-time-diff</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-rtcp-rtp-time-diff” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	1000
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:max-dropout-time">
+		<h3 class="method" id="maxdropouttime">
+	<span><code>max-dropout-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-dropout-time” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	60000
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:max-misorder-time">
+		<h3 class="method" id="maxmisordertime">
+	<span><code>max-misorder-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-misorder-time” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	2000
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:rfc7273-sync">
+		<h3 class="method" id="rfc7273sync">
+	<span><code>rfc7273-sync</code></span>
+</h3>
+
+		<pre class="property_signature">
+“rfc7273-sync” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpBin:max-streams">
+		<h3 class="method" id="maxstreams">
+	<span><code>max-streams</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-streams” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	-1
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRTCPSync">
+		<h3 id="enum-gstrtcpsync">
+		enum GstRTCPSync
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>always</td>
+            <td>always</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>initial</td>
+            <td>initial</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>rtp-info</td>
+            <td>rtp-info</td>
+            <td>0x00000002</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="RTPJitterBufferMode">
+		<h3 id="enum-rtpjitterbuffermode">
+		enum RTPJitterBufferMode
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>none</td>
+            <td>Only use RTP timestamps</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>slave</td>
+            <td>Slave receiver to sender clock</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>buffer</td>
+            <td>Do low/high watermark buffering</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>synced</td>
+            <td>Synchronized sender and receiver clocks</td>
+            <td>0x00000004</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="GstRTPProfile">
+		<h3 id="enum-gstrtpprofile">
+		enum GstRTPProfile
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>unknown</td>
+            <td>GST_RTP_PROFILE_UNKNOWN</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>avp</td>
+            <td>GST_RTP_PROFILE_AVP</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>savp</td>
+            <td>GST_RTP_PROFILE_SAVP</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>avpf</td>
+            <td>GST_RTP_PROFILE_AVPF</td>
+            <td>0x00000003</td>
+        </tr>
+        <tr>
+            <td>savpf</td>
+            <td>GST_RTP_PROFILE_SAVPF</td>
+            <td>0x00000004</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpNtpTimeSource">
+		<h3 id="enum-gstrtpntptimesource">
+		enum GstRtpNtpTimeSource
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>ntp</td>
+            <td>NTP time based on realtime clock</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>unix</td>
+            <td>UNIX time based on realtime clock</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>running-time</td>
+            <td>Running time based on pipeline clock</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>clock-time</td>
+            <td>Pipeline clock time</td>
+            <td>0x00000003</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

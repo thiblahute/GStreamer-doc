@@ -100,39 +100,39 @@ editing, serving streams, voice over ip and video calls.</p>
 and argv variables so that GStreamer can process its own command line
 options, as shown in the following example.</p>
 <h2 id="initializing-the-gstreamer-library">Initializing the gstreamer library</h2>
-<pre><code class="language-c">int
-main (int argc, char *argv[])
-{
-  // initialize the GStreamer library
-  gst_init (&amp;amp;argc, &amp;amp;argv);
-  ...
-}
+<pre><code class="language-["> int
+ main (int argc, char *argv[])
+ {
+   // initialize the GStreamer library
+   gst_init (&amp;amp;argc, &amp;amp;argv);
+   ...
+ }
 </code></pre>
 <p>It's allowed to pass two <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> pointers to <a href="../../libgstreamer-doc-1.0/c/gst.html#gst_init">gst_init</a> in case you don't want
 to pass the command line args to GStreamer.</p>
 <p>You can also use GOption to initialize your own parameters as shown in
 the next code fragment:</p>
 <h2 id="initializing-own-parameters-when-initializing-gstreamer">Initializing own parameters when initializing gstreamer</h2>
-<pre><code class="language-c">static gboolean stats = FALSE;
-...
-int
-main (int argc, char *argv[])
-{
- GOptionEntry options[] = {
-  {"tags", 't', 0, G_OPTION_ARG_NONE, &amp;amp;tags,
-      N_("Output tags (also known as metadata)"), NULL},
-  {NULL}
- };
- ctx = g_option_context_new ("[ADDITIONAL ARGUMENTS]");
- g_option_context_add_main_entries (ctx, options, GETTEXT_PACKAGE);
- g_option_context_add_group (ctx, gst_init_get_option_group ());
- if (!g_option_context_parse (ctx, &amp;amp;argc, &amp;amp;argv, &amp;amp;err)) {
-   g_print ("Error initializing: &amp;percnt;s\n", GST_STR_NULL (err-&gt;message));
-   exit (1);
+<pre><code class="language-["> static gboolean stats = FALSE;
+ ...
+ int
+ main (int argc, char *argv[])
+ {
+  GOptionEntry options[] = {
+   {"tags", 't', 0, G_OPTION_ARG_NONE, &amp;amp;tags,
+       N_("Output tags (also known as metadata)"), NULL},
+   {NULL}
+  };
+  ctx = g_option_context_new ("[ADDITIONAL ARGUMENTS]");
+  g_option_context_add_main_entries (ctx, options, GETTEXT_PACKAGE);
+  g_option_context_add_group (ctx, gst_init_get_option_group ());
+  if (!g_option_context_parse (ctx, &amp;amp;argc, &amp;amp;argv, &amp;amp;err)) {
+    g_print ("Error initializing: &amp;percnt;s\n", GST_STR_NULL (err-&gt;message));
+    exit (1);
+  }
+  g_option_context_free (ctx);
+ ...
  }
- g_option_context_free (ctx);
-...
-}
 </code></pre>
 <p>Use <a href="../../libgstreamer-doc-1.0/c/gst.html#gst_version">gst_version</a> to query the library version at runtime or use the
 GST_VERSION_* macros to find the version at compile time. Optionally

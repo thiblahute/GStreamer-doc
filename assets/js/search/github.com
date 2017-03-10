@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "github.com", "urls": ["GStreamer-doc-1.0/design/tracing.html#page-description"]});
+urls_downloaded_cb({"token": "github.com", "urls": ["gst-plugins-bad-plugins-doc-1.0/element-iqa.html#page-description", "GStreamer-doc-1.0/design/tracing.html#page-description"]});

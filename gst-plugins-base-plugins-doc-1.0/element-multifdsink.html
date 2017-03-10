@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>multifdsink</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gst-extension" data-hotdoc-project="gst-plugins-base-plugins-doc-1.0" data-hotdoc-ref="element-multifdsink.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="element-multifdsink">
+<h1 id="multifdsink1">multifdsink</h1><p>This plugin writes incoming data to a set of file descriptors. The
+file descriptors can be added to multifdsink by emitting the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-multifdsink.html#GstMultiFdSink-add">GstMultiFdSink::add</a> signal.
+For each descriptor added, the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-multifdsink.html#GstMultiFdSink-client-added">GstMultiFdSink::client-added</a> signal will be called.</p>
+<p>The multifdsink element needs to be set into READY, PAUSED or PLAYING state
+before operations such as adding clients are possible.</p>
+<p>A client can also be added with the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-multifdsink.html#GstMultiFdSink-add-full">GstMultiFdSink::add-full</a> signal
+that allows for more control over what and how much data a client
+initially receives.</p>
+<p>Clients can be removed from multifdsink by emitting the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-multifdsink.html#GstMultiFdSink-remove">GstMultiFdSink::remove</a> signal. For
+each descriptor removed, the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-multifdsink.html#GstMultiFdSink-client-removed">GstMultiFdSink::client-removed</a> signal will be called. The
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-multifdsink.html#GstMultiFdSink-client-removed">GstMultiFdSink::client-removed</a> signal can also be fired when multifdsink decides that a
+client is not active anymore or, depending on the value of the
+<a href="element-multifdsink.html#GstMultiFdSink:recover-policy">recover-policy</a> property, if the client is reading too slowly.
+In all cases, multifdsink will never close a file descriptor itself.
+The user of multifdsink is responsible for closing all file descriptors.
+This can for example be done in response to the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-multifdsink.html#GstMultiFdSink-client-fd-removed">GstMultiFdSink::client-fd-removed</a> signal.
+Note that multifdsink still has a reference to the file descriptor when the
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-multifdsink.html#GstMultiFdSink-client-removed">GstMultiFdSink::client-removed</a> signal is emitted, so that "get-stats" can be performed on
+the descriptor; it is therefore not safe to close the file descriptor in
+the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-multifdsink.html#GstMultiFdSink-client-removed">GstMultiFdSink::client-removed</a> signal handler, and you should use the
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-multifdsink.html#GstMultiFdSink-client-fd-removed">GstMultiFdSink::client-fd-removed</a> signal to safely close the fd.</p>
+<p>Multifdsink internally keeps a queue of the incoming buffers and uses a
+separate thread to send the buffers to the clients. This ensures that no
+client write can block the pipeline and that clients can read with different
+speeds.</p>
+<p>When adding a client to multifdsink, the <a href="element-multifdsink.html#GstMultiFdSink:sync-method">sync-method</a> property will define
+which buffer in the queued buffers will be sent first to the client. Clients
+can be sent the most recent buffer (which might not be decodable by the
+client if it is not a keyframe), the next keyframe received in
+multifdsink (which can take some time depending on the keyframe rate), or the
+last received keyframe (which will cause a simple burst-on-connect).
+Multifdsink will always keep at least one keyframe in its internal buffers
+when the sync-mode is set to latest-keyframe.</p>
+<p>There are additional values for the <a href="element-multifdsink.html#GstMultiFdSink:sync-method">sync-method</a>
+property to allow finer control over burst-on-connect behaviour. By selecting
+the 'burst' method a minimum burst size can be chosen, 'burst-keyframe'
+additionally requires that the burst begin with a keyframe, and
+'burst-with-keyframe' attempts to burst beginning with a keyframe, but will
+prefer a minimum burst size even if it requires not starting with a keyframe.</p>
+<p>Multifdsink can be instructed to keep at least a minimum amount of data
+expressed in time or byte units in its internal queues with the
+<a href="element-multifdsink.html#GstMultiFdSink:time-min">time-min</a> and <a href="element-multifdsink.html#GstMultiFdSink:bytes-min">bytes-min</a> properties respectively.
+These properties are useful if the application adds clients with the
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-multifdsink.html#GstMultiFdSink-add-full">GstMultiFdSink::add-full</a> signal to make sure that a burst connect can
+actually be honored.</p>
+<p>When streaming data, clients are allowed to read at a different rate than
+the rate at which multifdsink receives data. If the client is reading too
+fast, no data will be send to the client until multifdsink receives more
+data. If the client, however, reads too slowly, data for that client will be
+queued up in multifdsink. Two properties control the amount of data
+(buffers) that is queued in multifdsink: <a href="element-multifdsink.html#GstMultiFdSink:buffers-max">buffers-max</a> and
+<a href="element-multifdsink.html#GstMultiFdSink:buffers-soft-max">buffers-soft-max</a>. A client that falls behind by
+<a href="element-multifdsink.html#GstMultiFdSink:buffers-max">buffers-max</a> is removed from multifdsink forcibly.</p>
+<p>A client with a lag of at least <a href="element-multifdsink.html#GstMultiFdSink:buffers-soft-max">buffers-soft-max</a> enters the recovery
+procedure which is controlled with the <a href="element-multifdsink.html#GstMultiFdSink:recover-policy">recover-policy</a> property.
+A recover policy of NONE will do nothing, RESYNC_LATEST will send the most recently
+received buffer as the next buffer for the client, RESYNC_SOFT_LIMIT
+positions the client to the soft limit in the buffer queue and
+RESYNC_KEYFRAME positions the client at the most recent keyframe in the
+buffer queue.</p>
+<p>multifdsink will by default synchronize on the clock before serving the
+buffers to the clients. This behaviour can be disabled by setting the sync
+property to FALSE. Multifdsink will by default not do QoS and will never
+drop late buffers.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multifdsink">
+		<h3 id="multifdsink2">
+	multifdsink
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../libgstreamer-doc-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span><a title="GstBaseSink" href="../libgstbase-doc-1.0/c/gstbasesink.html#GstBaseSink">GstBaseSink</a>
+                    <span class="lineart">╰──</span>GstMultiHandleSink
+                        <span class="lineart">╰──</span>multifdsink
+</pre>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink-&gt;sink">
+		<h3 id="sink">
+    sink:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>ANY</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+<h2 class="symbol_section" id="Signals">Signals</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multifdsink::client-added">
+		<h3 id="clientadded">
+	<span><code>client-added</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+client_added_callback (multifdsink * param_0,
+                       gint param_1,
+                       gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multifdsink::client-removed">
+		<h3 id="clientremoved">
+	<span><code>client-removed</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+client_removed_callback (multifdsink * param_0,
+                         gint param_1,
+                         GstMultiHandleSinkClientStatus param_2,
+                         gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multifdsink::client-fd-removed">
+		<h3 id="clientfdremoved">
+	<span><code>client-fd-removed</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+client_fd_removed_callback (multifdsink * param_0,
+                            gint param_1,
+                            gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multifdsink::add">
+		<h3 id="add">
+	<span><code>add</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+add_callback (multifdsink * param_0,
+              gint param_1,
+              gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multifdsink::add-full">
+		<h3 id="addfull">
+	<span><code>add-full</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+add_full_callback (multifdsink * param_0,
+                   gint param_1,
+                   GstMultiHandleSinkSyncMethod param_2,
+                   GstFormat param_3,
+                   guint64 param_4,
+                   GstFormat param_5,
+                   guint64 param_6,
+                   gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_2:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_3:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_4:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_5:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_6:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multifdsink::remove">
+		<h3 id="remove">
+	<span><code>remove</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+remove_callback (multifdsink * param_0,
+                 gint param_1,
+                 gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multifdsink::remove-flush">
+		<h3 id="removeflush">
+	<span><code>remove-flush</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+remove_flush_callback (multifdsink * param_0,
+                       gint param_1,
+                       gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multifdsink::get-stats">
+		<h3 id="getstats">
+	<span><code>get-stats</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstStructure
+get_stats_callback (multifdsink * param_0,
+                    gint param_1,
+                    gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstStructure
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multifdsink::clear">
+		<h3 id="clear">
+	<span><code>clear</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+clear_callback (multifdsink * param_0,
+                gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	multifdsink0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:sync">
+		<h3 class="method" id="sync">
+	<span><code>sync</code></span>
+</h3>
+
+		<pre class="property_signature">
+“sync” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:max-lateness">
+		<h3 class="method" id="maxlateness">
+	<span><code>max-lateness</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-lateness” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	18446744073709551615
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:qos">
+		<h3 class="method" id="qos">
+	<span><code>qos</code></span>
+</h3>
+
+		<pre class="property_signature">
+“qos” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:async">
+		<h3 class="method" id="async">
+	<span><code>async</code></span>
+</h3>
+
+		<pre class="property_signature">
+“async” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:ts-offset">
+		<h3 class="method" id="tsoffset">
+	<span><code>ts-offset</code></span>
+</h3>
+
+		<pre class="property_signature">
+“ts-offset” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:enable-last-sample">
+		<h3 class="method" id="enablelastsample">
+	<span><code>enable-last-sample</code></span>
+</h3>
+
+		<pre class="property_signature">
+“enable-last-sample” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:last-sample">
+		<h3 class="method" id="lastsample">
+	<span><code>last-sample</code></span>
+</h3>
+
+		<pre class="property_signature">
+“last-sample” <span class="type"><a title="GstSample" href="../libgstreamer-doc-1.0/c/gstsample.html#GstSample">GstSample</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:blocksize">
+		<h3 class="method" id="blocksize">
+	<span><code>blocksize</code></span>
+</h3>
+
+		<pre class="property_signature">
+“blocksize” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	4096
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:render-delay">
+		<h3 class="method" id="renderdelay">
+	<span><code>render-delay</code></span>
+</h3>
+
+		<pre class="property_signature">
+“render-delay” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:throttle-time">
+		<h3 class="method" id="throttletime">
+	<span><code>throttle-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“throttle-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:max-bitrate">
+		<h3 class="method" id="maxbitrate">
+	<span><code>max-bitrate</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-bitrate” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:buffers-queued">
+		<h3 class="method" id="buffersqueued">
+	<span><code>buffers-queued</code></span>
+</h3>
+
+		<pre class="property_signature">
+“buffers-queued” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:unit-format">
+		<h3 class="method" id="unitformat">
+	<span><code>unit-format</code></span>
+</h3>
+
+		<pre class="property_signature">
+“unit-format” <span class="type"><a title="GstFormat" href="../GstFormat/c">GstFormat</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	buffers (4)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:units-max">
+		<h3 class="method" id="unitsmax">
+	<span><code>units-max</code></span>
+</h3>
+
+		<pre class="property_signature">
+“units-max” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	18446744073709551615
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:units-soft-max">
+		<h3 class="method" id="unitssoftmax">
+	<span><code>units-soft-max</code></span>
+</h3>
+
+		<pre class="property_signature">
+“units-soft-max” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	18446744073709551615
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:buffers-max">
+		<h3 class="method" id="buffersmax">
+	<span><code>buffers-max</code></span>
+</h3>
+
+		<pre class="property_signature">
+“buffers-max” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	-1
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:buffers-soft-max">
+		<h3 class="method" id="bufferssoftmax">
+	<span><code>buffers-soft-max</code></span>
+</h3>
+
+		<pre class="property_signature">
+“buffers-soft-max” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	-1
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:time-min">
+		<h3 class="method" id="timemin">
+	<span><code>time-min</code></span>
+</h3>
+
+		<pre class="property_signature">
+“time-min” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	18446744073709551615
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:bytes-min">
+		<h3 class="method" id="bytesmin">
+	<span><code>bytes-min</code></span>
+</h3>
+
+		<pre class="property_signature">
+“bytes-min” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	-1
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:buffers-min">
+		<h3 class="method" id="buffersmin">
+	<span><code>buffers-min</code></span>
+</h3>
+
+		<pre class="property_signature">
+“buffers-min” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	-1
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:recover-policy">
+		<h3 class="method" id="recoverpolicy">
+	<span><code>recover-policy</code></span>
+</h3>
+
+		<pre class="property_signature">
+“recover-policy” <span class="type"><a title="GstMultiHandleSinkRecoverPolicy" href="element-multisocketsink.html#GstMultiHandleSinkRecoverPolicy">GstMultiHandleSinkRecoverPolicy</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	none (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:timeout">
+		<h3 class="method" id="timeout">
+	<span><code>timeout</code></span>
+</h3>
+
+		<pre class="property_signature">
+“timeout” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:sync-method">
+		<h3 class="method" id="syncmethod">
+	<span><code>sync-method</code></span>
+</h3>
+
+		<pre class="property_signature">
+“sync-method” <span class="type"><a title="GstMultiHandleSinkSyncMethod" href="element-multisocketsink.html#GstMultiHandleSinkSyncMethod">GstMultiHandleSinkSyncMethod</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	latest (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:bytes-to-serve">
+		<h3 class="method" id="bytestoserve">
+	<span><code>bytes-to-serve</code></span>
+</h3>
+
+		<pre class="property_signature">
+“bytes-to-serve” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:bytes-served">
+		<h3 class="method" id="bytesserved">
+	<span><code>bytes-served</code></span>
+</h3>
+
+		<pre class="property_signature">
+“bytes-served” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:burst-format">
+		<h3 class="method" id="burstformat">
+	<span><code>burst-format</code></span>
+</h3>
+
+		<pre class="property_signature">
+“burst-format” <span class="type"><a title="GstFormat" href="../GstFormat/c">GstFormat</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	undefined (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:burst-value">
+		<h3 class="method" id="burstvalue">
+	<span><code>burst-value</code></span>
+</h3>
+
+		<pre class="property_signature">
+“burst-value” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:qos-dscp">
+		<h3 class="method" id="qosdscp">
+	<span><code>qos-dscp</code></span>
+</h3>
+
+		<pre class="property_signature">
+“qos-dscp” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	-1
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:resend-streamheader">
+		<h3 class="method" id="resendstreamheader">
+	<span><code>resend-streamheader</code></span>
+</h3>
+
+		<pre class="property_signature">
+“resend-streamheader” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:num-handles">
+		<h3 class="method" id="numhandles">
+	<span><code>num-handles</code></span>
+</h3>
+
+		<pre class="property_signature">
+“num-handles” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiFdSink:handle-read">
+		<h3 class="method" id="handleread">
+	<span><code>handle-read</code></span>
+</h3>
+
+		<pre class="property_signature">
+“handle-read” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstFormat">
+		<h3 id="enum-gstformat">
+		enum GstFormat
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>undefined</td>
+            <td>GST_FORMAT_UNDEFINED</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>default</td>
+            <td>GST_FORMAT_DEFAULT</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>bytes</td>
+            <td>GST_FORMAT_BYTES</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>time</td>
+            <td>GST_FORMAT_TIME</td>
+            <td>0x00000003</td>
+        </tr>
+        <tr>
+            <td>buffers</td>
+            <td>GST_FORMAT_BUFFERS</td>
+            <td>0x00000004</td>
+        </tr>
+        <tr>
+            <td>percent</td>
+            <td>GST_FORMAT_PERCENT</td>
+            <td>0x00000005</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiHandleSinkRecoverPolicy">
+		<h3 id="enum-gstmultihandlesinkrecoverpolicy">
+		enum GstMultiHandleSinkRecoverPolicy
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>none</td>
+            <td>Do not try to recover</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>latest</td>
+            <td>Resync client to latest buffer</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>soft-limit</td>
+            <td>Resync client to soft limit</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>keyframe</td>
+            <td>Resync client to most recent keyframe</td>
+            <td>0x00000003</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiHandleSinkSyncMethod">
+		<h3 id="enum-gstmultihandlesinksyncmethod">
+		enum GstMultiHandleSinkSyncMethod
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>latest</td>
+            <td>Serve starting from the latest buffer</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>next-keyframe</td>
+            <td>Serve starting from the next keyframe</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>latest-keyframe</td>
+            <td>Serve everything since the latest keyframe (burst)</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>burst</td>
+            <td>Serve burst-value data to client</td>
+            <td>0x00000003</td>
+        </tr>
+        <tr>
+            <td>burst-keyframe</td>
+            <td>Serve burst-value data starting on a keyframe</td>
+            <td>0x00000004</td>
+        </tr>
+        <tr>
+            <td>burst-with-keyframe</td>
+            <td>Serve burst-value data preferably starting on a keyframe</td>
+            <td>0x00000005</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -86,7 +86,43 @@
 	<div id="main">
 				
 <div id="page-description" data-hotdoc-source="gstaggregator.h">
-<h1 id="gstaggregator">GstAggregator</h1>
+<h1 id="gstaggregator">GstAggregator</h1><p>Manages a set of pads with the purpose of aggregating their buffers.
+Control is given to the subclass when all pads have data.</p>
+<ul>
+<li>
+<p>Base class for mixers and muxers. Subclasses should at least implement
+the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-bad-libs/html/gst-plugins-bad-libs-GstAggregator.html#GstAggregatorClass.aggregate">GstAggregatorClass.aggregate</a>() virtual method.</p>
+</li>
+<li>
+<p>When data is queued on all pads, tha aggregate vmethod is called.</p>
+</li>
+<li>
+<p>One can peek at the data on any given GstAggregatorPad with the
+gst_aggregator_pad_get_buffer () method, and take ownership of it
+with the gst_aggregator_pad_steal_buffer () method. When a buffer
+has been taken with steal_buffer (), a new buffer can be queued
+on that pad.</p>
+</li>
+<li>
+<p>If the subclass wishes to push a buffer downstream in its aggregate
+implementation, it should do so through the
+gst_aggregator_finish_buffer () method. This method will take care
+of sending and ordering mandatory events such as stream start, caps
+and segment.</p>
+</li>
+<li>
+<p>Same goes for EOS events, which should not be pushed directly by the
+subclass, it should instead return GST_FLOW_EOS in its aggregate
+implementation.</p>
+</li>
+<li>
+<p>Note that the aggregator logic regarding gap event handling is to turn
+these into gap buffers with matching PTS and duration. It will also
+flag these buffers with GST_BUFFER_FLAG_GAP and GST_BUFFER_FLAG_DROPPABLE
+to ease their identification and subsequent processing.</p>
+</li>
+</ul>
+
 </div>
 
 
@@ -410,7 +446,7 @@ gst_aggregator_pad_is_eos (<a title="GstAggregatorPad" href="../../gst-plugins-b
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 gst_aggregator_finish_buffer (<a title="GstAggregator" href="../../gst-plugins-bad-base-doc-1.0/c/gstaggregator.html#GstAggregator">GstAggregator</a> * agg,
                               <a title="GstBuffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer)</pre>
 
@@ -463,7 +499,7 @@ sent before pushing the buffer.</p>
 		
 	</td>
 	<td>
-		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 	</td>
 	</tr>
 
@@ -1300,7 +1336,7 @@ struct _GstAggregatorPadClass
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 aggregate (<a title="GstAggregator" href="../../gst-plugins-bad-base-doc-1.0/c/gstaggregator.html#GstAggregator">GstAggregator</a> * aggregator,
            <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> timeout)</pre>
 
@@ -1349,7 +1385,7 @@ aggregate (<a title="GstAggregator" href="../../gst-plugins-bad-base-doc-1.0/c/g
 		
 	</td>
 	<td>
-		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 	</td>
 	</tr>
 
@@ -1372,7 +1408,7 @@ aggregate (<a title="GstAggregator" href="../../gst-plugins-bad-base-doc-1.0/c/g
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 clip (<a title="GstAggregator" href="../../gst-plugins-bad-base-doc-1.0/c/gstaggregator.html#GstAggregator">GstAggregator</a> * aggregator,
       <a title="GstAggregatorPad" href="../../gst-plugins-bad-base-doc-1.0/c/gstaggregator.html#GstAggregatorPad">GstAggregatorPad</a> * aggregator_pad,
       <a title="GstBuffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buf,
@@ -1441,7 +1477,7 @@ clip (<a title="GstAggregator" href="../../gst-plugins-bad-base-doc-1.0/c/gstagg
 		
 	</td>
 	<td>
-		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 	</td>
 	</tr>
 
@@ -1556,7 +1592,7 @@ create_new_pad (<a title="GstAggregator" href="../../gst-plugins-bad-base-doc-1.
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 flush (<a title="GstAggregator" href="../../gst-plugins-bad-base-doc-1.0/c/gstaggregator.html#GstAggregator">GstAggregator</a> * aggregator)</pre>
 
 
@@ -1595,7 +1631,7 @@ flush (<a title="GstAggregator" href="../../gst-plugins-bad-base-doc-1.0/c/gstag
 		
 	</td>
 	<td>
-		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 	</td>
 	</tr>
 
@@ -2194,7 +2230,7 @@ stop (<a title="GstAggregator" href="../../gst-plugins-bad-base-doc-1.0/c/gstagg
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 flush (<a title="GstAggregatorPad" href="../../gst-plugins-bad-base-doc-1.0/c/gstaggregator.html#GstAggregatorPad">GstAggregatorPad</a> * aggpad,
        <a title="GstAggregator" href="../../gst-plugins-bad-base-doc-1.0/c/gstaggregator.html#GstAggregator">GstAggregator</a> * aggregator)</pre>
 
@@ -2243,7 +2279,7 @@ flush (<a title="GstAggregatorPad" href="../../gst-plugins-bad-base-doc-1.0/c/gs
 		
 	</td>
 	<td>
-		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 	</td>
 	</tr>
 
