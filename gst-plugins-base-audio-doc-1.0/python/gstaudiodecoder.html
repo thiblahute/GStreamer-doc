@@ -88,77 +88,48 @@
 <div id="page-description" data-hotdoc-source="gstaudiodecoder.h">
 <h1 id="gstaudiodecoder">GstAudioDecoder</h1><p>This base class is for audio decoders turning encoded data into
 raw audio samples.</p>
-<p>GstAudioDecoder and subclass should cooperate as follows.
-<orderedlist></orderedlist></p>
-<ul>
-<li>
+<p>GstAudioDecoder and subclass should cooperate as follows.</p>
 <h2 id="configuration">Configuration</h2>
 <ul>
-<li>
-<p>Initially, GstAudioDecoder calls <em>start</em> when the decoder element
+<li>Initially, GstAudioDecoder calls <em>start</em> when the decoder element
 is activated, which allows subclass to perform any global setup.
 Base class (context) parameters can already be set according to subclass
 capabilities (or possibly upon receive more information in subsequent
-<em>set_format</em>).</p>
-</li>
-<li>
-<p>GstAudioDecoder calls <em>set_format</em> to inform subclass of the format
+<em>set_format</em>).</li>
+<li>GstAudioDecoder calls <em>set_format</em> to inform subclass of the format
 of input audio data that it is about to receive.
 While unlikely, it might be called more than once, if changing input
-parameters require reconfiguration.</p>
-</li>
-<li>
-<p>GstAudioDecoder calls <em>stop</em> at end of all processing.</p>
-</li>
-</ul>
-</li>
+parameters require reconfiguration.</li>
+<li>GstAudioDecoder calls <em>stop</em> at end of all processing.</li>
 </ul>
 <p>As of configuration stage, and throughout processing, GstAudioDecoder
 provides various (context) parameters, e.g. describing the format of
 output audio data (valid when output caps have been set) or current parsing state.
 Conversely, subclass can and should configure context to inform
 base class of its expectation w.r.t. buffer handling.</p>
-<ul>
-<li>
 <h2 id="data-processing">Data processing</h2>
-<ul>
-<li>
-<p>Base class gathers input data, and optionally allows subclass
-to parse this into subsequently manageable (as defined by subclass)
-chunks.  Such chunks are subsequently referred to as 'frames',
-though they may or may not correspond to 1 (or more) audio format frame.</p>
-</li>
-<li>
-<p>Input frame is provided to subclass' <em>handle_frame</em>.</p>
-</li>
-<li>
-<p>If codec processing results in decoded data, subclass should call
-<em>gst_audio_decoder_finish_frame</em> to have decoded data pushed
-downstream.</p>
-</li>
-<li>
-<p>Just prior to actually pushing a buffer downstream,
-it is passed to <em>pre_push</em>.  Subclass should either use this callback
-to arrange for additional downstream pushing or otherwise ensure such
-custom pushing occurs after at least a method call has finished since
-setting src pad caps.</p>
-</li>
-<li>
-<p>During the parsing process GstAudioDecoderClass will handle both
-srcpad and sinkpad events. Sink events will be passed to subclass
-if <em>event</em> callback has been provided.</p>
-</li>
-</ul>
-</li>
-<li>
+<pre><code> * Base class gathers input data, and optionally allows subclass
+   to parse this into subsequently manageable (as defined by subclass)
+   chunks.  Such chunks are subsequently referred to as 'frames',
+   though they may or may not correspond to 1 (or more) audio format frame.
+ * Input frame is provided to subclass' @handle_frame.
+ * If codec processing results in decoded data, subclass should call
+   @gst_audio_decoder_finish_frame to have decoded data pushed
+   downstream.
+ * Just prior to actually pushing a buffer downstream,
+   it is passed to @pre_push.  Subclass should either use this callback
+   to arrange for additional downstream pushing or otherwise ensure such
+   custom pushing occurs after at least a method call has finished since
+   setting src pad caps.
+ * During the parsing process GstAudioDecoderClass will handle both
+   srcpad and sinkpad events. Sink events will be passed to subclass
+   if @event callback has been provided.
+</code></pre>
 <h2 id="shutdown-phase">Shutdown phase</h2>
 <ul>
 <li>GstAudioDecoder class calls <em>stop</em> to inform the subclass that data
 parsing will be stopped.</li>
 </ul>
-</li>
-</ul>
- 
 <p>Subclass is responsible for providing pad template caps for
 source and sink pads. The pads need to be named "sink" and "src". It also
 needs to set the fixed caps on srcpad, when the format is ensured.  This

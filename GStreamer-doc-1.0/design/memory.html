@@ -90,18 +90,28 @@
 <p>This document describes the design of the memory objects.</p>
 <p><code>GstMemory</code> objects are usually added to <code>GstBuffer</code> objects and contain the
 multimedia data passed around in the pipeline.</p>
+<pre><code class="language-c">struct GstMemory {
+  GstMiniObject   mini_object;
+
+  GstAllocator   *allocator;
+
+  GstMemory      *parent;
+  gsize           maxsize;
+  gsize           align;
+  gsize           offset;
+  gsize           size;
+};
+</code></pre>
 <h2 id="requirements">Requirements</h2>
 <ul>
 <li>It must be possible to have different memory allocators</li>
 <li>It must be possible to efficiently share memory objects, copy, span and trim.</li>
 </ul>
 <h2 id="memory-layout">Memory layout</h2>
-<p><code>GstMemory</code> manages a memory region. The accessible part of the managed region
-is defined by an offset relative to the start of the region and a size. This
-means that the managed region can be larger than what is visible to the user of
-<code>GstMemory</code> API.</p>
-<p>Schematically, <code>GstMemory</code> has a pointer to a memory region of <em>maxsize</em>. The
-area starting from <code>offset</code> and <code>size</code> is accessible.</p>
+<p>A <code>GstMemory</code> has a pointer to a memory region of <code>maxsize</code>. The accessible part
+of this managed region is defined by an <code>offset</code> relative to the start of the
+region and a <code>size</code>. This means that the managed region can be larger than what
+is visible to the user of the <code>GstMemory</code> API.</p>
 <pre><code>           memory
 GstMemory  -&gt;*----------------------------------------------------*
              ^----------------------------------------------------^
