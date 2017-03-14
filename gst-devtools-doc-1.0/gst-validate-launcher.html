@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>gst-validate-launcher</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="gst-devtools-doc-1.0" data-hotdoc-ref="gst-validate-launcher.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gst-validate-launcher.md">
+<h1 id="gstvalidatelauncher">gst-validate-launcher</h1>
+<p><code>gst-validate-launcher</code> is an application to create full testsuites on
+top of the GstValidate tools, testing behaviour with dynamic pipelines
+and user actions (seeking, changing the pipeline state, etc.) as
+described by the <a href="gst-validate-scenario.html#GstValidateScenario">scenario</a> format.</p>
+<h2 id="run-the-gstvalidate-default-testsuite">Run the GstValidate default testsuite</h2>
+<p>GstValidate comes with a default testsuite to be executed on a default
+set of media samples. Those media samples are stored with <code>git-annex</code> so
+you will need it to be able to launch the default testsuite.</p>
+<p>The first time you launch the testsuite, you will need to make sure that
+the media samples are downloaded. To do so and launch the testsuite you
+can simply do:</p>
+<pre><code>gst-validate-launcher validate --sync
+</code></pre>
+<p>This will only launch the GstValidate tests and not other applications
+that might be supported (currently <code>ges-launch</code> is also supported and
+has its own default testsuite).</p>
+<p>Launching the default testsuite will open/close many windows, you might
+want to mute it so you can keep using your computer:</p>
+<pre><code>gst-validate-launcher validate --sync --mute
+</code></pre>
+<h2 id="example-of-a-testsuite-implementation">Example of a testsuite implementation</h2>
+<p>To implement a testsuite, you will have to write some simple python code
+that defines the tests to be launched by <code>gst-validate-launcher</code>.</p>
+<p>In this example, we will assume that you want to write a whole new
+testsuite based on your own media samples and <a href="gst-validate-scenario.html#GstValidateScenario">scenarios</a>. The
+set of media files and the testsuite implementation file will be
+structured as follow:</p>
+<pre><code>testsuite_folder/
+  |-&gt; testsuite.py
+  |-&gt; sample_files/
+      |-&gt; file.mp4
+      |-&gt; file1.mkv
+      |-&gt; file2.ogv
+  |-&gt; scenarios
+      |-&gt; scenario.scenario
+      |-&gt; scenario1.scenario
+</code></pre>
+<p>You should generate the <code>.media_info</code> files. To generate them for local
+files, you can use:</p>
+<pre><code>gst-validate-launcher --medias-paths /path/to/sample_files/ --generate-media-info
+</code></pre>
+<p>For remote streams, you should use
+<code>gst-validate-media-check-GST_API_VERSION</code>. For an http stream you can
+for example do:</p>
+<pre><code>gst-validate-media-check-GST_API_VERSION http://someonlinestream.com/thestream \
+              --output-file /path/to/testsuite_folder/sample_files/thestream.stream_info
+</code></pre>
+<p>The <code>gst-validate-launcher</code> will use the generated <code>.media_info</code> and
+<code>.stream_info</code> files to validate the tests as those contain the
+necessary information.</p>
+<p>Then you will need to write the <code>testsuite.py</code> file. You can for example
+implement the following testsuite:</p>
+<pre><code class="language-python">import os
+
+# Make sure gst-validate-launcher uses our media files
+options.paths = os.path.dirname(os.path.realpath(__file__))
+
+# Make sure GstValidate is able to use our scenarios
+# from the testsuite_folder/scenarios folder
+os.environ["GST_VALIDATE_SCENARIOS_PATH"] = \
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), "scenarios")
+
+# You can activate the following if you only care about critical issues in
+# the report:
+# os.environ["GST_VALIDATE"] = "print_criticals"
+
+# Make gst-validate use our scenarios
+validate.add_scenarios(["scenario", "scenario1"])
+
+
+# Now add "Theora and Vorbis in OGG container" as a wanted transcoding format. That means
+# that conversion to this format will be tested on all the media files/streams.
+validate.add_encoding_formats([MediaFormatCombination("ogg", "vorbis", "theora")])
+
+# Use the GstValidatePlaybinTestsGenerator to generate tests that will use playbin
+# and GstValidateTranscodingTestsGenerator to create media transcoding tests that
+# will use all the media format added with validate.add_encoding_formats
+validate.add_generators([validate.GstValidatePlaybinTestsGenerator(validate),
+                         GstValidateTranscodingTestsGenerator(self)])
+
+# Blacklist some tests that are known to fail because a feature is not supported
+# or due to any other reason.
+# The tuple defining those tests is of the form:
+# ("regex defining the test name", "Reason why the test should be disabled")
+validate.set_default_blacklist([
+        ("validate.*.scenario1.*ogv$"
+         "oggdemux does not support some action executed in scenario1")]
+        )
+</code></pre>
+<p>Once this is done, you've got a testsuite that will:</p>
+<ul>
+<li>
+<p>Run playbin pipelines on <code>file.mp4</code>, <code>file1.mkv</code> and <code>file2.ogv</code>&amp;gt;
+executing <code>scenario</code> and <code>scenario1</code> scenarios</p>
+</li>
+<li>
+<p>Transcode <code>file.mp4,</code> <code>file1.mkv</code> and <code>file2.ogv</code> to Theora and
+Vorbis in a OGG container</p>
+</li>
+</ul>
+<p>The only thing to do to run the testsuite is:</p>
+<pre><code>gst-validate-launcher --config /path/to/testsuite_folder/testsuite.py
+</code></pre>
+<h1 id="invocation">Invocation</h1>
+<p>You can find detailed information about the launcher by launching it:</p>
+<pre><code>gst-validate-launcher --help
+</code></pre>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

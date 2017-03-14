@@ -93,8 +93,8 @@ and have a default handler handle the rest of them.</p>
 <p>The rest of this section will use the term <quote>error</quote>
 to mean both (non-fatal) warnings and (fatal) errors; they are treated
 similarly.</p>
-<p>Errors from elements are the combination of a <a href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html#GError">GLib.Error</a> and a debug string.
-The <a href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html#GError">GLib.Error</a> contains:</p>
+<p>Errors from elements are the combination of a GError and a debug string.
+The GError contains:</p>
 <ul>
 <li>a domain type: CORE, LIBRARY, RESOURCE or STREAM</li>
 <li>a code: an enum value specific to the domain</li>
@@ -107,8 +107,8 @@ errors.  As such, they should only inform about errors, and stop their
 processing.  In short, an element doesn't know what it is being used for.</p>
 <p>It is the application or compound element using the given element that
 has more context about the use of the element. Errors can be received by
-listening to the <a href="../../libgstreamer-doc-1.0/javascript/gstbus.html#GstBus">Gst.Bus</a> of the element/pipeline for <a href="../../libgstreamer-doc-1.0/javascript/gstmessage.html#GstMessage">Gst.Message</a> objects with
-the type <a href="../../libgstreamer-doc-1.0/javascript/gstmessage.html#GST_MESSAGE_ERROR">Gst.MessageType.prototype.error</a> or <a href="../../libgstreamer-doc-1.0/javascript/gstmessage.html#GST_MESSAGE_WARNING">Gst.MessageType.prototype.warning</a>. The thrown errors should
+listening to the <a href="../../libgstreamer-doc-1.0/gstbus.html#GstBus">Gst.Bus</a> of the element/pipeline for <a href="../../libgstreamer-doc-1.0/gstmessage.html#GstMessage">Gst.Message</a> objects with
+the type <a href="../../libgstreamer-doc-1.0/gstmessage.html#GST_MESSAGE_ERROR">Gst.MessageType.prototype.error</a> or <a href="../../libgstreamer-doc-1.0/gstmessage.html#GST_MESSAGE_WARNING">Gst.MessageType.prototype.warning</a>. The thrown errors should
 be inspected, and filtered if appropriate.</p>
 <p>An application is expected to, by default, present the user with a
 dialog box (or an equivalent) showing the error message.  The dialog
@@ -116,13 +116,13 @@ should also allow a way to get at the additional debug information,
 so the user can provide bug reporting information.</p>
 <p>A compound element is expected to forward errors by default higher up
 the hierarchy; this is done by default in the same way as for other types
-of <a href="../../libgstreamer-doc-1.0/javascript/gstmessage.html#GstMessage">Gst.Message</a>.</p>
+of <a href="../../libgstreamer-doc-1.0/gstmessage.html#GstMessage">Gst.Message</a>.</p>
 <p>When applications or compound elements trigger errors that they can
 recover from, they can filter out these errors and take appropriate action.
 For example, an application that gets an error from xvimagesink
 that indicates all XVideo ports are taken, the application can attempt
 to use another sink instead.</p>
-<p>Elements throw errors using the <a href="../../libgstreamer-doc-1.0/c/gstelement.html#GST_ELEMENT_ERROR">GST_ELEMENT_ERROR (not introspectable)</a> convenience macro:</p>
+<p>Elements throw errors using the <a href="../../libgstreamer-doc-1.0/gstelement.html#GST_ELEMENT_ERROR">GST_ELEMENT_ERROR (not introspectable)</a> convenience macro:</p>
 <h2 id="throwing-an-error">Throwing an error</h2>
 <pre><code class="language-|[">     GST_ELEMENT_ERROR (src, RESOURCE, NOT_FOUND,
        (_("No file name specified for reading.")), (NULL));
@@ -150,7 +150,7 @@ sees.  Details, technical info, ... should go in the debug string.</p>
 <li>
 <p>The debug string can be as you like.  Again, use (%NULL)
 if there's nothing to add - file and line number will still be
-passed.  <a href="../../libgstreamer-doc-1.0/javascript/gsterror.html#GST_ERROR_SYSTEM">Gst.ERROR_SYSTEM</a> can be used as a shortcut to give
+passed.  <a href="../../libgstreamer-doc-1.0/gsterror.html#GST_ERROR_SYSTEM">Gst.ERROR_SYSTEM</a> can be used as a shortcut to give
 debug information on a system call error.</p>
 </li>
 </ul>
@@ -167,7 +167,7 @@ debug information on a system call error.</p>
 </h3>
 
 		<pre class="programlisting">
-function Gst.prototype.error_get_message(domain: <a title="GLib.Quark" href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#GQuark">GLib.Quark</a>, code: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+function Gst.prototype.error_get_message(domain: GLib.Quark, code: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
     // javascript wrapper for 'gst_error_get_message'
 }</pre>
 
@@ -186,7 +186,7 @@ function Gst.prototype.error_get_message(domain: <a title="GLib.Quark" href="htt
 		<td><p>the GStreamer error domain this error belongs to.</p>
 </td>
 <td>
-<a title="GLib.Quark" href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#GQuark">GLib.Quark</a>
+GLib.Quark
 </td>
 </tr>
 
@@ -241,216 +241,15 @@ the error message (in UTF-8 encoding)</p>
 </div>
 
 
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_stream_error_quark">
-		<h3 id="gststreamprototypeerror_quark">
-	<span><code>Gst.Stream.prototype.error_quark</code></span>
-</h3>
-
-		<pre class="programlisting">
-function Gst.Stream.prototype.error_quark(): {
-    // javascript wrapper for 'gst_stream_error_quark'
-}</pre>
-
-
-
-	<div class="multi_return_value_container">
-			<h4 id="returns1">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		
-	</td>
-	<td>
-		<a title="GLib.Quark" href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#GQuark">GLib.Quark</a>
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_core_error_quark">
-		<h3 id="gstprototypecore_error_quark">
-	<span><code>Gst.prototype.core_error_quark</code></span>
-</h3>
-
-		<pre class="programlisting">
-function Gst.prototype.core_error_quark(): {
-    // javascript wrapper for 'gst_core_error_quark'
-}</pre>
-
-
-
-	<div class="multi_return_value_container">
-			<h4 id="returns2">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		
-	</td>
-	<td>
-		<a title="GLib.Quark" href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#GQuark">GLib.Quark</a>
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_resource_error_quark">
-		<h3 id="gstprototyperesource_error_quark">
-	<span><code>Gst.prototype.resource_error_quark</code></span>
-</h3>
-
-		<pre class="programlisting">
-function Gst.prototype.resource_error_quark(): {
-    // javascript wrapper for 'gst_resource_error_quark'
-}</pre>
-
-
-
-	<div class="multi_return_value_container">
-			<h4 id="returns3">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		
-	</td>
-	<td>
-		<a title="GLib.Quark" href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#GQuark">GLib.Quark</a>
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_library_error_quark">
-		<h3 id="gstprototypelibrary_error_quark">
-	<span><code>Gst.prototype.library_error_quark</code></span>
-</h3>
-
-		<pre class="programlisting">
-function Gst.prototype.library_error_quark(): {
-    // javascript wrapper for 'gst_library_error_quark'
-}</pre>
-
-
-
-	<div class="multi_return_value_container">
-			<h4 id="returns4">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		
-	</td>
-	<td>
-		<a title="GLib.Quark" href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#GQuark">GLib.Quark</a>
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-
-</div>
-
-
 <h2 class="symbol_section" id="Enumerations">Enumerations</h2>
 
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstCoreError">
-		<h3 id="gstcoreerror">
-		Gst.CoreError
+		<h3 id="enum-gstcoreerror">
+		enum Gst.CoreError
 	</h3>
 
-		<pre class="raw_code">
-typedef enum
-{
-  GST_CORE_ERROR_FAILED = 1,
-  GST_CORE_ERROR_TOO_LAZY,
-  GST_CORE_ERROR_NOT_IMPLEMENTED,
-  GST_CORE_ERROR_STATE_CHANGE,
-  GST_CORE_ERROR_PAD,
-  GST_CORE_ERROR_THREAD,
-  GST_CORE_ERROR_NEGOTIATION,
-  GST_CORE_ERROR_EVENT,
-  GST_CORE_ERROR_SEEK,
-  GST_CORE_ERROR_CAPS,
-  GST_CORE_ERROR_TAG,
-  GST_CORE_ERROR_MISSING_PLUGIN,
-  GST_CORE_ERROR_CLOCK,
-  GST_CORE_ERROR_DISABLED,
-  GST_CORE_ERROR_NUM_ERRORS
-} GstCoreError;
-</pre>
-
-<p>Core errors are errors inside the core GStreamer library.</p>
+		<p>Core errors are errors inside the core GStreamer library.</p>
 
 
 <div class="member_details">
@@ -683,24 +482,11 @@ compile time.</p>
 
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstLibraryError">
-		<h3 id="gstlibraryerror">
-		Gst.LibraryError
+		<h3 id="enum-gstlibraryerror">
+		enum Gst.LibraryError
 	</h3>
 
-		<pre class="raw_code">
-typedef enum
-{
-  GST_LIBRARY_ERROR_FAILED = 1,
-  GST_LIBRARY_ERROR_TOO_LAZY,
-  GST_LIBRARY_ERROR_INIT,
-  GST_LIBRARY_ERROR_SHUTDOWN,
-  GST_LIBRARY_ERROR_SETTINGS,
-  GST_LIBRARY_ERROR_ENCODE,
-  GST_LIBRARY_ERROR_NUM_ERRORS
-} GstLibraryError;
-</pre>
-
-<p>Library errors are for errors from the library being used by elements
+		<p>Library errors are for errors from the library being used by elements
 (initializing, finalizing, settings, ...)</p>
 
 
@@ -820,33 +606,11 @@ deciding where to go while developing code.</p>
 
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstResourceError">
-		<h3 id="gstresourceerror">
-		Gst.ResourceError
+		<h3 id="enum-gstresourceerror">
+		enum Gst.ResourceError
 	</h3>
 
-		<pre class="raw_code">
-typedef enum
-{
-  GST_RESOURCE_ERROR_FAILED = 1,
-  GST_RESOURCE_ERROR_TOO_LAZY,
-  GST_RESOURCE_ERROR_NOT_FOUND,
-  GST_RESOURCE_ERROR_BUSY,
-  GST_RESOURCE_ERROR_OPEN_READ,
-  GST_RESOURCE_ERROR_OPEN_WRITE,
-  GST_RESOURCE_ERROR_OPEN_READ_WRITE,
-  GST_RESOURCE_ERROR_CLOSE,
-  GST_RESOURCE_ERROR_READ,
-  GST_RESOURCE_ERROR_WRITE,
-  GST_RESOURCE_ERROR_SEEK,
-  GST_RESOURCE_ERROR_SYNC,
-  GST_RESOURCE_ERROR_SETTINGS,
-  GST_RESOURCE_ERROR_NO_SPACE_LEFT,
-  GST_RESOURCE_ERROR_NOT_AUTHORIZED,
-  GST_RESOURCE_ERROR_NUM_ERRORS
-} GstResourceError;
-</pre>
-
-<p>Resource errors are for any resource used by an element:
+		<p>Resource errors are for any resource used by an element:
 memory, files, network connections, process space, ...
 They're typically used by source and sink elements.</p>
 
@@ -1096,31 +860,11 @@ due to missing authorization.
 
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstStreamError">
-		<h3 id="gststreamerror">
-		Gst.StreamError
+		<h3 id="enum-gststreamerror">
+		enum Gst.StreamError
 	</h3>
 
-		<pre class="raw_code">
-typedef enum
-{
-  GST_STREAM_ERROR_FAILED = 1,
-  GST_STREAM_ERROR_TOO_LAZY,
-  GST_STREAM_ERROR_NOT_IMPLEMENTED,
-  GST_STREAM_ERROR_TYPE_NOT_FOUND,
-  GST_STREAM_ERROR_WRONG_TYPE,
-  GST_STREAM_ERROR_CODEC_NOT_FOUND,
-  GST_STREAM_ERROR_DECODE,
-  GST_STREAM_ERROR_ENCODE,
-  GST_STREAM_ERROR_DEMUX,
-  GST_STREAM_ERROR_MUX,
-  GST_STREAM_ERROR_FORMAT,
-  GST_STREAM_ERROR_DECRYPT,
-  GST_STREAM_ERROR_DECRYPT_NOKEY,
-  GST_STREAM_ERROR_NUM_ERRORS
-} GstStreamError;
-</pre>
-
-<p>Stream errors are for anything related to the stream being processed:
+		<p>Stream errors are for anything related to the stream being processed:
 format errors, media type errors, ...
 They're typically used by decoders, demuxers, converters, ...</p>
 
@@ -1347,14 +1091,25 @@ can't be decrypted because no suitable key is available.</p>
 <h2 class="symbol_section" id="Constants">Constants</h2>
 
 
+<div class="base_symbol_container" data-hotdoc-tags="" id="__GST_ERROR_H__">
+		<h3 class="constant" id="__gst_error_h__-not-introspectable">
+	__GST_ERROR_H__ (not introspectable)
+</h3>
+
+		
+
+</div>
+
+
+
 <div class="base_symbol_container" data-hotdoc-tags="" id="GST_LIBRARY_ERROR">
 		<h3 class="constant" id="gst_library_error-not-introspectable">
 	GST_LIBRARY_ERROR (not introspectable)
 </h3>
 
 		<p>Error domain for library loading. Errors in this domain will
-be from the <a href="../../libgstreamer-doc-1.0/javascript/gsterror.html#GstLibraryError">Gst.LibraryError</a> enumeration.
-See <a href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html#GError">GLib.Error</a> for information on error domains.</p>
+be from the <a href="../../libgstreamer-doc-1.0/gsterror.html#GstLibraryError">Gst.LibraryError</a> enumeration.
+See GError for information on error domains.</p>
 
 
 </div>
@@ -1367,8 +1122,8 @@ See <a href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html
 </h3>
 
 		<p>Error domain for resource handling. Errors in this domain will
-be from the <a href="../../libgstreamer-doc-1.0/javascript/gsterror.html#GstResourceError">Gst.ResourceError</a> enumeration.
-See <a href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html#GError">GLib.Error</a> for information on error domains.</p>
+be from the <a href="../../libgstreamer-doc-1.0/gsterror.html#GstResourceError">Gst.ResourceError</a> enumeration.
+See GError for information on error domains.</p>
 
 
 </div>
@@ -1381,8 +1136,8 @@ See <a href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html
 </h3>
 
 		<p>Error domain for core system. Errors in this domain will
-be from the <a href="../../libgstreamer-doc-1.0/javascript/gsterror.html#GstCoreError">Gst.CoreError</a> enumeration.
-See <a href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html#GError">GLib.Error</a> for information on error domains.</p>
+be from the <a href="../../libgstreamer-doc-1.0/gsterror.html#GstCoreError">Gst.CoreError</a> enumeration.
+See GError for information on error domains.</p>
 
 
 </div>
@@ -1395,8 +1150,8 @@ See <a href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html
 </h3>
 
 		<p>Error domain for media stream processing. Errors in this domain will
-be from the <a href="../../libgstreamer-doc-1.0/javascript/gsterror.html#GstStreamError">Gst.StreamError</a> enumeration.
-See <a href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html#GError">GLib.Error</a> for information on error domains.</p>
+be from the <a href="../../libgstreamer-doc-1.0/gsterror.html#GstStreamError">Gst.StreamError</a> enumeration.
+See GError for information on error domains.</p>
 
 
 </div>
@@ -1409,7 +1164,7 @@ See <a href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html
 </h3>
 
 		<p>Builds a string using errno describing the previously failed system
-call.  To be used as the debug argument in <a href="../../libgstreamer-doc-1.0/c/gstelement.html#GST_ELEMENT_ERROR">GST_ELEMENT_ERROR (not introspectable)</a>.</p>
+call.  To be used as the debug argument in <a href="../../libgstreamer-doc-1.0/gstelement.html#GST_ELEMENT_ERROR">GST_ELEMENT_ERROR (not introspectable)</a>.</p>
 
 
 </div>

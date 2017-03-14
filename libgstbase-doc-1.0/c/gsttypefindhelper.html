@@ -87,8 +87,8 @@
 				
 <div id="page-description" data-hotdoc-source="gsttypefindhelper.h">
 <h1 id="gsttypefindhelper">GstTypeFindHelper</h1><p>Utility functions for elements doing typefinding:
-<a href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#gst_type_find_helper">gst_type_find_helper</a> does typefinding in pull mode, while
-<a href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#gst_type_find_helper_for_buffer">gst_type_find_helper_for_buffer</a> is useful for elements needing to do
+<a href="../../libgstbase-doc-1.0/gsttypefindhelper.html#gst_type_find_helper">gst_type_find_helper</a> does typefinding in pull mode, while
+<a href="../../libgstbase-doc-1.0/gsttypefindhelper.html#gst_type_find_helper_for_buffer">gst_type_find_helper_for_buffer</a> is useful for elements needing to do
 typefinding in push mode from a chain function.</p>
 
 </div>
@@ -105,11 +105,11 @@ typefinding in push mode from a chain function.</p>
 		
 
 <pre class="prototype">
-<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
-gst_type_find_helper (<a title="GstPad" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a> * src,
-                      <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> size)</pre>
+<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
+gst_type_find_helper (<a title="GstPad" href="../../libgstreamer-doc-1.0/gstpad.html#GstPad">GstPad</a> * src,
+                      guint64 size)</pre>
 
-<p>Tries to find what type of data is flowing from the given source <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a>.</p>
+<p>Tries to find what type of data is flowing from the given source <a href="../../libgstreamer-doc-1.0/gstpad.html#GstPad">GstPad</a>.</p>
 <p>Free-function: gst_caps_unref</p>
 
 	<div class="parameter_container">
@@ -122,7 +122,7 @@ gst_type_find_helper (<a title="GstPad" href="../../libgstreamer-doc-1.0/c/gstpa
 		<i><em><code>src:</code></em></i>
 		</p>
 	</td>
-		<td><p>A source <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a></p>
+		<td><p>A source <a href="../../libgstreamer-doc-1.0/gstpad.html#GstPad">GstPad</a></p>
 </td>
 </tr>
 
@@ -155,12 +155,111 @@ gst_type_find_helper (<a title="GstPad" href="../../libgstreamer-doc-1.0/c/gstpa
 				</p>
 	</td>
 	<td>
-		<p>the <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> corresponding to the data
-stream.  Returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if no <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> matches the data stream.</p>
+		<p>the <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> corresponding to the data
+stream.  Returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if no <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> matches the data stream.</p>
 
 	</td>
 	<td>
-		<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+		<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_type_find_helper_for_buffer">
+		<h3 id="gst_type_find_helper_for_buffer1">
+	<span><code>gst_type_find_helper_for_buffer</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
+gst_type_find_helper_for_buffer (<a title="GstObject" href="../../libgstreamer-doc-1.0/gstobject.html#GstObject">GstObject</a> * obj,
+                                 <a title="GstBuffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">GstBuffer</a> * buf,
+                                 <a title="GstTypeFindProbability" href="../../libgstreamer-doc-1.0/gsttypefind.html#GstTypeFindProbability">GstTypeFindProbability</a> * prob)</pre>
+
+<p>Tries to find what type of data is contained in the given <a href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">GstBuffer</a>, the
+assumption being that the buffer represents the beginning of the stream or
+file.</p>
+<p>All available typefinders will be called on the data in order of rank. If
+a typefinding function returns a probability of <a href="../../libgstreamer-doc-1.0/gsttypefind.html#GST_TYPE_FIND_MAXIMUM">GST_TYPE_FIND_MAXIMUM</a>,
+typefinding is stopped immediately and the found caps will be returned
+right away. Otherwise, all available typefind functions will the tried,
+and the caps with the highest probability will be returned, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if
+the content of the buffer could not be identified.</p>
+<p>Free-function: gst_caps_unref</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>obj:</code></em></i>
+		</p>
+	</td>
+		<td><p>object doing the typefinding, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> (used for logging)</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buf:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">GstBuffer</a> with data to typefind</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>prob:</code></em></i>
+		</p>
+	</td>
+		<td><p>location to store the probability of the found
+caps, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a></p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> corresponding to the data,
+or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if no type could be found. The caller should free the caps
+returned with <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstCaps.html#gst-caps-unref">gst_caps_unref</a>.</p>
+
+	</td>
+	<td>
+		<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
 	</td>
 	</tr>
 
@@ -183,17 +282,17 @@ stream.  Returns <a href="https://developer.gnome.org/glib/unstable/glib-Standar
 		
 
 <pre class="prototype">
-<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
-gst_type_find_helper_for_data (<a title="GstObject" href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> * obj,
-                               const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * data,
-                               <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> size,
-                               <a title="GstTypeFindProbability" href="../../libgstreamer-doc-1.0/c/gsttypefind.html#GstTypeFindProbability">GstTypeFindProbability</a> * prob)</pre>
+<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
+gst_type_find_helper_for_data (<a title="GstObject" href="../../libgstreamer-doc-1.0/gstobject.html#GstObject">GstObject</a> * obj,
+                               const guint8* data,
+                               gsize size,
+                               <a title="GstTypeFindProbability" href="../../libgstreamer-doc-1.0/gsttypefind.html#GstTypeFindProbability">GstTypeFindProbability</a> * prob)</pre>
 
 <p>Tries to find what type of data is contained in the given <em>data</em>, the
 assumption being that the data represents the beginning of the stream or
 file.</p>
 <p>All available typefinders will be called on the data in order of rank. If
-a typefinding function returns a probability of <a href="../../libgstreamer-doc-1.0/c/gsttypefind.html#GST_TYPE_FIND_MAXIMUM">GST_TYPE_FIND_MAXIMUM</a>,
+a typefinding function returns a probability of <a href="../../libgstreamer-doc-1.0/gsttypefind.html#GST_TYPE_FIND_MAXIMUM">GST_TYPE_FIND_MAXIMUM</a>,
 typefinding is stopped immediately and the found caps will be returned
 right away. Otherwise, all available typefind functions will the tried,
 and the caps with the highest probability will be returned, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if
@@ -201,7 +300,7 @@ the content of <em>data</em> could not be identified.</p>
 <p>Free-function: gst_caps_unref</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters1">Parameters</h4>
+		<h4 id="parameters2">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -250,105 +349,6 @@ caps, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros
 	</div>
 
 	<div class="multi_return_value_container">
-			<h4 id="returns1">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		<p>the <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> corresponding to the data,
-or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if no type could be found. The caller should free the caps
-returned with <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#gst_caps_unref">gst_caps_unref</a>.</p>
-
-	</td>
-	<td>
-		<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_type_find_helper_for_buffer">
-		<h3 id="gst_type_find_helper_for_buffer1">
-	<span><code>gst_type_find_helper_for_buffer</code></span>
-</h3>
-
-		
-
-<pre class="prototype">
-<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
-gst_type_find_helper_for_buffer (<a title="GstObject" href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> * obj,
-                                 <a title="GstBuffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buf,
-                                 <a title="GstTypeFindProbability" href="../../libgstreamer-doc-1.0/c/gsttypefind.html#GstTypeFindProbability">GstTypeFindProbability</a> * prob)</pre>
-
-<p>Tries to find what type of data is contained in the given <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a>, the
-assumption being that the buffer represents the beginning of the stream or
-file.</p>
-<p>All available typefinders will be called on the data in order of rank. If
-a typefinding function returns a probability of <a href="../../libgstreamer-doc-1.0/c/gsttypefind.html#GST_TYPE_FIND_MAXIMUM">GST_TYPE_FIND_MAXIMUM</a>,
-typefinding is stopped immediately and the found caps will be returned
-right away. Otherwise, all available typefind functions will the tried,
-and the caps with the highest probability will be returned, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if
-the content of the buffer could not be identified.</p>
-<p>Free-function: gst_caps_unref</p>
-
-	<div class="parameter_container">
-		<h4 id="parameters2">Parameters</h4>
-		<table>
-			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>obj:</code></em></i>
-		</p>
-	</td>
-		<td><p>object doing the typefinding, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> (used for logging)</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>buf:</code></em></i>
-		</p>
-	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> with data to typefind</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>prob:</code></em></i>
-		</p>
-	</td>
-		<td><p>location to store the probability of the found
-caps, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a></p>
-</td>
-</tr>
-
-							</tbody>
-		</table>
-	</div>
-
-	<div class="multi_return_value_container">
 			<h4 id="returns2">Returns:</h4>
 		<table>
 		<colgroup>
@@ -363,13 +363,13 @@ caps, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros
 				</p>
 	</td>
 	<td>
-		<p>the <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> corresponding to the data,
+		<p>the <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> corresponding to the data,
 or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if no type could be found. The caller should free the caps
-returned with <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#gst_caps_unref">gst_caps_unref</a>.</p>
+returned with <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstCaps.html#gst-caps-unref">gst_caps_unref</a>.</p>
 
 	</td>
 	<td>
-		<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+		<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
 	</td>
 	</tr>
 
@@ -392,11 +392,11 @@ returned with <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#gst_caps_unref"
 		
 
 <pre class="prototype">
-<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
-gst_type_find_helper_for_extension (<a title="GstObject" href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> * obj,
-                                    const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * extension)</pre>
+<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
+gst_type_find_helper_for_extension (<a title="GstObject" href="../../libgstreamer-doc-1.0/gstobject.html#GstObject">GstObject</a> * obj,
+                                    const gchar* extension)</pre>
 
-<p>Tries to find the best <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> associated with <em>extension</em>.</p>
+<p>Tries to find the best <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> associated with <em>extension</em>.</p>
 <p>All available typefinders will be checked against the extension in order
 of rank. The caps of the first typefinder that can handle <em>extension</em> will be
 returned.</p>
@@ -445,13 +445,13 @@ returned.</p>
 				</p>
 	</td>
 	<td>
-		<p>the <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> corresponding to
+		<p>the <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> corresponding to
 <em>extension</em>, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if no type could be found. The caller should free
-the caps returned with <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#gst_caps_unref">gst_caps_unref</a>.</p>
+the caps returned with <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstCaps.html#gst-caps-unref">gst_caps_unref</a>.</p>
 
 	</td>
 	<td>
-		<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+		<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
 	</td>
 	</tr>
 
@@ -474,15 +474,15 @@ the caps returned with <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#gst_ca
 		
 
 <pre class="prototype">
-<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
-gst_type_find_helper_get_range (<a title="GstObject" href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> * obj,
-                                <a title="GstObject" href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> * parent,
-                                <a title="GstTypeFindHelperGetRangeFunction" href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstTypeFindHelperGetRangeFunction">GstTypeFindHelperGetRangeFunction</a> func,
-                                <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> size,
-                                const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * extension,
-                                <a title="GstTypeFindProbability" href="../../libgstreamer-doc-1.0/c/gsttypefind.html#GstTypeFindProbability">GstTypeFindProbability</a> * prob)</pre>
+<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
+gst_type_find_helper_get_range (<a title="GstObject" href="../../libgstreamer-doc-1.0/gstobject.html#GstObject">GstObject</a> * obj,
+                                <a title="GstObject" href="../../libgstreamer-doc-1.0/gstobject.html#GstObject">GstObject</a> * parent,
+                                GstTypeFindHelperGetRangeFunction func,
+                                guint64 size,
+                                const gchar* extension,
+                                <a title="GstTypeFindProbability" href="../../libgstreamer-doc-1.0/gsttypefind.html#GstTypeFindProbability">GstTypeFindProbability</a> * prob)</pre>
 
-<p>Utility function to do pull-based typefinding. Unlike <a href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#gst_type_find_helper">gst_type_find_helper</a>
+<p>Utility function to do pull-based typefinding. Unlike <a href="../../libgstbase-doc-1.0/gsttypefindhelper.html#gst_type_find_helper">gst_type_find_helper</a>
 however, this function will use the specified function <em>func</em> to obtain the
 data needed by the typefind functions, rather than operating on a given
 source pad. This is useful mostly for elements like tag demuxers which
@@ -505,7 +505,7 @@ in many cases.</p>
 		<i><em><code>obj:</code></em></i>
 		</p>
 	</td>
-		<td><p>A <a href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> that will be passed as first argument to <em>func</em></p>
+		<td><p>A <a href="../../libgstreamer-doc-1.0/gstobject.html#GstObject">GstObject</a> that will be passed as first argument to <em>func</em></p>
 </td>
 </tr>
 
@@ -525,7 +525,7 @@ in many cases.</p>
 		<i><em><code>func:</code></em></i>
 		</p>
 	</td>
-		<td><p>A generic <a href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#GstTypeFindHelperGetRangeFunction">GstTypeFindHelperGetRangeFunction</a> that will
+		<td><p>A generic GstTypeFindHelperGetRangeFunction that will
 be used to access data at random offsets when doing the typefinding</p>
 </td>
 </tr>
@@ -580,12 +580,12 @@ caps, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros
 				</p>
 	</td>
 	<td>
-		<p>the <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> corresponding to the data
-stream.  Returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if no <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> matches the data stream.</p>
+		<p>the <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> corresponding to the data
+stream.  Returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if no <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> matches the data stream.</p>
 
 	</td>
 	<td>
-		<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+		<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
 	</td>
 	</tr>
 
@@ -599,116 +599,17 @@ stream.  Returns <a href="https://developer.gnome.org/glib/unstable/glib-Standar
 </div>
 
 
-<h2 class="symbol_section" id="Callbacks">Callbacks</h2>
+<h2 class="symbol_section" id="Constants">Constants</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstTypeFindHelperGetRangeFunction">
-		<h3 id="gsttypefindhelpergetrangefunction">
-	<span><code>GstTypeFindHelperGetRangeFunction</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="__GST_TYPEFINDHELPER_H__">
+		<h3 class="constant" id="__gst_typefindhelper_h__">
+	__GST_TYPEFINDHELPER_H__
 </h3>
 
-		
-
-<pre class="prototype">
-<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
-(*GstTypeFindHelperGetRangeFunction) (<a title="GstObject" href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> * obj,
-                                      <a title="GstObject" href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> * parent,
-                                      <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset,
-                                      <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> length,
-                                      <a title="GstBuffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> ** buffer)</pre>
-
-<p>This function will be called by <a href="../../libgstbase-doc-1.0/c/gsttypefindhelper.html#gst_type_find_helper_get_range">gst_type_find_helper_get_range</a> when
-typefinding functions request to peek at the data of a stream at certain
-offsets. If this function returns GST_FLOW_OK, the result buffer will be
-stored in <em>buffer</em>. The  contents of <em>buffer</em> is invalid for any other
-return value.</p>
-<p>This function is supposed to behave exactly like a <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPadGetRangeFunction">GstPadGetRangeFunction</a>.</p>
-
-	<div class="parameter_container">
-		<h4 id="parameters5">Parameters</h4>
-		<table>
-			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>obj:</code></em></i>
-		</p>
-	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> that will handle the getrange request</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>parent:</code></em></i>
-		</p>
-	</td>
-		<td><p>the parent of <em>obj</em> or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a></p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>offset:</code></em></i>
-		</p>
-	</td>
-		<td><p>the offset of the range</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>length:</code></em></i>
-		</p>
-	</td>
-		<td><p>the length of the range</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>buffer:</code></em></i>
-		</p>
-	</td>
-		<td><p>a memory location to hold the result buffer</p>
-</td>
-</tr>
-
-							</tbody>
-		</table>
-	</div>
-
-	<div class="multi_return_value_container">
-			<h4 id="returns5">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		<p>GST_FLOW_OK for success</p>
-
-	</td>
-	<td>
-		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
+		<pre class="raw_code">
+#define __GST_TYPEFINDHELPER_H__
+</pre>
 
 
 

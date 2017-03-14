@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>gst-validate-transcoding</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="gst-devtools-doc-1.0" data-hotdoc-ref="gst-validate-transcoding.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gst-validate-transcoding.md">
+<h1 id="gstvalidatetranscoding">gst-validate-transcoding</h1>
+<p><code>gst-validate-transcoding</code> is tool to create media files transcoding
+pipelines running inside the GstValidate monitoring infrastructure.</p>
+<p>You can for example transcode any media file to Vorbis audio + VP8 video
+in a WebM container by doing:</p>
+<pre><code>gst-validate-transcoding-GST_API_VERSION file:///./file.ogg file:///.../transcoded.webm -o 'video/webm:video/x-vp8:audio/x-vorbis'
+</code></pre>
+<p><code>gst-validate-transcoding</code> will list every issue encountered during the
+execution of the transcoding operation in a human readable report like
+the one below:</p>
+<pre><code>issue : buffer is out of the segment range Detected on theoradec0.srcpad
+at 0:00:00.096556426 Details : buffer is out of segment and shouldn't be
+pushed. Timestamp: 0:00:25.000 - duration: 0:00:00.040 Range:
+0:00:00.000 - 0:00:04.520 Description : buffer being pushed is out of
+the current segment's start-stop range. Meaning it is going to be
+discarded downstream without any use
+</code></pre>
+<p>The return code of the process will be 18 in case a <code>CRITICAL</code> issue has
+been found.</p>
+<h2 id="the-encoding-profile-serialization-format-gstvalidatetranscodingencodingprofile">The encoding profile serialization format {#gst-validate-transcoding--encoding-profile}</h2>
+<p>This is the serialization format of a <a href="../gst-plugins-base-pbutils-doc-1.0/encoding-profile.html#GstEncodingProfile">GstEncodingProfile</a>.</p>
+<p>Internally the transcoding application uses <a href="../gst-plugins-base-plugins-doc-1.0/element-encodebin.html#encodebin">GstEncodeBin</a>.
+<code>gst-validate-transcoding-GST_API_VERSION</code> uses its own serialization
+format to describe the <a href="GstEncodeBin--profile"><code>GstEncodeBin.profile</code></a> property of the
+encodebin.</p>
+<p>The simplest serialized profile looks like:</p>
+<pre><code>muxer_source_caps:videoencoder_source_caps:audioencoder_source_caps
+</code></pre>
+<p>For example to encode a stream into a WebM container, with an OGG audio
+stream and a VP8 video stream, the serialized <a href="../gst-plugins-base-pbutils-doc-1.0/encoding-profile.html#GstEncodingProfile">GstEncodingProfile</a>
+will look like:</p>
+<pre><code>video/webm:video/x-vp8:audio/x-vorbis
+</code></pre>
+<p>You can also set the preset name of the encoding profile using the
+caps+preset_name syntax as in:</p>
+<pre><code>video/webm:video/x-vp8+youtube-preset:audio/x-vorbis
+</code></pre>
+<p>Moreover, you can set the <a href="../gst-plugins-base-pbutils-doc-1.0/encoding-profile.html#gst_encoding_profile_set_presence">presence</a> property
+of an encoding profile using the <code>|presence</code> syntax as in:</p>
+<pre><code>video/webm:video/x-vp8|1:audio/x-vorbis
+</code></pre>
+<p>This field allows you to specify how many times maximum a
+<a href="../gst-plugins-base-pbutils-doc-1.0/encoding-profile.html#GstEncodingProfile">GstEncodingProfile</a> can be used inside an encodebin.</p>
+<p>You can also use the <code>restriction_caps-&gt;encoded_format_caps</code> syntax to
+specify the <a href="GstEncodingProfile::restriction-caps">restriction caps</a>
+to be set on a <a href="../gst-plugins-base-pbutils-doc-1.0/encoding-profile.html#GstEncodingProfile">GstEncodingProfile</a>. It
+corresponds to the restriction <a href="../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> to apply before the encoder
+that will be used in the profile. The fields present in restriction caps
+are properties of the raw stream (that is, before encoding), such as
+height and width for video and depth and sampling rate for audio. This
+property does not make sense for muxers.</p>
+<p>To force a video stream to be encoded with a Full HD resolution (using
+WebM as the container format, VP8 as the video codec and Vorbis as the
+audio codec), you should use:</p>
+<pre><code>video/webm:video/x-raw,width=1920,height=1080-&gt;video/x-vp8:audio/x-vorbis
+</code></pre>
+<h3 id="some-serialized-encoding-formats-examples">Some serialized encoding formats examples:</h3>
+<p>MP3 audio and H264 in MP4:</p>
+<div class="informalexample">
+<pre><code>video/quicktime,variant=iso:video/x-h264:audio/mpeg,mpegversion=1,layer=3
+</code></pre>
+</div>
+<p>Vorbis and theora in OGG:</p>
+<div class="informalexample">
+<pre><code>application/ogg:video/x-theora:audio/x-vorbis
+</code></pre>
+</div>
+<p>AC3 and H264 in MPEG-TS:</p>
+<div class="informalexample">
+<pre><code>video/mpegts:video/x-h264:audio/x-ac3
+</code></pre>
+</div>
+<h1 id="invocation">Invocation</h1>
+<p><code>gst-validate-transcoding</code> takes and input URI and an output URI, plus a
+few options to control how transcoding should be tested.</p>
+<h2 id="options-gstvalidatetranscodingoptions">Options {#gst-validate-transcoding.options}</h2>
+<p><code>--set-scenario</code>: Let you set a scenario, it can be a full path to a scenario file or
+the name of the scenario (name of the file without the <code>.scenario</code>
+extension).</p>
+<p><code>-l</code>, <code>--list-scenarios</code>: List the avalaible scenarios that can be run.</p>
+<p><code>--scenarios-defs-output-file</code>: The output file to store scenarios details. Implies
+<code>--list-scenario</code>.</p>
+<p><code>-t</code>, <code>--inspect-action-type</code>: Inspect the avalaible action types with which to write scenarios if
+no parameter passed, it will list all avalaible action types
+otherwize will print the full description of the wanted types.</p>
+<p><code>--set-configs</code>: Let you set a config scenario. The scenario needs to be set as
+<code>config</code>. You can specify a list of scenarios separated by <code>:</code>. It
+will override the GST_VALIDATE_SCENARIO environment variable.</p>
+<p><code>-e</code>, <code>--eos-on-shutdown</code>: If an EOS event should be sent to the pipeline if an interrupt is
+received, instead of forcing the pipeline to stop. Sending an EOS
+will allow the transcoding to finish the files properly before
+exiting.</p>
+<p><code>-r</code>, <code>--force-reencoding</code>: Whether to try to force reencoding, meaning trying to only remux if
+possible, defaults to <code>TRUE</code>.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -95,19 +95,24 @@ codec profile and level in human-readable string form from header data.</p>
 <h2 class="symbol_section" id="Functions">Functions</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_aac_get_sample_rate_from_index">
-		<h3 id="gst_codec_utils_aac_get_sample_rate_from_index1">
-	<span><code>gst_codec_utils_aac_get_sample_rate_from_index</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_aac_caps_set_level_and_profile">
+		<h3 id="gst_codec_utils_aac_caps_set_level_and_profile1">
+	<span><code>gst_codec_utils_aac_caps_set_level_and_profile</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>
-gst_codec_utils_aac_get_sample_rate_from_index (<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> sr_idx)</pre>
+gboolean
+gst_codec_utils_aac_caps_set_level_and_profile (<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> * caps,
+                                                const guint8* audio_config,
+                                                guint len)</pre>
 
-<p>Translates the sample rate index found in AAC headers to the actual sample
-rate.</p>
+<p>Sets the level and profile on <em>caps</em> if it can be determined from
+<em>audio_config</em>. See <a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_aac_get_level">gst_codec_utils_aac_get_level</a> and
+<a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_aac_get_profile">gst_codec_utils_aac_get_profile</a> for more details on the parameters.
+<em>caps</em> must be audio/mpeg caps with an "mpegversion" field of either 2 or 4.
+If mpegversion is 4, the "base-profile" field is also set in <em>caps</em>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters">Parameters</h4>
@@ -116,11 +121,32 @@ rate.</p>
 									<tr>
 		<td>
 		<p>
-		<i><em><code>sr_idx:</code></em></i>
+		<i><em><code>caps:</code></em></i>
 		</p>
 	</td>
-		<td><p>Sample rate index as from the AudioSpecificConfig (MPEG-4
-container) or ADTS frame header</p>
+		<td><p>the <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> to which level and profile fields are to be added</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>audio_config:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to the AudioSpecificConfig as specified in the
+Elementary Stream Descriptor (esds) in ISO/IEC 14496-1 (see
+below for a more details).</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>len:</code></em></i>
+		</p>
+	</td>
+		<td><p>Length of <em>audio_config</em> in bytes</p>
 </td>
 </tr>
 
@@ -143,11 +169,88 @@ container) or ADTS frame header</p>
 				</p>
 	</td>
 	<td>
-		<p>The sample rate if <em>sr_idx</em> is valid, 0 otherwise.</p>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the level and profile could be set, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
 
 	</td>
 	<td>
-		<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>
+		gboolean
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_aac_get_channels">
+		<h3 id="gst_codec_utils_aac_get_channels1">
+	<span><code>gst_codec_utils_aac_get_channels</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+guint
+gst_codec_utils_aac_get_channels (const guint8* audio_config,
+                                  guint len)</pre>
+
+<p>Returns the channels of the given AAC stream.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>audio_config:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to the AudioSpecificConfig as specified in the
+Elementary Stream Descriptor (esds) in ISO/IEC 14496-1.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>len:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The channels or 0 if the channel could not be determined.</p>
+<p>Since 1.10</p>
+
+	</td>
+	<td>
+		guint
 	</td>
 	</tr>
 
@@ -170,13 +273,13 @@ container) or ADTS frame header</p>
 		
 
 <pre class="prototype">
-<a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a>
-gst_codec_utils_aac_get_index_from_sample_rate (<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> rate)</pre>
+gint
+gst_codec_utils_aac_get_index_from_sample_rate (guint rate)</pre>
 
 <p>Translates the sample rate to the index corresponding to it in AAC spec.</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters1">Parameters</h4>
+		<h4 id="parameters2">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -186,90 +289,6 @@ gst_codec_utils_aac_get_index_from_sample_rate (<a title="guint" href="https://d
 		</p>
 	</td>
 		<td><p>Sample rate</p>
-</td>
-</tr>
-
-							</tbody>
-		</table>
-	</div>
-
-	<div class="multi_return_value_container">
-			<h4 id="returns1">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		<p>The AAC index for this sample rate, -1 if the rate is not a
-valid AAC sample rate.</p>
-
-	</td>
-	<td>
-		<a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a>
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_aac_get_profile">
-		<h3 id="gst_codec_utils_aac_get_profile1">
-	<span><code>gst_codec_utils_aac_get_profile</code></span>
-</h3>
-
-		
-
-<pre class="prototype">
-const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-gst_codec_utils_aac_get_profile (const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * audio_config,
-                                 <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
-
-<p>Returns the profile of the given AAC stream as a string. The profile is
-determined using the AudioObjectType field which is in the first 5 bits of
-<em>audio_config</em>.</p>
-<blockquote>
-<p>HE-AAC support has not yet been implemented.</p>
-</blockquote>
-
-	<div class="parameter_container">
-		<h4 id="parameters2">Parameters</h4>
-		<table>
-			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>audio_config:</code></em></i>
-		</p>
-	</td>
-		<td><p>a pointer to the AudioSpecificConfig as specified in the
-Elementary Stream Descriptor (esds) in ISO/IEC 14496-1 (see
-<a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_aac_get_level">gst_codec_utils_aac_get_level</a> for a more details).</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>len:</code></em></i>
-		</p>
-	</td>
-		<td><p>Length of <em>audio_config</em> in bytes</p>
 </td>
 </tr>
 
@@ -292,12 +311,12 @@ Elementary Stream Descriptor (esds) in ISO/IEC 14496-1 (see
 				</p>
 	</td>
 	<td>
-		<p>The profile as a const string and <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if the profile could not be
-determined.</p>
+		<p>The AAC index for this sample rate, -1 if the rate is not a
+valid AAC sample rate.</p>
 
 	</td>
 	<td>
-		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+		gint
 	</td>
 	</tr>
 
@@ -320,9 +339,9 @@ determined.</p>
 		
 
 <pre class="prototype">
-const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-gst_codec_utils_aac_get_level (const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * audio_config,
-                               <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+const gchar*
+gst_codec_utils_aac_get_level (const guint8* audio_config,
+                               guint len)</pre>
 
 <p>Determines the level of a stream as defined in ISO/IEC 14496-3. For AAC LC
 streams, the constraints from the AAC audio profile are applied. For AAC
@@ -389,7 +408,7 @@ determined.</p>
 
 	</td>
 	<td>
-		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+		const gchar*
 	</td>
 	</tr>
 
@@ -404,20 +423,24 @@ determined.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_aac_get_sample_rate">
-		<h3 id="gst_codec_utils_aac_get_sample_rate1">
-	<span><code>gst_codec_utils_aac_get_sample_rate</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_aac_get_profile">
+		<h3 id="gst_codec_utils_aac_get_profile1">
+	<span><code>gst_codec_utils_aac_get_profile</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>
-gst_codec_utils_aac_get_sample_rate (const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * audio_config,
-                                     <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+const gchar*
+gst_codec_utils_aac_get_profile (const guint8* audio_config,
+                                 guint len)</pre>
 
-<p>Translates the sample rate index found in AAC headers to the actual sample
-rate.</p>
+<p>Returns the profile of the given AAC stream as a string. The profile is
+determined using the AudioObjectType field which is in the first 5 bits of
+<em>audio_config</em>.</p>
+<blockquote>
+<p>HE-AAC support has not yet been implemented.</p>
+</blockquote>
 
 	<div class="parameter_container">
 		<h4 id="parameters4">Parameters</h4>
@@ -430,7 +453,8 @@ rate.</p>
 		</p>
 	</td>
 		<td><p>a pointer to the AudioSpecificConfig as specified in the
-Elementary Stream Descriptor (esds) in ISO/IEC 14496-1.</p>
+Elementary Stream Descriptor (esds) in ISO/IEC 14496-1 (see
+<a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_aac_get_level">gst_codec_utils_aac_get_level</a> for a more details).</p>
 </td>
 </tr>
 
@@ -463,12 +487,12 @@ Elementary Stream Descriptor (esds) in ISO/IEC 14496-1.</p>
 				</p>
 	</td>
 	<td>
-		<p>The sample rate if sr_idx is valid, 0 otherwise.</p>
-<p>Since 1.10</p>
+		<p>The profile as a const string and <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if the profile could not be
+determined.</p>
 
 	</td>
 	<td>
-		<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>
+		const gchar*
 	</td>
 	</tr>
 
@@ -483,19 +507,20 @@ Elementary Stream Descriptor (esds) in ISO/IEC 14496-1.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_aac_get_channels">
-		<h3 id="gst_codec_utils_aac_get_channels1">
-	<span><code>gst_codec_utils_aac_get_channels</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_aac_get_sample_rate">
+		<h3 id="gst_codec_utils_aac_get_sample_rate1">
+	<span><code>gst_codec_utils_aac_get_sample_rate</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>
-gst_codec_utils_aac_get_channels (const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * audio_config,
-                                  <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+guint
+gst_codec_utils_aac_get_sample_rate (const guint8* audio_config,
+                                     guint len)</pre>
 
-<p>Returns the channels of the given AAC stream.</p>
+<p>Translates the sample rate index found in AAC headers to the actual sample
+rate.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters5">Parameters</h4>
@@ -518,7 +543,8 @@ Elementary Stream Descriptor (esds) in ISO/IEC 14496-1.</p>
 		<i><em><code>len:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>Length of <em>audio_config</em> in bytes</p>
+</td>
 </tr>
 
 							</tbody>
@@ -540,12 +566,12 @@ Elementary Stream Descriptor (esds) in ISO/IEC 14496-1.</p>
 				</p>
 	</td>
 	<td>
-		<p>The channels or 0 if the channel could not be determined.</p>
+		<p>The sample rate if sr_idx is valid, 0 otherwise.</p>
 <p>Since 1.10</p>
 
 	</td>
 	<td>
-		<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>
+		guint
 	</td>
 	</tr>
 
@@ -560,24 +586,19 @@ Elementary Stream Descriptor (esds) in ISO/IEC 14496-1.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_aac_caps_set_level_and_profile">
-		<h3 id="gst_codec_utils_aac_caps_set_level_and_profile1">
-	<span><code>gst_codec_utils_aac_caps_set_level_and_profile</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_aac_get_sample_rate_from_index">
+		<h3 id="gst_codec_utils_aac_get_sample_rate_from_index1">
+	<span><code>gst_codec_utils_aac_get_sample_rate_from_index</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
-gst_codec_utils_aac_caps_set_level_and_profile (<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps,
-                                                const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * audio_config,
-                                                <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+guint
+gst_codec_utils_aac_get_sample_rate_from_index (guint sr_idx)</pre>
 
-<p>Sets the level and profile on <em>caps</em> if it can be determined from
-<em>audio_config</em>. See <a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_aac_get_level">gst_codec_utils_aac_get_level</a> and
-<a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_aac_get_profile">gst_codec_utils_aac_get_profile</a> for more details on the parameters.
-<em>caps</em> must be audio/mpeg caps with an "mpegversion" field of either 2 or 4.
-If mpegversion is 4, the "base-profile" field is also set in <em>caps</em>.</p>
+<p>Translates the sample rate index found in AAC headers to the actual sample
+rate.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters6">Parameters</h4>
@@ -586,32 +607,11 @@ If mpegversion is 4, the "base-profile" field is also set in <em>caps</em>.</p>
 									<tr>
 		<td>
 		<p>
-		<i><em><code>caps:</code></em></i>
+		<i><em><code>sr_idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> to which level and profile fields are to be added</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>audio_config:</code></em></i>
-		</p>
-	</td>
-		<td><p>a pointer to the AudioSpecificConfig as specified in the
-Elementary Stream Descriptor (esds) in ISO/IEC 14496-1 (see
-below for a more details).</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>len:</code></em></i>
-		</p>
-	</td>
-		<td><p>Length of <em>audio_config</em> in bytes</p>
+		<td><p>Sample rate index as from the AudioSpecificConfig (MPEG-4
+container) or ADTS frame header</p>
 </td>
 </tr>
 
@@ -634,11 +634,11 @@ below for a more details).</p>
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the level and profile could be set, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
+		<p>The sample rate if <em>sr_idx</em> is valid, 0 otherwise.</p>
 
 	</td>
 	<td>
-		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+		guint
 	</td>
 	</tr>
 
@@ -653,38 +653,37 @@ below for a more details).</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h264_get_profile">
-		<h3 id="gst_codec_utils_h264_get_profile1">
-	<span><code>gst_codec_utils_h264_get_profile</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h264_caps_set_level_and_profile">
+		<h3 id="gst_codec_utils_h264_caps_set_level_and_profile1">
+	<span><code>gst_codec_utils_h264_caps_set_level_and_profile</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-gst_codec_utils_h264_get_profile (const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * sps,
-                                  <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+gboolean
+gst_codec_utils_h264_caps_set_level_and_profile (<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> * caps,
+                                                 const guint8* sps,
+                                                 guint len)</pre>
 
-<p>Converts the profile indication (profile_idc) in the stream's
-sequence parameter set into a string. The SPS is expected to have the
-following format, as defined in the H.264 specification. The SPS is viewed
-as a bitstream here, with bit 0 being the most significant bit of the first
-byte.</p>
-<ul>
-<li>Bit 0:7   - Profile indication</li>
-<li>Bit 8     - constraint_set0_flag</li>
-<li>Bit 9     - constraint_set1_flag</li>
-<li>Bit 10    - constraint_set2_flag</li>
-<li>Bit 11    - constraint_set3_flag</li>
-<li>Bit 12    - constraint_set3_flag</li>
-<li>Bit 13:15 - Reserved</li>
-<li>Bit 16:24 - Level indication</li>
-</ul>
+<p>Sets the level and profile in <em>caps</em> if it can be determined from <em>sps</em>. See
+<a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_h264_get_level">gst_codec_utils_h264_get_level</a> and <a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_h264_get_profile">gst_codec_utils_h264_get_profile</a>
+for more details on the parameters.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters7">Parameters</h4>
 		<table>
 			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> to which the level and profile are to be added</p>
+</td>
+</tr>
+
 									<tr>
 		<td>
 		<p>
@@ -724,11 +723,11 @@ byte.</p>
 				</p>
 	</td>
 	<td>
-		<p>The profile as a const string, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if there is an error.</p>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the level and profile could be set, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
 
 	</td>
 	<td>
-		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+		gboolean
 	</td>
 	</tr>
 
@@ -751,13 +750,13 @@ byte.</p>
 		
 
 <pre class="prototype">
-const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-gst_codec_utils_h264_get_level (const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * sps,
-                                <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+const gchar*
+gst_codec_utils_h264_get_level (const guint8* sps,
+                                guint len)</pre>
 
 <p>Converts the level indication (level_idc) in the stream's
 sequence parameter set into a string. The SPS is expected to have the
-same format as for <a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_h264_get_profile">gst_codec_utils_h264_get_profile</a>.</p>
+same format as for <a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_h264_get_profile">gst_codec_utils_h264_get_profile</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters8">Parameters</h4>
@@ -806,7 +805,7 @@ same format as for <a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils
 
 	</td>
 	<td>
-		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+		const gchar*
 	</td>
 	</tr>
 
@@ -829,8 +828,8 @@ same format as for <a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils
 		
 
 <pre class="prototype">
-<a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a>
-gst_codec_utils_h264_get_level_idc (const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * level)</pre>
+guint8
+gst_codec_utils_h264_get_level_idc (const gchar* level)</pre>
 
 <p>Transform a level string from the caps into the level_idc</p>
 
@@ -871,7 +870,7 @@ gst_codec_utils_h264_get_level_idc (const <a title="gchar" href="https://develop
 
 	</td>
 	<td>
-		<a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a>
+		guint8
 	</td>
 	</tr>
 
@@ -886,37 +885,38 @@ gst_codec_utils_h264_get_level_idc (const <a title="gchar" href="https://develop
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h264_caps_set_level_and_profile">
-		<h3 id="gst_codec_utils_h264_caps_set_level_and_profile1">
-	<span><code>gst_codec_utils_h264_caps_set_level_and_profile</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h264_get_profile">
+		<h3 id="gst_codec_utils_h264_get_profile1">
+	<span><code>gst_codec_utils_h264_get_profile</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
-gst_codec_utils_h264_caps_set_level_and_profile (<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps,
-                                                 const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * sps,
-                                                 <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+const gchar*
+gst_codec_utils_h264_get_profile (const guint8* sps,
+                                  guint len)</pre>
 
-<p>Sets the level and profile in <em>caps</em> if it can be determined from <em>sps</em>. See
-<a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_h264_get_level">gst_codec_utils_h264_get_level</a> and <a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_h264_get_profile">gst_codec_utils_h264_get_profile</a>
-for more details on the parameters.</p>
+<p>Converts the profile indication (profile_idc) in the stream's
+sequence parameter set into a string. The SPS is expected to have the
+following format, as defined in the H.264 specification. The SPS is viewed
+as a bitstream here, with bit 0 being the most significant bit of the first
+byte.</p>
+<ul>
+<li>Bit 0:7   - Profile indication</li>
+<li>Bit 8     - constraint_set0_flag</li>
+<li>Bit 9     - constraint_set1_flag</li>
+<li>Bit 10    - constraint_set2_flag</li>
+<li>Bit 11    - constraint_set3_flag</li>
+<li>Bit 12    - constraint_set3_flag</li>
+<li>Bit 13:15 - Reserved</li>
+<li>Bit 16:24 - Level indication</li>
+</ul>
 
 	<div class="parameter_container">
 		<h4 id="parameters10">Parameters</h4>
 		<table>
 			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>caps:</code></em></i>
-		</p>
-	</td>
-		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> to which the level and profile are to be added</p>
-</td>
-</tr>
-
 									<tr>
 		<td>
 		<p>
@@ -956,11 +956,11 @@ for more details on the parameters.</p>
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the level and profile could be set, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
+		<p>The profile as a const string, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if there is an error.</p>
 
 	</td>
 	<td>
-		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+		const gchar*
 	</td>
 	</tr>
 
@@ -975,35 +975,23 @@ for more details on the parameters.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h265_get_profile">
-		<h3 id="gst_codec_utils_h265_get_profile1">
-	<span><code>gst_codec_utils_h265_get_profile</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h265_caps_set_level_tier_and_profile">
+		<h3 id="gst_codec_utils_h265_caps_set_level_tier_and_profile1">
+	<span><code>gst_codec_utils_h265_caps_set_level_tier_and_profile</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-gst_codec_utils_h265_get_profile (const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * profile_tier_level,
-                                  <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+gboolean
+gst_codec_utils_h265_caps_set_level_tier_and_profile (<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> * caps,
+                                                      const guint8* profile_tier_level,
+                                                      guint len)</pre>
 
-<p>Converts the profile indication (general_profile_idc) in the stream's
-profile_level_tier structure into a string. The profile_tier_level is
-expected to have the following format, as defined in the H.265
-specification. The profile_tier_level is viewed as a bitstream here,
-with bit 0 being the most significant bit of the first byte.</p>
-<ul>
-<li>Bit 0:1   - general_profile_space</li>
-<li>Bit 2     - general_tier_flag</li>
-<li>Bit 3:7   - general_profile_idc</li>
-<li>Bit 8:39  - gernal_profile_compatibility_flags</li>
-<li>Bit 40    - general_progressive_source_flag</li>
-<li>Bit 41    - general_interlaced_source_flag</li>
-<li>Bit 42    - general_non_packed_constraint_flag</li>
-<li>Bit 43    - general_frame_only_constraint_flag</li>
-<li>Bit 44:87 - general_reserved_zero_44bits</li>
-<li>Bit 88:95 - general_level_idc</li>
-</ul>
+<p>Sets the level, tier and profile in <em>caps</em> if it can be determined from
+<em>profile_tier_level</em>. See <a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_h265_get_level">gst_codec_utils_h265_get_level</a>,
+<a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_h265_get_tier">gst_codec_utils_h265_get_tier</a> and <a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_h265_get_profile">gst_codec_utils_h265_get_profile</a>
+for more details on the parameters.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters11">Parameters</h4>
@@ -1012,11 +1000,20 @@ with bit 0 being the most significant bit of the first byte.</p>
 									<tr>
 		<td>
 		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> to which the level, tier and profile are to be added</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
 		<i><em><code>profile_tier_level:</code></em></i>
 		</p>
 	</td>
-		<td><p>Pointer to the profile_tier_level
-structure for the stream.</p>
+		<td><p>Pointer to the profile_tier_level struct</p>
 </td>
 </tr>
 
@@ -1026,7 +1023,7 @@ structure for the stream.</p>
 		<i><em><code>len:</code></em></i>
 		</p>
 	</td>
-		<td><p>Length of the data available in <em>profile_tier_level</em></p>
+		<td><p>Length of the data available in <em>profile_tier_level</em>.</p>
 </td>
 </tr>
 
@@ -1049,12 +1046,12 @@ structure for the stream.</p>
 				</p>
 	</td>
 	<td>
-		<p>The profile as a const string, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if there is an error.</p>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the level, tier, profile could be set, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
 <p>Since 1.4</p>
 
 	</td>
 	<td>
-		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+		gboolean
 	</td>
 	</tr>
 
@@ -1069,21 +1066,21 @@ structure for the stream.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h265_get_tier">
-		<h3 id="gst_codec_utils_h265_get_tier1">
-	<span><code>gst_codec_utils_h265_get_tier</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h265_get_level">
+		<h3 id="gst_codec_utils_h265_get_level1">
+	<span><code>gst_codec_utils_h265_get_level</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-gst_codec_utils_h265_get_tier (const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * profile_tier_level,
-                               <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+const gchar*
+gst_codec_utils_h265_get_level (const guint8* profile_tier_level,
+                                guint len)</pre>
 
-<p>Converts the tier indication (general_tier_flag) in the stream's
-profile_tier_level structure into a string. The profile_tier_level
-is expected to have the same format as for <a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_h264_get_profile">gst_codec_utils_h264_get_profile</a>.</p>
+<p>Converts the level indication (general_level_idc) in the stream's
+profile_tier_level structure into a string. The profiel_tier_level is
+expected to have the same format as for <a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_h264_get_profile">gst_codec_utils_h264_get_profile</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters12">Parameters</h4>
@@ -1096,7 +1093,7 @@ is expected to have the same format as for <a href="../../gst-plugins-base-pbuti
 		</p>
 	</td>
 		<td><p>Pointer to the profile_tier_level structure
-for the stream.</p>
+for the stream</p>
 </td>
 </tr>
 
@@ -1129,92 +1126,12 @@ for the stream.</p>
 				</p>
 	</td>
 	<td>
-		<p>The tier as a const string, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if there is an error.</p>
-<p>Since 1.4</p>
-
-	</td>
-	<td>
-		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h265_get_level">
-		<h3 id="gst_codec_utils_h265_get_level1">
-	<span><code>gst_codec_utils_h265_get_level</code></span>
-</h3>
-
-		
-
-<pre class="prototype">
-const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-gst_codec_utils_h265_get_level (const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * profile_tier_level,
-                                <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
-
-<p>Converts the level indication (general_level_idc) in the stream's
-profile_tier_level structure into a string. The profiel_tier_level is
-expected to have the same format as for <a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_h264_get_profile">gst_codec_utils_h264_get_profile</a>.</p>
-
-	<div class="parameter_container">
-		<h4 id="parameters13">Parameters</h4>
-		<table>
-			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>profile_tier_level:</code></em></i>
-		</p>
-	</td>
-		<td><p>Pointer to the profile_tier_level structure
-for the stream</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>len:</code></em></i>
-		</p>
-	</td>
-		<td><p>Length of the data available in <em>profile_tier_level</em>.</p>
-</td>
-</tr>
-
-							</tbody>
-		</table>
-	</div>
-
-	<div class="multi_return_value_container">
-			<h4 id="returns13">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
 		<p>The level as a const string, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if there is an error.</p>
 <p>Since 1.4</p>
 
 	</td>
 	<td>
-		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+		const gchar*
 	</td>
 	</tr>
 
@@ -1237,13 +1154,13 @@ for the stream</p>
 		
 
 <pre class="prototype">
-<a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a>
-gst_codec_utils_h265_get_level_idc (const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * level)</pre>
+guint8
+gst_codec_utils_h265_get_level_idc (const gchar* level)</pre>
 
 <p>Transform a level string from the caps into the level_idc</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters14">Parameters</h4>
+		<h4 id="parameters13">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -1253,6 +1170,100 @@ gst_codec_utils_h265_get_level_idc (const <a title="gchar" href="https://develop
 		</p>
 	</td>
 		<td><p>A level string from caps</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the level_idc or 0 if the level is unknown</p>
+<p>Since 1.4</p>
+
+	</td>
+	<td>
+		guint8
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h265_get_profile">
+		<h3 id="gst_codec_utils_h265_get_profile1">
+	<span><code>gst_codec_utils_h265_get_profile</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const gchar*
+gst_codec_utils_h265_get_profile (const guint8* profile_tier_level,
+                                  guint len)</pre>
+
+<p>Converts the profile indication (general_profile_idc) in the stream's
+profile_level_tier structure into a string. The profile_tier_level is
+expected to have the following format, as defined in the H.265
+specification. The profile_tier_level is viewed as a bitstream here,
+with bit 0 being the most significant bit of the first byte.</p>
+<ul>
+<li>Bit 0:1   - general_profile_space</li>
+<li>Bit 2     - general_tier_flag</li>
+<li>Bit 3:7   - general_profile_idc</li>
+<li>Bit 8:39  - gernal_profile_compatibility_flags</li>
+<li>Bit 40    - general_progressive_source_flag</li>
+<li>Bit 41    - general_interlaced_source_flag</li>
+<li>Bit 42    - general_non_packed_constraint_flag</li>
+<li>Bit 43    - general_frame_only_constraint_flag</li>
+<li>Bit 44:87 - general_reserved_zero_44bits</li>
+<li>Bit 88:95 - general_level_idc</li>
+</ul>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>profile_tier_level:</code></em></i>
+		</p>
+	</td>
+		<td><p>Pointer to the profile_tier_level
+structure for the stream.</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>len:</code></em></i>
+		</p>
+	</td>
+		<td><p>Length of the data available in <em>profile_tier_level</em></p>
 </td>
 </tr>
 
@@ -1275,12 +1286,12 @@ gst_codec_utils_h265_get_level_idc (const <a title="gchar" href="https://develop
 				</p>
 	</td>
 	<td>
-		<p>the level_idc or 0 if the level is unknown</p>
+		<p>The profile as a const string, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if there is an error.</p>
 <p>Since 1.4</p>
 
 	</td>
 	<td>
-		<a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a>
+		const gchar*
 	</td>
 	</tr>
 
@@ -1295,23 +1306,21 @@ gst_codec_utils_h265_get_level_idc (const <a title="gchar" href="https://develop
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h265_caps_set_level_tier_and_profile">
-		<h3 id="gst_codec_utils_h265_caps_set_level_tier_and_profile1">
-	<span><code>gst_codec_utils_h265_caps_set_level_tier_and_profile</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_h265_get_tier">
+		<h3 id="gst_codec_utils_h265_get_tier1">
+	<span><code>gst_codec_utils_h265_get_tier</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
-gst_codec_utils_h265_caps_set_level_tier_and_profile (<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps,
-                                                      const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * profile_tier_level,
-                                                      <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+const gchar*
+gst_codec_utils_h265_get_tier (const guint8* profile_tier_level,
+                               guint len)</pre>
 
-<p>Sets the level, tier and profile in <em>caps</em> if it can be determined from
-<em>profile_tier_level</em>. See <a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_h265_get_level">gst_codec_utils_h265_get_level</a>,
-<a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_h265_get_tier">gst_codec_utils_h265_get_tier</a> and <a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_h265_get_profile">gst_codec_utils_h265_get_profile</a>
-for more details on the parameters.</p>
+<p>Converts the tier indication (general_tier_flag) in the stream's
+profile_tier_level structure into a string. The profile_tier_level
+is expected to have the same format as for <a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_h264_get_profile">gst_codec_utils_h264_get_profile</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters15">Parameters</h4>
@@ -1320,20 +1329,11 @@ for more details on the parameters.</p>
 									<tr>
 		<td>
 		<p>
-		<i><em><code>caps:</code></em></i>
-		</p>
-	</td>
-		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> to which the level, tier and profile are to be added</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
 		<i><em><code>profile_tier_level:</code></em></i>
 		</p>
 	</td>
-		<td><p>Pointer to the profile_tier_level struct</p>
+		<td><p>Pointer to the profile_tier_level structure
+for the stream.</p>
 </td>
 </tr>
 
@@ -1366,12 +1366,12 @@ for more details on the parameters.</p>
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the level, tier, profile could be set, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
+		<p>The tier as a const string, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if there is an error.</p>
 <p>Since 1.4</p>
 
 	</td>
 	<td>
-		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+		const gchar*
 	</td>
 	</tr>
 
@@ -1386,27 +1386,38 @@ for more details on the parameters.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_mpeg4video_get_profile">
-		<h3 id="gst_codec_utils_mpeg4video_get_profile1">
-	<span><code>gst_codec_utils_mpeg4video_get_profile</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_mpeg4video_caps_set_level_and_profile">
+		<h3 id="gst_codec_utils_mpeg4video_caps_set_level_and_profile1">
+	<span><code>gst_codec_utils_mpeg4video_caps_set_level_and_profile</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-gst_codec_utils_mpeg4video_get_profile (const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * vis_obj_seq,
-                                        <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+gboolean
+gst_codec_utils_mpeg4video_caps_set_level_and_profile (<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> * caps,
+                                                       const guint8* vis_obj_seq,
+                                                       guint len)</pre>
 
-<p>Converts the profile indication in the stream's visual object sequence into
-a string. <em>vis_obj_seq</em> is expected to be the data following the visual
-object sequence start code. Only the first byte
-(profile_and_level_indication) is used.</p>
+<p>Sets the level and profile in <em>caps</em> if it can be determined from
+<em>vis_obj_seq</em>. See <a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_mpeg4video_get_level">gst_codec_utils_mpeg4video_get_level</a> and
+<a href="../../gst-plugins-base-pbutils-doc-1.0/codec-utils.html#gst_codec_utils_mpeg4video_get_profile">gst_codec_utils_mpeg4video_get_profile</a> for more details on the
+parameters.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters16">Parameters</h4>
 		<table>
 			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> to which the level and profile are to be added</p>
+</td>
+</tr>
+
 									<tr>
 		<td>
 		<p>
@@ -1446,11 +1457,11 @@ object sequence start code. Only the first byte
 				</p>
 	</td>
 	<td>
-		<p>The profile as a const string, or NULL if there is an error.</p>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the level and profile could be set, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
 
 	</td>
 	<td>
-		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+		gboolean
 	</td>
 	</tr>
 
@@ -1473,9 +1484,9 @@ object sequence start code. Only the first byte
 		
 
 <pre class="prototype">
-const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-gst_codec_utils_mpeg4video_get_level (const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * vis_obj_seq,
-                                      <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+const gchar*
+gst_codec_utils_mpeg4video_get_level (const guint8* vis_obj_seq,
+                                      guint len)</pre>
 
 <p>Converts the level indication in the stream's visual object sequence into
 a string. <em>vis_obj_seq</em> is expected to be the data following the visual
@@ -1529,7 +1540,7 @@ object sequence start code. Only the first byte
 
 	</td>
 	<td>
-		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+		const gchar*
 	</td>
 	</tr>
 
@@ -1544,38 +1555,27 @@ object sequence start code. Only the first byte
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_mpeg4video_caps_set_level_and_profile">
-		<h3 id="gst_codec_utils_mpeg4video_caps_set_level_and_profile1">
-	<span><code>gst_codec_utils_mpeg4video_caps_set_level_and_profile</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_codec_utils_mpeg4video_get_profile">
+		<h3 id="gst_codec_utils_mpeg4video_get_profile1">
+	<span><code>gst_codec_utils_mpeg4video_get_profile</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
-gst_codec_utils_mpeg4video_caps_set_level_and_profile (<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps,
-                                                       const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * vis_obj_seq,
-                                                       <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> len)</pre>
+const gchar*
+gst_codec_utils_mpeg4video_get_profile (const guint8* vis_obj_seq,
+                                        guint len)</pre>
 
-<p>Sets the level and profile in <em>caps</em> if it can be determined from
-<em>vis_obj_seq</em>. See <a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_mpeg4video_get_level">gst_codec_utils_mpeg4video_get_level</a> and
-<a href="../../gst-plugins-base-pbutils-doc-1.0/c/codec-utils.html#gst_codec_utils_mpeg4video_get_profile">gst_codec_utils_mpeg4video_get_profile</a> for more details on the
-parameters.</p>
+<p>Converts the profile indication in the stream's visual object sequence into
+a string. <em>vis_obj_seq</em> is expected to be the data following the visual
+object sequence start code. Only the first byte
+(profile_and_level_indication) is used.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters18">Parameters</h4>
 		<table>
 			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>caps:</code></em></i>
-		</p>
-	</td>
-		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> to which the level and profile are to be added</p>
-</td>
-</tr>
-
 									<tr>
 		<td>
 		<p>
@@ -1615,11 +1615,11 @@ parameters.</p>
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the level and profile could be set, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
+		<p>The profile as a const string, or NULL if there is an error.</p>
 
 	</td>
 	<td>
-		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+		const gchar*
 	</td>
 	</tr>
 
@@ -1634,39 +1634,28 @@ parameters.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="gst_codec_utils_opus_parse_caps">
-		<h3 id="gst_codec_utils_opus_parse_caps1">
-	<span><code>gst_codec_utils_opus_parse_caps</code></span>
+<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="gst_codec_utils_opus_create_caps">
+		<h3 id="gst_codec_utils_opus_create_caps1">
+	<span><code>gst_codec_utils_opus_create_caps</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
-gst_codec_utils_opus_parse_caps (<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps,
-                                 <a title="guint32" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint32">guint32</a> * rate,
-                                 <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * channels,
-                                 <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * channel_mapping_family,
-                                 <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * stream_count,
-                                 <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * coupled_count,
-                                 guint8 [256]  channel_mapping)</pre>
+<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
+gst_codec_utils_opus_create_caps (guint32 rate,
+                                  guint8 channels,
+                                  guint8 channel_mapping_family,
+                                  guint8 stream_count,
+                                  guint8 coupled_count,
+                                  const guint8* channel_mapping)</pre>
 
-<p>Parses Opus caps and fills the different fields with defaults if possible.</p>
+<p>Creates Opus caps from the given parameters.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters19">Parameters</h4>
 		<table>
 			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>caps:</code></em></i>
-		</p>
-	</td>
-		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> to which the level and profile are to be added</p>
-</td>
-</tr>
-
 									<tr>
 		<td>
 		<p>
@@ -1746,134 +1735,11 @@ gst_codec_utils_opus_parse_caps (<a title="GstCaps" href="../../libgstreamer-doc
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if parsing was successful, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
+		<p>The <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a>.</p>
 
 	</td>
 	<td>
-		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-	<p>
-	Since			: 1.8
-		</p>
-
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="gst_codec_utils_opus_create_caps">
-		<h3 id="gst_codec_utils_opus_create_caps1">
-	<span><code>gst_codec_utils_opus_create_caps</code></span>
-</h3>
-
-		
-
-<pre class="prototype">
-<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
-gst_codec_utils_opus_create_caps (<a title="guint32" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint32">guint32</a> rate,
-                                  <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> channels,
-                                  <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> channel_mapping_family,
-                                  <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> stream_count,
-                                  <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> coupled_count,
-                                  const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * channel_mapping)</pre>
-
-<p>Creates Opus caps from the given parameters.</p>
-
-	<div class="parameter_container">
-		<h4 id="parameters20">Parameters</h4>
-		<table>
-			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>rate:</code></em></i>
-		</p>
-	</td>
-		<td><p>the sample rate</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>channels:</code></em></i>
-		</p>
-	</td>
-		<td><p>the number of channels</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>channel_mapping_family:</code></em></i>
-		</p>
-	</td>
-		<td><p>the channel mapping family</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>stream_count:</code></em></i>
-		</p>
-	</td>
-		<td><p>the number of independent streams</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>coupled_count:</code></em></i>
-		</p>
-	</td>
-		<td><p>the number of stereo streams</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>channel_mapping:</code></em></i>
-		</p>
-	</td>
-		<td><p>the mapping between the streams</p>
-</td>
-</tr>
-
-							</tbody>
-		</table>
-	</div>
-
-	<div class="multi_return_value_container">
-			<h4 id="returns20">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		<p>The <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a>.</p>
-
-	</td>
-	<td>
-		<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+		<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
 	</td>
 	</tr>
 
@@ -1899,15 +1765,15 @@ gst_codec_utils_opus_create_caps (<a title="guint32" href="https://developer.gno
 		
 
 <pre class="prototype">
-<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
-gst_codec_utils_opus_create_caps_from_header (<a title="GstBuffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * header,
-                                              <a title="GstBuffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * comments)</pre>
+<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
+gst_codec_utils_opus_create_caps_from_header (<a title="GstBuffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">GstBuffer</a> * header,
+                                              <a title="GstBuffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">GstBuffer</a> * comments)</pre>
 
 <p>Creates Opus caps from the given OpusHead <em>header</em> and comment header
 <em>comments</em>.</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters21">Parameters</h4>
+		<h4 id="parameters20">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -1935,7 +1801,7 @@ gst_codec_utils_opus_create_caps_from_header (<a title="GstBuffer" href="../../l
 	</div>
 
 	<div class="multi_return_value_container">
-			<h4 id="returns21">Returns:</h4>
+			<h4 id="returns20">Returns:</h4>
 		<table>
 		<colgroup>
 			<col>
@@ -1949,11 +1815,11 @@ gst_codec_utils_opus_create_caps_from_header (<a title="GstBuffer" href="../../l
 				</p>
 	</td>
 	<td>
-		<p>The <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a>.</p>
+		<p>The <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a>.</p>
 
 	</td>
 	<td>
-		<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+		<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> *
 	</td>
 	</tr>
 
@@ -1979,20 +1845,20 @@ gst_codec_utils_opus_create_caps_from_header (<a title="GstBuffer" href="../../l
 		
 
 <pre class="prototype">
-<a title="GstBuffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> *
-gst_codec_utils_opus_create_header (<a title="guint32" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint32">guint32</a> rate,
-                                    <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> channels,
-                                    <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> channel_mapping_family,
-                                    <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> stream_count,
-                                    <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> coupled_count,
-                                    const <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * channel_mapping,
-                                    <a title="guint16" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint16">guint16</a> pre_skip,
-                                    <a title="gint16" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint16">gint16</a> output_gain)</pre>
+<a title="GstBuffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">GstBuffer</a> *
+gst_codec_utils_opus_create_header (guint32 rate,
+                                    guint8 channels,
+                                    guint8 channel_mapping_family,
+                                    guint8 stream_count,
+                                    guint8 coupled_count,
+                                    const guint8* channel_mapping,
+                                    guint16 pre_skip,
+                                    gint16 output_gain)</pre>
 
 <p>Creates OpusHead header from the given parameters.</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters22">Parameters</h4>
+		<h4 id="parameters21">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -2080,6 +1946,140 @@ gst_codec_utils_opus_create_header (<a title="guint32" href="https://developer.g
 	</div>
 
 	<div class="multi_return_value_container">
+			<h4 id="returns21">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The <a href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">GstBuffer</a> containing the OpusHead.</p>
+
+	</td>
+	<td>
+		<a title="GstBuffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">GstBuffer</a> *
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.8
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="gst_codec_utils_opus_parse_caps">
+		<h3 id="gst_codec_utils_opus_parse_caps1">
+	<span><code>gst_codec_utils_opus_parse_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+gboolean
+gst_codec_utils_opus_parse_caps (<a title="GstCaps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> * caps,
+                                 guint32* rate,
+                                 guint8* channels,
+                                 guint8* channel_mapping_family,
+                                 guint8* stream_count,
+                                 guint8* coupled_count,
+                                 guint8 channel_mapping)</pre>
+
+<p>Parses Opus caps and fills the different fields with defaults if possible.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">GstCaps</a> to which the level and profile are to be added</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>rate:</code></em></i>
+		</p>
+	</td>
+		<td><p>the sample rate</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>channels:</code></em></i>
+		</p>
+	</td>
+		<td><p>the number of channels</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>channel_mapping_family:</code></em></i>
+		</p>
+	</td>
+		<td><p>the channel mapping family</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stream_count:</code></em></i>
+		</p>
+	</td>
+		<td><p>the number of independent streams</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>coupled_count:</code></em></i>
+		</p>
+	</td>
+		<td><p>the number of stereo streams</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>channel_mapping:</code></em></i>
+		</p>
+	</td>
+		<td><p>the mapping between the streams</p>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
 			<h4 id="returns22">Returns:</h4>
 		<table>
 		<colgroup>
@@ -2094,11 +2094,11 @@ gst_codec_utils_opus_create_header (<a title="guint32" href="https://developer.g
 				</p>
 	</td>
 	<td>
-		<p>The <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> containing the OpusHead.</p>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if parsing was successful, <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise.</p>
 
 	</td>
 	<td>
-		<a title="GstBuffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> *
+		gboolean
 	</td>
 	</tr>
 
@@ -2124,16 +2124,16 @@ gst_codec_utils_opus_create_header (<a title="guint32" href="https://developer.g
 		
 
 <pre class="prototype">
-<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
-gst_codec_utils_opus_parse_header (<a title="GstBuffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * header,
-                                   <a title="guint32" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint32">guint32</a> * rate,
-                                   <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * channels,
-                                   <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * channel_mapping_family,
-                                   <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * stream_count,
-                                   <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * coupled_count,
-                                   guint8 [256]  channel_mapping,
-                                   <a title="guint16" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint16">guint16</a> * pre_skip,
-                                   <a title="gint16" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint16">gint16</a> * output_gain)</pre>
+gboolean
+gst_codec_utils_opus_parse_header (<a title="GstBuffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">GstBuffer</a> * header,
+                                   guint32* rate,
+                                   guint8* channels,
+                                   guint8* channel_mapping_family,
+                                   guint8* stream_count,
+                                   guint8* coupled_count,
+                                   guint8 channel_mapping,
+                                   guint16* pre_skip,
+                                   gint16* output_gain)</pre>
 
 <p>Parses the OpusHead header.</p>
 
@@ -2147,7 +2147,7 @@ gst_codec_utils_opus_parse_header (<a title="GstBuffer" href="../../libgstreamer
 		<i><em><code>header:</code></em></i>
 		</p>
 	</td>
-		<td><p>the OpusHead <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a></p>
+		<td><p>the OpusHead <a href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">GstBuffer</a></p>
 </td>
 </tr>
 
@@ -2254,7 +2254,7 @@ gst_codec_utils_opus_parse_header (<a title="GstBuffer" href="../../libgstreamer
 
 	</td>
 	<td>
-		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+		gboolean
 	</td>
 	</tr>
 
@@ -2267,6 +2267,23 @@ gst_codec_utils_opus_parse_header (<a title="GstBuffer" href="../../libgstreamer
 	<p>
 	Since			: 1.8
 		</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="__GST_PB_UTILS_CODEC_UTILS_H__">
+		<h3 class="constant" id="__gst_pb_utils_codec_utils_h__">
+	__GST_PB_UTILS_CODEC_UTILS_H__
+</h3>
+
+		<pre class="raw_code">
+#define __GST_PB_UTILS_CODEC_UTILS_H__
+</pre>
+
+
 
 </div>
 

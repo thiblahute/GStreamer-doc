@@ -93,311 +93,6 @@
 <h2 class="symbol_section" id="Functions">Functions</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_video_frame_map">
-		<h3 id="gstvideovideoframemap">
-	<span><code>GstVideo.VideoFrame.map</code></span>
-</h3>
-
-		<pre class="programlisting">
-def GstVideo.VideoFrame.map (self, info, buffer, flags):
-    #python wrapper for 'gst_video_frame_map'</pre>
-
-<p>Use <em>info</em> and <em>buffer</em> to fill in the values of <em>frame</em>. <em>frame</em> is usually
-allocated on the stack, and you will pass the address to the <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
-structure allocated on the stack; <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#gst_video_frame_map">GstVideo.VideoFrame.map</a> will then fill in
-the structures with the various video-specific information you need to access
-the pixels of the video buffer. You can then use accessor macros such as
-<a href="../../gst-plugins-base-video-doc-1.0/c/video-frame.html#GST_VIDEO_FRAME_COMP_DATA">GST_VIDEO_FRAME_COMP_DATA (not introspectable)</a>, <a href="../../gst-plugins-base-video-doc-1.0/c/video-frame.html#GST_VIDEO_FRAME_PLANE_DATA">GST_VIDEO_FRAME_PLANE_DATA (not introspectable)</a>,
-<a href="../../gst-plugins-base-video-doc-1.0/c/video-frame.html#GST_VIDEO_FRAME_COMP_STRIDE">GST_VIDEO_FRAME_COMP_STRIDE (not introspectable)</a>, <a href="../../gst-plugins-base-video-doc-1.0/c/video-frame.html#GST_VIDEO_FRAME_PLANE_STRIDE">GST_VIDEO_FRAME_PLANE_STRIDE (not introspectable)</a> etc.
-to get to the pixels.</p>
-<pre><code class="language-[&lt;!--">   GstVideoFrame vframe;
-   ...
-   // set RGB pixels to black one at a time
-   if (gst_video_frame_map (&amp;amp;vframe, video_info, video_buffer, GST_MAP_WRITE)) {
-     guint8 *pixels = GST_VIDEO_FRAME_PLANE_DATA (vframe, 0);
-     guint stride = GST_VIDEO_FRAME_PLANE_STRIDE (vframe, 0);
-     guint pixel_stride = GST_VIDEO_FRAME_COMP_PSTRIDE (vframe, 0);
-
-     for (h = 0; h &lt; height; ++h) {
-       for (w = 0; w &lt; width; ++w) {
-         guint8 *pixel = pixels + h * stride + w * pixel_stride;
-
-         memset (pixel, 0, pixel_stride);
-       }
-     }
-
-     gst_video_frame_unmap (&amp;amp;vframe);
-   }
-   ...
-</code></pre>
-<p>All video planes of <em>buffer</em> will be mapped and the pointers will be set in
-<em>frame</em>-&gt;data.</p>
-<p>The purpose of this function is to make it easy for you to get to the video
-pixels in a generic way, without you having to worry too much about details
-such as whether the video data is allocated in one contiguous memory chunk
-or multiple memory chunks (e.g. one for each plane); or if custom strides
-and custom plane offsets are used or not (as signalled by GstVideoMeta on
-each buffer). This function will just fill the <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a> structure
-with the right values and if you use the accessor macros everything will
-just work and you can access the data easily. It also maps the underlying
-memory chunks for you.</p>
-
-	<div class="parameter_container">
-		<h4 id="parameters">Parameters</h4>
-		<table>
-			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>frame:</code></em></i>
-		</p>
-	</td>
-		<td><p>pointer to <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
-</td>
-<td>
-<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>info:</code></em></i>
-		</p>
-	</td>
-		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/python/video-info.html#GstVideoInfo">GstVideo.VideoInfo</a></p>
-</td>
-<td>
-<a title="GstVideo.VideoInfo" href="../../gst-plugins-base-video-doc-1.0/python/video-info.html#GstVideoInfo">GstVideo.VideoInfo</a>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>buffer:</code></em></i>
-		</p>
-	</td>
-		<td><p>the buffer to map</p>
-</td>
-<td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>flags:</code></em></i>
-		</p>
-	</td>
-		<td><p><a href="../../libgstreamer-doc-1.0/c/gstmemory.html#GstMapFlags">Gst.MapFlags</a></p>
-</td>
-<td>
-<a title="Gst.MapFlags" href="../../libgstreamer-doc-1.0/c/gstmemory.html#GstMapFlags">Gst.MapFlags</a>
-</td>
-</tr>
-
-							</tbody>
-		</table>
-	</div>
-
-	<div class="multi_return_value_container">
-			<h4 id="returns">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> on success.</p>
-
-	</td>
-	<td>
-		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_video_frame_map_id">
-		<h3 id="gstvideovideoframemap_id">
-	<span><code>GstVideo.VideoFrame.map_id</code></span>
-</h3>
-
-		<pre class="programlisting">
-def GstVideo.VideoFrame.map_id (self, info, buffer, id, flags):
-    #python wrapper for 'gst_video_frame_map_id'</pre>
-
-<p>Use <em>info</em> and <em>buffer</em> to fill in the values of <em>frame</em> with the video frame
-information of frame <em>id</em>.</p>
-<p>When <em>id</em> is -1, the default frame is mapped. When <em>id</em> != -1, this function
-will return <a href="https://docs.python.org/2/library/constants.html#False">False</a> when there is no GstVideoMeta with that id.</p>
-<p>All video planes of <em>buffer</em> will be mapped and the pointers will be set in
-<em>frame</em>-&gt;data.</p>
-
-	<div class="parameter_container">
-		<h4 id="parameters1">Parameters</h4>
-		<table>
-			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>frame:</code></em></i>
-		</p>
-	</td>
-		<td><p>pointer to <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
-</td>
-<td>
-<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>info:</code></em></i>
-		</p>
-	</td>
-		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/python/video-info.html#GstVideoInfo">GstVideo.VideoInfo</a></p>
-</td>
-<td>
-<a title="GstVideo.VideoInfo" href="../../gst-plugins-base-video-doc-1.0/python/video-info.html#GstVideoInfo">GstVideo.VideoInfo</a>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>buffer:</code></em></i>
-		</p>
-	</td>
-		<td><p>the buffer to map</p>
-</td>
-<td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>id:</code></em></i>
-		</p>
-	</td>
-		<td><p>the frame id to map</p>
-</td>
-<td>
-<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>flags:</code></em></i>
-		</p>
-	</td>
-		<td><p><a href="../../libgstreamer-doc-1.0/c/gstmemory.html#GstMapFlags">Gst.MapFlags</a></p>
-</td>
-<td>
-<a title="Gst.MapFlags" href="../../libgstreamer-doc-1.0/c/gstmemory.html#GstMapFlags">Gst.MapFlags</a>
-</td>
-</tr>
-
-							</tbody>
-		</table>
-	</div>
-
-	<div class="multi_return_value_container">
-			<h4 id="returns1">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> on success.</p>
-
-	</td>
-	<td>
-		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-
-</div>
-
-
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_video_frame_unmap">
-		<h3 id="gstvideovideoframeunmap">
-	<span><code>GstVideo.VideoFrame.unmap</code></span>
-</h3>
-
-		<pre class="programlisting">
-def GstVideo.VideoFrame.unmap (self):
-    #python wrapper for 'gst_video_frame_unmap'</pre>
-
-<p>Unmap the memory previously mapped with gst_video_frame_map.</p>
-
-	<div class="parameter_container">
-		<h4 id="parameters2">Parameters</h4>
-		<table>
-			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>frame:</code></em></i>
-		</p>
-	</td>
-		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
-</td>
-<td>
-<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
-</td>
-</tr>
-
-							</tbody>
-		</table>
-	</div>
-
-
-
-
-</div>
-
-
-
 <div class="base_symbol_container" data-hotdoc-tags="" id="gst_video_frame_copy">
 		<h3 id="gstvideovideoframecopy">
 	<span><code>GstVideo.VideoFrame.copy</code></span>
@@ -410,7 +105,7 @@ def GstVideo.VideoFrame.copy (self, src):
 <p>Copy the contents from <em>src</em> to <em>dest</em>.</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters3">Parameters</h4>
+		<h4 id="parameters">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -419,10 +114,10 @@ def GstVideo.VideoFrame.copy (self, src):
 		<i><em><code>dest:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
+		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
 </td>
 <td>
-<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
+<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
 </td>
 </tr>
 
@@ -432,10 +127,10 @@ def GstVideo.VideoFrame.copy (self, src):
 		<i><em><code>src:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
+		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
 </td>
 <td>
-<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
+<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
 </td>
 </tr>
 
@@ -444,7 +139,7 @@ def GstVideo.VideoFrame.copy (self, src):
 	</div>
 
 	<div class="multi_return_value_container">
-			<h4 id="returns2">Returns:</h4>
+			<h4 id="returns">Returns:</h4>
 		<table>
 		<colgroup>
 			<col>
@@ -489,7 +184,7 @@ def GstVideo.VideoFrame.copy_plane (self, src, plane):
 <p>Copy the plane with index <em>plane</em> from <em>src</em> to <em>dest</em>.</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters4">Parameters</h4>
+		<h4 id="parameters1">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -498,10 +193,10 @@ def GstVideo.VideoFrame.copy_plane (self, src, plane):
 		<i><em><code>dest:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
+		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
 </td>
 <td>
-<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
+<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
 </td>
 </tr>
 
@@ -511,10 +206,10 @@ def GstVideo.VideoFrame.copy_plane (self, src, plane):
 		<i><em><code>src:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
+		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
 </td>
 <td>
-<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
+<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
 </td>
 </tr>
 
@@ -536,7 +231,7 @@ def GstVideo.VideoFrame.copy_plane (self, src, plane):
 	</div>
 
 	<div class="multi_return_value_container">
-			<h4 id="returns3">Returns:</h4>
+			<h4 id="returns1">Returns:</h4>
 		<table>
 		<colgroup>
 			<col>
@@ -561,6 +256,311 @@ def GstVideo.VideoFrame.copy_plane (self, src, plane):
 					</tbody>
 	</table>
 </div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_video_frame_map">
+		<h3 id="gstvideovideoframemap">
+	<span><code>GstVideo.VideoFrame.map</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstVideo.VideoFrame.map (self, info, buffer, flags):
+    #python wrapper for 'gst_video_frame_map'</pre>
+
+<p>Use <em>info</em> and <em>buffer</em> to fill in the values of <em>frame</em>. <em>frame</em> is usually
+allocated on the stack, and you will pass the address to the <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
+structure allocated on the stack; <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#gst_video_frame_map">GstVideo.VideoFrame.map</a> will then fill in
+the structures with the various video-specific information you need to access
+the pixels of the video buffer. You can then use accessor macros such as
+<a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GST_VIDEO_FRAME_COMP_DATA">GST_VIDEO_FRAME_COMP_DATA (not introspectable)</a>, <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GST_VIDEO_FRAME_PLANE_DATA">GST_VIDEO_FRAME_PLANE_DATA (not introspectable)</a>,
+<a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GST_VIDEO_FRAME_COMP_STRIDE">GST_VIDEO_FRAME_COMP_STRIDE (not introspectable)</a>, <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GST_VIDEO_FRAME_PLANE_STRIDE">GST_VIDEO_FRAME_PLANE_STRIDE (not introspectable)</a> etc.
+to get to the pixels.</p>
+<pre><code class="language-[&lt;!--">   GstVideoFrame vframe;
+   ...
+   // set RGB pixels to black one at a time
+   if (gst_video_frame_map (&amp;amp;vframe, video_info, video_buffer, GST_MAP_WRITE)) {
+     guint8 *pixels = GST_VIDEO_FRAME_PLANE_DATA (vframe, 0);
+     guint stride = GST_VIDEO_FRAME_PLANE_STRIDE (vframe, 0);
+     guint pixel_stride = GST_VIDEO_FRAME_COMP_PSTRIDE (vframe, 0);
+
+     for (h = 0; h &lt; height; ++h) {
+       for (w = 0; w &lt; width; ++w) {
+         guint8 *pixel = pixels + h * stride + w * pixel_stride;
+
+         memset (pixel, 0, pixel_stride);
+       }
+     }
+
+     gst_video_frame_unmap (&amp;amp;vframe);
+   }
+   ...
+</code></pre>
+<p>All video planes of <em>buffer</em> will be mapped and the pointers will be set in
+<em>frame</em>-&gt;data.</p>
+<p>The purpose of this function is to make it easy for you to get to the video
+pixels in a generic way, without you having to worry too much about details
+such as whether the video data is allocated in one contiguous memory chunk
+or multiple memory chunks (e.g. one for each plane); or if custom strides
+and custom plane offsets are used or not (as signalled by GstVideoMeta on
+each buffer). This function will just fill the <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a> structure
+with the right values and if you use the accessor macros everything will
+just work and you can access the data easily. It also maps the underlying
+memory chunks for you.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>frame:</code></em></i>
+		</p>
+	</td>
+		<td><p>pointer to <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
+</td>
+<td>
+<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>info:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/video-info.html#GstVideoInfo">GstVideo.VideoInfo</a></p>
+</td>
+<td>
+<a title="GstVideo.VideoInfo" href="../../gst-plugins-base-video-doc-1.0/video-info.html#GstVideoInfo">GstVideo.VideoInfo</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td><p>the buffer to map</p>
+</td>
+<td>
+<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>flags:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="../../libgstreamer-doc-1.0/gstmemory.html#GstMapFlags">Gst.MapFlags</a></p>
+</td>
+<td>
+<a title="Gst.MapFlags" href="../../libgstreamer-doc-1.0/gstmemory.html#GstMapFlags">Gst.MapFlags</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> on success.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_video_frame_map_id">
+		<h3 id="gstvideovideoframemap_id">
+	<span><code>GstVideo.VideoFrame.map_id</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstVideo.VideoFrame.map_id (self, info, buffer, id, flags):
+    #python wrapper for 'gst_video_frame_map_id'</pre>
+
+<p>Use <em>info</em> and <em>buffer</em> to fill in the values of <em>frame</em> with the video frame
+information of frame <em>id</em>.</p>
+<p>When <em>id</em> is -1, the default frame is mapped. When <em>id</em> != -1, this function
+will return <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">False</a> when there is no GstVideoMeta with that id.</p>
+<p>All video planes of <em>buffer</em> will be mapped and the pointers will be set in
+<em>frame</em>-&gt;data.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>frame:</code></em></i>
+		</p>
+	</td>
+		<td><p>pointer to <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
+</td>
+<td>
+<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>info:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/video-info.html#GstVideoInfo">GstVideo.VideoInfo</a></p>
+</td>
+<td>
+<a title="GstVideo.VideoInfo" href="../../gst-plugins-base-video-doc-1.0/video-info.html#GstVideoInfo">GstVideo.VideoInfo</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td><p>the buffer to map</p>
+</td>
+<td>
+<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>id:</code></em></i>
+		</p>
+	</td>
+		<td><p>the frame id to map</p>
+</td>
+<td>
+<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>flags:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="../../libgstreamer-doc-1.0/gstmemory.html#GstMapFlags">Gst.MapFlags</a></p>
+</td>
+<td>
+<a title="Gst.MapFlags" href="../../libgstreamer-doc-1.0/gstmemory.html#GstMapFlags">Gst.MapFlags</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> on success.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_video_frame_unmap">
+		<h3 id="gstvideovideoframeunmap">
+	<span><code>GstVideo.VideoFrame.unmap</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstVideo.VideoFrame.unmap (self):
+    #python wrapper for 'gst_video_frame_unmap'</pre>
+
+<p>Unmap the memory previously mapped with gst_video_frame_map.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>frame:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a></p>
+</td>
+<td>
+<a title="GstVideo.VideoFrame" href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrame">GstVideo.VideoFrame</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
 
 
 
@@ -1004,74 +1004,93 @@ def GstVideo.VideoFrame.copy_plane (self, src, plane):
 
 <h2 class="symbol_section" id="Structures">Structures</h2>
 <div class="refsect2">
-	<a id="_GstVideoFrame"></a>
-	<h3 id="_gstvideoframe-not-introspectable">
-		_GstVideoFrame (not introspectable)
+	<a id="GstVideoFrame"></a>
+	<h3 id="gstvideovideoframe">
+		GstVideo.VideoFrame
 	</h3>
+		<p>A video frame obtained from <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#gst_video_frame_map">GstVideo.VideoFrame.map</a></p>
+
 		
 <div class="member_details">
 	<h4 id="attributes">Attributes</h4>
 	<div class="member_container">
 		<table>
 			<tbody>
-						<tr id="_GstVideoFrame.info">
+						<tr id="GstVideoFrame.info">
 		<td>
 		<p>
-		<i><em><code><a title="GstVideo.VideoInfo" href="../../gst-plugins-base-video-doc-1.0/python/video-info.html#GstVideoInfo">GstVideo.VideoInfo</a> <em><code>info</code></em>:</code></em></i>
+		<i><em><code><a title="GstVideo.VideoInfo" href="../../gst-plugins-base-video-doc-1.0/video-info.html#GstVideoInfo">GstVideo.VideoInfo</a> <em><code>info</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the <a href="../../gst-plugins-base-video-doc-1.0/video-info.html#GstVideoInfo">GstVideo.VideoInfo</a></p>
+</td>
 </tr>
 
-						<tr id="_GstVideoFrame.flags">
+						<tr id="GstVideoFrame.flags">
 		<td>
 		<p>
-		<i><em><code><a title="GstVideo.VideoFrameFlags" href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#GstVideoFrameFlags">GstVideo.VideoFrameFlags</a> <em><code>flags</code></em>:</code></em></i>
+		<i><em><code><a title="GstVideo.VideoFrameFlags" href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrameFlags">GstVideo.VideoFrameFlags</a> <em><code>flags</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p><a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#GstVideoFrameFlags">GstVideo.VideoFrameFlags</a> for the frame</p>
+</td>
 </tr>
 
-						<tr id="_GstVideoFrame.buffer">
+						<tr id="GstVideoFrame.buffer">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> <em><code>buffer</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a> <em><code>buffer</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the mapped buffer</p>
+</td>
 </tr>
 
-						<tr id="_GstVideoFrame.meta">
+						<tr id="GstVideoFrame.meta">
 		<td>
 		<p>
-		<i><em><code><a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a> <em><code>meta</code></em>:</code></em></i>
+		<i><em><code>object <em><code>meta</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>pointer to metadata if any</p>
+</td>
 </tr>
 
-						<tr id="_GstVideoFrame.id">
+						<tr id="GstVideoFrame.id">
 		<td>
 		<p>
-		<i><em><code><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a> <em><code>id</code></em>:</code></em></i>
+		<i><em><code>int <em><code>id</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>id of the mapped frame. the id can for example be used to
+indentify the frame in case of multiview video.</p>
+</td>
 </tr>
 
-						<tr id="_GstVideoFrame.data">
+						<tr id="GstVideoFrame.data">
 		<td>
 		<p>
-		<i><em><code>gpointer [4]  <em><code>data</code></em>:</code></em></i>
+		<i><em><code>object <em><code>data</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>pointers to the plane data</p>
+</td>
 </tr>
 
-						<tr id="_GstVideoFrame.map">
+						<tr id="GstVideoFrame.map">
 		<td>
 		<p>
-		<i><em><code>GstMapInfo [4]  <em><code>map</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.MapInfo" href="../../libgstreamer-doc-1.0/gstmemory.html#GstMapInfo">Gst.MapInfo</a> <em><code>map</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>mappings of the planes</p>
+</td>
+</tr>
+
+						<tr id="GstVideoFrame._gst_reserved">
+		<td>
+		<p>
+		<i><em><code>object <em><code>_gst_reserved</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -1088,28 +1107,155 @@ def GstVideo.VideoFrame.copy_plane (self, src, plane):
 <h2 class="symbol_section" id="Enumerations">Enumerations</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoFrameFlags">
-		<h3 id="gstvideovideoframeflags">
-		GstVideo.VideoFrameFlags
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoBufferFlags">
+		<h3 id="enum-gstvideovideobufferflags">
+		enum GstVideo.VideoBufferFlags
 	</h3>
 
-		<pre class="raw_code">
-typedef enum {
-  GST_VIDEO_FRAME_FLAG_NONE         = 0,
-  GST_VIDEO_FRAME_FLAG_INTERLACED   = (1 &lt;&lt; 0),
-  GST_VIDEO_FRAME_FLAG_TFF          = (1 &lt;&lt; 1),
-  GST_VIDEO_FRAME_FLAG_RFF          = (1 &lt;&lt; 2),
-  GST_VIDEO_FRAME_FLAG_ONEFIELD     = (1 &lt;&lt; 3),
-  GST_VIDEO_FRAME_FLAG_MULTIPLE_VIEW = (1 &lt;&lt; 4),
-  GST_VIDEO_FRAME_FLAG_FIRST_IN_BUNDLE = (1 &lt;&lt; 5)
-} GstVideoFrameFlags;
-</pre>
-
-<p>Extra video frame flags</p>
+		<p>Additional video buffer flags. These flags can potentially be used on any
+buffers carrying video data - even encoded data.</p>
+<p>Note that these are only valid for <a href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">Gst.Caps</a> of type: video/...
+They can conflict with other extended buffer flags.</p>
 
 
 <div class="member_details">
 	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_VIDEO_BUFFER_FLAG_INTERLACED"></a>
+		GstVideo.VideoBufferFlags.interlaced
+		</p>
+	</td>
+	<td><p>If the <a href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a> is interlaced. In mixed
+interlace-mode, this flags specifies if the frame is
+interlaced or progressive.</p>
+</td>
+	<td>
+		<span class="value">Value: 1048576</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_VIDEO_BUFFER_FLAG_TFF"></a>
+		GstVideo.VideoBufferFlags.tff
+		</p>
+	</td>
+	<td><p>If the <a href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a> is interlaced, then the first field
+in the video frame is the top field.  If unset, the
+bottom field is first.</p>
+</td>
+	<td>
+		<span class="value">Value: 2097152</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_VIDEO_BUFFER_FLAG_RFF"></a>
+		GstVideo.VideoBufferFlags.rff
+		</p>
+	</td>
+	<td><p>If the <a href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a> is interlaced, then the first field
+(as defined by the GST_VIDEO_BUFFER_TFF flag setting)
+is repeated.</p>
+</td>
+	<td>
+		<span class="value">Value: 4194304</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_VIDEO_BUFFER_FLAG_ONEFIELD"></a>
+		GstVideo.VideoBufferFlags.onefield
+		</p>
+	</td>
+	<td><p>If the <a href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a> is interlaced, then only the
+first field (as defined by the GST_VIDEO_BUFFER_TFF
+flag setting) is to be displayed.</p>
+</td>
+	<td>
+		<span class="value">Value: 8388608</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_VIDEO_BUFFER_FLAG_MULTIPLE_VIEW"></a>
+		GstVideo.VideoBufferFlags.multiple_view
+		</p>
+	</td>
+	<td><p>The <a href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a> contains one or more specific views,
+such as left or right eye view. This flags is set on
+any buffer that contains non-mono content - even for
+streams that contain only a single viewpoint. In mixed
+mono / non-mono streams, the absense of the flag marks
+mono buffers.</p>
+</td>
+	<td>
+		<span class="value">Value: 16777216</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_VIDEO_BUFFER_FLAG_FIRST_IN_BUNDLE"></a>
+		GstVideo.VideoBufferFlags.first_in_bundle
+		</p>
+	</td>
+	<td><p>When conveying stereo/multiview content with
+frame-by-frame methods, this flag marks the first buffer
+in a bundle of frames that belong together.</p>
+</td>
+	<td>
+		<span class="value">Value: 33554432</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_VIDEO_BUFFER_FLAG_LAST"></a>
+		GstVideo.VideoBufferFlags.last
+		</p>
+	</td>
+	<td><p>Offset to define more flags</p>
+</td>
+	<td>
+		<span class="value">Value: 268435456</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoFrameFlags">
+		<h3 id="enum-gstvideovideoframeflags">
+		enum GstVideo.VideoFrameFlags
+	</h3>
+
+		<p>Extra video frame flags</p>
+
+
+<div class="member_details">
+	<h4 id="members1">Members</h4>
 	<div class="member_container">
 		<table>
 			<tbody>
@@ -1225,173 +1371,12 @@ in a set of corresponding views provided as sequential frames.</p>
 
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoBufferFlags">
-		<h3 id="gstvideovideobufferflags">
-		GstVideo.VideoBufferFlags
-	</h3>
-
-		<pre class="raw_code">
-typedef enum {
-  GST_VIDEO_BUFFER_FLAG_INTERLACED  = (GST_BUFFER_FLAG_LAST &lt;&lt; 0),
-  GST_VIDEO_BUFFER_FLAG_TFF         = (GST_BUFFER_FLAG_LAST &lt;&lt; 1),
-  GST_VIDEO_BUFFER_FLAG_RFF         = (GST_BUFFER_FLAG_LAST &lt;&lt; 2),
-  GST_VIDEO_BUFFER_FLAG_ONEFIELD    = (GST_BUFFER_FLAG_LAST &lt;&lt; 3),
-
-  GST_VIDEO_BUFFER_FLAG_MULTIPLE_VIEW = (GST_BUFFER_FLAG_LAST &lt;&lt; 4),
-  GST_VIDEO_BUFFER_FLAG_FIRST_IN_BUNDLE = (GST_BUFFER_FLAG_LAST &lt;&lt; 5),
-
-  GST_VIDEO_BUFFER_FLAG_LAST        = (GST_BUFFER_FLAG_LAST &lt;&lt; 8)
-} GstVideoBufferFlags;
-</pre>
-
-<p>Additional video buffer flags. These flags can potentially be used on any
-buffers carrying video data - even encoded data.</p>
-<p>Note that these are only valid for <a href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a> of type: video/...
-They can conflict with other extended buffer flags.</p>
-
-
-<div class="member_details">
-	<h4 id="members1">Members</h4>
-	<div class="member_container">
-		<table>
-			<tbody>
-						<tr>
-	<td>
-		<p>
-		<a id="GST_VIDEO_BUFFER_FLAG_INTERLACED"></a>
-		GstVideo.VideoBufferFlags.interlaced
-		</p>
-	</td>
-	<td><p>If the <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> is interlaced. In mixed
-interlace-mode, this flags specifies if the frame is
-interlaced or progressive.</p>
-</td>
-	<td>
-		<span class="value">Value: 1048576</span>
-	</td>
-</tr>
-
-						<tr>
-	<td>
-		<p>
-		<a id="GST_VIDEO_BUFFER_FLAG_TFF"></a>
-		GstVideo.VideoBufferFlags.tff
-		</p>
-	</td>
-	<td><p>If the <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> is interlaced, then the first field
-in the video frame is the top field.  If unset, the
-bottom field is first.</p>
-</td>
-	<td>
-		<span class="value">Value: 2097152</span>
-	</td>
-</tr>
-
-						<tr>
-	<td>
-		<p>
-		<a id="GST_VIDEO_BUFFER_FLAG_RFF"></a>
-		GstVideo.VideoBufferFlags.rff
-		</p>
-	</td>
-	<td><p>If the <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> is interlaced, then the first field
-(as defined by the GST_VIDEO_BUFFER_TFF flag setting)
-is repeated.</p>
-</td>
-	<td>
-		<span class="value">Value: 4194304</span>
-	</td>
-</tr>
-
-						<tr>
-	<td>
-		<p>
-		<a id="GST_VIDEO_BUFFER_FLAG_ONEFIELD"></a>
-		GstVideo.VideoBufferFlags.onefield
-		</p>
-	</td>
-	<td><p>If the <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> is interlaced, then only the
-first field (as defined by the GST_VIDEO_BUFFER_TFF
-flag setting) is to be displayed.</p>
-</td>
-	<td>
-		<span class="value">Value: 8388608</span>
-	</td>
-</tr>
-
-						<tr>
-	<td>
-		<p>
-		<a id="GST_VIDEO_BUFFER_FLAG_MULTIPLE_VIEW"></a>
-		GstVideo.VideoBufferFlags.multiple_view
-		</p>
-	</td>
-	<td><p>The <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> contains one or more specific views,
-such as left or right eye view. This flags is set on
-any buffer that contains non-mono content - even for
-streams that contain only a single viewpoint. In mixed
-mono / non-mono streams, the absense of the flag marks
-mono buffers.</p>
-</td>
-	<td>
-		<span class="value">Value: 16777216</span>
-	</td>
-</tr>
-
-						<tr>
-	<td>
-		<p>
-		<a id="GST_VIDEO_BUFFER_FLAG_FIRST_IN_BUNDLE"></a>
-		GstVideo.VideoBufferFlags.first_in_bundle
-		</p>
-	</td>
-	<td><p>When conveying stereo/multiview content with
-frame-by-frame methods, this flag marks the first buffer
-in a bundle of frames that belong together.</p>
-</td>
-	<td>
-		<span class="value">Value: 33554432</span>
-	</td>
-</tr>
-
-						<tr>
-	<td>
-		<p>
-		<a id="GST_VIDEO_BUFFER_FLAG_LAST"></a>
-		GstVideo.VideoBufferFlags.last
-		</p>
-	</td>
-	<td><p>Offset to define more flags</p>
-</td>
-	<td>
-		<span class="value">Value: 268435456</span>
-	</td>
-</tr>
-
-						</tbody>
-		</table>
-	</div>
-</div>
-
-
-</div>
-
-
-
 <div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="GstVideoFrameMapFlags">
-		<h3 id="gstvideovideoframemapflags">
-		GstVideo.VideoFrameMapFlags
+		<h3 id="enum-gstvideovideoframemapflags">
+		enum GstVideo.VideoFrameMapFlags
 	</h3>
 
-		<pre class="raw_code">
-typedef enum {
-  GST_VIDEO_FRAME_MAP_FLAG_NO_REF   = (GST_MAP_FLAG_LAST &lt;&lt; 0),
-  GST_VIDEO_FRAME_MAP_FLAG_LAST     = (GST_MAP_FLAG_LAST &lt;&lt; 8)
-  /* 8 more flags possible afterwards */
-} GstVideoFrameMapFlags;
-</pre>
-
-<p>Additional mapping flags for <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#gst_video_frame_map">GstVideo.VideoFrame.map</a>.</p>
+		<p>Additional mapping flags for <a href="../../gst-plugins-base-video-doc-1.0/video-frame.html#gst_video_frame_map">GstVideo.VideoFrame.map</a>.</p>
 
 
 <div class="member_details">
@@ -1439,18 +1424,15 @@ buffer reference stays valid until the frame is unmapped again.</p>
 </div>
 
 
-<h2 class="symbol_section" id="Aliases">Aliases</h2>
+<h2 class="symbol_section" id="Constants">Constants</h2>
 
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoFrame">
-		<h3 id="gstvideovideoframe">
-	GstVideo.VideoFrame
+<div class="base_symbol_container" data-hotdoc-tags="" id="__GST_VIDEO_FRAME_H__">
+		<h3 class="constant" id="__gst_video_frame_h__-not-introspectable">
+	__GST_VIDEO_FRAME_H__ (not introspectable)
 </h3>
 
-		<pre>
-typedef struct _GstVideoFrame  GstVideo.VideoFrame</pre>
-<p>A video frame obtained from <a href="../../gst-plugins-base-video-doc-1.0/python/video-frame.html#gst_video_frame_map">GstVideo.VideoFrame.map</a></p>
-
+		
 
 </div>
 
