@@ -88,62 +88,62 @@
 <div id="page-description" data-hotdoc-source="gstclock.h">
 <h1 id="gstclock">GstClock</h1><p>GStreamer uses a global clock to synchronize the plugins in a pipeline.
 Different clock implementations are possible by implementing this abstract
-base class or, more conveniently, by subclassing <a href="../../libgstreamer-doc-1.0/gstsystemclock.html#GstSystemClock">Gst.SystemClock</a>.</p>
-<p>The <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> returns a monotonically increasing time with the method
-<a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a>. Its accuracy and base time depend on the specific
+base class or, more conveniently, by subclassing <a href="../../libgstreamer-doc-1.0/python/gstsystemclock.html#GstSystemClock">Gst.SystemClock</a>.</p>
+<p>The <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> returns a monotonically increasing time with the method
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a>. Its accuracy and base time depend on the specific
 clock implementation but time is always expressed in nanoseconds. Since the
 baseline of the clock is undefined, the clock time returned is not
 meaningful in itself, what matters are the deltas between two clock times.
 The time returned by a clock is called the absolute time.</p>
 <p>The pipeline uses the clock to calculate the running time. Usually all
 renderers synchronize to the global clock using the buffer timestamps, the
-newsegment events and the element's base time, see <a href="../../libgstreamer-doc-1.0/gstpipeline.html#GstPipeline">Gst.Pipeline</a>.</p>
+newsegment events and the element's base time, see <a href="../../libgstreamer-doc-1.0/python/gstpipeline.html#GstPipeline">Gst.Pipeline</a>.</p>
 <p>A clock implementation can support periodic and single shot clock
 notifications both synchronous and asynchronous.</p>
-<p>One first needs to create a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> for the periodic or single shot
-notification using <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_new_single_shot_id">Gst.Clock.new_single_shot_id</a> or
-<a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_new_periodic_id">Gst.Clock.new_periodic_id</a>.</p>
-<p>To perform a blocking wait for the specific time of the <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> use the
-<a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_id_wait">Gst.Clock.id_wait</a>. To receive a callback when the specific time is reached
-in the clock use <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_id_wait_async">Gst.Clock.id_wait_async</a>. Both these calls can be
-interrupted with the <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_id_unschedule">Gst.Clock.id_unschedule</a> call. If the blocking wait is
-unscheduled a return value of <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_UNSCHEDULED">Gst.ClockReturn.unscheduled</a> is returned.</p>
+<p>One first needs to create a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> for the periodic or single shot
+notification using <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_new_single_shot_id">Gst.Clock.new_single_shot_id</a> or
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_new_periodic_id">Gst.Clock.new_periodic_id</a>.</p>
+<p>To perform a blocking wait for the specific time of the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> use the
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_id_wait">Gst.Clock.id_wait</a>. To receive a callback when the specific time is reached
+in the clock use <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_id_wait_async">Gst.Clock.id_wait_async</a>. Both these calls can be
+interrupted with the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_id_unschedule">Gst.Clock.id_unschedule</a> call. If the blocking wait is
+unscheduled a return value of <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_UNSCHEDULED">Gst.ClockReturn.unscheduled</a> is returned.</p>
 <p>Periodic callbacks scheduled async will be repeatedly called automatically
 until it is unscheduled. To schedule a sync periodic callback,
-<a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_id_wait">Gst.Clock.id_wait</a> should be called repeatedly.</p>
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_id_wait">Gst.Clock.id_wait</a> should be called repeatedly.</p>
 <p>The async callbacks can happen from any thread, either provided by the core
 or from a streaming thread. The application should be prepared for this.</p>
-<p>A <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> that has been unscheduled cannot be used again for any wait
-operation, a new <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> should be created and the old unscheduled one
-should be destroyed with <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_id_unref">Gst.Clock.id_unref</a>.</p>
-<p>It is possible to perform a blocking wait on the same <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> from
-multiple threads. However, registering the same <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> for multiple
+<p>A <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> that has been unscheduled cannot be used again for any wait
+operation, a new <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> should be created and the old unscheduled one
+should be destroyed with <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_id_unref">Gst.Clock.id_unref</a>.</p>
+<p>It is possible to perform a blocking wait on the same <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> from
+multiple threads. However, registering the same <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> for multiple
 async notifications is not possible, the callback will only be called for
 the thread registering the entry last.</p>
-<p>None of the wait operations unref the <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>, the owner is responsible
+<p>None of the wait operations unref the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>, the owner is responsible
 for unreffing the ids itself. This holds for both periodic and single shot
-notifications. The reason being that the owner of the <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> has to
-keep a handle to the <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> to unblock the wait on FLUSHING events or
+notifications. The reason being that the owner of the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> has to
+keep a handle to the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> to unblock the wait on FLUSHING events or
 state changes and if the entry would be unreffed automatically, the handle
 might become invalid without any notification.</p>
 <p>These clock operations do not operate on the running time, so the callbacks
 will also occur when not in PLAYING state as if the clock just keeps on
 running. Some clocks however do not progress when the element that provided
 the clock is not PLAYING.</p>
-<p>When a clock has the <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_FLAG_CAN_SET_MASTER">Gst.ClockFlags.can_set_master</a> flag set, it can be
-slaved to another <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> with the <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_set_master">Gst.Clock.set_master</a>. The clock will
+<p>When a clock has the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_FLAG_CAN_SET_MASTER">Gst.ClockFlags.can_set_master</a> flag set, it can be
+slaved to another <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> with the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_set_master">Gst.Clock.set_master</a>. The clock will
 then automatically be synchronized to this master clock by repeatedly
 sampling the master clock and the slave clock and recalibrating the slave
-clock with <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_set_calibration">Gst.Clock.set_calibration</a>. This feature is mostly useful for
+clock with <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_set_calibration">Gst.Clock.set_calibration</a>. This feature is mostly useful for
 plugins that have an internal clock but must operate with another clock
-selected by the <a href="../../libgstreamer-doc-1.0/gstpipeline.html#GstPipeline">Gst.Pipeline</a>.  They can track the offset and rate difference
+selected by the <a href="../../libgstreamer-doc-1.0/python/gstpipeline.html#GstPipeline">Gst.Pipeline</a>.  They can track the offset and rate difference
 of their internal clock relative to the master clock by using the
-<a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_get_calibration">Gst.Clock.get_calibration</a> function.</p>
-<p>The master/slave synchronisation can be tuned with the <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock:timeout">timeout</a>,
-<a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock:window-size">window-size</a> and <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock:window-threshold">window-threshold</a> properties.
-The <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock:timeout">timeout</a> property defines the interval to sample the master
-clock and run the calibration functions. <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock:window-size">window-size</a> defines the
-number of samples to use when calibrating and <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock:window-threshold">window-threshold</a>
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_get_calibration">Gst.Clock.get_calibration</a> function.</p>
+<p>The master/slave synchronisation can be tuned with the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock:timeout">timeout</a>,
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock:window-size">window-size</a> and <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock:window-threshold">window-threshold</a> properties.
+The <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock:timeout">timeout</a> property defines the interval to sample the master
+clock and run the calibration functions. <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock:window-size">window-size</a> defines the
+number of samples to use when calibrating and <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock:window-threshold">window-threshold</a>
 defines the minimum number of samples before the calibration is performed.</p>
 
 </div>
@@ -160,11 +160,11 @@ defines the minimum number of samples before the calibration is performed.</p>
 		<div class="hierarchy_container">
 	<div class="hierarchy_details">
 <pre>
-GObject.Object
-    <span class="lineart">╰──</span>GObject.InitiallyUnowned
-        <span class="lineart">╰──</span><a title="Gst.Object" href="../../libgstreamer-doc-1.0/gstobject.html#GstObject">Gst.Object</a>
+<a title="GObject.Object" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a>
+    <span class="lineart">╰──</span><a title="GObject.InitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GObject.InitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="Gst.Object" href="../../libgstreamer-doc-1.0/python/gstobject.html#GstObject">Gst.Object</a>
             <span class="lineart">╰──</span>Gst.Clock
-                <span class="lineart">╰──</span><a title="Gst.SystemClock" href="../../libgstreamer-doc-1.0/gstsystemclock.html#GstSystemClock">Gst.SystemClock</a>
+                <span class="lineart">╰──</span><a title="Gst.SystemClock" href="../../libgstreamer-doc-1.0/python/gstsystemclock.html#GstSystemClock">Gst.SystemClock</a>
 </pre>
 
 </div>
@@ -172,8 +172,8 @@ GObject.Object
 </div>
 
 <div class="class_details">
-	<p><a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> base structure. The values of this structure are
-protected for subclasses, use the methods to use the <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>.</p>
+	<p><a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> base structure. The values of this structure are
+protected for subclasses, use the methods to use the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>.</p>
 
 </div>
 
@@ -185,7 +185,7 @@ protected for subclasses, use the methods to use the <a href="../../libgstreamer
 						<tr id="GstClock.object">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.Object" href="../../libgstreamer-doc-1.0/gstobject.html#GstObject">Gst.Object</a> <em><code>object</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.Object" href="../../libgstreamer-doc-1.0/python/gstobject.html#GstObject">Gst.Object</a> <em><code>object</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -203,7 +203,7 @@ protected for subclasses, use the methods to use the <a href="../../libgstreamer
 						<tr id="GstClock._gst_reserved">
 		<td>
 		<p>
-		<i><em><code>object <em><code>_gst_reserved</code></em>:</code></em></i>
+		<i><em><code><a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a> <em><code>_gst_reserved</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -230,7 +230,7 @@ protected for subclasses, use the methods to use the <a href="../../libgstreamer
 def Gst.Clock.id_compare_func (id1, id2):
     #python wrapper for 'gst_clock_id_compare_func'</pre>
 
-<p>Compares the two <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> instances. This function can be used
+<p>Compares the two <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> instances. This function can be used
 as a GCompareFunc when sorting ids.</p>
 
 	<div class="parameter_container">
@@ -243,7 +243,7 @@ as a GCompareFunc when sorting ids.</p>
 		<i><em><code>id1:</code></em></i>
 		</p>
 	</td>
-		<td><p>A <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a></p>
+		<td><p>A <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a></p>
 </td>
 <td>
 <a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>
@@ -256,7 +256,7 @@ as a GCompareFunc when sorting ids.</p>
 		<i><em><code>id2:</code></em></i>
 		</p>
 	</td>
-		<td><p>A <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> to compare with</p>
+		<td><p>A <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> to compare with</p>
 </td>
 <td>
 <a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>
@@ -323,10 +323,10 @@ def Gst.Clock.id_get_time (id):
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> to query</p>
+		<td><p>The <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> to query</p>
 </td>
 <td>
-<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>
+<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
 </td>
 </tr>
 
@@ -354,7 +354,7 @@ def Gst.Clock.id_get_time (id):
 
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -390,10 +390,10 @@ def Gst.Clock.id_ref (id):
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> to ref</p>
+		<td><p>The <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> to ref</p>
 </td>
 <td>
-<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>
+<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
 </td>
 </tr>
 
@@ -416,12 +416,12 @@ def Gst.Clock.id_ref (id):
 				</p>
 	</td>
 	<td>
-		<p>The same <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> with increased refcount.</p>
+		<p>The same <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> with increased refcount.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>
+		<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
 	</td>
 	</tr>
 
@@ -446,7 +446,7 @@ def Gst.Clock.id_unref (id):
     #python wrapper for 'gst_clock_id_unref'</pre>
 
 <p>Unref given <em>id</em>. When the refcount reaches 0 the
-<a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> will be freed.</p>
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> will be freed.</p>
 <p>MT safe.</p>
 
 	<div class="parameter_container">
@@ -459,10 +459,10 @@ def Gst.Clock.id_unref (id):
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> to unref</p>
+		<td><p>The <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> to unref</p>
 </td>
 <td>
-<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>
+<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
 </td>
 </tr>
 
@@ -489,7 +489,7 @@ def Gst.Clock.id_unschedule (id):
 <p>Cancel an outstanding request with <em>id</em>. This can either
 be an outstanding async notification or a pending sync notification.
 After this call, <em>id</em> cannot be used anymore to receive sync or
-async notifications, you need to create a new <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>.</p>
+async notifications, you need to create a new <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>.</p>
 <p>MT safe.</p>
 
 	<div class="parameter_container">
@@ -505,7 +505,7 @@ async notifications, you need to create a new <a href="../../libgstreamer-doc-1.
 		<td><p>The id to unschedule</p>
 </td>
 <td>
-<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>
+<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
 </td>
 </tr>
 
@@ -530,15 +530,15 @@ def Gst.Clock.id_wait (id):
     #python wrapper for 'gst_clock_id_wait'</pre>
 
 <p>Perform a blocking wait on <em>id</em>.
-<em>id</em> should have been created with <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_new_single_shot_id">Gst.Clock.new_single_shot_id</a>
-or <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_new_periodic_id">Gst.Clock.new_periodic_id</a> and should not have been unscheduled
-with a call to <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_id_unschedule">Gst.Clock.id_unschedule</a>.</p>
-<p>If the <em>jitter</em> argument is not <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">None</a> and this function returns <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_OK">Gst.ClockReturn.ok</a>
-or <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_EARLY">Gst.ClockReturn.early</a>, it will contain the difference
+<em>id</em> should have been created with <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_new_single_shot_id">Gst.Clock.new_single_shot_id</a>
+or <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_new_periodic_id">Gst.Clock.new_periodic_id</a> and should not have been unscheduled
+with a call to <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_id_unschedule">Gst.Clock.id_unschedule</a>.</p>
+<p>If the <em>jitter</em> argument is not <a href="https://docs.python.org/2/library/constants.html#None">None</a> and this function returns <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_OK">Gst.ClockReturn.ok</a>
+or <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_EARLY">Gst.ClockReturn.early</a>, it will contain the difference
 against the clock and the time of <em>id</em> when this method was
 called.
 Positive values indicate how late <em>id</em> was relative to the clock
-(in which case this function will return <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_EARLY">Gst.ClockReturn.early</a>).
+(in which case this function will return <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_EARLY">Gst.ClockReturn.early</a>).
 Negative values indicate how much time was spent waiting on the clock
 before this function returned.</p>
 
@@ -552,10 +552,10 @@ before this function returned.</p>
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> to wait on</p>
+		<td><p>The <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> to wait on</p>
 </td>
 <td>
-<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>
+<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
 </td>
 </tr>
 
@@ -578,15 +578,15 @@ before this function returned.</p>
 				</p>
 	</td>
 	<td>
-		<p>the result of the blocking wait. <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_EARLY">Gst.ClockReturn.early</a> will be returned
-if the current clock time is past the time of <em>id</em>, <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_OK">Gst.ClockReturn.ok</a> if
-<em>id</em> was scheduled in time. <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_UNSCHEDULED">Gst.ClockReturn.unscheduled</a> if <em>id</em> was
-unscheduled with <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_id_unschedule">Gst.Clock.id_unschedule</a>.</p>
+		<p>the result of the blocking wait. <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_EARLY">Gst.ClockReturn.early</a> will be returned
+if the current clock time is past the time of <em>id</em>, <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_OK">Gst.ClockReturn.ok</a> if
+<em>id</em> was scheduled in time. <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_UNSCHEDULED">Gst.ClockReturn.unscheduled</a> if <em>id</em> was
+unscheduled with <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_id_unschedule">Gst.Clock.id_unschedule</a>.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockReturn" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockReturn">Gst.ClockReturn</a>
+		<a title="Gst.ClockReturn" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockReturn">Gst.ClockReturn</a>
 	</td>
 	</tr>
 
@@ -597,15 +597,15 @@ unscheduled with <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_id_
 				</p>
 	</td>
 	<td>
-		<p>the result of the blocking wait. <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_EARLY">Gst.ClockReturn.early</a> will be returned
-if the current clock time is past the time of <em>id</em>, <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_OK">Gst.ClockReturn.ok</a> if
-<em>id</em> was scheduled in time. <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_UNSCHEDULED">Gst.ClockReturn.unscheduled</a> if <em>id</em> was
-unscheduled with <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_id_unschedule">Gst.Clock.id_unschedule</a>.</p>
+		<p>the result of the blocking wait. <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_EARLY">Gst.ClockReturn.early</a> will be returned
+if the current clock time is past the time of <em>id</em>, <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_OK">Gst.ClockReturn.ok</a> if
+<em>id</em> was scheduled in time. <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_UNSCHEDULED">Gst.ClockReturn.unscheduled</a> if <em>id</em> was
+unscheduled with <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_id_unschedule">Gst.Clock.id_unschedule</a>.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockTimeDiff" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a>
+		<a title="Gst.ClockTimeDiff" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a>
 	</td>
 	</tr>
 
@@ -629,8 +629,8 @@ unscheduled with <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_id_
 def Gst.Clock.id_wait_async (id, func, user_data, destroy_data):
     #python wrapper for 'gst_clock_id_wait_async'</pre>
 
-<p>Register a callback on the given <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> <em>id</em> with the given
-function and user_data. When passing a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> with an invalid
+<p>Register a callback on the given <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> <em>id</em> with the given
+function and user_data. When passing a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> with an invalid
 time to this function, the callback will be called immediately
 with  a time set to GST_CLOCK_TIME_NONE. The callback will
 be called when the time of <em>id</em> has been reached.</p>
@@ -647,10 +647,10 @@ core or from a streaming thread. The application should be prepared for this.</p
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> to wait on</p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> to wait on</p>
 </td>
 <td>
-<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>
+<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
 </td>
 </tr>
 
@@ -663,7 +663,7 @@ core or from a streaming thread. The application should be prepared for this.</p
 		<td><p>The callback function</p>
 </td>
 <td>
-Gst.ClockCallback
+<a title="Gst.ClockCallback" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockCallback">Gst.ClockCallback</a>
 </td>
 </tr>
 
@@ -686,10 +686,10 @@ Gst.ClockCallback
 		<i><em><code>destroy_data:</code></em></i>
 		</p>
 	</td>
-		<td><p>GDestroyNotify for user_data</p>
+		<td><p><a href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GLib.DestroyNotify</a> for user_data</p>
 </td>
 <td>
-GLib.DestroyNotify
+<a title="GLib.DestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GLib.DestroyNotify</a>
 </td>
 </tr>
 
@@ -717,7 +717,7 @@ GLib.DestroyNotify
 
 	</td>
 	<td>
-		<a title="Gst.ClockReturn" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockReturn">Gst.ClockReturn</a>
+		<a title="Gst.ClockReturn" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockReturn">Gst.ClockReturn</a>
 	</td>
 	</tr>
 
@@ -745,7 +745,7 @@ def Gst.Clock.add_observation (self, slave, master):
 clock are added to the list of observations. If enough observations
 are available, a linear regression algorithm is run on the
 observations and <em>clock</em> is recalibrated.</p>
-<p>If this functions returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a>, <em>r_squared</em> will contain the
+<p>If this functions returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>, <em>r_squared</em> will contain the
 correlation coefficient of the interpolation. A value of 1.0
 means a perfect regression was performed. This value can
 be used to control the sampling frequency of the master and slave
@@ -761,10 +761,10 @@ clocks.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -777,7 +777,7 @@ clocks.</p>
 		<td><p>a time on the slave</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -790,7 +790,7 @@ clocks.</p>
 		<td><p>a time on the master</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -813,7 +813,7 @@ clocks.</p>
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> if enough observations were added to run the
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if enough observations were added to run the
 regression algorithm.</p>
 <p>MT safe.</p>
 
@@ -830,13 +830,13 @@ regression algorithm.</p>
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> if enough observations were added to run the
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if enough observations were added to run the
 regression algorithm.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		float
+		<a title="float" href="https://docs.python.org/2/library/functions.html#float">float</a>
 	</td>
 	</tr>
 
@@ -861,9 +861,9 @@ def Gst.Clock.add_observation_unapplied (self, slave, master):
     #python wrapper for 'gst_clock_add_observation_unapplied'</pre>
 
 <p>Add a clock observation to the internal slaving algorithm the same as
-<a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_add_observation">Gst.Clock.add_observation</a>, and return the result of the master clock
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_add_observation">Gst.Clock.add_observation</a>, and return the result of the master clock
 estimation, without updating the internal calibration.</p>
-<p>The caller can then take the results and call <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_set_calibration">Gst.Clock.set_calibration</a>
+<p>The caller can then take the results and call <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_set_calibration">Gst.Clock.set_calibration</a>
 with the values, or some modified version of them.</p>
 
 	<div class="parameter_container">
@@ -876,10 +876,10 @@ with the values, or some modified version of them.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -892,7 +892,7 @@ with the values, or some modified version of them.</p>
 		<td><p>a time on the slave</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -905,7 +905,7 @@ with the values, or some modified version of them.</p>
 		<td><p>a time on the master</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -945,7 +945,7 @@ with the values, or some modified version of them.</p>
 		
 	</td>
 	<td>
-		float
+		<a title="float" href="https://docs.python.org/2/library/functions.html#float">float</a>
 	</td>
 	</tr>
 
@@ -959,7 +959,7 @@ with the values, or some modified version of them.</p>
 		
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -973,7 +973,7 @@ with the values, or some modified version of them.</p>
 		
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -987,7 +987,7 @@ with the values, or some modified version of them.</p>
 		
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1001,7 +1001,7 @@ with the values, or some modified version of them.</p>
 		
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1029,10 +1029,10 @@ def Gst.Clock.adjust_unlocked (self, internal):
     #python wrapper for 'gst_clock_adjust_unlocked'</pre>
 
 <p>Converts the given <em>internal</em> clock time to the external time, adjusting for the
-rate and reference time set with <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_set_calibration">Gst.Clock.set_calibration</a> and making sure
+rate and reference time set with <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_set_calibration">Gst.Clock.set_calibration</a> and making sure
 that the returned time is increasing. This function should be called with the
 clock's OBJECT_LOCK held and is mainly used by clock subclasses.</p>
-<p>This function is the reverse of <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_unadjust_unlocked">Gst.Clock.unadjust_unlocked</a>.</p>
+<p>This function is the reverse of <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_unadjust_unlocked">Gst.Clock.unadjust_unlocked</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters9">Parameters</h4>
@@ -1044,10 +1044,10 @@ clock's OBJECT_LOCK held and is mainly used by clock subclasses.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> to use</p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> to use</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1060,7 +1060,7 @@ clock's OBJECT_LOCK held and is mainly used by clock subclasses.</p>
 		<td><p>a clock time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -1087,7 +1087,7 @@ clock's OBJECT_LOCK held and is mainly used by clock subclasses.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1113,9 +1113,9 @@ def Gst.Clock.adjust_with_calibration (self, internal_target, cinternal, cextern
 
 <p>Converts the given <em>internal_target</em> clock time to the external time,
 using the passed calibration parameters. This function performs the
-same calculation as <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_adjust_unlocked">Gst.Clock.adjust_unlocked</a> when called using the
+same calculation as <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_adjust_unlocked">Gst.Clock.adjust_unlocked</a> when called using the
 current calibration parameters, but doesn't ensure a monotonically
-increasing result as <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_adjust_unlocked">Gst.Clock.adjust_unlocked</a> does.</p>
+increasing result as <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_adjust_unlocked">Gst.Clock.adjust_unlocked</a> does.</p>
 <p>Note: The <em>clock</em> parameter is unused and can be NULL</p>
 
 	<div class="parameter_container">
@@ -1128,10 +1128,10 @@ increasing result as <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> to use</p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> to use</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1144,7 +1144,7 @@ increasing result as <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock
 		<td><p>a clock time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -1157,7 +1157,7 @@ increasing result as <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock
 		<td><p>a reference internal time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -1170,7 +1170,7 @@ increasing result as <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock
 		<td><p>a reference external time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -1184,7 +1184,7 @@ increasing result as <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock
 internal time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -1197,7 +1197,7 @@ internal time</p>
 		<td><p>the denominator of the rate of the clock</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -1224,7 +1224,7 @@ internal time</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1252,8 +1252,8 @@ def Gst.Clock.get_calibration (self):
     #python wrapper for 'gst_clock_get_calibration'</pre>
 
 <p>Gets the internal rate and reference time of <em>clock</em>. See
-<a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_set_calibration">Gst.Clock.set_calibration</a> for more information.</p>
-<p><em>internal</em>, <em>external</em>, <em>rate_num</em>, and <em>rate_denom</em> can be left <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">None</a> if the
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_set_calibration">Gst.Clock.set_calibration</a> for more information.</p>
+<p><em>internal</em>, <em>external</em>, <em>rate_num</em>, and <em>rate_denom</em> can be left <a href="https://docs.python.org/2/library/constants.html#None">None</a> if the
 caller is not interested in the values.</p>
 <p>MT safe.</p>
 
@@ -1267,10 +1267,10 @@ caller is not interested in the values.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1297,7 +1297,7 @@ caller is not interested in the values.</p>
 		
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1311,7 +1311,7 @@ caller is not interested in the values.</p>
 		
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1325,7 +1325,7 @@ caller is not interested in the values.</p>
 		
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1339,7 +1339,7 @@ caller is not interested in the values.</p>
 		
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1376,10 +1376,10 @@ unadjusted for the offset and the rate.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> to query</p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> to query</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1408,7 +1408,7 @@ given invalid input.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1432,7 +1432,7 @@ given invalid input.</p>
 def Gst.Clock.get_master (self):
     #python wrapper for 'gst_clock_get_master'</pre>
 
-<p>Get the master clock that <em>clock</em> is slaved to or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">None</a> when the clock is
+<p>Get the master clock that <em>clock</em> is slaved to or <a href="https://docs.python.org/2/library/constants.html#None">None</a> when the clock is
 not slaved to any master clock.</p>
 
 	<div class="parameter_container">
@@ -1445,10 +1445,10 @@ not slaved to any master clock.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1471,14 +1471,14 @@ not slaved to any master clock.</p>
 				</p>
 	</td>
 	<td>
-		<p>a master <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">None</a>
+		<p>a master <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> or <a href="https://docs.python.org/2/library/constants.html#None">None</a>
 when this clock is not slaved to a master clock. Unref after
 usage.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+		<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 	</td>
 	</tr>
 
@@ -1503,7 +1503,7 @@ def Gst.Clock.get_resolution (self):
     #python wrapper for 'gst_clock_get_resolution'</pre>
 
 <p>Get the accuracy of the clock. The accuracy of the clock is the granularity
-of the values returned by <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a>.</p>
+of the values returned by <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters14">Parameters</h4>
@@ -1515,10 +1515,10 @@ of the values returned by <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1541,12 +1541,12 @@ of the values returned by <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_
 				</p>
 	</td>
 	<td>
-		<p>the resolution of the clock in units of <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>.</p>
+		<p>the resolution of the clock in units of <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1584,10 +1584,10 @@ offset and rate.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> to query</p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> to query</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1616,7 +1616,7 @@ given invalid input.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1652,10 +1652,10 @@ def Gst.Clock.get_timeout (self):
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1682,7 +1682,7 @@ def Gst.Clock.get_timeout (self):
 
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -1722,7 +1722,7 @@ def Gst.Clock.is_synced (self):
 		<td><p>a GstClock</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1745,7 +1745,7 @@ def Gst.Clock.is_synced (self):
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> if the clock is currently synced</p>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the clock is currently synced</p>
 
 	</td>
 	<td>
@@ -1792,10 +1792,10 @@ after usage.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> to get a periodic notification id from</p>
+		<td><p>The <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> to get a periodic notification id from</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1808,7 +1808,7 @@ after usage.</p>
 		<td><p>the requested start time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -1821,7 +1821,7 @@ after usage.</p>
 		<td><p>the requested interval</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -1844,13 +1844,13 @@ after usage.</p>
 				</p>
 	</td>
 	<td>
-		<p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> that can be used to request the
+		<p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> that can be used to request the
 time notification.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>
+		<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
 	</td>
 	</tr>
 
@@ -1874,7 +1874,7 @@ time notification.</p>
 def Gst.Clock.new_single_shot_id (self, time):
     #python wrapper for 'gst_clock_new_single_shot_id'</pre>
 
-<p>Get a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> from <em>clock</em> to trigger a single shot
+<p>Get a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> from <em>clock</em> to trigger a single shot
 notification at the requested time. The single shot id should be
 unreffed after usage.</p>
 <p>Free-function: gst_clock_id_unref</p>
@@ -1889,10 +1889,10 @@ unreffed after usage.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> to get a single shot notification from</p>
+		<td><p>The <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> to get a single shot notification from</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1905,7 +1905,7 @@ unreffed after usage.</p>
 		<td><p>the requested time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -1928,13 +1928,13 @@ unreffed after usage.</p>
 				</p>
 	</td>
 	<td>
-		<p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a> that can be used to request the
+		<p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> that can be used to request the
 time notification.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>
+		<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
 	</td>
 	</tr>
 
@@ -1971,10 +1971,10 @@ interval. Does not modify the reference count.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -1984,10 +1984,10 @@ interval. Does not modify the reference count.</p>
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a></p>
 </td>
 <td>
-<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>
+<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
 </td>
 </tr>
 
@@ -2000,7 +2000,7 @@ interval. Does not modify the reference count.</p>
 		<td><p>the requested start time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2013,7 +2013,7 @@ interval. Does not modify the reference count.</p>
 		<td><p>the requested interval</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2036,8 +2036,8 @@ interval. Does not modify the reference count.</p>
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> if the GstClockID could be reinitialized to the provided
-<em>time</em>, else <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">False</a>.</p>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the GstClockID could be reinitialized to the provided
+<em>time</em>, else <a href="https://docs.python.org/2/library/constants.html#False">False</a>.</p>
 
 	</td>
 	<td>
@@ -2068,17 +2068,17 @@ def Gst.Clock.set_calibration (self, internal, external, rate_num, rate_denom):
 <p>Adjusts the rate and time of <em>clock</em>. A rate of 1/1 is the normal speed of
 the clock. Values bigger than 1/1 make the clock go faster.</p>
 <p><em>internal</em> and <em>external</em> are calibration parameters that arrange that
-<a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a> should have been <em>external</em> at internal time <em>internal</em>.
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a> should have been <em>external</em> at internal time <em>internal</em>.
 This internal time should not be in the future; that is, it should be less
-than the value of <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_get_internal_time">Gst.Clock.get_internal_time</a> when this function is called.</p>
-<p>Subsequent calls to <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a> will return clock times computed as
+than the value of <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_get_internal_time">Gst.Clock.get_internal_time</a> when this function is called.</p>
+<p>Subsequent calls to <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a> will return clock times computed as
 follows:</p>
 <pre><code class="language-[">   time = (internal_time - internal) * rate_num / rate_denom + external
 </code></pre>
-<p>This formula is implemented in <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_adjust_unlocked">Gst.Clock.adjust_unlocked</a>. Of course, it
+<p>This formula is implemented in <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_adjust_unlocked">Gst.Clock.adjust_unlocked</a>. Of course, it
 tries to do the integer arithmetic as precisely as possible.</p>
-<p>Note that <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a> always returns increasing values so when you
-move the clock backwards, <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a> will report the previous value
+<p>Note that <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a> always returns increasing values so when you
+move the clock backwards, <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a> will report the previous value
 until the clock catches up.</p>
 <p>MT safe.</p>
 
@@ -2092,10 +2092,10 @@ until the clock catches up.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> to calibrate</p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> to calibrate</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -2108,7 +2108,7 @@ until the clock catches up.</p>
 		<td><p>a reference internal time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2121,7 +2121,7 @@ until the clock catches up.</p>
 		<td><p>a reference external time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2135,7 +2135,7 @@ until the clock catches up.</p>
 internal time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2148,7 +2148,7 @@ internal time</p>
 		<td><p>the denominator of the rate of the clock</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2173,11 +2173,11 @@ def Gst.Clock.set_master (self, master):
     #python wrapper for 'gst_clock_set_master'</pre>
 
 <p>Set <em>master</em> as the master clock for <em>clock</em>. <em>clock</em> will be automatically
-calibrated so that <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a> reports the same time as the
+calibrated so that <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a> reports the same time as the
 master clock.</p>
 <p>A clock provider that slaves its clock to a master can get the current
-calibration values with <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_get_calibration">Gst.Clock.get_calibration</a>.</p>
-<p><em>master</em> can be <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">None</a> in which case <em>clock</em> will not be slaved anymore. It will
+calibration values with <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_get_calibration">Gst.Clock.get_calibration</a>.</p>
+<p><em>master</em> can be <a href="https://docs.python.org/2/library/constants.html#None">None</a> in which case <em>clock</em> will not be slaved anymore. It will
 however keep reporting its time adjusted with the last configured rate
 and time offsets.</p>
 
@@ -2191,10 +2191,10 @@ and time offsets.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -2204,10 +2204,10 @@ and time offsets.</p>
 		<i><em><code>master:</code></em></i>
 		</p>
 	</td>
-		<td><p>a master <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a master <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -2230,9 +2230,9 @@ and time offsets.</p>
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> if the clock is capable of being slaved to a master clock.
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the clock is capable of being slaved to a master clock.
 Trying to set a master on a clock without the
-<a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_FLAG_CAN_SET_MASTER">Gst.ClockFlags.can_set_master</a> flag will make this function return <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">False</a>.</p>
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_FLAG_CAN_SET_MASTER">Gst.ClockFlags.can_set_master</a> flag will make this function return <a href="https://docs.python.org/2/library/constants.html#False">False</a>.</p>
 <p>MT safe.</p>
 
 	</td>
@@ -2265,7 +2265,7 @@ def Gst.Clock.set_resolution (self, resolution):
 with different accuracy at the expense of more resource usage. There is
 normally no need to change the default resolution of a clock. The resolution
 of a clock can only be changed if the clock has the
-<a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_FLAG_CAN_SET_RESOLUTION">Gst.ClockFlags.can_set_resolution</a> flag set.</p>
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_FLAG_CAN_SET_RESOLUTION">Gst.ClockFlags.can_set_resolution</a> flag set.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters23">Parameters</h4>
@@ -2277,10 +2277,10 @@ of a clock can only be changed if the clock has the
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -2293,7 +2293,7 @@ of a clock can only be changed if the clock has the
 		<td><p>The resolution to set</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2320,7 +2320,7 @@ of a clock can only be changed if the clock has the
 
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -2345,7 +2345,7 @@ def Gst.Clock.set_synced (self, synced):
     #python wrapper for 'gst_clock_set_synced'</pre>
 
 <p>Sets <em>clock</em> to synced and emits the GstClock::synced signal, and wakes up any
-thread waiting in <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_wait_for_sync">Gst.Clock.wait_for_sync</a>.</p>
+thread waiting in <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_wait_for_sync">Gst.Clock.wait_for_sync</a>.</p>
 <p>This function must only be called if GST_CLOCK_FLAG_NEEDS_STARTUP_SYNC
 is set on the clock, and is intended to be called by subclasses only.</p>
 
@@ -2362,7 +2362,7 @@ is set on the clock, and is intended to be called by subclasses only.</p>
 		<td><p>a GstClock</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -2415,10 +2415,10 @@ clocks</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -2431,7 +2431,7 @@ clocks</p>
 		<td><p>a timeout</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2468,10 +2468,10 @@ modify the reference count.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a></p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -2481,10 +2481,10 @@ modify the reference count.</p>
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a></p>
 </td>
 <td>
-<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockID">Gst.ClockID</a>
+<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
 </td>
 </tr>
 
@@ -2497,7 +2497,7 @@ modify the reference count.</p>
 		<td><p>The requested time.</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2520,8 +2520,8 @@ modify the reference count.</p>
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> if the GstClockID could be reinitialized to the provided
-<em>time</em>, else <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">False</a>.</p>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the GstClockID could be reinitialized to the provided
+<em>time</em>, else <a href="https://docs.python.org/2/library/constants.html#False">False</a>.</p>
 
 	</td>
 	<td>
@@ -2550,10 +2550,10 @@ def Gst.Clock.unadjust_unlocked (self, external):
     #python wrapper for 'gst_clock_unadjust_unlocked'</pre>
 
 <p>Converts the given <em>external</em> clock time to the internal time of <em>clock</em>,
-using the rate and reference time set with <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_set_calibration">Gst.Clock.set_calibration</a>.
+using the rate and reference time set with <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_set_calibration">Gst.Clock.set_calibration</a>.
 This function should be called with the clock's OBJECT_LOCK held and
 is mainly used by clock subclasses.</p>
-<p>This function is the reverse of <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_adjust_unlocked">Gst.Clock.adjust_unlocked</a>.</p>
+<p>This function is the reverse of <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_adjust_unlocked">Gst.Clock.adjust_unlocked</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters27">Parameters</h4>
@@ -2565,10 +2565,10 @@ is mainly used by clock subclasses.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> to use</p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> to use</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -2581,7 +2581,7 @@ is mainly used by clock subclasses.</p>
 		<td><p>an external clock time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2608,7 +2608,7 @@ is mainly used by clock subclasses.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -2634,7 +2634,7 @@ def Gst.Clock.unadjust_with_calibration (self, external_target, cinternal, cexte
 
 <p>Converts the given <em>external_target</em> clock time to the internal time,
 using the passed calibration parameters. This function performs the
-same calculation as <a href="../../libgstreamer-doc-1.0/gstclock.html#gst_clock_unadjust_unlocked">Gst.Clock.unadjust_unlocked</a> when called using the
+same calculation as <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_unadjust_unlocked">Gst.Clock.unadjust_unlocked</a> when called using the
 current calibration parameters.</p>
 <p>Note: The <em>clock</em> parameter is unused and can be NULL</p>
 
@@ -2648,10 +2648,10 @@ current calibration parameters.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> to use</p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> to use</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -2664,7 +2664,7 @@ current calibration parameters.</p>
 		<td><p>a clock time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2677,7 +2677,7 @@ current calibration parameters.</p>
 		<td><p>a reference internal time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2690,7 +2690,7 @@ current calibration parameters.</p>
 		<td><p>a reference external time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2704,7 +2704,7 @@ current calibration parameters.</p>
 internal time</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2717,7 +2717,7 @@ internal time</p>
 		<td><p>the denominator of the rate of the clock</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2744,7 +2744,7 @@ internal time</p>
 
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -2772,7 +2772,7 @@ def Gst.Clock.wait_for_sync (self, timeout):
     #python wrapper for 'gst_clock_wait_for_sync'</pre>
 
 <p>Waits until <em>clock</em> is synced for reporting the current time. If <em>timeout</em>
-is <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> it will wait forever, otherwise it will time out
+is <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> it will wait forever, otherwise it will time out
 after <em>timeout</em> nanoseconds.</p>
 <p>For asynchronous waiting, the GstClock::synced signal can be used.</p>
 <p>This returns immediately with TRUE if GST_CLOCK_FLAG_NEEDS_STARTUP_SYNC
@@ -2791,7 +2791,7 @@ is not set on the clock, or if the clock is already synced.</p>
 		<td><p>a GstClock</p>
 </td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -2801,10 +2801,10 @@ is not set on the clock, or if the clock is already synced.</p>
 		<i><em><code>timeout:</code></em></i>
 		</p>
 	</td>
-		<td><p>timeout for waiting or <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a></p>
+		<td><p>timeout for waiting or <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a></p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -2827,7 +2827,7 @@ is not set on the clock, or if the clock is already synced.</p>
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> if waiting was successful, or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">False</a> on timeout</p>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if waiting was successful, or <a href="https://docs.python.org/2/library/constants.html#False">False</a> on timeout</p>
 
 	</td>
 	<td>
@@ -2878,7 +2878,7 @@ is not set on the clock, or if the clock is already synced.</p>
 #define GST_CLOCK_TIME_IS_VALID(time)   (((GstClockTime)(time)) != GST_CLOCK_TIME_NONE)
 </pre>
 
-<p>Tests if a given <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> represents a valid defined time.</p>
+<p>Tests if a given <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> represents a valid defined time.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters30">Parameters</h4>
@@ -2917,7 +2917,7 @@ is not set on the clock, or if the clock is already synced.</p>
 #define GST_CLOCK_STIME_IS_VALID(time)   (((GstClockTimeDiff)(time)) != GST_CLOCK_STIME_NONE)
 </pre>
 
-<p>Tests if a given <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a> of gint64 represents a valid defined time.</p>
+<p>Tests if a given <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a> of <a href="https://docs.python.org/2/library/functions.html#int">int</a> represents a valid defined time.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters31">Parameters</h4>
@@ -2956,7 +2956,7 @@ is not set on the clock, or if the clock is already synced.</p>
 #define GST_TIME_AS_SECONDS(time)  ((time) / GST_SECOND)
 </pre>
 
-<p>Convert a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> to seconds.</p>
+<p>Convert a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> to seconds.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters32">Parameters</h4>
@@ -2995,7 +2995,7 @@ is not set on the clock, or if the clock is already synced.</p>
 #define GST_TIME_AS_MSECONDS(time) ((time) / G_GINT64_CONSTANT (1000000))
 </pre>
 
-<p>Convert a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> to milliseconds (1/1000 of a second).</p>
+<p>Convert a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> to milliseconds (1/1000 of a second).</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters33">Parameters</h4>
@@ -3034,7 +3034,7 @@ is not set on the clock, or if the clock is already synced.</p>
 #define GST_TIME_AS_USECONDS(time) ((time) / G_GINT64_CONSTANT (1000))
 </pre>
 
-<p>Convert a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> to microseconds (1/1000000 of a second).</p>
+<p>Convert a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> to microseconds (1/1000000 of a second).</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters34">Parameters</h4>
@@ -3073,7 +3073,7 @@ is not set on the clock, or if the clock is already synced.</p>
 #define GST_TIME_AS_NSECONDS(time) (time)
 </pre>
 
-<p>Convert a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> to nanoseconds (1/1000000000 of a second).</p>
+<p>Convert a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> to nanoseconds (1/1000000000 of a second).</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters35">Parameters</h4>
@@ -3112,7 +3112,7 @@ is not set on the clock, or if the clock is already synced.</p>
 #define GST_CLOCK_DIFF(s, e)            (GstClockTimeDiff)((e) - (s))
 </pre>
 
-<p>Calculate a difference between two clock times as a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a>.
+<p>Calculate a difference between two clock times as a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a>.
 The difference is calculated as <em>e</em> - <em>s</em>.</p>
 
 	<div class="parameter_container">
@@ -3165,7 +3165,7 @@ The difference is calculated as <em>e</em> - <em>s</em>.</p>
 #define GST_TIMEVAL_TO_TIME(tv)         (GstClockTime)((tv).tv_sec * GST_SECOND + (tv).tv_usec * GST_USECOND)
 </pre>
 
-<p>Convert a GTimeVal to a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>.</p>
+<p>Convert a <a href="https://developer.gnome.org/glib/unstable/glib-Date-and-Time-Functions.html#GTimeVal">GLib.TimeVal</a> to a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters37">Parameters</h4>
@@ -3212,7 +3212,7 @@ G_STMT_START {                                                  \
 } G_STMT_END
 </pre>
 
-<p>Convert a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> to a GTimeVal</p>
+<p>Convert a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> to a <a href="https://developer.gnome.org/glib/unstable/glib-Date-and-Time-Functions.html#GTimeVal">GLib.TimeVal</a></p>
 <blockquote>
 <p>on 32-bit systems, a timeval has a range of only 2^32 - 1 seconds,
 which is about 68 years.  Expect trouble if you want to schedule stuff
@@ -3229,7 +3229,7 @@ in your pipeline for 2038.</p>
 		<i><em><code>t:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> to convert</p>
+		<td><p>The <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> to convert</p>
 </td>
 <td>
  t
@@ -3269,7 +3269,7 @@ in your pipeline for 2038.</p>
 #define GST_TIMESPEC_TO_TIME(ts)        (GstClockTime)((ts).tv_sec * GST_SECOND + (ts).tv_nsec * GST_NSECOND)
 </pre>
 
-<p>Convert a struct timespec (see man pselect) to a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>.</p>
+<p>Convert a struct timespec (see man pselect) to a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters39">Parameters</h4>
@@ -3314,7 +3314,7 @@ G_STMT_START {                                                    \
 } G_STMT_END
 </pre>
 
-<p>Convert a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> to a struct timespec (see man pselect)</p>
+<p>Convert a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> to a struct timespec (see man pselect)</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters40">Parameters</h4>
@@ -3326,7 +3326,7 @@ G_STMT_START {                                                    \
 		<i><em><code>t:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> to convert</p>
+		<td><p>The <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> to convert</p>
 </td>
 <td>
  t
@@ -3374,7 +3374,7 @@ G_STMT_START {                                                    \
         (guint) (((GstClockTime)(t)) % GST_SECOND) : 999999999
 </pre>
 
-<p>Format <em>t</em> for the <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_TIME_FORMAT">Gst.TIME_FORMAT</a> format string. Note: <em>t</em> will be
+<p>Format <em>t</em> for the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_TIME_FORMAT">Gst.TIME_FORMAT</a> format string. Note: <em>t</em> will be
 evaluated more than once.</p>
 
 	<div class="parameter_container">
@@ -3387,7 +3387,7 @@ evaluated more than once.</p>
 		<i><em><code>t:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a></p>
 </td>
 <td>
  t
@@ -3423,7 +3423,7 @@ evaluated more than once.</p>
     (guint) (((GstClockTime)(ABS(t))) % GST_SECOND) : 999999999
 </pre>
 
-<p>Format <em>t</em> for the <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_STIME_FORMAT">Gst.STIME_FORMAT</a> format string. Note: <em>t</em> will be
+<p>Format <em>t</em> for the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_STIME_FORMAT">Gst.STIME_FORMAT</a> format string. Note: <em>t</em> will be
 evaluated more than once.</p>
 
 	<div class="parameter_container">
@@ -3436,7 +3436,7 @@ evaluated more than once.</p>
 		<i><em><code>t:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a> or gint64</p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a> or <a href="https://docs.python.org/2/library/functions.html#int">int</a></p>
 </td>
 <td>
  t
@@ -3697,7 +3697,7 @@ evaluated more than once.</p>
 #define GST_CLOCK_FLAGS(clock)  GST_OBJECT_FLAGS(clock)
 </pre>
 
-<p>Gets the <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockFlags">Gst.ClockFlags</a> clock flags.</p>
+<p>Gets the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockFlags">Gst.ClockFlags</a> clock flags.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters49">Parameters</h4>
@@ -3879,7 +3879,7 @@ functionality.</p>
 						<tr id="GstClockClass.parent_class">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.ObjectClass" href="../../libgstreamer-doc-1.0/gstobject.html#GstObjectClass">Gst.ObjectClass</a> <em><code>parent_class</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.ObjectClass" href="../../libgstreamer-doc-1.0/python/gstobject.html#GstObjectClass">Gst.ObjectClass</a> <em><code>parent_class</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>the parent class structure</p>
@@ -3924,7 +3924,7 @@ implement <em>wait_jitter</em> instead.</p>
 		<i><em><code><em><code>wait</code></em>():</code></em></i>
 		</p>
 	</td>
-		<td><p>perform a blocking wait on the given <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockEntry">Gst.ClockEntry</a> and return
+		<td><p>perform a blocking wait on the given <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockEntry">Gst.ClockEntry</a> and return
 the jitter.</p>
 </td>
 </tr>
@@ -3935,7 +3935,7 @@ the jitter.</p>
 		<i><em><code><em><code>wait_async</code></em>():</code></em></i>
 		</p>
 	</td>
-		<td><p>perform an asynchronous wait for the given <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockEntry">Gst.ClockEntry</a>.</p>
+		<td><p>perform an asynchronous wait for the given <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockEntry">Gst.ClockEntry</a>.</p>
 </td>
 </tr>
 
@@ -3952,7 +3952,7 @@ the jitter.</p>
 						<tr id="GstClockClass._gst_reserved">
 		<td>
 		<p>
-		<i><em><code>object <em><code>_gst_reserved</code></em>:</code></em></i>
+		<i><em><code><a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a> <em><code>_gst_reserved</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3984,7 +3984,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.refcount">
 		<td>
 		<p>
-		<i><em><code>int <em><code>refcount</code></em>:</code></em></i>
+		<i><em><code><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a> <em><code>refcount</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>reference counter (read-only)</p>
@@ -3994,7 +3994,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.clock">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a> <em><code>clock</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a> <em><code>clock</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -4003,7 +4003,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.type">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.ClockEntryType" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockEntryType">Gst.ClockEntryType</a> <em><code>type</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.ClockEntryType" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockEntryType">Gst.ClockEntryType</a> <em><code>type</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -4012,7 +4012,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.time">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> <em><code>time</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> <em><code>time</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -4021,7 +4021,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.interval">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> <em><code>interval</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> <em><code>interval</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -4030,7 +4030,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.status">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.ClockReturn" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockReturn">Gst.ClockReturn</a> <em><code>status</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.ClockReturn" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockReturn">Gst.ClockReturn</a> <em><code>status</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -4039,7 +4039,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.func">
 		<td>
 		<p>
-		<i><em><code>Gst.ClockCallback <em><code>func</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.ClockCallback" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockCallback">Gst.ClockCallback</a> <em><code>func</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -4048,7 +4048,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.user_data">
 		<td>
 		<p>
-		<i><em><code>object <em><code>user_data</code></em>:</code></em></i>
+		<i><em><code><a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a> <em><code>user_data</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -4057,7 +4057,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.destroy_data">
 		<td>
 		<p>
-		<i><em><code>GLib.DestroyNotify <em><code>destroy_data</code></em>:</code></em></i>
+		<i><em><code><a title="GLib.DestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GLib.DestroyNotify</a> <em><code>destroy_data</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -4066,7 +4066,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.unscheduled">
 		<td>
 		<p>
-		<i><em><code>bool <em><code>unscheduled</code></em>:</code></em></i>
+		<i><em><code><a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a> <em><code>unscheduled</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -4075,7 +4075,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.woken_up">
 		<td>
 		<p>
-		<i><em><code>bool <em><code>woken_up</code></em>:</code></em></i>
+		<i><em><code><a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a> <em><code>woken_up</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -4084,7 +4084,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry._gst_reserved">
 		<td>
 		<p>
-		<i><em><code>object <em><code>_gst_reserved</code></em>:</code></em></i>
+		<i><em><code><a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a> <em><code>_gst_reserved</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -4123,7 +4123,7 @@ def change_resolution (clock, old_resolution, new_resolution):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -4135,7 +4135,7 @@ def change_resolution (clock, old_resolution, new_resolution):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -4147,7 +4147,7 @@ def change_resolution (clock, old_resolution, new_resolution):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -4173,7 +4173,7 @@ def change_resolution (clock, old_resolution, new_resolution):
 		
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -4210,7 +4210,7 @@ def get_internal_time (clock):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -4236,7 +4236,7 @@ def get_internal_time (clock):
 		
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -4273,7 +4273,7 @@ def get_resolution (clock):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -4299,7 +4299,7 @@ def get_resolution (clock):
 		
 	</td>
 	<td>
-		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
 	</td>
 	</tr>
 
@@ -4336,7 +4336,7 @@ def unschedule (clock, entry):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -4348,7 +4348,7 @@ def unschedule (clock, entry):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.ClockEntry" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockEntry">Gst.ClockEntry</a>
+<a title="Gst.ClockEntry" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockEntry">Gst.ClockEntry</a>
 </td>
 </tr>
 
@@ -4385,7 +4385,7 @@ def wait (clock, entry, jitter):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -4397,7 +4397,7 @@ def wait (clock, entry, jitter):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.ClockEntry" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockEntry">Gst.ClockEntry</a>
+<a title="Gst.ClockEntry" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockEntry">Gst.ClockEntry</a>
 </td>
 </tr>
 
@@ -4409,7 +4409,7 @@ def wait (clock, entry, jitter):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.ClockTimeDiff" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a>
+<a title="Gst.ClockTimeDiff" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a>
 </td>
 </tr>
 
@@ -4435,7 +4435,7 @@ def wait (clock, entry, jitter):
 		
 	</td>
 	<td>
-		<a title="Gst.ClockReturn" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockReturn">Gst.ClockReturn</a>
+		<a title="Gst.ClockReturn" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockReturn">Gst.ClockReturn</a>
 	</td>
 	</tr>
 
@@ -4472,7 +4472,7 @@ def wait_async (clock, entry):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/gstclock.html#GstClock">Gst.Clock</a>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
 </td>
 </tr>
 
@@ -4484,7 +4484,7 @@ def wait_async (clock, entry):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.ClockEntry" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockEntry">Gst.ClockEntry</a>
+<a title="Gst.ClockEntry" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockEntry">Gst.ClockEntry</a>
 </td>
 </tr>
 
@@ -4510,7 +4510,7 @@ def wait_async (clock, entry):
 		
 	</td>
 	<td>
-		<a title="Gst.ClockReturn" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockReturn">Gst.ClockReturn</a>
+		<a title="Gst.ClockReturn" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockReturn">Gst.ClockReturn</a>
 	</td>
 	</tr>
 
@@ -4867,7 +4867,7 @@ def wait_async (clock, entry):
 	GST_TYPE_CLOCK_TIME (not introspectable)
 </h3>
 
-		<p>The GType of a <a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>.</p>
+		<p>The <a href="https://developer.gnome.org/gobject/stable/gobject-Type-Information.html#GType">GObject.Type</a> of a <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>.</p>
 
 
 </div>
@@ -4952,7 +4952,7 @@ def wait_async (clock, entry):
 </h3>
 
 		<p>A string that can be used in printf-like format strings to display a
-<a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a> value in h:m:s format.  Use <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_TIME_ARGS">GST_TIME_ARGS (not introspectable)</a> to construct
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> value in h:m:s format.  Use <a href="../../libgstreamer-doc-1.0/c/gstclock.html#GST_TIME_ARGS">GST_TIME_ARGS (not introspectable)</a> to construct
 the matching arguments.</p>
 <p>Example:</p>
 <pre><code class="language-[&lt;!--"> printf("%" GST_TIME_FORMAT "\n", GST_TIME_ARGS(ts));
@@ -4969,7 +4969,7 @@ the matching arguments.</p>
 </h3>
 
 		<p>A string that can be used in printf-like format strings to display a signed
-<a href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a> or gint64 value in h:m:s format.  Use <a href="../../libgstreamer-doc-1.0/gstclock.html#GST_TIME_ARGS">GST_TIME_ARGS (not introspectable)</a> to
+<a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a> or <a href="https://docs.python.org/2/library/functions.html#int">int</a> value in h:m:s format.  Use <a href="../../libgstreamer-doc-1.0/c/gstclock.html#GST_TIME_ARGS">GST_TIME_ARGS (not introspectable)</a> to
 construct the matching arguments.</p>
 <p>Example:</p>
 <pre><code class="language-["> printf("%" GST_STIME_FORMAT "\n", GST_STIME_ARGS(ts));
@@ -4988,7 +4988,7 @@ construct the matching arguments.</p>
 </h3>
 
 		<pre>
-typedef object Gst.ClockID</pre>
+typedef <a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a> Gst.ClockID</pre>
 <p>A datatype to hold the handle to an outstanding sync or async clock callback.</p>
 
 
@@ -5002,7 +5002,7 @@ typedef object Gst.ClockID</pre>
 </h3>
 
 		<pre>
-typedef int Gst.ClockTime</pre>
+typedef <a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a> Gst.ClockTime</pre>
 <p>A datatype to hold a time, measured in nanoseconds.</p>
 
 
@@ -5016,8 +5016,120 @@ typedef int Gst.ClockTime</pre>
 </h3>
 
 		<pre>
-typedef int Gst.ClockTimeDiff</pre>
+typedef <a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a> Gst.ClockTimeDiff</pre>
 <p>A datatype to hold a time difference, measured in nanoseconds.</p>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Callbacks">Callbacks</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstClockCallback">
+		<h3 id="gstclockcallback">
+	<span><code>Gst.ClockCallback</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+(*Gst.ClockCallback) (<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>,
+                      <a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>,
+                      <a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>,
+                      <a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>)</pre>
+
+<p>The function prototype of the callback.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters57">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>clock:</code></em></i>
+		</p>
+	</td>
+		<td><p>The clock that triggered the callback</p>
+</td>
+<td>
+<a title="Gst.Clock" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClock">Gst.Clock</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>time:</code></em></i>
+		</p>
+	</td>
+		<td><p>The time it was triggered</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>id:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a> that expired</p>
+</td>
+<td>
+<a title="Gst.ClockID" href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>user data passed in the <a href="../../libgstreamer-doc-1.0/python/gstclock.html#gst_clock_id_wait_async">Gst.Clock.id_wait_async</a> function</p>
+</td>
+<td>
+<a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns26">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> or <a href="https://docs.python.org/2/library/constants.html#False">False</a> (currently unused)</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
 
 
 </div>

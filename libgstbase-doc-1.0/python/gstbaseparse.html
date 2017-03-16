@@ -104,31 +104,31 @@ a parser and share a lot of rather complex code.</p>
 <h2 id="setup-phase">Set-up phase</h2>
 <ul>
 <li>
-<p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> calls <em>start</em> to inform subclass that data processing is
+<p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> calls <em>start</em> to inform subclass that data processing is
 about to start now.</p>
 </li>
 <li>
-<p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> class calls <em>set_sink_caps</em> to inform the subclass about
+<p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> class calls <em>set_sink_caps</em> to inform the subclass about
 incoming sinkpad caps. Subclass could already set the srcpad caps
 accordingly, but this might be delayed until calling
-<a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_finish_frame">GstBase.BaseParse.finish_frame</a> with a non-queued frame.</p>
+<a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_finish_frame">GstBase.BaseParse.finish_frame</a> with a non-queued frame.</p>
 </li>
 <li>
-<p>At least at this point subclass needs to tell the <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> class
+<p>At least at this point subclass needs to tell the <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> class
 how big data chunks it wants to receive (min_frame_size). It can do
-this with <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_set_min_frame_size">GstBase.BaseParse.set_min_frame_size</a>.</p>
+this with <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_set_min_frame_size">GstBase.BaseParse.set_min_frame_size</a>.</p>
 </li>
 <li>
-<p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> class sets up appropriate data passing mode (pull/push)
+<p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> class sets up appropriate data passing mode (pull/push)
 and starts to process the data.</p>
 </li>
 </ul>
 <h2 id="parsing-phase">Parsing phase</h2>
 <ul>
 <li>
-<p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> gathers at least min_frame_size bytes of data either
+<p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> gathers at least min_frame_size bytes of data either
 by pulling it from upstream or collecting buffers in an internal
-<a href="../../libgstbase-doc-1.0/gstadapter.html#GstAdapter">GstBase.Adapter</a>.</p>
+<a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>.</p>
 </li>
 <li>
 <p>A buffer of (at least) min_frame_size bytes is passed to subclass with
@@ -140,10 +140,10 @@ If, otherwise, the buffer does not hold a complete frame,
 data is available.  In push mode this amounts to an
 additional input buffer (thus minimal additional latency), in pull mode
 this amounts to some arbitrary reasonable buffer size increase.
-Of course, <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_set_min_frame_size">GstBase.BaseParse.set_min_frame_size</a> could also be used if a
+Of course, <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_set_min_frame_size">GstBase.BaseParse.set_min_frame_size</a> could also be used if a
 very specific known amount of additional data is required.
 If, however, the buffer holds a complete valid frame, it can pass
-the size of this frame to <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_finish_frame">GstBase.BaseParse.finish_frame</a>.
+the size of this frame to <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_finish_frame">GstBase.BaseParse.finish_frame</a>.
 If acting as a converter, it can also merely indicate consumed input data
 while simultaneously providing custom output data.
 Note that baseclass performs some processing (such as tracking
@@ -152,7 +152,7 @@ but other state is only updated upon each call to <em>handle_frame</em>
 (such as tracking upstream input timestamp).</p>
 <p>Subclass is also responsible for setting the buffer metadata
 (e.g. buffer timestamp and duration, or keyframe if applicable).
-(although the latter can also be done by <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> if it is
+(although the latter can also be done by <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> if it is
 appropriately configured, see below).  Frame is provided with
 timestamp derived from upstream (as much as generally possible),
 duration obtained from configuration (see below), and offset
@@ -168,25 +168,25 @@ last chance to examine buffer metadata, or to send some custom (tag)
 events, or to perform custom (segment) filtering.</p>
 </li>
 <li>
-<p>During the parsing process <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseClass">GstBase.BaseParseClass</a> will handle both srcpad
+<p>During the parsing process <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseClass">GstBase.BaseParseClass</a> will handle both srcpad
 and sinkpad events. They will be passed to subclass if <em>event</em> or
 <em>src_event</em> callbacks have been provided.</p>
 </li>
 </ul>
 <h2 id="shutdown-phase">Shutdown phase</h2>
 <ul>
-<li><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> class calls <em>stop</em> to inform the subclass that data
+<li><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> class calls <em>stop</em> to inform the subclass that data
 parsing will be stopped.</li>
 </ul>
 <p>Subclass is responsible for providing pad template caps for
 source and sink pads. The pads need to be named "sink" and "src". It also
 needs to set the fixed caps on srcpad, when the format is ensured (e.g.
 when base class calls subclass' <em>set_sink_caps</em> function).</p>
-<p>This base class uses <a href="../../libgstreamer-doc-1.0/gstformat.html#GST_FORMAT_DEFAULT">Gst.Format.default</a> as a meaning of frames. So,
+<p>This base class uses <a href="../../libgstreamer-doc-1.0/c/gstformat.html#GST_FORMAT_DEFAULT">Gst.Format.default</a> as a meaning of frames. So,
 subclass conversion routine needs to know that conversion from
-<a href="../../libgstreamer-doc-1.0/gstformat.html#GST_FORMAT_TIME">Gst.Format.time</a> to <a href="../../libgstreamer-doc-1.0/gstformat.html#GST_FORMAT_DEFAULT">Gst.Format.default</a> must return the
+<a href="../../libgstreamer-doc-1.0/c/gstformat.html#GST_FORMAT_TIME">Gst.Format.time</a> to <a href="../../libgstreamer-doc-1.0/c/gstformat.html#GST_FORMAT_DEFAULT">Gst.Format.default</a> must return the
 frame number that can be found from the given byte position.</p>
-<p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> uses subclasses conversion methods also for seeking (or
+<p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> uses subclasses conversion methods also for seeking (or
 otherwise uses its own default one, see also below).</p>
 <p>Subclass <em>start</em> and <em>stop</em> functions will be called to inform the beginning
 and end of data processing.</p>
@@ -200,34 +200,34 @@ and end of data processing.</p>
 </li>
 <li>
 <p>Inform base class how big data chunks should be retrieved. This is
-done with <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_set_min_frame_size">GstBase.BaseParse.set_min_frame_size</a> function.</p>
+done with <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_set_min_frame_size">GstBase.BaseParse.set_min_frame_size</a> function.</p>
 </li>
 <li>
 <p>Examine data chunks passed to subclass with <em>handle_frame</em> and pass
-proper frame(s) to <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_finish_frame">GstBase.BaseParse.finish_frame</a>, and setting src pad
+proper frame(s) to <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_finish_frame">GstBase.BaseParse.finish_frame</a>, and setting src pad
 caps and timestamps on frame.</p>
 </li>
 <li>
 <p>Provide conversion functions</p>
 </li>
 <li>
-<p>Update the duration information with <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_set_duration">GstBase.BaseParse.set_duration</a></p>
+<p>Update the duration information with <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_set_duration">GstBase.BaseParse.set_duration</a></p>
 </li>
 <li>
-<p>Optionally passthrough using <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_set_passthrough">GstBase.BaseParse.set_passthrough</a></p>
+<p>Optionally passthrough using <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_set_passthrough">GstBase.BaseParse.set_passthrough</a></p>
 </li>
 <li>
 <p>Configure various baseparse parameters using
-<a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_set_average_bitrate">GstBase.BaseParse.set_average_bitrate</a>, <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_set_syncable">GstBase.BaseParse.set_syncable</a>
-and <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_set_frame_rate">GstBase.BaseParse.set_frame_rate</a>.</p>
+<a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_set_average_bitrate">GstBase.BaseParse.set_average_bitrate</a>, <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_set_syncable">GstBase.BaseParse.set_syncable</a>
+and <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_set_frame_rate">GstBase.BaseParse.set_frame_rate</a>.</p>
 </li>
 <li>
 <p>In particular, if subclass is unable to determine a duration, but
 parsing (or specs) yields a frames per seconds rate, then this can be
-provided to <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> to enable it to cater for
+provided to <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> to enable it to cater for
 buffer time metadata (which will be taken from upstream as much as
 possible). Internally keeping track of frame durations and respective
-sizes that have been pushed provides <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> with an estimated
+sizes that have been pushed provides <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> with an estimated
 bitrate. A default <em>convert</em> (used if not overridden) will then use these
 rates to perform obvious conversions.  These rates are also used to
 update (estimated) duration at regular frame intervals.</p>
@@ -248,10 +248,10 @@ update (estimated) duration at regular frame intervals.</p>
 		<div class="hierarchy_container">
 	<div class="hierarchy_details">
 <pre>
-GObject.Object
-    <span class="lineart">╰──</span>GObject.InitiallyUnowned
-        <span class="lineart">╰──</span><a title="Gst.Object" href="../../libgstreamer-doc-1.0/gstobject.html#GstObject">Gst.Object</a>
-            <span class="lineart">╰──</span><a title="Gst.Element" href="../../libgstreamer-doc-1.0/gstelement.html#GstElement">Gst.Element</a>
+<a title="GObject.Object" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a>
+    <span class="lineart">╰──</span><a title="GObject.InitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GObject.InitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="Gst.Object" href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">Gst.Object</a>
+            <span class="lineart">╰──</span><a title="Gst.Element" href="../../libgstreamer-doc-1.0/c/gstelement.html#GstElement">Gst.Element</a>
                 <span class="lineart">╰──</span>GstBase.BaseParse
 </pre>
 
@@ -260,7 +260,7 @@ GObject.Object
 </div>
 
 <div class="class_details">
-	<p>The opaque <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> data structure.</p>
+	<p>The opaque <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> data structure.</p>
 
 </div>
 
@@ -272,7 +272,7 @@ GObject.Object
 						<tr id="GstBaseParse.element">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.Element" href="../../libgstreamer-doc-1.0/gstelement.html#GstElement">Gst.Element</a> <em><code>element</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.Element" href="../../libgstreamer-doc-1.0/c/gstelement.html#GstElement">Gst.Element</a> <em><code>element</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>the parent element.</p>
@@ -282,7 +282,7 @@ GObject.Object
 						<tr id="GstBaseParse.sinkpad">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.Pad" href="../../libgstreamer-doc-1.0/gstpad.html#GstPad">Gst.Pad</a> <em><code>sinkpad</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.Pad" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">Gst.Pad</a> <em><code>sinkpad</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -291,7 +291,7 @@ GObject.Object
 						<tr id="GstBaseParse.srcpad">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.Pad" href="../../libgstreamer-doc-1.0/gstpad.html#GstPad">Gst.Pad</a> <em><code>srcpad</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.Pad" href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">Gst.Pad</a> <em><code>srcpad</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -300,7 +300,7 @@ GObject.Object
 						<tr id="GstBaseParse.flags">
 		<td>
 		<p>
-		<i><em><code>int <em><code>flags</code></em>:</code></em></i>
+		<i><em><code><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a> <em><code>flags</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -309,7 +309,7 @@ GObject.Object
 						<tr id="GstBaseParse.segment">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.Segment" href="../../libgstreamer-doc-1.0/gstsegment.html#GstSegment">Gst.Segment</a> <em><code>segment</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.Segment" href="../../libgstreamer-doc-1.0/c/gstsegment.html#GstSegment">Gst.Segment</a> <em><code>segment</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -318,7 +318,7 @@ GObject.Object
 						<tr id="GstBaseParse._gst_reserved">
 		<td>
 		<p>
-		<i><em><code>object <em><code>_gst_reserved</code></em>:</code></em></i>
+		<i><em><code><a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a> <em><code>_gst_reserved</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -369,10 +369,10 @@ to the new entry, etc.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -398,7 +398,7 @@ to the new entry, etc.</p>
 		<td><p>timestamp associated with offset</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -447,7 +447,7 @@ to the new entry, etc.</p>
 				</p>
 	</td>
 	<td>
-		<p>gboolean indicating whether entry was added</p>
+		<p><a href="https://docs.python.org/2.7/library/functions.html#bool">bool</a> indicating whether entry was added</p>
 
 	</td>
 	<td>
@@ -475,7 +475,7 @@ to the new entry, etc.</p>
 def GstBase.BaseParse.convert_default (self, src_format, src_value, dest_format, dest_value):
     #python wrapper for 'gst_base_parse_convert_default'</pre>
 
-<p>Default implementation of "convert" vmethod in <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> class.</p>
+<p>Default implementation of "convert" vmethod in <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> class.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters1">Parameters</h4>
@@ -487,10 +487,10 @@ def GstBase.BaseParse.convert_default (self, src_format, src_value, dest_format,
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -500,10 +500,10 @@ def GstBase.BaseParse.convert_default (self, src_format, src_value, dest_format,
 		<i><em><code>src_format:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../GstFormat">Gst.Format</a> describing the source format.</p>
+		<td><p><a href="../../GstFormat/c">Gst.Format</a> describing the source format.</p>
 </td>
 <td>
-<a title="Gst.Format" href="../../GstFormat">Gst.Format</a>
+<a title="Gst.Format" href="../../GstFormat/c">Gst.Format</a>
 </td>
 </tr>
 
@@ -526,10 +526,10 @@ def GstBase.BaseParse.convert_default (self, src_format, src_value, dest_format,
 		<i><em><code>dest_format:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../GstFormat">Gst.Format</a> defining the converted format.</p>
+		<td><p><a href="../../GstFormat/c">Gst.Format</a> defining the converted format.</p>
 </td>
 <td>
-<a title="Gst.Format" href="../../GstFormat">Gst.Format</a>
+<a title="Gst.Format" href="../../GstFormat/c">Gst.Format</a>
 </td>
 </tr>
 
@@ -565,7 +565,7 @@ def GstBase.BaseParse.convert_default (self, src_format, src_value, dest_format,
 				</p>
 	</td>
 	<td>
-		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> if conversion was successful.</p>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if conversion was successful.</p>
 
 	</td>
 	<td>
@@ -607,10 +607,10 @@ is emptied or chain returns with error.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -657,10 +657,10 @@ caller retains ownership of <em>frame</em>.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -670,10 +670,10 @@ caller retains ownership of <em>frame</em>.</p>
 		<i><em><code>frame:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
+<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
 </td>
 </tr>
 
@@ -709,11 +709,11 @@ caller retains ownership of <em>frame</em>.</p>
 				</p>
 	</td>
 	<td>
-		<p>a <a href="../../gst-plugins-bad-plugins-doc-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a> that should be escalated to caller (of caller)</p>
+		<p>a <a href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a> that should be escalated to caller (of caller)</p>
 
 	</td>
 	<td>
-		<a title="Gst.FlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+		<a title="Gst.FlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 	</td>
 	</tr>
 
@@ -739,7 +739,7 @@ def GstBase.BaseParse.merge_tags (self, tags, mode):
 
 <p>Sets the parser subclass's tags and how they should be merged with any
 upstream stream tags. This will override any tags previously-set
-with <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_merge_tags">GstBase.BaseParse.merge_tags</a>.</p>
+with <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_merge_tags">GstBase.BaseParse.merge_tags</a>.</p>
 <p>Note that this is provided for convenience, and the subclass is
 not required to use this and can still do tag handling on its own.</p>
 
@@ -753,10 +753,10 @@ not required to use this and can still do tag handling on its own.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -766,11 +766,11 @@ not required to use this and can still do tag handling on its own.</p>
 		<i><em><code>tags:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gsttaglist.html#GstTagList">Gst.TagList</a> to merge, or NULL to unset
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GstTagList">Gst.TagList</a> to merge, or NULL to unset
 previously-set tags</p>
 </td>
 <td>
-<a title="Gst.TagList" href="../../libgstreamer-doc-1.0/gsttaglist.html#GstTagList">Gst.TagList</a>
+<a title="Gst.TagList" href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GstTagList">Gst.TagList</a>
 </td>
 </tr>
 
@@ -780,10 +780,10 @@ previously-set tags</p>
 		<i><em><code>mode:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../libgstreamer-doc-1.0/gsttaglist.html#GstTagMergeMode">Gst.TagMergeMode</a> to use, usually <a href="../../libgstreamer-doc-1.0/gsttaglist.html#GST_TAG_MERGE_REPLACE">Gst.TagMergeMode.replace</a></p>
+		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GstTagMergeMode">Gst.TagMergeMode</a> to use, usually <a href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GST_TAG_MERGE_REPLACE">Gst.TagMergeMode.replace</a></p>
 </td>
 <td>
-<a title="Gst.TagMergeMode" href="../../libgstreamer-doc-1.0/gsttaglist.html#GstTagMergeMode">Gst.TagMergeMode</a>
+<a title="Gst.TagMergeMode" href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GstTagMergeMode">Gst.TagMergeMode</a>
 </td>
 </tr>
 
@@ -825,10 +825,10 @@ frame's buffer, though caller retains ownership of <em>frame</em>.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -838,10 +838,10 @@ frame's buffer, though caller retains ownership of <em>frame</em>.</p>
 		<i><em><code>frame:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
+<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
 </td>
 </tr>
 
@@ -864,11 +864,11 @@ frame's buffer, though caller retains ownership of <em>frame</em>.</p>
 				</p>
 	</td>
 	<td>
-		<p><a href="../../gst-plugins-bad-plugins-doc-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a></p>
+		<p><a href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a></p>
 
 	</td>
 	<td>
-		<a title="Gst.FlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+		<a title="Gst.FlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 	</td>
 	</tr>
 
@@ -897,7 +897,7 @@ e.g. based on metadata, as it will be posted to the application.</p>
 <p>By default, announced average bitrate is estimated. The average bitrate
 is used to estimate the total duration of the stream and to estimate
 a seek position, if there's no index and the format is syncable
-(see <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_set_syncable">GstBase.BaseParse.set_syncable</a>).</p>
+(see <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_set_syncable">GstBase.BaseParse.set_syncable</a>).</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters6">Parameters</h4>
@@ -909,10 +909,10 @@ a seek position, if there's no index and the format is syncable
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -965,10 +965,10 @@ frames.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -978,10 +978,10 @@ frames.</p>
 		<i><em><code>fmt:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../GstFormat">Gst.Format</a>.</p>
+		<td><p><a href="../../GstFormat/c">Gst.Format</a>.</p>
 </td>
 <td>
-<a title="Gst.Format" href="../../GstFormat">Gst.Format</a>
+<a title="Gst.Format" href="../../GstFormat/c">Gst.Format</a>
 </td>
 </tr>
 
@@ -1047,10 +1047,10 @@ entirely filled upon decoding.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> to set</p>
+		<td><p>the <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> to set</p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -1140,10 +1140,10 @@ can be obtained following a seek.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -1195,10 +1195,10 @@ timestamp inferring.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -1208,7 +1208,7 @@ timestamp inferring.</p>
 		<i><em><code>infer_ts:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> if parser should infer DTS/PTS from each other</p>
+		<td><p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if parser should infer DTS/PTS from each other</p>
 </td>
 <td>
 <a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
@@ -1249,10 +1249,10 @@ particular parsing of the format, it typically corresponds to 1 frame duration.<
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -1265,7 +1265,7 @@ particular parsing of the format, it typically corresponds to 1 frame duration.<
 		<td><p>minimum parse latency</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -1278,7 +1278,7 @@ particular parsing of the format, it typically corresponds to 1 frame duration.<
 		<td><p>maximum parse latency</p>
 </td>
 <td>
-<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/gstclock.html#GstClockTime">Gst.ClockTime</a>
+<a title="Gst.ClockTime" href="../../libgstreamer-doc-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
 </td>
 </tr>
 
@@ -1315,10 +1315,10 @@ give at least min_size buffers.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>.</p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -1374,10 +1374,10 @@ passthrough semantics in <em>pre_push_frame</em>.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -1387,7 +1387,7 @@ passthrough semantics in <em>pre_push_frame</em>.</p>
 		<i><em><code>passthrough:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> if parser should run in passthrough mode</p>
+		<td><p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if parser should run in passthrough mode</p>
 </td>
 <td>
 <a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
@@ -1429,10 +1429,10 @@ implementing such formats should disable PTS interpolation.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -1442,7 +1442,7 @@ implementing such formats should disable PTS interpolation.</p>
 		<i><em><code>pts_interpolate:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a> if parser should interpolate PTS timestamps</p>
+		<td><p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if parser should interpolate PTS timestamps</p>
 </td>
 <td>
 <a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
@@ -1483,10 +1483,10 @@ is possible for a format/stream.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -1524,7 +1524,7 @@ def GstBase.BaseParse.set_ts_at_offset (self, offset):
     #python wrapper for 'gst_base_parse_set_ts_at_offset'</pre>
 
 <p>This function should only be called from a <em>handle_frame</em> implementation.</p>
-<p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> creates initial timestamps for frames by using the last
+<p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> creates initial timestamps for frames by using the last
 timestamp seen in the stream before the frame starts.  In certain
 cases, the correct timestamps will occur in the stream after the
 start of the frame, but before the start of the actual picture data.
@@ -1541,10 +1541,10 @@ into the frame data that the picture starts.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a></p>
 </td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -1584,9 +1584,9 @@ into the frame data that the picture starts.</p>
 def GstBase.BaseParseFrame.new (buffer, flags, overhead):
     #python wrapper for 'gst_base_parse_frame_new'</pre>
 
-<p>Allocates a new <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>. This function is mainly for bindings,
+<p>Allocates a new <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>. This function is mainly for bindings,
 elements written in C should usually allocate the frame on the stack and
-then use <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_frame_init">GstBase.BaseParseFrame.init</a> to initialise it.</p>
+then use <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_frame_init">GstBase.BaseParseFrame.init</a> to initialise it.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters17">Parameters</h4>
@@ -1598,10 +1598,10 @@ then use <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_fram
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1614,7 +1614,7 @@ then use <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_fram
 		<td><p>the flags</p>
 </td>
 <td>
-<a title="GstBase.BaseParseFrameFlags" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrameFlags">GstBase.BaseParseFrameFlags</a>
+<a title="GstBase.BaseParseFrameFlags" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrameFlags">GstBase.BaseParseFrameFlags</a>
 </td>
 </tr>
 
@@ -1652,12 +1652,12 @@ Set to -1 to mark the entire frame as metadata. If in doubt, set to 0.</p>
 				</p>
 	</td>
 	<td>
-		<p>a newly-allocated <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>. Free with
-<a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_frame_free">GstBase.BaseParseFrame.free</a> when no longer needed.</p>
+		<p>a newly-allocated <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>. Free with
+<a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_frame_free">GstBase.BaseParseFrame.free</a> when no longer needed.</p>
 
 	</td>
 	<td>
-		<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
+		<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
 	</td>
 	</tr>
 
@@ -1694,7 +1694,7 @@ def GstBase.BaseParseFrame.free (self):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
+<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
 </td>
 </tr>
 
@@ -1718,10 +1718,10 @@ def GstBase.BaseParseFrame.free (self):
 def GstBase.BaseParseFrame.init (self):
     #python wrapper for 'gst_base_parse_frame_init'</pre>
 
-<p>Sets a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a> to initial state.  Currently this means
+<p>Sets a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a> to initial state.  Currently this means
 all public fields are zero-ed and a private flag is set to make
-sure <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_frame_free">GstBase.BaseParseFrame.free</a> only frees the contents but not
-the actual frame. Use this function to initialise a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
+sure <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_frame_free">GstBase.BaseParseFrame.free</a> only frees the contents but not
+the actual frame. Use this function to initialise a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
 allocated on the stack.</p>
 
 	<div class="parameter_container">
@@ -1734,10 +1734,10 @@ allocated on the stack.</p>
 		<i><em><code>frame:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>.</p>
 </td>
 <td>
-<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
+<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
 </td>
 </tr>
 
@@ -1781,7 +1781,7 @@ allocated on the stack.</p>
 #define GST_BASE_PARSE_SRC_PAD(obj)    (GST_BASE_PARSE_CAST (obj)-&gt;srcpad)
 </pre>
 
-<p>Gives the pointer to the source <a href="../../libgstreamer-doc-1.0/gstpad.html#GstPad">Gst.Pad</a> object of the element.</p>
+<p>Gives the pointer to the source <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">Gst.Pad</a> object of the element.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters20">Parameters</h4>
@@ -1820,7 +1820,7 @@ allocated on the stack.</p>
 #define GST_BASE_PARSE_SINK_PAD(obj)    (GST_BASE_PARSE_CAST (obj)-&gt;sinkpad)
 </pre>
 
-<p>Gives the pointer to the sink <a href="../../libgstreamer-doc-1.0/gstpad.html#GstPad">Gst.Pad</a> object of the element.</p>
+<p>Gives the pointer to the sink <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">Gst.Pad</a> object of the element.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters21">Parameters</h4>
@@ -1940,11 +1940,11 @@ the parser is now processing the frames at the end of the stream)</p>
 “disable-passthrough” <span class="type"><a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a></span>
 </pre>
 
-<p>If set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">True</a>, baseparse will unconditionally force parsing of the
+<p>If set to <a href="https://docs.python.org/2/library/constants.html#True">True</a>, baseparse will unconditionally force parsing of the
 incoming data. This can be required in the rare cases where the incoming
 side-data (caps, pts, dts, ...) is not trusted by the user and wants to
 force validation and parsing of the incoming data.
-If set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">False</a>, decision of whether to parse the data or not is up to
+If set to <a href="https://docs.python.org/2/library/constants.html#False">False</a>, decision of whether to parse the data or not is up to
 the implementation (standard behaviour).</p>
 
 
@@ -1980,7 +1980,7 @@ needed. At minimum <em>handle_frame</em> needs to be overridden.</p>
 						<tr id="GstBaseParseClass.parent_class">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.ElementClass" href="../../libgstreamer-doc-1.0/gstelement.html#GstElementClass">Gst.ElementClass</a> <em><code>parent_class</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.ElementClass" href="../../libgstreamer-doc-1.0/c/gstelement.html#GstElementClass">Gst.ElementClass</a> <em><code>parent_class</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>the parent class</p>
@@ -2029,7 +2029,7 @@ Allows the subclass to be notified of the actual caps set.</p>
 		</p>
 	</td>
 		<td><p>Parses the input data into valid frames as defined by subclass
-which should be passed to <a href="../../libgstbase-doc-1.0/gstbaseparse.html#gst_base_parse_finish_frame">GstBase.BaseParse.finish_frame</a>.
+which should be passed to <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#gst_base_parse_finish_frame">GstBase.BaseParse.finish_frame</a>.
 The frame's input buffer is guaranteed writable,
 whereas the input frame ownership is held by caller
 (so subclass should make a copy if it needs to hang on).
@@ -2144,7 +2144,7 @@ parent to let the default handler run (Since 1.2)</p>
 						<tr id="GstBaseParseClass._gst_reserved">
 		<td>
 		<p>
-		<i><em><code>object <em><code>_gst_reserved</code></em>:</code></em></i>
+		<i><em><code><a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a> <em><code>_gst_reserved</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -2179,7 +2179,7 @@ of each frame's processing, i.e. parsing virtual method invocation sequence.</p>
 						<tr id="GstBaseParseFrame.buffer">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a> <em><code>buffer</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> <em><code>buffer</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>input data to be parsed for frames.</p>
@@ -2189,7 +2189,7 @@ of each frame's processing, i.e. parsing virtual method invocation sequence.</p>
 						<tr id="GstBaseParseFrame.out_buffer">
 		<td>
 		<p>
-		<i><em><code><a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a> <em><code>out_buffer</code></em>:</code></em></i>
+		<i><em><code><a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> <em><code>out_buffer</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>output data.</p>
@@ -2199,19 +2199,19 @@ of each frame's processing, i.e. parsing virtual method invocation sequence.</p>
 						<tr id="GstBaseParseFrame.flags">
 		<td>
 		<p>
-		<i><em><code>int <em><code>flags</code></em>:</code></em></i>
+		<i><em><code><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a> <em><code>flags</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>a combination of input and output <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrameFlags">GstBase.BaseParseFrameFlags</a> that
+		<td><p>a combination of input and output <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrameFlags">GstBase.BaseParseFrameFlags</a> that
 convey additional context to subclass or allow subclass to tune
-subsequent <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> actions.</p>
+subsequent <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a> actions.</p>
 </td>
 </tr>
 
 						<tr id="GstBaseParseFrame.offset">
 		<td>
 		<p>
-		<i><em><code>int <em><code>offset</code></em>:</code></em></i>
+		<i><em><code><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a> <em><code>offset</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>media specific offset of input frame
@@ -2222,7 +2222,7 @@ Note that a converter may have a different one on the frame's buffer.</p>
 						<tr id="GstBaseParseFrame.overhead">
 		<td>
 		<p>
-		<i><em><code>int <em><code>overhead</code></em>:</code></em></i>
+		<i><em><code><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a> <em><code>overhead</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>subclass can set this to indicates the metadata overhead
@@ -2235,7 +2235,7 @@ skipped in bitrate calculation.</p>
 						<tr id="GstBaseParseFrame.size">
 		<td>
 		<p>
-		<i><em><code>int <em><code>size</code></em>:</code></em></i>
+		<i><em><code><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a> <em><code>size</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -2244,7 +2244,7 @@ skipped in bitrate calculation.</p>
 						<tr id="GstBaseParseFrame._gst_reserved_i">
 		<td>
 		<p>
-		<i><em><code>int <em><code>_gst_reserved_i</code></em>:</code></em></i>
+		<i><em><code><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a> <em><code>_gst_reserved_i</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -2253,7 +2253,7 @@ skipped in bitrate calculation.</p>
 						<tr id="GstBaseParseFrame._gst_reserved_p">
 		<td>
 		<p>
-		<i><em><code>object <em><code>_gst_reserved_p</code></em>:</code></em></i>
+		<i><em><code><a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a> <em><code>_gst_reserved_p</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -2262,7 +2262,7 @@ skipped in bitrate calculation.</p>
 						<tr id="GstBaseParseFrame._private_flags">
 		<td>
 		<p>
-		<i><em><code>int <em><code>_private_flags</code></em>:</code></em></i>
+		<i><em><code><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a> <em><code>_private_flags</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -2301,7 +2301,7 @@ def convert (parse, src_format, src_value, dest_format, dest_value):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -2313,7 +2313,7 @@ def convert (parse, src_format, src_value, dest_format, dest_value):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Format" href="../../GstFormat">Gst.Format</a>
+<a title="Gst.Format" href="../../GstFormat/c">Gst.Format</a>
 </td>
 </tr>
 
@@ -2337,7 +2337,7 @@ def convert (parse, src_format, src_value, dest_format, dest_value):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Format" href="../../GstFormat">Gst.Format</a>
+<a title="Gst.Format" href="../../GstFormat/c">Gst.Format</a>
 </td>
 </tr>
 
@@ -2412,7 +2412,7 @@ def detect (parse, buffer):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -2424,7 +2424,7 @@ def detect (parse, buffer):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2450,7 +2450,7 @@ def detect (parse, buffer):
 		
 	</td>
 	<td>
-		<a title="Gst.FlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+		<a title="Gst.FlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 	</td>
 	</tr>
 
@@ -2487,7 +2487,7 @@ def get_sink_caps (parse, filter):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -2499,7 +2499,7 @@ def get_sink_caps (parse, filter):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Caps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">Gst.Caps</a>
+<a title="Gst.Caps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>
 </td>
 </tr>
 
@@ -2525,7 +2525,7 @@ def get_sink_caps (parse, filter):
 		
 	</td>
 	<td>
-		<a title="Gst.Caps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">Gst.Caps</a>
+		<a title="Gst.Caps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>
 	</td>
 	</tr>
 
@@ -2562,7 +2562,7 @@ def handle_frame (parse, frame, skipsize):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -2574,7 +2574,7 @@ def handle_frame (parse, frame, skipsize):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
+<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
 </td>
 </tr>
 
@@ -2612,7 +2612,7 @@ def handle_frame (parse, frame, skipsize):
 		
 	</td>
 	<td>
-		<a title="Gst.FlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+		<a title="Gst.FlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 	</td>
 	</tr>
 
@@ -2649,7 +2649,7 @@ def pre_push_frame (parse, frame):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -2661,7 +2661,7 @@ def pre_push_frame (parse, frame):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
+<a title="GstBase.BaseParseFrame" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>
 </td>
 </tr>
 
@@ -2687,7 +2687,7 @@ def pre_push_frame (parse, frame):
 		
 	</td>
 	<td>
-		<a title="Gst.FlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+		<a title="Gst.FlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 	</td>
 	</tr>
 
@@ -2724,7 +2724,7 @@ def set_sink_caps (parse, caps):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -2736,7 +2736,7 @@ def set_sink_caps (parse, caps):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Caps" href="../../libgstreamer-doc-1.0/gstcaps.html#GstCaps">Gst.Caps</a>
+<a title="Gst.Caps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>
 </td>
 </tr>
 
@@ -2799,7 +2799,7 @@ def sink_event (parse, event):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -2811,7 +2811,7 @@ def sink_event (parse, event):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Event" href="../../libgstreamer-doc-1.0/gstevent.html#GstEvent">Gst.Event</a>
+<a title="Gst.Event" href="../../libgstreamer-doc-1.0/c/gstevent.html#GstEvent">Gst.Event</a>
 </td>
 </tr>
 
@@ -2874,7 +2874,7 @@ def sink_query (parse, query):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -2886,7 +2886,7 @@ def sink_query (parse, query):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Query" href="../../libgstreamer-doc-1.0/gstquery.html#GstQuery">Gst.Query</a>
+<a title="Gst.Query" href="../../libgstreamer-doc-1.0/c/gstquery.html#GstQuery">Gst.Query</a>
 </td>
 </tr>
 
@@ -2949,7 +2949,7 @@ def src_event (parse, event):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -2961,7 +2961,7 @@ def src_event (parse, event):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Event" href="../../libgstreamer-doc-1.0/gstevent.html#GstEvent">Gst.Event</a>
+<a title="Gst.Event" href="../../libgstreamer-doc-1.0/c/gstevent.html#GstEvent">Gst.Event</a>
 </td>
 </tr>
 
@@ -3024,7 +3024,7 @@ def src_query (parse, query):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -3036,7 +3036,7 @@ def src_query (parse, query):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Query" href="../../libgstreamer-doc-1.0/gstquery.html#GstQuery">Gst.Query</a>
+<a title="Gst.Query" href="../../libgstreamer-doc-1.0/c/gstquery.html#GstQuery">Gst.Query</a>
 </td>
 </tr>
 
@@ -3099,7 +3099,7 @@ def start (parse):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -3162,7 +3162,7 @@ def stop (parse):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
+<a title="GstBase.BaseParse" href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParse">GstBase.BaseParse</a>
 </td>
 </tr>
 
@@ -3210,7 +3210,7 @@ def stop (parse):
 		enum GstBase.BaseParseFrameFlags
 	</h3>
 
-		<p>Flags to be used in a <a href="../../libgstbase-doc-1.0/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>.</p>
+		<p>Flags to be used in a <a href="../../libgstbase-doc-1.0/python/gstbaseparse.html#GstBaseParseFrame">GstBase.BaseParseFrame</a>.</p>
 
 
 <div class="member_details">
@@ -3340,7 +3340,7 @@ when the first non-queued frame is finished</p>
 	GST_BASE_PARSE_FLOW_DROPPED (not introspectable)
 </h3>
 
-		<p>A <a href="../../gst-plugins-bad-plugins-doc-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a> that can be returned from parse_frame to
+		<p>A <a href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a> that can be returned from parse_frame to
 indicate that no output buffer was generated, or from pre_push_frame to
 to forego pushing buffer.</p>
 
