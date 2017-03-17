@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Pad (de)activation</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="design/activation.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="activation.md">
+<h1 id="pad-deactivation">Pad (de)activation</h1>
+<h2 id="activation">Activation</h2>
+<p>When changing states, a bin will set the state on all of its children in
+sink-to-source order. As elements undergo the READY→PAUSED transition,
+their pads are activated so as to prepare for data flow. Some pads will
+start tasks to drive the data flow.</p>
+<p>An element activates its pads from sourcepads to sinkpads. This to make
+sure that when the sinkpads are activated and ready to accept data, the
+sourcepads are already active to pass the data downstream.</p>
+<p>Pads can be activated in one of two modes, PUSH and PULL. PUSH pads are
+the normal case, where the source pad in a link sends data to the sink
+pad via <code>gst_pad_push()</code>. PULL pads instead have sink pads request data
+from the source pads via <code>gst_pad_pull_range()</code>.</p>
+<p>To activate a pad, the core will call <code>gst_pad_set_active()</code> with a
+TRUE argument, indicating that the pad should be active. If the pad is
+already active, be it in a PUSH or PULL mode, <code>gst_pad_set_active()</code>
+will return without doing anything. Otherwise it will call the
+activation function of the pad.</p>
+<p>Because the core does not know in which mode to activate a pad (PUSH or
+PULL), it delegates that choice to a method on the pad, <code>activate()</code>. The
+<code>activate()</code> function of a pad should choose whether to operate in PUSH or
+PULL mode. Once the choice is made, it should call <code>activate_mode()</code> with
+the selected activation mode. The default <code>activate()</code> function will call
+<code>activate_mode()</code> with <code>#GST_PAD_MODE_PUSH</code>, as it is the default
+mechanism for data flow. A sink pad that supports either mode of
+operation might call <code>activate_mode(PULL)</code> if the SCHEDULING query
+upstream contains the <code>#GST_PAD_MODE_PULL</code> scheduling mode, and
+<code>activate_mode(PUSH)</code> otherwise.</p>
+<p>Consider the case <code>fakesrc ! fakesink</code>, where fakesink is configured to
+operate in PULL mode. State changes in the pipeline will start with
+fakesink, which is the most downstream element. The core will call
+<code>activate()</code> on fakesink’s sink pad. For fakesink to go into PULL mode, it
+needs to implement a custom <code>activate()</code> function that will call
+<code>activate_mode(PULL)</code> on its sink pad (because the default is to use PUSH
+mode). <code>activate_mode(PULL)</code> is then responsible for starting the task
+that pulls from fakesrc:src. Clearly, fakesrc needs to be notified that
+fakesrc is about to pull on its src pad, even though the pipeline has
+not yet changed fakesrc’s state. For this reason, GStreamer will first
+call call <code>activate_mode(PULL)</code> on fakesink:sink’s peer before calling
+<code>activate_mode(PULL)</code> on fakesink:sinks.</p>
+<p>In short, upstream elements operating in PULL mode must be ready to
+produce data in READY, after having <code>activate_mode(PULL)</code> called on their
+source pad. Also, a call to <code>activate_mode(PULL)</code> needs to propagate
+through the pipeline to every pad that a <code>gst_pad_pull()</code> will reach. In
+the case <code>fakesrc ! identity ! fakesink</code>, calling <code>activate_mode(PULL)</code>
+on identity’s source pad would need to activate its sink pad in pull
+mode as well, which should propagate all the way to fakesrc.</p>
+<p>If, on the other hand, <code>fakesrc ! fakesink</code> is operating in PUSH mode,
+the activation sequence is different. First, <code>activate()</code> on fakesink:sink
+calls <code>activate_mode(PUSH)</code> on fakesink:sink. Then fakesrc’s pads are
+activated: sources first, then sinks (of which fakesrc has none).
+fakesrc:src’s activation function is then called.</p>
+<p>Note that it does not make sense to set an activation function on a
+source pad. The peer of a source pad is downstream, meaning it should
+have been activated first. If it was activated in PULL mode, the source
+pad should have already had <code>activate_mode(PULL)</code> called on it, and thus
+needs no further activation. Otherwise it should be in PUSH mode, which
+is the choice of the default activation function.</p>
+<p>So, in the PUSH case, the default activation function chooses PUSH mode,
+which calls <code>activate_mode(PUSH)</code>, which will then start a task on the
+source pad and begin pushing. In this way PUSH scheduling is a bit
+easier, because it follows the order of state changes in a pipeline.
+fakesink is already in PAUSED with an active sink pad by the time
+fakesrc starts pushing data.</p>
+<h2 id="deactivation">Deactivation</h2>
+<p>Pad deactivation occurs when its parent goes into the READY state or
+when the pad is deactivated explicitly by the application or element.
+<code>gst_pad_set_active()</code> is called with a FALSE argument, which then
+calls <code>activate_mode(PUSH)</code> or <code>activate_mode(PULL)</code> with a FALSE
+argument, depending on the current activation mode of the pad.</p>
+<h2 id="mode-switching">Mode switching</h2>
+<p>Changing from push to pull modes needs a bit of thought. This is
+actually possible and implemented but not yet documented here.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

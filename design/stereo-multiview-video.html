@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Stereoscopic &amp; Multiview Video Handling</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="design/stereo-multiview-video.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="stereo-multiview-video.md">
+<h1 id="stereoscopic-multiview-video-handling">Stereoscopic &amp; Multiview Video Handling</h1>
+<p>There are two cases to handle:</p>
+<ul>
+<li>
+<p>Encoded video output from a demuxer to parser / decoder or from encoders
+into a muxer.</p>
+</li>
+<li>
+<p>Raw video buffers</p>
+</li>
+</ul>
+<p>The design below is somewhat based on the proposals from
+<a href="https://bugzilla.gnome.org/show_bug.cgi?id=611157">bug 611157</a></p>
+<p>Multiview is used as a generic term to refer to handling both
+stereo content (left and right eye only) as well as extensions for videos
+containing multiple independent viewpoints.</p>
+<h2 id="encoded-signalling">Encoded Signalling</h2>
+<p>This is regarding the signalling in caps and buffers from demuxers to
+parsers (sometimes) or out from encoders.</p>
+<p>For backward compatibility with existing codecs many transports of
+stereoscopic 3D content use normal 2D video with 2 views packed spatially
+in some way, and put extra new descriptions in the container/mux.</p>
+<p>Info in the demuxer seems to apply to stereo encodings only. For all
+MVC methods I know, the multiview encoding is in the video bitstream itself
+and therefore already available to decoders. Only stereo systems have been retro-fitted
+into the demuxer.</p>
+<p>Also, sometimes extension descriptions are in the codec (e.g. H.264 SEI FPA packets)
+and it would be useful to be able to put the info onto caps and buffers from the
+parser without decoding.</p>
+<p>To handle both cases, we need to be able to output the required details on
+encoded video for decoders to apply onto the raw video buffers they decode.</p>
+<p><em>If there ever is a need to transport multiview info for encoded data the
+same system below for raw video or some variation should work</em></p>
+<h3 id="encoded-video-properties-that-need-to-be-encoded-into-caps">Encoded Video: Properties that need to be encoded into caps</h3>
+<ol>
+<li>
+<p>multiview-mode (called "Channel Layout" in bug 611157)</p>
+<ul>
+<li>Whether a stream is mono, for a single eye, stereo, mixed-mono-stereo
+(switches between mono and stereo - mp4 can do this)</li>
+<li>Uses a buffer flag to mark individual buffers as mono or "not mono"
+(single|stereo|multiview) for mixed scenarios. The alternative (not
+proposed) is for the demuxer to switch caps for each mono to not-mono
+change, and not used a 'mixed' caps variant at all.</li>
+<li><em>single</em> refers to a stream of buffers that only contain 1 view.
+It is different from mono in that the stream is a marked left or right
+eye stream for later combining in a mixer or when displaying.</li>
+<li><em>multiple</em> marks a stream with multiple independent views encoded.
+It is included in this list for completeness. As noted above, there's
+currently no scenario that requires marking encoded buffers as MVC.</li>
+</ul>
+</li>
+<li>
+<p>Frame-packing arrangements / view sequence orderings</p>
+<ul>
+<li>Possible frame packings: side-by-side, side-by-side-quincunx,
+column-interleaved, row-interleaved, top-bottom, checker-board</li>
+<li>bug 611157 - sreerenj added side-by-side-full and top-bottom-full but
+I think that's covered by suitably adjusting pixel-aspect-ratio. If
+not, they can be added later.</li>
+<li><em>top-bottom</em>, <em>side-by-side</em>, <em>column-interleaved</em>, <em>row-interleaved</em> are as the names suggest.</li>
+<li><em>checker-board</em>, samples are left/right pixels in a chess grid +-+-+-/-+-+-+</li>
+<li><em>side-by-side-quincunx</em>. Side By Side packing, but quincunx sampling -
+1 pixel offset of each eye needs to be accounted when upscaling or displaying</li>
+<li>there may be other packings (future expansion)</li>
+<li>Possible view sequence orderings: frame-by-frame, frame-primary-secondary-tracks, sequential-row-interleaved</li>
+<li><em>frame-by-frame</em>, each buffer is left, then right view etc</li>
+<li><em>frame-primary-secondary-tracks</em> - the file has 2 video tracks (primary and secondary), one is left eye, one is right.
+Demuxer info indicates which one is which.
+Handling this means marking each stream as all-left and all-right views, decoding separately, and combining automatically (inserting a mixer/combiner in playbin)
+-&gt; <em>Leave this for future expansion</em></li>
+<li><em>sequential-row-interleaved</em> Mentioned by sreerenj in bug patches, I can't find a mention of such a thing. Maybe it's in MPEG-2
+-&gt; <em>Leave this for future expansion / deletion</em></li>
+</ul>
+</li>
+<li>
+<p>view encoding order</p>
+<ul>
+<li>Describes how to decide which piece of each frame corresponds to left or right eye</li>
+<li>Possible orderings left, right, left-then-right, right-then-left</li>
+</ul>
+<ul>
+<li>Need to figure out how we find the correct frame in the demuxer to start decoding when seeking in frame-sequential streams</li>
+<li>Need a buffer flag for marking the first buffer of a group.</li>
+</ul>
+</li>
+<li>
+<p>"Frame layout flags"</p>
+<ul>
+<li>flags for view specific interpretation</li>
+<li>horizontal-flip-left, horizontal-flip-right, vertical-flip-left, vertical-flip-right
+Indicates that one or more views has been encoded in a flipped orientation, usually due to camera with mirror or displays with mirrors.</li>
+<li>This should be an actual flags field. Registered GLib flags types aren't generally well supported in our caps - the type might not be loaded/registered yet when parsing a caps string, so they can't be used in caps templates in the registry.</li>
+<li>It might be better just to use a hex value / integer</li>
+</ul>
+</li>
+</ol>
+<h2 id="buffer-representation-for-raw-video">Buffer representation for raw video</h2>
+<ul>
+<li>Transported as normal video buffers with extra metadata</li>
+<li>The caps define the overall buffer width/height, with helper functions to
+extract the individual views for packed formats</li>
+<li>pixel-aspect-ratio adjusted if needed to double the overall width/height</li>
+<li>video sinks that don't know about multiview extensions yet will show the
+packed view as-is. For frame-sequence outputs, things might look weird, but
+just adding multiview-mode to the sink caps can disallow those transports.</li>
+<li><em>row-interleaved</em> packing is actually just side-by-side memory layout with
+half frame width, twice the height, so can be handled by adjusting the
+overall caps and strides</li>
+<li>Other exotic layouts need new pixel formats defined (checker-board,
+column-interleaved, side-by-side-quincunx)</li>
+<li><em>Frame-by-frame</em> - one view per buffer, but with alternating metas marking
+which buffer is which left/right/other view and using a new buffer flag as
+described above to mark the start of a group of corresponding frames.</li>
+<li>New video caps addition as for encoded buffers</li>
+</ul>
+<h3 id="proposed-caps-fields">Proposed Caps fields</h3>
+<p>Combining the requirements above and collapsing the combinations into mnemonics:</p>
+<ul>
+<li>
+<p>multiview-mode =
+mono | left | right | sbs | sbs-quin | col | row | topbot | checkers |
+frame-by-frame | mixed-sbs | mixed-sbs-quin | mixed-col | mixed-row |
+mixed-topbot | mixed-checkers | mixed-frame-by-frame | multiview-frames mixed-multiview-frames</p>
+</li>
+<li>
+<p>multiview-flags =</p>
+<ul>
+<li>0x0000 none</li>
+<li>0x0001 right-view-first</li>
+<li>0x0002 left-h-flipped</li>
+<li>0x0004 left-v-flipped</li>
+<li>0x0008 right-h-flipped</li>
+<li>0x0010 right-v-flipped</li>
+</ul>
+</li>
+</ul>
+<h3 id="proposed-new-buffer-flags">Proposed new buffer flags</h3>
+<p>Add two new <code>GST_VIDEO_BUFFER_*</code> flags in video-frame.h and make it clear that
+those flags can apply to encoded video buffers too. wtay says that's currently
+the case anyway, but the documentation should say it.</p>
+<ul>
+<li>
+<p><strong><code>GST_VIDEO_BUFFER_FLAG_MULTIPLE_VIEW</code></strong> - Marks a buffer as representing
+non-mono content, although it may be a single (left or right) eye view.</p>
+</li>
+<li>
+<p><strong><code>GST_VIDEO_BUFFER_FLAG_FIRST_IN_BUNDLE</code></strong> - for frame-sequential methods of
+transport, mark the "first" of a left/right/other group of frames</p>
+</li>
+</ul>
+<h3 id="a-new-gstmultiviewmeta">A new GstMultiviewMeta</h3>
+<p>This provides a place to describe all provided views in a buffer / stream,
+and through Meta negotiation to inform decoders about which views to decode if
+not all are wanted.</p>
+<ul>
+<li>
+<p>Logical labels/names and mapping to GstVideoMeta numbers</p>
+</li>
+<li>
+<p>Standard view labels LEFT/RIGHT, and non-standard ones (strings)</p>
+<pre><code>  GST_VIDEO_MULTIVIEW_VIEW_LEFT = 1
+  GST_VIDEO_MULTIVIEW_VIEW_RIGHT = 2
+
+  struct GstVideoMultiviewViewInfo {
+      guint view_label;
+      guint meta_id; // id of the GstVideoMeta for this view
+
+      padding;
+  }
+
+  struct GstVideoMultiviewMeta {
+      guint n_views;
+      GstVideoMultiviewViewInfo *view_info;
+  }
+</code></pre>
+</li>
+</ul>
+<p>The meta is optional, and probably only useful later for MVC</p>
+<h2 id="outputting-stereo-content">Outputting stereo content</h2>
+<p>The initial implementation for output will be stereo content in glimagesink</p>
+<h3 id="output-considerations-with-opengl">Output Considerations with OpenGL</h3>
+<ul>
+<li>
+<p>If we have support for stereo GL buffer formats, we can output separate
+left/right eye images and let the hardware take care of display.</p>
+</li>
+<li>
+<p>Otherwise, glimagesink needs to render one window with left/right in a
+suitable frame packing and that will only show correctly in fullscreen on a
+device set for the right 3D packing -&gt; requires app intervention to set the
+video mode.</p>
+</li>
+<li>
+<p>Which could be done manually on the TV, or with HDMI 1.4 by setting the
+right video mode for the screen to inform the TV or third option, we support
+rendering to two separate overlay areas on the screen - one for left eye,
+one for right which can be supported using the 'splitter' element and two
+output sinks or, better, add a 2nd window overlay for split stereo output</p>
+</li>
+<li>
+<p>Intel hardware doesn't do stereo GL buffers - only nvidia and AMD, so
+initial implementation won't include that</p>
+</li>
+</ul>
+<h2 id="other-elements-for-handling-multiview-content">Other elements for handling multiview content</h2>
+<ul>
+<li>
+<p>videooverlay interface extensions</p>
+<ul>
+<li><strong>Q</strong>: Should this be a new interface?</li>
+<li>Element message to communicate the presence of stereoscopic information to the app</li>
+<li>App needs to be able to override the input interpretation - ie, set multiview-mode and multiview-flags
+<ul>
+<li>Most videos I've seen are side-by-side or top-bottom with no frame-packing metadata</li>
+</ul>
+</li>
+<li>New API for the app to set rendering options for stereo/multiview content</li>
+<li>This might be best implemented as a <strong>multiview GstContext</strong>, so that
+the pipeline can share app preferences for content interpretation and downmixing
+to mono for output, or in the sink and have those down as far upstream/downstream as possible.</li>
+</ul>
+</li>
+<li>
+<p>Converter element</p>
+<ul>
+<li>convert different view layouts</li>
+<li>Render to anaglyphs of different types (magenta/green, red/blue, etc) and output as mono</li>
+</ul>
+</li>
+<li>
+<p>Mixer element</p>
+<ul>
+<li>take 2 video streams and output as stereo</li>
+<li>later take n video streams</li>
+<li>share code with the converter, it just takes input from n pads instead of one.</li>
+</ul>
+</li>
+<li>
+<p>Splitter element</p>
+</li>
+<li>
+<p>Output one pad per view</p>
+</li>
+</ul>
+<h3 id="implementing-mvc-handling-in-decoders-parsers-and-encoders">Implementing MVC handling in decoders / parsers (and encoders)</h3>
+<p>Things to do to implement MVC handling</p>
+<ol>
+<li>Parsing SEI in h264parse and setting caps (patches available in
+bugzilla for parsing, see below)</li>
+<li>Integrate gstreamer-vaapi MVC support with this proposal</li>
+<li>Help with <a href="https://wiki.libav.org/Blueprint/MVC">libav MVC implementation</a></li>
+<li>generating SEI in H.264 encoder</li>
+<li>Support for MPEG2 MVC extensions</li>
+</ol>
+<h2 id="relevant-bugs">Relevant bugs</h2>
+<ul>
+<li><a href="https://bugzilla.gnome.org/show_bug.cgi?id=685215">bug 685215</a> - codecparser h264: Add initial MVC parser</li>
+<li><a href="https://bugzilla.gnome.org/show_bug.cgi?id=696135">bug 696135</a> - h264parse: Add mvc stream parsing support</li>
+<li><a href="https://bugzilla.gnome.org/show_bug.cgi?id=732267">bug 732267</a> - h264parse: extract base stream from MVC or SVC encoded streams</li>
+</ul>
+<h2 id="other-information">Other Information</h2>
+<p><a href="http://www.matroska.org/technical/specs/notes.html#3D">Matroska 3D support notes</a></p>
+<h2 id="open-questions">Open Questions</h2>
+<h3 id="background">Background</h3>
+<h3 id="representation-for-gstgl">Representation for GstGL</h3>
+<p>When uploading raw video frames to GL textures, the goal is to implement:</p>
+<p>Split packed frames into separate GL textures when uploading, and
+attach multiple GstGLMemory's to the GstBuffer. The multiview-mode and
+multiview-flags fields in the caps should change to reflect the conversion
+from one incoming GstMemory to multiple GstGLMemory, and change the
+width/height in the output info as needed.</p>
+<p>This is (currently) targetted as 2 render passes - upload as normal
+to a single stereo-packed RGBA texture, and then unpack into 2
+smaller textures, output with GST_VIDEO_MULTIVIEW_MODE_SEPARATED, as
+2 GstGLMemory attached to one buffer. We can optimise the upload later
+to go directly to 2 textures for common input formats.</p>
+<p>Separat output textures have a few advantages:</p>
+<ul>
+<li>
+<p>Filter elements can more easily apply filters in several passes to each
+texture without fundamental changes to our filters to avoid mixing pixels
+from separate views.</p>
+</li>
+<li>
+<p>Centralises the sampling of input video frame packings in the upload code,
+which makes adding new packings in the future easier.</p>
+</li>
+<li>
+<p>Sampling multiple textures to generate various output frame-packings
+for display is conceptually simpler than converting from any input packing
+to any output packing.</p>
+</li>
+<li>
+<p>In implementations that support quad buffers, having separate textures
+makes it trivial to do GL_LEFT/GL_RIGHT output</p>
+</li>
+</ul>
+<p>For either option, we'll need new glsink output API to pass more
+information to applications about multiple views for the draw signal/callback.</p>
+<p>I don't know if it's desirable to support <em>both</em> methods of representing
+views. If so, that should be signalled in the caps too. That could be a
+new multiview-mode for passing views in separate GstMemory objects
+attached to a GstBuffer, which would not be GL specific.</p>
+<h3 id="overriding-frame-packing-interpretation">Overriding frame packing interpretation</h3>
+<p>Most sample videos available are frame packed, with no metadata
+to say so. How should we override that interpretation?</p>
+<ul>
+<li>Simple answer: Use capssetter + new properties on playbin to
+override the multiview fields. <em>Basically implemented in playbin, using</em>
+<em>a pad probe. Needs more work for completeness</em></li>
+</ul>
+<h3 id="adding-extra-gstvideometa-to-buffers">Adding extra GstVideoMeta to buffers</h3>
+<p>There should be one GstVideoMeta for the entire video frame in packed
+layouts, and one GstVideoMeta per GstGLMemory when views are attached
+to a GstBuffer separately. This should be done by the buffer pool,
+which knows from the caps.</p>
+<h3 id="videooverlay-interface-extensions">videooverlay interface extensions</h3>
+<p>GstVideoOverlay needs:</p>
+<ul>
+<li>A way to announce the presence of multiview content when it is
+detected/signalled in a stream.</li>
+<li>A way to tell applications which output methods are supported/available</li>
+<li>A way to tell the sink which output method it should use</li>
+<li>Possibly a way to tell the sink to override the input frame
+interpretation / caps - depends on the answer to the question
+above about how to model overriding input interpretation.</li>
+</ul>
+<h3 id="whats-implemented">What's implemented</h3>
+<ul>
+<li>Caps handling</li>
+<li>gst-plugins-base libsgstvideo pieces</li>
+<li>playbin caps overriding</li>
+<li>conversion elements - glstereomix, gl3dconvert (needs a rename),
+glstereosplit.</li>
+</ul>
+<h3 id="possible-future-enhancements">Possible future enhancements</h3>
+<ul>
+<li>Make GLupload split to separate textures at upload time?
+<ul>
+<li>Needs new API to extract multiple textures from the upload. Currently only outputs 1 result RGBA texture.</li>
+</ul>
+</li>
+<li>Make GLdownload able to take 2 input textures, pack them and colorconvert / download as needed.
+<ul>
+<li>current done by packing then downloading which isn't OK overhead for RGBA download</li>
+</ul>
+</li>
+<li>Think about how we integrate GLstereo - do we need to do anything special,
+or can the app just render to stereo/quad buffers if they're available?</li>
+</ul>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

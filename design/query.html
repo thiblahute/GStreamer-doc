@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Query</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="design/query.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="query.md">
+<h1 id="query">Query</h1>
+<h2 id="purpose">Purpose</h2>
+<p>Queries are used to get information about the stream. A query is started
+on a specific pad and travels up or downstream.</p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>
+<p>multiple return values, grouped together when they make sense.</p>
+</li>
+<li>
+<p>one pad function to perform the query</p>
+</li>
+<li>
+<p>extensible queries.</p>
+</li>
+</ul>
+<h2 id="implementation">Implementation</h2>
+<ul>
+<li>
+<p><code>GstQuery</code> extends <code>GstMiniObject</code> and contains a <code>GstStructure</code> (see
+<code>GstMessage</code>)</p>
+</li>
+<li>
+<p>some standard query types are defined below</p>
+</li>
+<li>
+<p>methods to create and parse the results in the <code>GstQuery</code>.</p>
+</li>
+<li>
+<p>define pad
+method:</p>
+</li>
+</ul>
+<pre><code class="language-c">        gboolean                (*GstPadQueryFunction)          (GstPad    *pad,
+                                                                 GstObject *parent,
+                                                                 GstQuery  *query);
+</code></pre>
+<p>pad returns result in query structure and TRUE as result or FALSE when query is
+not supported.</p>
+<h2 id="query-types">Query types</h2>
+<p><strong><code>GST_QUERY_POSITION</code></strong>: get info on current position of the stream in <code>stream_time</code>.</p>
+<p><strong><code>GST_QUERY_DURATION</code></strong>: get info on the total duration of the stream.</p>
+<p><strong><code>GST_QUERY_LATENCY</code></strong>: get amount of latency introduced in the pipeline. (See <a href="latency.html">latency</a>)</p>
+<p><strong><code>GST_QUERY_RATE</code></strong>: get the current playback rate of the pipeline</p>
+<p><strong><code>GST_QUERY_SEEKING</code></strong>: get info on how seeking can be done
+- getrange, with/without offset/size
+- ranges where seeking is efficient (for caching network sources)
+- flags describing seeking behaviour (forward, backward, segments,
+play backwards, ...)</p>
+<p><strong><code>GST_QUERY_SEGMENT</code></strong>: get info about the currently configured playback segment.</p>
+<p><strong><code>GST_QUERY_CONVERT</code></strong>: convert format/value to another format/value pair.</p>
+<p><strong><code>GST_QUERY_FORMATS</code></strong>: return list of supported formats that can be used for <code>GST_QUERY_CONVERT</code>.</p>
+<p><strong><code>GST_QUERY_BUFFERING</code></strong>: query available media for efficient seeking (See <a href="buffering.html">buffering</a>)</p>
+<p><strong><code>GST_QUERY_CUSTOM</code></strong>: a custom query, the name of the query defines the properties of the query.</p>
+<p><strong><code>GST_QUERY_URI</code></strong>: query the uri of the source or sink element</p>
+<p><strong><code>GST_QUERY_ALLOCATION</code></strong>: the buffer allocation properties (See <a href="bufferpool.html">bufferpool</a>)</p>
+<p><strong><code>GST_QUERY_SCHEDULING</code></strong>: the scheduling properties (See <a href="scheduling.html">scheduling</a>)</p>
+<p><strong><code>GST_QUERY_ACCEPT_CAPS</code></strong>: check if caps are supported (See <a href="negotiation.html">negotiation</a>)</p>
+<p><strong><code>GST_QUERY_CAPS</code></strong>: get the possible caps (See <a href="negotiation.html">negotiation</a>)</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Interfaces</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="plugin-development/advanced/interfaces.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="interfaces.md">
+<h1 id="interfaces">Interfaces</h1>
+<p>Previously, in the chapter <a href="../basics/args.html">Adding Properties</a>, we have
+introduced the concept of GObject properties of controlling an element's
+behaviour. This is very powerful, but it has two big disadvantages: first of
+all, it is too generic, and second, it isn't dynamic.</p>
+<p>The first disadvantage is related to the customizability of the end-user
+interface that will be built to control the element. Some properties are
+more important than others. Some integer properties are better shown in
+a spin-button widget, whereas others would be better represented by a
+slider widget. Such things are not possible because the UI has no actual
+meaning in the application. A UI widget that represents a bitrate
+property is the same as a UI widget that represents the size of a video,
+as long as both are of the same <code>GParamSpec</code> type. Another problem, is
+that things like parameter grouping, function grouping, or parameter
+coupling are not really possible.</p>
+<p>The second problem with parameters are that they are not dynamic. In
+many cases, the allowed values for a property are not fixed, but depend
+on things that can only be detected at runtime. The names of inputs for
+a TV card in a video4linux source element, for example, can only be
+retrieved from the kernel driver when we've opened the device; this only
+happens when the element goes into the READY state. This means that we
+cannot create an enum property type to show this to the user.</p>
+<p>The solution to those problems is to create very specialized types of
+controls for certain often-used controls. We use the concept of
+interfaces to achieve this. The basis of this all is the glib
+<code>GTypeInterface</code> type. For each case where we think it's useful, we've
+created interfaces which can be implemented by elements at their own
+will.</p>
+<p>One important note: interfaces do <em>not</em> replace properties. Rather,
+interfaces should be built <em>next to</em> properties. There are two important
+reasons for this. First of all, properties can be more easily
+introspected. Second, properties can be specified on the commandline
+(<code>gst-launch-1.0</code>).</p>
+<h2 id="how-to-implement-interfaces">How to Implement Interfaces</h2>
+<p>Implementing interfaces is initiated in the <code>_get_type ()</code> of your
+element. You can register one or more interfaces after having registered
+the type itself. Some interfaces have dependencies on other interfaces
+or can only be registered by certain types of elements. You will be
+notified of doing that wrongly when using the element: it will quit with
+failed assertions, which will explain what went wrong. If it does, you
+need to register support for <em>that</em> interface before registering support
+for the interface that you're wanting to support. The example below
+explains how to add support for a simple interface with no further
+dependencies.</p>
+<pre><code class="language-c">static void gst_my_filter_some_interface_init   (GstSomeInterface *iface);
+
+GType
+gst_my_filter_get_type (void)
+{
+  static GType my_filter_type = 0;
+
+  if (!my_filter_type) {
+    static const GTypeInfo my_filter_info = {
+      sizeof (GstMyFilterClass),
+      NULL,
+      NULL,
+      (GClassInitFunc) gst_my_filter_class_init,
+      NULL,
+      NULL,
+      sizeof (GstMyFilter),
+      0,
+      (GInstanceInitFunc) gst_my_filter_init
+    };
+    static const GInterfaceInfo some_interface_info = {
+      (GInterfaceInitFunc) gst_my_filter_some_interface_init,
+      NULL,
+      NULL
+    };
+
+    my_filter_type =
+    g_type_register_static (GST_TYPE_ELEMENT,
+                "GstMyFilter",
+                &amp;my_filter_info, 0);
+    g_type_add_interface_static (my_filter_type,
+                 GST_TYPE_SOME_INTERFACE,
+                                 &amp;some_interface_info);
+  }
+
+  return my_filter_type;
+}
+
+static void
+gst_my_filter_some_interface_init (GstSomeInterface *iface)
+{
+  /* here, you would set virtual function pointers in the interface */
+}
+
+</code></pre>
+<p>Or more
+conveniently:</p>
+<pre><code class="language-c">static void gst_my_filter_some_interface_init   (GstSomeInterface *iface);
+
+G_DEFINE_TYPE_WITH_CODE (GstMyFilter, gst_my_filter,GST_TYPE_ELEMENT,
+     G_IMPLEMENT_INTERFACE (GST_TYPE_SOME_INTERFACE,
+            gst_my_filter_some_interface_init));
+
+
+</code></pre>
+<h2 id="uri-interface">URI interface</h2>
+<p>WRITEME</p>
+<h2 id="color-balance-interface">Color Balance Interface</h2>
+<p>WRITEME</p>
+<h2 id="video-overlay-interface">Video Overlay Interface</h2>
+<p>The <code>GstVideoOverlay</code> interface is used for 2 main purposes :</p>
+<ul>
+<li>
+<p>To get a grab on the Window where the video sink element is going to
+render. This is achieved by either being informed about the Window
+identifier that the video sink element generated, or by forcing the
+video sink element to use a specific Window identifier for
+rendering.</p>
+</li>
+<li>
+<p>To force a redrawing of the latest video frame the video sink
+element displayed on the Window. Indeed if the <code>GstPipeline</code> is in
+<code>GST\_STATE\_PAUSED</code> state, moving the Window around will damage its
+content. Application developers will want to handle the Expose
+events themselves and force the video sink element to refresh the
+Window's content.</p>
+</li>
+</ul>
+<p>A plugin drawing video output in a video window will need to have that
+window at one stage or another. Passive mode simply means that no window
+has been given to the plugin before that stage, so the plugin created
+the window by itself. In that case the plugin is responsible of
+destroying that window when it's not needed any more and it has to tell
+the applications that a window has been created so that the application
+can use it. This is done using the <code>have-window-handle</code> message that can
+be posted from the plugin with the <code>gst_video_overlay_got_window_handle</code>
+method.</p>
+<p>As you probably guessed already active mode just means sending a video
+window to the plugin so that video output goes there. This is done using
+the <code>gst_video_overlay_set_window_handle</code> method.</p>
+<p>It is possible to switch from one mode to another at any moment, so the
+plugin implementing this interface has to handle all cases. There are
+only 2 methods that plugins writers have to implement and they most
+probably look like that :</p>
+<pre><code class="language-c">static void
+gst_my_filter_set_window_handle (GstVideoOverlay *overlay, guintptr handle)
+{
+  GstMyFilter *my_filter = GST_MY_FILTER (overlay);
+
+  if (my_filter-&gt;window)
+    gst_my_filter_destroy_window (my_filter-&gt;window);
+
+  my_filter-&gt;window = handle;
+}
+
+static void
+gst_my_filter_xoverlay_init (GstVideoOverlayClass *iface)
+{
+  iface-&gt;set_window_handle = gst_my_filter_set_window_handle;
+}
+
+</code></pre>
+<p>You will also need to use the interface methods to post messages when
+needed such as when receiving a CAPS event where you will know the video
+geometry and maybe create the window.</p>
+<pre><code class="language-c">static MyFilterWindow *
+gst_my_filter_window_create (GstMyFilter *my_filter, gint width, gint height)
+{
+  MyFilterWindow *window = g_new (MyFilterWindow, 1);
+  ...
+  gst_video_overlay_got_window_handle (GST_VIDEO_OVERLAY (my_filter), window-&gt;win);
+}
+
+/* called from the event handler for CAPS events */
+static gboolean
+gst_my_filter_sink_set_caps (GstMyFilter *my_filter, GstCaps *caps)
+{
+  gint width, height;
+  gboolean ret;
+  ...
+  ret = gst_structure_get_int (structure, "width", &amp;width);
+  ret &amp;= gst_structure_get_int (structure, "height", &amp;height);
+  if (!ret) return FALSE;
+
+  gst_video_overlay_prepare_window_handle (GST_VIDEO_OVERLAY (my_filter));
+
+  if (!my_filter-&gt;window)
+    my_filter-&gt;window = gst_my_filter_create_window (my_filter, width, height);
+
+  ...
+}
+
+</code></pre>
+<h2 id="navigation-interface">Navigation Interface</h2>
+<p>WRITEME</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

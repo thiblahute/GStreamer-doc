@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Windows deployment</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="deploying/windows.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="windows.md">
+<h1 id="windows-deployment">Windows deployment</h1>
+<p>This page explains how to deploy GStreamer along your
+application. There are different mechanisms, which have been reviewed
+in <a href="index.html">Deploying your application</a>. The details for some of the
+mechanisms are given here, and more options might be added to this
+documentation in the future.</p>
+<h2 id="shared-gstreamer">Shared GStreamer</h2>
+<p>This is the easiest way to deploy GStreamer, although most of the time
+it installs unnecessary files which grow the size of the installer and
+the target drive free space requirements. Since GStreamer might be shared
+among all applications that use it, though, the extra space requirements
+are somewhat blurred.</p>
+<p>Simply pack GStreamer  <strong>runtime</strong>  installer (<a href="../installing/on-windows.html">the same one you
+installed in your development machine</a>)
+inside your installer (or download it from your installer) and execute
+it silently using <code>msiexec</code>. <code>msiexec</code> is the tool that wraps most of
+the Windows Installer functionality and offers a number of options to
+suit your needs. You can review these options by
+executing <code>msiexec</code> without parameters. For example using 1.8.1:</p>
+<pre><code>msiexec /i gstreamer-1.0-x86-1.8.1.msi
+</code></pre>
+<p>This will bring up the installation dialog as if the user had
+double-clicked on the <code>msi</code> file. Usually, you will want to let the user
+choose where they want to install GStreamer. An environment variable will
+let your application locate it later on.</p>
+<h2 id="private-deployment-of-gstreamer">Private deployment of GStreamer</h2>
+<p>You can use the same method as the shared GStreamer, but instruct its
+installer to deploy to your application’s folder (or a
+subfolder). Again, use the <code>msiexec</code> parameters that suit you best. For
+example:</p>
+<pre><code>msiexec /passive INSTALLDIR=C:\Desired\Folder /i gstreamer-1.0-x86-1.8.1.msi
+</code></pre>
+<p>This will install GStreamer to <code>C:\Desired\Folder</code>  showing a progress
+dialog, but not requiring user intervention.</p>
+<h2 id="deploy-only-necessary-files-by-manually-picking-them">Deploy only necessary files, by manually picking them</h2>
+<p>On the other side of the spectrum, if you want to reduce the space
+requirements (and installer size) to the maximum, you can manually
+choose which GStreamer libraries to deploy. Unfortunately, you are on
+your own on this road, besides using the <a href="http://www.dependencywalker.com/">Dependency
+Walker</a> tool to discover inter-DLL
+dependencies.</p>
+<p>Bear in mind that GStreamer is modular in nature. Plug-ins are loaded
+depending on the media that is being played, so, if you do not know in
+advance what files you are going to play, you do not know which DLLs you
+need to deploy.</p>
+<h2 id="deploy-only-necessary-packages-using-provided-merge-modules">Deploy only necessary packages, using provided Merge Modules</h2>
+<p>If you are building your installer using one of the Professional
+editions of <a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/professional/overview">Visual
+Studio</a>
+or <a href="http://wix.sf.net">WiX</a> you can take advantage of pre-packaged
+<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa369820(v=vs.85).aspx">Merge
+Modules</a>.
+GStreamer is divided in packages, which roughly take care of
+different tasks. There is the core package, the playback package, the
+networking package, etc. Each package contains the necessary libraries
+and files to accomplish its task.</p>
+<p>The Merge Modules are pieces that can be put together to build a larger
+Windows Installer. In this case, you just need to create a deployment
+project for your application with Visual Studio and then add the Merge
+Modules for the GStreamer packages your application needs.</p>
+<p>This will produce a smaller installer than deploying the complete
+GStreamer, without the added burden of having to manually pick each
+library. You just need to know which packages your application requires.</p>
+<table>
+<thead>
+<tr>
+<th> Package name</th>
+<th> Dependencies</th>
+<th> Licenses</th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> base-system-1.0</td>
+<td></td>
+<td>JPEG, FreeType, BSD-like, LGPL, LGPL-2+, LGPL-2.1, LibPNG and MIT</td>
+<td> Base system dependencies</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-capture</td>
+<td> gstreamer-1.0-core, gstreamer-1.0-encoding</td>
+<td> LGPL and LGPL-2+</td>
+<td> GStreamer plugins for capture</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-codecs</td>
+<td> base-crypto, gstreamer-1.0-core</td>
+<td> BSD, Jasper-2.0, BSD-like, LGPL, LGPL-2, LGPL-2+, LGPL-2.1 and LGPL-2.1+</td>
+<td> GStreamer codecs</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-codecs-gpl</td>
+<td> gstreamer-1.0-core</td>
+<td> BSD-like, LGPL, LGPL-2+ and LGPL-2.1+</td>
+<td> GStreamer codecs under the GPL license and/or with patents issues</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-core</td>
+<td> base-system-1.0</td>
+<td> LGPL and LGPL-2+</td>
+<td> GStreamer core</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-dvd</td>
+<td> gstreamer-1.0-core</td>
+<td> GPL-2+, LGPL and LGPL-2+</td>
+<td> GStreamer DVD support</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-effects</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL-2+</td>
+<td> GStreamer effects and instrumentation plugins</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-net</td>
+<td> base-crypto, gstreamer-1.0-core</td>
+<td> GPL-3, LGPL, LGPL-2+, LGPL-2.1+ and LGPL-3+</td>
+<td> GStreamer plugins for network protocols</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-playback</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL-2+</td>
+<td> GStreamer plugins for playback</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-system</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL, LGPL-2+ and LGPL-2.1+</td>
+<td> GStreamer system plugins</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-visualizers</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL-2+</td>
+<td> GStreamer visualization plugins</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-encoding</td>
+<td> gstreamer-1.0-core, gstreamer-1.0-playback</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer plugins for encoding</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-editing</td>
+<td> gstreamer-1.0-core, gstreamer-1.0-devtools</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer libraries and plugins for non linear editing</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-devtools</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer developers tools</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-libav</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer plugins wrapping ffmpeg</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-net-restricted</td>
+<td> base-crypto, gstreamer-1.0-core</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer plugins for network protocols with potential patent issues in some countries</td>
+</tr>
+<tr>
+<td> gstreamer-1.0-codecs-restricted</td>
+<td> gstreamer-1.0-core</td>
+<td> LGPL and LGPL2+</td>
+<td> GStreamer restricted codecs with potential patent issues in some countries</td>
+</tr>
+<tr>
+<td> base-crypto</td>
+<td> base-system-1.0</td>
+<td> LGPL and LGPL2+</td>
+<td> Cryptographic libraries</td>
+</tr></tbody></table>
+<p>If you include a merge module in your deployment project, remember to
+include also its dependencies. Otherwise, the project will build
+correctly and install flawlessly, but, when executing your application,
+it will miss files.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Building a Test Application</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="plugin-development/basics/testapp.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="testapp.md">
+<h1 id="building-a-test-application">Building a Test Application</h1>
+<p>Often, you will want to test your newly written plugin in an as small
+setting as possible. Usually, <code>gst-launch-1.0</code> is a good first step at
+testing a plugin. If you have not installed your plugin in a directory
+that GStreamer searches, then you will need to set the plugin path.
+Either set GST_PLUGIN_PATH to the directory containing your plugin, or
+use the command-line option --gst-plugin-path. If you based your plugin
+off of the gst-plugin template, then this will look something like <code>gst-launch-1.0 --gst-plugin-path=$HOME/gst-template/gst-plugin/src/.libs TESTPIPELINE</code> However, you will often need more testing features than gst-launch-1.0
+can provide, such as seeking, events, interactivity and more. Writing
+your own small testing program is the easiest way to accomplish this.
+This section explains - in a few words - how to do that. For a complete
+application development guide, see the <a href="../../application-development/index.html">Application Development
+Manual</a>.</p>
+<p>At the start, you need to initialize the GStreamer core library by
+calling <code>gst_init ()</code>. You can alternatively call
+<code>gst_init_get_option_group ()</code>, which will return a pointer to
+GOptionGroup. You can then use GOption to handle the initialization, and
+this will finish the GStreamer initialization.</p>
+<p>You can create elements using <code>gst_element_factory_make ()</code>, where the
+first argument is the element type that you want to create, and the
+second argument is a free-form name. The example at the end uses a
+simple filesource - decoder - soundcard output pipeline, but you can use
+specific debugging elements if that's necessary. For example, an
+<code>identity</code> element can be used in the middle of the pipeline to act as a
+data-to-application transmitter. This can be used to check the data for
+misbehaviours or correctness in your test application. Also, you can use
+a <code>fakesink</code> element at the end of the pipeline to dump your data to the
+stdout (in order to do this, set the <code>dump</code> property to TRUE). Lastly,
+you can use valgrind to check for memory errors.</p>
+<p>During linking, your test application can use filtered caps as a way to
+drive a specific type of data to or from your element. This is a very
+simple and effective way of checking multiple types of input and output
+in your element.</p>
+<p>Note that during running, you should listen for at least the “error” and
+“eos” messages on the bus and/or your plugin/element to check for
+correct handling of this. Also, you should add events into the pipeline
+and make sure your plugin handles these correctly (with respect to
+clocking, internal caching, etc.).</p>
+<p>Never forget to clean up memory in your plugin or your test application.
+When going to the NULL state, your element should clean up allocated
+memory and caches. Also, it should close down any references held to
+possible support libraries. Your application should <code>unref ()</code> the
+pipeline and make sure it doesn't crash.</p>
+<pre><code class="language-c">#include &lt;gst/gst.h&gt;
+
+static gboolean
+bus_call (GstBus     *bus,
+      GstMessage *msg,
+      gpointer    data)
+{
+  GMainLoop *loop = data;
+
+  switch (GST_MESSAGE_TYPE (msg)) {
+    case GST_MESSAGE_EOS:
+      g_print ("End-of-stream\n");
+      g_main_loop_quit (loop);
+      break;
+    case GST_MESSAGE_ERROR: {
+      gchar *debug = NULL;
+      GError *err = NULL;
+
+      gst_message_parse_error (msg, &amp;err, &amp;debug);
+
+      g_print ("Error: %s\n", err-&gt;message);
+      g_error_free (err);
+
+      if (debug) {
+        g_print ("Debug details: %s\n", debug);
+        g_free (debug);
+      }
+
+      g_main_loop_quit (loop);
+      break;
+    }
+    default:
+      break;
+  }
+
+  return TRUE;
+}
+
+gint
+main (gint   argc,
+      gchar *argv[])
+{
+  GstStateChangeReturn ret;
+  GstElement *pipeline, *filesrc, *decoder, *filter, *sink;
+  GstElement *convert1, *convert2, *resample;
+  GMainLoop *loop;
+  GstBus *bus;
+  guint watch_id;
+
+  /* initialization */
+  gst_init (&amp;argc, &amp;argv);
+  loop = g_main_loop_new (NULL, FALSE);
+  if (argc != 2) {
+    g_print ("Usage: %s &lt;mp3 filename&gt;\n", argv[0]);
+    return 01;
+  }
+
+  /* create elements */
+  pipeline = gst_pipeline_new ("my_pipeline");
+
+  /* watch for messages on the pipeline's bus (note that this will only
+   * work like this when a GLib main loop is running) */
+  bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
+  watch_id = gst_bus_add_watch (bus, bus_call, loop);
+  gst_object_unref (bus);
+
+  filesrc  = gst_element_factory_make ("filesrc", "my_filesource");
+  decoder  = gst_element_factory_make ("mad", "my_decoder");
+
+  /* putting an audioconvert element here to convert the output of the
+   * decoder into a format that my_filter can handle (we are assuming it
+   * will handle any sample rate here though) */
+  convert1 = gst_element_factory_make ("audioconvert", "audioconvert1");
+
+  /* use "identity" here for a filter that does nothing */
+  filter   = gst_element_factory_make ("my_filter", "my_filter");
+
+  /* there should always be audioconvert and audioresample elements before
+   * the audio sink, since the capabilities of the audio sink usually vary
+   * depending on the environment (output used, sound card, driver etc.) */
+  convert2 = gst_element_factory_make ("audioconvert", "audioconvert2");
+  resample = gst_element_factory_make ("audioresample", "audioresample");
+  sink     = gst_element_factory_make ("pulsesink", "audiosink");
+
+  if (!sink || !decoder) {
+    g_print ("Decoder or output could not be found - check your install\n");
+    return -1;
+  } else if (!convert1 || !convert2 || !resample) {
+    g_print ("Could not create audioconvert or audioresample element, "
+             "check your installation\n");
+    return -1;
+  } else if (!filter) {
+    g_print ("Your self-written filter could not be found. Make sure it "
+             "is installed correctly in $(libdir)/gstreamer-1.0/ or "
+             "~/.gstreamer-1.0/plugins/ and that gst-inspect-1.0 lists it. "
+             "If it doesn't, check with 'GST_DEBUG=*:2 gst-inspect-1.0' for "
+             "the reason why it is not being loaded.");
+    return -1;
+  }
+
+  g_object_set (G_OBJECT (filesrc), "location", argv[1], NULL);
+
+  gst_bin_add_many (GST_BIN (pipeline), filesrc, decoder, convert1, filter,
+                    convert2, resample, sink, NULL);
+
+  /* link everything together */
+  if (!gst_element_link_many (filesrc, decoder, convert1, filter, convert2,
+                              resample, sink, NULL)) {
+    g_print ("Failed to link one or more elements!\n");
+    return -1;
+  }
+
+  /* run */
+  ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
+  if (ret == GST_STATE_CHANGE_FAILURE) {
+    GstMessage *msg;
+
+    g_print ("Failed to start up pipeline!\n");
+
+    /* check if there is an error message with details on the bus */
+    msg = gst_bus_poll (bus, GST_MESSAGE_ERROR, 0);
+    if (msg) {
+      GError *err = NULL;
+
+      gst_message_parse_error (msg, &amp;err, NULL);
+      g_print ("ERROR: %s\n", err-&gt;message);
+      g_error_free (err);
+      gst_message_unref (msg);
+    }
+    return -1;
+  }
+
+  g_main_loop_run (loop);
+
+  /* clean up */
+  gst_element_set_state (pipeline, GST_STATE_NULL);
+  gst_object_unref (pipeline);
+  g_source_remove (watch_id);
+  g_main_loop_unref (loop);
+
+  return 0;
+}
+
+</code></pre>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

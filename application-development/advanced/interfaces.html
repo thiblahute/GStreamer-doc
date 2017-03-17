@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Interfaces</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="application-development/advanced/interfaces.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="interfaces.md">
+<h1 id="interfaces">Interfaces</h1>
+<p>In <a href="../basics/elements.html#using-an-element-as-a-gobject">Using an element as a GObject</a>, you have
+learned how to use <code>GObject</code> properties as a simple way to do
+interaction between applications and elements. This method suffices for
+the simple'n'straight settings, but fails for anything more complicated
+than a getter and setter. For the more complicated use cases, GStreamer
+uses interfaces based on the GObject
+<a href="http://library.gnome.org/devel/gobject/stable/gtype-non-instantiable-classed.html"><code>GTypeInterface</code></a>
+type.</p>
+<p>Most of the interfaces handled here will not contain any example code.
+See the API references for details. Here, we will just describe the
+scope and purpose of each interface.</p>
+<h2 id="the-uri-interface">The URI interface</h2>
+<p>In all examples so far, we have only supported local files through the
+“filesrc” element. GStreamer, obviously, supports many more location
+sources. However, we don't want applications to need to know any
+particular element implementation details, such as element names for
+particular network source types and so on. Therefore, there is a URI
+interface, which can be used to get the source element that supports a
+particular URI type. There is no strict rule for URI naming, but in
+general we follow naming conventions that others use, too. For example,
+assuming you have the correct plugins installed, GStreamer supports
+“file:///&lt;path&gt;/&lt;file&gt;”, “http://&lt;host&gt;/&lt;path&gt;/&lt;file&gt;”,
+“mms://&lt;host&gt;/&lt;path&gt;/&lt;file&gt;”, and so on.</p>
+<p>In order to get the source or sink element supporting a particular URI,
+use <code>gst_element_make_from_uri ()</code>, with the URI type being either
+<code>GST_URI_SRC</code> for a source element, or <code>GST_URI_SINK</code> for a sink
+element.</p>
+<p>You can convert filenames to and from URIs using GLib's
+<code>g_filename_to_uri ()</code> and <code>g_uri_to_filename ()</code>.</p>
+<h2 id="the-color-balance-interface">The Color Balance interface</h2>
+<p>The colorbalance interface is a way to control video-related properties
+on an element, such as brightness, contrast and so on. It's sole reason
+for existence is that, as far as its authors know, there's no way to
+dynamically register properties using <code>GObject</code>.</p>
+<p>The colorbalance interface is implemented by several plugins, including
+xvimagesink and the Video4linux2 elements.</p>
+<h2 id="the-video-overlay-interface">The Video Overlay interface</h2>
+<p>The Video Overlay interface was created to solve the problem of
+embedding video streams in an application window. The application
+provides an window handle to the element implementing this interface to
+draw on, and the element will then use this window handle to draw on
+rather than creating a new toplevel window. This is useful to embed
+video in video players.</p>
+<p>This interface is implemented by, amongst others, the Video4linux2
+elements and by ximagesink, xvimagesink and sdlvideosink.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>iOS tutorial 5: A Complete media player</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="tutorials/ios/a-complete-media-player.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="a-complete-media-player.md">
+<h1 id="ios-tutorial-5-a-complete-media-player">iOS tutorial 5: A Complete media player</h1>
+<h2 id="goal">Goal</h2>
+<p><img src="images/tutorials/ios-a-complete-media-player-screenshot-0.png" alt="screenshot0" id="screenshot0">
+<img src="images/tutorials/ios-a-complete-media-player-screenshot-1.png" alt="screenshot1" id="screenshot1"></p>
+<p>This tutorial wants to be the “demo application” that showcases what can
+be done with GStreamer on the iOS platform.</p>
+<p>It is intended to be built and run, rather than analyzed for its
+pedagogical value, since it adds very little GStreamer knowledge over
+what has already been shown in <a href="a-basic-media-player.html">iOS tutorial 4: A basic media player</a>.</p>
+<p>It demonstrates the main functionality that a conventional media player
+has, but it is not a complete application yet, therefore it has not been
+uploaded to the AppStore.</p>
+<h2 id="introduction">Introduction</h2>
+<p>The previous tutorial already implemented a basic media player. This one
+simply adds a few finishing touches. In particular, it adds the
+capability to choose the media to play, and disables the screensaver
+during media playback.</p>
+<p>These are not features directly related to GStreamer, and are therefore
+outside the scope of these tutorials. Only a few implementation pointers
+are given here.</p>
+<h2 id="selecting-the-media-to-play">Selecting the media to play</h2>
+<p>A new <code>UIView</code> has been added, derived from <code>UITableViewController</code>
+which shows a list of clips. When one is selected, the
+<code>VideoViewController</code> from <a href="a-basic-media-player.html">iOS tutorial 4: A basic media player</a> appears
+and its URI property is set to the URI of the selected clip.</p>
+<p>The list of clips is populated from three sources: Media from the
+device’s Photo library, Media from the application’s Documents folder
+(accessible through iTunes file sharing) and a list of hardcoded
+Internet addresses, selected to showcase different container and codec
+formats, and a couple of bogus ones, to illustrate error reporting.</p>
+<h2 id="preventing-the-screen-from-turning-off">Preventing the screen from turning off</h2>
+<p>While watching a movie, there is typically no user activity. After a
+short period of such inactivity, iOS will dim the screen, and then turn
+it off completely. To prevent this, the <code>idleTimerDisabled</code> property of
+the <code>UIApplication</code> class is used. The application sets it to YES
+(screen locking disabled) when the Play button is pressed, so the screen
+is never turned off, and sets it back to NO when the Pause button is
+pressed.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This finishes the series of iOS tutorials. Each one of the preceding
+tutorials has evolved on top of the previous one, showing how to
+implement a particular set of features, and concluding in this Tutorial</p>
+<ol start="5">
+<li>The goal of Tutorial 5 is to build a complete media player which can
+already be used to showcase the integration of GStreamer and iOS.</li>
+</ol>
+<p>It has been a pleasure having you here, and see you soon!</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

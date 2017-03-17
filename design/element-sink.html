@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Sink elements</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="design/element-sink.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="element-sink.md">
+<h1 id="sink-elements">Sink elements</h1>
+<p>Sink elements consume data and normally have no source pads.</p>
+<p>Typical sink elements include:</p>
+<ul>
+<li>
+<p>audio/video renderers</p>
+</li>
+<li>
+<p>network sinks</p>
+</li>
+<li>
+<p>filesinks</p>
+</li>
+</ul>
+<p>Sinks are harder to construct than other element types as they are
+treated specially by the GStreamer core.</p>
+<h2 id="state-changes">state changes</h2>
+<p>A sink always returns ASYNC from the state change to PAUSED, this
+includes a state change from READY→PAUSED and PLAYING→PAUSED. The reason
+for this is that this way we can detect when the first buffer or event
+arrives in the sink when the state change completes.</p>
+<p>A sink should block on the first EOS event or buffer received in the
+READY→PAUSED state before commiting the state to PAUSED.</p>
+<p>FLUSHING events have to be handled out of sync with the buffer flow and
+take no part in the preroll procedure.</p>
+<p>Events other than EOS do not complete the preroll stage.</p>
+<h2 id="sink-overview">sink overview</h2>
+<ul>
+<li>TODO: <code>PREROLL_LOCK</code> can be removed and we can safely use the <code>STREAM_LOCK</code>.</li>
+</ul>
+<pre><code>  # Commit the state. We return TRUE if we can continue
+  # streaming, FALSE in the case we go to a READY or NULL state.
+  # if we go to PLAYING, we don't need to block on preroll.
+  commit
+  {
+    LOCK
+    switch (pending)
+      case PLAYING:
+        need_preroll = FALSE
+	break
+      case PAUSED:
+	break
+      case READY:
+      case NULL:
+        return FALSE
+      case VOID:
+        return TRUE
+
+    # update state
+    state = pending
+    next = VOID
+    pending = VOID
+    UNLOCK
+    return TRUE
+  }
+
+  # Sync an object. We have to wait for the element to reach
+  # the PLAYING state before we can wait on the clock.
+  # Some items do not need synchronisation (most events) so the
+  # get_times method returns FALSE (not syncable)
+  # need_preroll indicates that we are not in the PLAYING state
+  # and therefore need to commit and potentially block on preroll
+  # if our clock_wait got interrupted we commit and block again.
+  # The reason for this is that the current item being rendered is
+  # not yet finished and we can use that item to finish preroll.
+  do_sync (obj)
+  {
+    # get timing information for this object
+    syncable = get_times (obj, &amp;start, &amp;stop)
+    if (!syncable)
+      return OK;
+ again:
+    while (need_preroll)
+      if (need_commit)
+        need_commit = FALSE
+        if (!commit)
+          return FLUSHING
+
+      if (need_preroll)
+        # release PREROLL_LOCK and wait. prerolled can be observed
+        # and will be TRUE
+        prerolled = TRUE
+        PREROLL_WAIT (releasing PREROLL_LOCK)
+        prerolled = FALSE
+        if (flushing)
+          return FLUSHING
+
+    if (valid (start || stop))
+      PREROLL_UNLOCK
+      end_time = stop
+      ret = wait_clock (obj,start)
+      PREROLL_LOCK
+      if (flushing)
+        return FLUSHING
+      # if the clock was unscheduled, we redo the
+      # preroll
+      if (ret == UNSCHEDULED)
+        goto again
+  }
+
+  # render a prerollable item (EOS or buffer). It is
+  # always called with the PREROLL_LOCK helt.
+  render_object (obj)
+  {
+    ret = do_sync (obj)
+    if (ret != OK)
+      return ret;
+
+    # preroll and syncing done, now we can render
+    render(obj)
+  }
+                                   | # sinks that sync on buffer contents do like this
+                                   | while (more_to_render)
+                                   |   ret = render
+                                   |   if (ret == interrupted)
+                                   |     prerolled = TRUE
+    render (buffer)          -----&gt;|     PREROLL_WAIT (releasing PREROLL_LOCK)
+                                   |     prerolled = FALSE
+                                   |     if (flushing)
+                                   |       return FLUSHING
+                                   |
+
+  # queue a prerollable item (EOS or buffer). It is
+  # always called with the PREROLL_LOCK helt.
+  # This function will commit the state when receiving the
+  # first prerollable item.
+  # items are then added to the rendering queue or rendered
+  # right away if no preroll is needed.
+  queue (obj, prerollable)
+  {
+    if (need_preroll)
+      if (prerollable)
+        queuelen++
+
+      # first item in the queue while we need preroll
+      # will complete state change and call preroll
+      if (queuelen == 1)
+        preroll (obj)
+        if (need_commit)
+          need_commit = FALSE
+          if (!commit)
+            return FLUSHING
+
+      # then see if we need more preroll items before we
+      # can block
+      if (need_preroll)
+        if (queuelen &lt;= maxqueue)
+          queue.add (obj)
+          return OK
+
+    # now clear the queue and render each item before
+    # rendering the current item.
+    while (queue.hasItem)
+      render_object (queue.remove())
+
+    render_object (obj)
+    queuelen = 0
+  }
+
+  # various event functions
+  event
+    EOS:
+      # events must complete preroll too
+      STREAM_LOCK
+      PREROLL_LOCK
+      if (flushing)
+        return FALSE
+      ret = queue (event, TRUE)
+      if (ret == FLUSHING)
+        return FALSE
+      PREROLL_UNLOCK
+      STREAM_UNLOCK
+      break
+    SEGMENT:
+      # the segment must be used to clip incoming
+      # buffers. Then then go into the queue as non-prerollable
+      # items used for syncing the buffers
+      STREAM_LOCK
+      PREROLL_LOCK
+      if (flushing)
+        return FALSE
+      set_clip
+      ret = queue (event, FALSE)
+      if (ret == FLUSHING)
+        return FALSE
+      PREROLL_UNLOCK
+      STREAM_UNLOCK
+      break
+    FLUSH_START:
+      # set flushing and unblock all that is waiting
+      event                   ----&gt; subclasses can interrupt render
+      PREROLL_LOCK
+      flushing = TRUE
+      unlock_clock
+      PREROLL_SIGNAL
+      PREROLL_UNLOCK
+      STREAM_LOCK
+      lost_state
+      STREAM_UNLOCK
+      break
+    FLUSH_END:
+      # unset flushing and clear all data and eos
+      STREAM_LOCK
+      event
+      PREROLL_LOCK
+      queue.clear
+      queuelen = 0
+      flushing = FALSE
+      eos = FALSE
+      PREROLL_UNLOCK
+      STREAM_UNLOCK
+      break
+
+  # the chain function checks the buffer falls within the
+  # configured segment and queues the buffer for preroll and
+  # rendering
+  chain
+    STREAM_LOCK
+    PREROLL_LOCK
+    if (flushing)
+      return FLUSHING
+    if (clip)
+      queue (buffer, TRUE)
+    PREROLL_UNLOCK
+    STREAM_UNLOCK
+
+  state
+    switch (transition)
+      READY_PAUSED:
+        # no datapassing is going on so we always return ASYNC
+        ret = ASYNC
+	need_commit = TRUE
+        eos = FALSE
+        flushing = FALSE
+	need_preroll = TRUE
+	prerolled = FALSE
+        break
+      PAUSED_PLAYING:
+        # we grab the preroll lock. This we can only do if the
+	# chain function is either doing some clock sync, we are
+	# waiting for preroll or the chain function is not being called.
+        PREROLL_LOCK
+	if (prerolled || eos)
+          ret = OK
+	  need_commit = FALSE
+	  need_preroll = FALSE
+	  if (eos)
+	    post_eos
+	  else
+            PREROLL_SIGNAL
+	else
+	  need_preroll = TRUE
+	  need_commit = TRUE
+          ret = ASYNC
+        PREROLL_UNLOCK
+        break
+      PLAYING_PAUSED:
+                           ---&gt; subclass can interrupt render
+        # we grab the preroll lock. This we can only do if the
+	# chain function is either doing some clock sync
+	# or the chain function is not being called.
+        PREROLL_LOCK
+	need_preroll = TRUE
+        unlock_clock
+	if (prerolled || eos)
+          ret = OK
+	else
+          ret = ASYNC
+        PREROLL_UNLOCK
+        break
+      PAUSED_READY:
+                           ---&gt; subclass can interrupt render
+        # we grab the preroll lock. Set to flushing and unlock
+	# everything. This should exit the chain functions and stop
+	# streaming.
+        PREROLL_LOCK
+        flushing = TRUE
+        unlock_clock
+        queue.clear
+        queuelen = 0
+        PREROLL_SIGNAL
+        ret = OK
+        PREROLL_UNLOCK
+        break
+```
+</code></pre>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

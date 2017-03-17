@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Adding Properties</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="plugin-development/basics/args.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="args.md">
+<h1 id="adding-properties">Adding Properties</h1>
+<p>The primary and most important way of controlling how an element
+behaves, is through GObject properties. GObject properties are defined
+in the <code>_class_init ()</code> function. The element optionally implements a
+<code>_get_property ()</code> and a <code>_set_property ()</code> function. These functions
+will be notified if an application changes or requests the value of a
+property, and can then fill in the value or take action required for
+that property to change value internally.</p>
+<p>You probably also want to keep an instance variable around with the
+currently configured value of the property that you use in the get and
+set functions. Note that <code>GObject</code> will not automatically set your
+instance variable to the default value, you will have to do that in the
+<code>_init ()</code> function of your element.</p>
+<pre><code class="language-c">
+/* properties */
+enum {
+  PROP_0,
+  PROP_SILENT
+  /* FILL ME */
+};
+
+static void gst_my_filter_set_property  (GObject      *object,
+                         guint         prop_id,
+                         const GValue *value,
+                         GParamSpec   *pspec);
+static void gst_my_filter_get_property  (GObject      *object,
+                         guint         prop_id,
+                         GValue       *value,
+                         GParamSpec   *pspec);
+
+static void
+gst_my_filter_class_init (GstMyFilterClass *klass)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  /* define virtual function pointers */
+  object_class-&gt;set_property = gst_my_filter_set_property;
+  object_class-&gt;get_property = gst_my_filter_get_property;
+
+  /* define properties */
+  g_object_class_install_property (object_class, PROP_SILENT,
+    g_param_spec_boolean ("silent", "Silent",
+              "Whether to be very verbose or not",
+              FALSE, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+}
+
+static void
+gst_my_filter_set_property (GObject      *object,
+                guint         prop_id,
+                const GValue *value,
+                GParamSpec   *pspec)
+{
+  GstMyFilter *filter = GST_MY_FILTER (object);
+
+  switch (prop_id) {
+    case PROP_SILENT:
+      filter-&gt;silent = g_value_get_boolean (value);
+      g_print ("Silent argument was changed to %s\n",
+           filter-&gt;silent ? "true" : "false");
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+  }
+}
+
+static void
+gst_my_filter_get_property (GObject    *object,
+                guint       prop_id,
+                GValue     *value,
+                GParamSpec *pspec)
+{
+  GstMyFilter *filter = GST_MY_FILTER (object);
+
+  switch (prop_id) {
+    case PROP_SILENT:
+      g_value_set_boolean (value, filter-&gt;silent);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+  }
+}
+</code></pre>
+<p>The above is a very simple example of how properties are used. Graphical
+applications will use these properties and will display a
+user-controllable widget with which these properties can be changed.
+This means that - for the property to be as user-friendly as possible -
+you should be as exact as possible in the definition of the property.
+Not only in defining ranges in between which valid properties can be
+located (for integers, floats, etc.), but also in using very descriptive
+(better yet: internationalized) strings in the definition of the
+property, and if possible using enums and flags instead of integers. The
+GObject documentation describes these in a very complete way, but below,
+we'll give a short example of where this is useful. Note that using
+integers here would probably completely confuse the user, because they
+make no sense in this context. The example is stolen from videotestsrc.</p>
+<pre><code class="language-c">typedef enum {
+  GST_VIDEOTESTSRC_SMPTE,
+  GST_VIDEOTESTSRC_SNOW,
+  GST_VIDEOTESTSRC_BLACK
+} GstVideotestsrcPattern;
+
+[..]
+
+#define GST_TYPE_VIDEOTESTSRC_PATTERN (gst_videotestsrc_pattern_get_type ())
+static GType
+gst_videotestsrc_pattern_get_type (void)
+{
+  static GType videotestsrc_pattern_type = 0;
+
+  if (!videotestsrc_pattern_type) {
+    static GEnumValue pattern_types[] = {
+      { GST_VIDEOTESTSRC_SMPTE, "SMPTE 100% color bars",    "smpte" },
+      { GST_VIDEOTESTSRC_SNOW,  "Random (television snow)", "snow"  },
+      { GST_VIDEOTESTSRC_BLACK, "0% Black",                 "black" },
+      { 0, NULL, NULL },
+    };
+
+    videotestsrc_pattern_type =
+    g_enum_register_static ("GstVideotestsrcPattern",
+                pattern_types);
+  }
+
+  return videotestsrc_pattern_type;
+}
+
+[..]
+
+static void
+gst_videotestsrc_class_init (GstvideotestsrcClass *klass)
+{
+[..]
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_PATTERN,
+    g_param_spec_enum ("pattern", "Pattern",
+               "Type of test pattern to generate",
+                       GST_TYPE_VIDEOTESTSRC_PATTERN, GST_VIDEOTESTSRC_SMPTE,
+                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+[..]
+}
+
+</code></pre>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

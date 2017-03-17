@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Overview</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="design/overview.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="overview.md">
+<h1 id="overview">Overview</h1>
+<p>This part gives an overview of the design of GStreamer with references
+to the more detailed explanations of the different topics.</p>
+<p>This document is intented for people that want to have a global overview
+of the inner workings of GStreamer.</p>
+<h2 id="introduction">Introduction</h2>
+<p>GStreamer is a set of libraries and plugins that can be used to
+implement various multimedia applications ranging from desktop players,
+audio/video recorders, multimedia servers, transcoders, etc.</p>
+<p>Applications are built by constructing a pipeline composed of elements.
+An element is an object that performs some action on a multimedia stream
+such as:</p>
+<ul>
+<li>read a file</li>
+<li>decode or encode between formats</li>
+<li>capture from a hardware device</li>
+<li>render to a hardware device</li>
+<li>mix or multiplex multiple streams</li>
+</ul>
+<p>Elements have input and output pads called sink and source pads in
+GStreamer. An application links elements together on pads to construct a
+pipeline. Below is an example of an ogg/vorbis playback pipeline.</p>
+<pre><code>+-----------------------------------------------------------+
+|    ----------&gt; downstream -------------------&gt;            |
+|                                                           |
+| pipeline                                                  |
+| +---------+   +----------+   +-----------+   +----------+ |
+| | filesrc |   | oggdemux |   | vorbisdec |   | alsasink | |
+| |        src-sink       src-sink        src-sink        | |
+| +---------+   +----------+   +-----------+   +----------+ |
+|                                                           |
+|    &lt;---------&lt; upstream &lt;-------------------&lt;             |
++-----------------------------------------------------------+
+</code></pre>
+<p>The filesrc element reads data from a file on disk. The oggdemux element
+parses the data and sends the compressed audio data to the vorbisdec
+element. The vorbisdec element decodes the compressed data and sends it
+to the alsasink element. The alsasink element sends the samples to the
+audio card for playback.</p>
+<p>Downstream and upstream are the terms used to describe the direction in
+the Pipeline. From source to sink is called "downstream" and "upstream"
+is from sink to source. Dataflow always happens downstream.</p>
+<p>The task of the application is to construct a pipeline as above using
+existing elements. This is further explained in the pipeline building
+topic.</p>
+<p>The application does not have to manage any of the complexities of the
+actual dataflow/decoding/conversions/synchronisation etc. but only calls
+high level functions on the pipeline object such as PLAY/PAUSE/STOP.</p>
+<p>The application also receives messages and notifications from the
+pipeline such as metadata, warning, error and EOS messages.</p>
+<p>If the application needs more control over the graph it is possible to
+directly access the elements and pads in the pipeline.</p>
+<h2 id="design-overview">Design overview</h2>
+<p>GStreamer design goals include:</p>
+<ul>
+<li>Process large amounts of data quickly</li>
+<li>Allow fully multithreaded processing</li>
+<li>Ability to deal with multiple formats</li>
+<li>Synchronize different dataflows</li>
+<li>Ability to deal with multiple devices</li>
+</ul>
+<p>The capabilities presented to the application depends on the number of
+elements installed on the system and their functionality.</p>
+<p>The GStreamer core is designed to be media agnostic but provides many
+features to elements to describe media formats.</p>
+<h2 id="elements">Elements</h2>
+<p>The smallest building blocks in a pipeline are elements. An element
+provides a number of pads which can be source or sinkpads. Sourcepads
+provide data and sinkpads consume data. Below is an example of an ogg
+demuxer element that has one pad that takes (sinks) data and two source
+pads that produce data.</p>
+<pre><code> +-----------+
+ | oggdemux  |
+ |          src0
+sink        src1
+ +-----------+
+</code></pre>
+<p>An element can be in four different states: NULL, READY, PAUSED,
+PLAYING. In the NULL and READY state, the element is not processing any
+data. In the PLAYING state it is processing data. The intermediate
+PAUSED state is used to preroll data in the pipeline. A state change can
+be performed with <code>gst_element_set_state()</code>.</p>
+<p>An element always goes through all the intermediate state changes. This
+means that when en element is in the READY state and is put to PLAYING,
+it will first go through the intermediate PAUSED state.</p>
+<p>An element state change to PAUSED will activate the pads of the element.
+First the source pads are activated, then the sinkpads. When the pads
+are activated, the pad activate function is called. Some pads will start
+a thread (<code>GstTask</code>) or some other mechanism to start producing or
+consuming data.</p>
+<p>The PAUSED state is special as it is used to preroll data in the
+pipeline. The purpose is to fill all connected elements in the pipeline
+with data so that the subsequent PLAYING state change happens very
+quickly. Some elements will therefore not complete the state change to
+PAUSED before they have received enough data. Sink elements are required
+to only complete the state change to PAUSED after receiving the first
+data.</p>
+<p>Normally the state changes of elements are coordinated by the pipeline
+as explained in <a href="states.html">states</a>.</p>
+<p>Different categories of elements exist:</p>
+<ul>
+<li>
+<p><em>source elements</em>: these are elements that do not consume data but
+only provide data for the pipeline.</p>
+</li>
+<li>
+<p><em>sink elements</em>: these are elements that do not produce data but
+renders data to an output device.</p>
+</li>
+<li>
+<p><em>transform elements</em>: these elements transform an input stream in a
+certain format into a stream of another format.
+Encoder/decoder/converters are examples.</p>
+</li>
+<li>
+<p><em>demuxer elements</em>: these elements parse a stream and produce several
+output streams.</p>
+</li>
+<li>
+<p><em>mixer/muxer elements</em>: combine several input streams into one output
+stream.</p>
+</li>
+</ul>
+<p>Other categories of elements can be constructed (see <a href="draft-klass.html">klass</a>).</p>
+<h2 id="bins">Bins</h2>
+<p>A bin is an element subclass and acts as a container for other elements
+so that multiple elements can be combined into one element.</p>
+<p>A bin coordinates its children’s state changes as explained later. It
+also distributes events and various other functionality to elements.</p>
+<p>A bin can have its own source and sinkpads by ghostpadding one or more
+of its children’s pads to itself.</p>
+<p>Below is a picture of a bin with two elements. The sinkpad of one
+element is ghostpadded to the bin.</p>
+<pre><code> +---------------------------+
+ | bin                       |
+ |    +--------+   +-------+ |
+ |    |        |   |       | |
+ |  /sink     src-sink     | |
+sink  +--------+   +-------+ |
+ +---------------------------+
+</code></pre>
+<h2 id="pipeline">Pipeline</h2>
+<p>A pipeline is a special bin subclass that provides the following
+features to its children:</p>
+<ul>
+<li>Select and manage a global clock for all its children.</li>
+<li>Manage <code>running_time</code> based on the selected clock. Running_time is
+the elapsed time the pipeline spent in the PLAYING state and is used
+for synchronisation.</li>
+<li>Manage latency in the pipeline.</li>
+<li>Provide means for elements to comunicate with the application by the
+<code>GstBus</code>.</li>
+<li>Manage the global state of the elements such as Errors and
+end-of-stream.</li>
+</ul>
+<p>Normally the application creates one pipeline that will manage all the
+elements in the application.</p>
+<h2 id="dataflow-and-buffers">Dataflow and buffers</h2>
+<p>GStreamer supports two possible types of dataflow, the push and pull
+model. In the push model, an upstream element sends data to a downstream
+element by calling a method on a sinkpad. In the pull model, a
+downstream element requests data from an upstream element by calling a
+method on a source pad.</p>
+<p>The most common dataflow is the push model. The pull model can be used
+in specific circumstances by demuxer elements. The pull model can also
+be used by low latency audio applications.</p>
+<p>The data passed between pads is encapsulated in Buffers. The buffer
+contains pointers to the actual memory and also metadata describing the
+memory. This metadata includes:</p>
+<ul>
+<li>
+<p>timestamp of the data, this is the time instance at which the data
+was captured or the time at which the data should be played back.</p>
+</li>
+<li>
+<p>offset of the data: a media specific offset, this could be samples
+for audio or frames for video.</p>
+</li>
+<li>
+<p>the duration of the data in time.</p>
+</li>
+<li>
+<p>additional flags describing special properties of the data such as
+discontinuities or delta units.</p>
+</li>
+<li>
+<p>additional arbitrary metadata</p>
+</li>
+</ul>
+<p>When an element whishes to send a buffer to another element is does this
+using one of the pads that is linked to a pad of the other element. In
+the push model, a buffer is pushed to the peer pad with
+<code>gst_pad_push()</code>. In the pull model, a buffer is pulled from the peer
+with the <code>gst_pad_pull_range()</code> function.</p>
+<p>Before an element pushes out a buffer, it should make sure that the peer
+element can understand the buffer contents. It does this by querying the
+peer element for the supported formats and by selecting a suitable
+common format. The selected format is then first sent to the peer
+element with a CAPS event before pushing the buffer (see
+<a href="negotiation.html">negotiation</a>).</p>
+<p>When an element pad receives a CAPS event, it has to check if it
+understand the media type. The element must refuse following buffers if
+the media type preceding it was not accepted.</p>
+<p>Both <code>gst_pad_push()</code> and <code>gst_pad_pull_range()</code> have a return value
+indicating whether the operation succeeded. An error code means that no
+more data should be sent to that pad. A source element that initiates
+the data flow in a thread typically pauses the producing thread when
+this happens.</p>
+<p>A buffer can be created with <code>gst_buffer_new()</code> or by requesting a
+usable buffer from a buffer pool using
+<code>gst_buffer_pool_acquire_buffer()</code>. Using the second method, it is
+possible for the peer element to implement a custom buffer allocation
+algorithm.</p>
+<p>The process of selecting a media type is called caps negotiation.</p>
+<h2 id="caps">Caps</h2>
+<p>A media type (Caps) is described using a generic list of key/value
+pairs. The key is a string and the value can be a single/list/range of
+int/float/string.</p>
+<p>Caps that have no ranges/list or other variable parts are said to be
+fixed and can be used to put on a buffer.</p>
+<p>Caps with variables in them are used to describe possible media types
+that can be handled by a pad.</p>
+<h2 id="dataflow-and-events">Dataflow and events</h2>
+<p>Parallel to the dataflow is a flow of events. Unlike the buffers, events
+can pass both upstream and downstream. Some events only travel upstream
+others only downstream.</p>
+<p>The events are used to denote special conditions in the dataflow such as
+EOS or to inform plugins of special events such as flushing or seeking.</p>
+<p>Some events must be serialized with the buffer flow, others don’t.
+Serialized events are inserted between the buffers. Non serialized
+events jump in front of any buffers current being processed.</p>
+<p>An example of a serialized event is a TAG event that is inserted between
+buffers to mark metadata for those buffers.</p>
+<p>An example of a non serialized event is the FLUSH event.</p>
+<h2 id="pipeline-construction">Pipeline construction</h2>
+<p>The application starts by creating a Pipeline element using
+<code>gst_pipeline_new()</code>. Elements are added to and removed from the
+pipeline with <code>gst_bin_add()</code> and <code>gst_bin_remove()</code>.</p>
+<p>After adding the elements, the pads of an element can be retrieved with
+<code>gst_element_get_pad()</code>. Pads can then be linked together with
+<code>gst_pad_link()</code>.</p>
+<p>Some elements create new pads when actual dataflow is happening in the
+pipeline. With <code>g_signal_connect()</code> one can receive a notification when
+an element has created a pad. These new pads can then be linked to other
+unlinked pads.</p>
+<p>Some elements cannot be linked together because they operate on
+different incompatible data types. The possible datatypes a pad can
+provide or consume can be retrieved with <code>gst_pad_get_caps()</code>.</p>
+<p>Below is a simple mp3 playback pipeline that we constructed. We will use
+this pipeline in further examples.</p>
+<pre><code>+-------------------------------------------+
+| pipeline                                  |
+| +---------+   +----------+   +----------+ |
+| | filesrc |   | mp3dec   |   | alsasink | |
+| |        src-sink       src-sink        | |
+| +---------+   +----------+   +----------+ |
++-------------------------------------------+
+</code></pre>
+<h2 id="pipeline-clock">Pipeline clock</h2>
+<p>One of the important functions of the pipeline is to select a global
+clock for all the elements in the pipeline.</p>
+<p>The purpose of the clock is to provide a stricly increasing value at the
+rate of one <code>GST_SECOND</code> per second. Clock values are expressed in
+nanoseconds. Elements use the clock time to synchronize the playback of
+data.</p>
+<p>Before the pipeline is set to PLAYING, the pipeline asks each element if
+they can provide a clock. The clock is selected in the following order:</p>
+<ul>
+<li>
+<p>If the application selected a clock, use that one.</p>
+</li>
+<li>
+<p>If a source element provides a clock, use that clock.</p>
+</li>
+<li>
+<p>Select a clock from any other element that provides a clock, start
+with the sinks.</p>
+</li>
+<li>
+<p>If no element provides a clock a default system clock is used for
+the pipeline.</p>
+</li>
+</ul>
+<p>In a typical playback pipeline this algorithm will select the clock
+provided by a sink element such as an audio sink.</p>
+<p>In capture pipelines, this will typically select the clock of the data
+producer, which in most cases can not control the rate at which it
+produces data.</p>
+<h2 id="pipeline-states">Pipeline states</h2>
+<p>When all the pads are linked and signals have been connected, the
+pipeline can be put in the PAUSED state to start dataflow.</p>
+<p>When a bin (and hence a pipeline) performs a state change, it will
+change the state of all its children. The pipeline will change the state
+of its children from the sink elements to the source elements, this to
+make sure that no upstream element produces data to an element that is
+not yet ready to accept it.</p>
+<p>In the mp3 playback pipeline, the state of the elements is changed in
+the order alsasink, mp3dec, filesrc.</p>
+<p>All intermediate states are traversed for each element resulting in the
+following chain of state changes:</p>
+<ul>
+<li>
+<p>alsasink to READY:  the audio device is probed</p>
+</li>
+<li>
+<p>mp3dec to READY:    nothing happens.</p>
+</li>
+<li>
+<p>filesrc to READY:   the file is probed</p>
+</li>
+<li>
+<p>alsasink to PAUSED: the audio device is opened. alsasink is a sink and returns ASYNC because it did not receive data yet. mp3dec to PAUSED:   the decoding library is initialized</p>
+</li>
+<li>
+<p>filesrc to PAUSED:  the file is opened and a thread is started to push data to mp3dec</p>
+</li>
+</ul>
+<p>At this point data flows from filesrc to mp3dec and alsasink. Since
+mp3dec is PAUSED, it accepts the data from filesrc on the sinkpad and
+starts decoding the compressed data to raw audio samples.</p>
+<p>The mp3 decoder figures out the samplerate, the number of channels and
+other audio properties of the raw audio samples and sends out a caps
+event with the media type.</p>
+<p>Alsasink then receives the caps event, inspects the caps and
+reconfigures itself to process the media type.</p>
+<p>mp3dec then puts the decoded samples into a Buffer and pushes this
+buffer to the next element.</p>
+<p>Alsasink receives the buffer with samples. Since it received the first
+buffer of samples, it completes the state change to the PAUSED state. At
+this point the pipeline is prerolled and all elements have samples.
+Alsasink is now also capable of providing a clock to the pipeline.</p>
+<p>Since alsasink is now in the PAUSED state it blocks while receiving the
+first buffer. This effectively blocks both mp3dec and filesrc in their
+<code>gst_pad_push()</code>.</p>
+<p>Since all elements now return SUCCESS from the
+<code>gst_element_get_state()</code> function, the pipeline can be put in the
+PLAYING state.</p>
+<p>Before going to PLAYING, the pipeline select a clock and samples the
+current time of the clock. This is the <code>base_time</code>. It then distributes
+this time to all elements. Elements can then synchronize against the
+clock using the buffer <code>running_time</code>
+<code>base_time</code> (See also <a href="synchronisation.html">synchronisation</a>).</p>
+<p>The following chain of state changes then takes place:</p>
+<ul>
+<li>
+<p>alsasink to PLAYING:  the samples are played to the audio device</p>
+</li>
+<li>
+<p>mp3dec to PLAYING:    nothing happens</p>
+</li>
+<li>
+<p>filesrc to PLAYING:   nothing happens</p>
+</li>
+</ul>
+<h2 id="pipeline-status">Pipeline status</h2>
+<p>The pipeline informs the application of any special events that occur in
+the pipeline with the bus. The bus is an object that the pipeline
+provides and that can be retrieved with <code>gst_pipeline_get_bus()</code>.</p>
+<p>The bus can be polled or added to the glib mainloop.</p>
+<p>The bus is distributed to all elements added to the pipeline. The
+elements use the bus to post messages on. Various message types exist
+such as ERRORS, WARNINGS, EOS, <code>STATE_CHANGED</code>, etc..</p>
+<p>The pipeline handles EOS messages received from elements in a special
+way. It will only forward the message to the application when all sink
+elements have posted an EOS message.</p>
+<p>Other methods for obtaining the pipeline status include the Query
+functionality that can be performed with <code>gst_element_query()</code> on the
+pipeline. This type of query is useful for obtaining information about
+the current position and total time of the pipeline. It can also be used
+to query for the supported seeking formats and ranges.</p>
+<h2 id="pipeline-eos">Pipeline EOS</h2>
+<p>When the source filter encounters the end of the stream, it sends an EOS
+event to the peer element. This event will then travel downstream to all
+of the connected elements to inform them of the EOS. The element is not
+supposed to accept any more data after receiving an EOS event on a
+sinkpad.</p>
+<p>The element providing the streaming thread stops sending data after
+sending the EOS event.</p>
+<p>The EOS event will eventually arrive in the sink element. The sink will
+then post an EOS message on the bus to inform the pipeline that a
+particular stream has finished. When all sinks have reported EOS, the
+pipeline forwards the EOS message to the application. The EOS message is
+only forwarded to the application in the PLAYING state.</p>
+<p>When in EOS, the pipeline remains in the PLAYING state, it is the
+applications responsability to PAUSE or READY the pipeline. The
+application can also issue a seek, for example.</p>
+<h2 id="pipeline-ready">Pipeline READY</h2>
+<p>When a running pipeline is set from the PLAYING to READY state, the
+following actions occur in the pipeline:</p>
+<ul>
+<li>alsasink to PAUSED:  alsasink blocks and completes the state change on the
+next sample. If the element was EOS, it does not wait for a sample to complete
+the state change.</li>
+<li>mp3dec to PAUSED:    nothing</li>
+<li>filesrc to PAUSED:   nothing</li>
+</ul>
+<p>Going to the intermediate PAUSED state will block all elements in the
+<code>_push()</code> functions. This happens because the sink element blocks on the
+first buffer it receives.</p>
+<p>Some elements might be performing blocking operations in the PLAYING
+state that must be unblocked when they go into the PAUSED state. This
+makes sure that the state change happens very fast.</p>
+<p>In the next PAUSED to READY state change the pipeline has to shut down
+and all streaming threads must stop sending data. This happens in the
+following sequence:</p>
+<ul>
+<li>alsasink to READY:   alsasink unblocks from the <code>_chain()</code> function and returns
+a FLUSHING return value to the peer element. The sinkpad is deactivated and
+becomes unusable for sending more data.</li>
+<li>mp3dec to READY:     the pads are deactivated and the state change completes
+when mp3dec leaves its <code>_chain()</code> function.</li>
+<li>filesrc to READY:    the pads are deactivated and the thread is paused.</li>
+</ul>
+<p>The upstream elements finish their <code>_chain()</code> function because the
+downstream element returned an error code (FLUSHING) from the <code>_push()</code>
+functions. These error codes are eventually returned to the element that
+started the streaming thread (filesrc), which pauses the thread and
+completes the state change.</p>
+<p>This sequence of events ensure that all elements are unblocked and all
+streaming threads stopped.</p>
+<h2 id="pipeline-seeking">Pipeline seeking</h2>
+<p>Seeking in the pipeline requires a very specific order of operations to
+make sure that the elements remain synchronized and that the seek is
+performed with a minimal amount of latency.</p>
+<p>An application issues a seek event on the pipeline using
+<code>gst_element_send_event()</code> on the pipeline element. The event can be a
+seek event in any of the formats supported by the elements.</p>
+<p>The pipeline first pauses the pipeline to speed up the seek operations.</p>
+<p>The pipeline then issues the seek event to all sink elements. The sink
+then forwards the seek event upstream until some element can perform the
+seek operation, which is typically the source or demuxer element. All
+intermediate elements can transform the requested seek offset to another
+format, this way a decoder element can transform a seek to a frame
+number to a timestamp, for example.</p>
+<p>When the seek event reaches an element that will perform the seek
+operation, that element performs the following steps.</p>
+<ol>
+<li>send a <code>FLUSH_START</code> event to all downstream and upstream peer elements.</li>
+<li>make sure the streaming thread is not running. The streaming thread will
+always stop because of step 1).</li>
+<li>perform the seek operation</li>
+<li>send a FLUSH done event to all downstream and upstream peer elements.</li>
+<li>send SEGMENT event to inform all elements of the new position and to complete
+the seek.</li>
+</ol>
+<p>In step 1) all downstream elements have to return from any blocking
+operations and have to refuse any further buffers or events different
+from a FLUSH done.</p>
+<p>The first step ensures that the streaming thread eventually unblocks and
+that step 2) can be performed. At this point, dataflow is completely
+stopped in the pipeline.</p>
+<p>In step 3) the element performs the seek to the requested position.</p>
+<p>In step 4) all peer elements are allowed to accept data again and
+streaming can continue from the new position. A FLUSH done event is sent
+to all the peer elements so that they accept new data again and restart
+their streaming threads.</p>
+<p>Step 5) informs all elements of the new position in the stream. After
+that the event function returns back to the application. and the
+streaming threads start to produce new data.</p>
+<p>Since the pipeline is still PAUSED, this will preroll the next media
+sample in the sinks. The application can wait for this preroll to
+complete by performing a <code>_get_state()</code> on the pipeline.</p>
+<p>The last step in the seek operation is then to adjust the stream
+<code>running_time</code> of the pipeline to 0 and to set the pipeline back to
+PLAYING.</p>
+<p>The sequence of events in our mp3 playback example.</p>
+<pre><code>                                   | a) seek on pipeline
+                                   | b) PAUSE pipeline
++----------------------------------V--------+
+| pipeline                         | c) seek on sink
+| +---------+   +----------+   +---V------+ |
+| | filesrc |   | mp3dec   |   | alsasink | |
+| |        src-sink       src-sink        | |
+| +---------+   +----------+   +----|-----+ |
++-----------------------------------|-------+
+           &lt;------------------------+
+                 d) seek travels upstream
+
+    --------------------------&gt; 1) FLUSH event
+    | 2) stop streaming
+    | 3) perform seek
+    --------------------------&gt; 4) FLUSH done event
+    --------------------------&gt; 5) SEGMENT event
+
+    | e) update running_time to 0
+    | f) PLAY pipeline
+</code></pre>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

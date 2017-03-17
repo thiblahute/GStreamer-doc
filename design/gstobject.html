@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstObject</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="design/gstobject.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstobject.md">
+<h1 id="gstobject">GstObject</h1>
+<p>The base class for the entire GStreamer hierarchy is the <code>GstObject</code>.</p>
+<h2 id="parentage">Parentage</h2>
+<p>A pointer is available to store the current parent of the object. This
+is one of the two fundamental requirements for a hierarchical system
+such as GStreamer (for the other, read up on <code>GstBin</code>). Three functions
+are provided: <code>_set_parent()</code>, <code>_get_parent()</code>, and <code>_unparent()</code>. The
+third is required because there is an explicit check in <code>_set_parent()</code>:
+an object must not already have a parent if you wish to set one. You
+must unparent the object first. This allows for new additions later.</p>
+<ul>
+<li><code>GstObject</code>’s that can be parented: <code>GstElement</code> (inside a bin) <code>GstPad</code> (inside an element)</li>
+</ul>
+<h2 id="naming">Naming</h2>
+<ul>
+<li>names of objects cannot be changed when they are parented</li>
+<li>names of objects should be unique across parent
+<ul>
+<li><code>set_name()</code> can fail because of this</li>
+<li>as can <code>gst_element_add_pad()</code>/<code>gst_bin_add_element()</code></li>
+</ul>
+</li>
+<li><code>gst_object_set_name()</code> only changes the object’s name</li>
+<li>objects also have a name_prefix that is used to prefix the object
+name during debugging and identification</li>
+<li>there are object-specific <code>set_name()</code> which also set the
+name_prefix on the object. This is useful for debugging purposes to
+give the object a more identifiable name. Typically a parent will
+call <code>_set_name_prefix()</code> on children, taking a lock on them to do
+so.</li>
+</ul>
+<h2 id="locking">Locking</h2>
+<p>The <code>GstObject</code> contains the necessary primitives to lock the object in a
+thread-safe manner. This will be used to provide general thread-safety
+as needed. However, this lock is generic, i.e. it covers the whole
+object.</p>
+<p>The object LOCK is a very lowlevel lock that should only be held to
+access the object properties for short periods of code.</p>
+<p>All members of the <code>GstObject</code> structure marked as <code>/**&lt; public &gt;**/ /* with LOCK */</code> are protected by this lock. These members can only be
+accessed for reading or writing while the lock is held. All members
+should be copied or reffed if they are used after releasing the LOCK.</p>
+<p>Note that this does <strong>not</strong> mean that no other thread can modify the
+object at the same time that the lock is held. It only means that any
+two sections of code that obey the lock are guaranteed to not be running
+simultaneously. "The lock is voluntary and cooperative".</p>
+<p>This lock will ideally be used for parentage, flags and naming, which is
+reasonable, since they are the only possible things to protect in the
+<code>GstObject</code>.</p>
+<h2 id="locking-order">Locking order</h2>
+<p>In parent-child situations the lock of the parent must always be taken
+first before taking the lock of the child. It is NOT allowed to hold the
+child lock before taking the parent lock.</p>
+<p>This policy allows for parents to iterate their children and setting
+properties on them.</p>
+<p>Whenever a nested lock needs to be taken on objects not involved in a
+parent-child relation (eg. pads), an explictic locking order has to be
+defined.</p>
+<h2 id="path-generation">Path Generation</h2>
+<p>Due to the base nature of the <code>GstObject</code>, it becomes the only reasonable
+place to put this particular function (<code>_get_path_string()</code>). It will
+generate a string describing the parent hierarchy of a given <code>GstObject</code>.</p>
+<h2 id="flags">Flags</h2>
+<p>Each object in the GStreamer object hierarchy can have flags associated
+with it, which are used to describe its state or a features.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

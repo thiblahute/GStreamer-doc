@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Different scheduling modes</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="plugin-development/advanced/scheduling.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="scheduling.md">
+<h1 id="different-scheduling-modes">Different scheduling modes</h1>
+<p>The scheduling mode of a pad defines how data is retrieved from (source)
+or given to (sink) pads. GStreamer can operate in two scheduling mode,
+called push- and pull-mode. GStreamer supports elements with pads in any
+of the scheduling modes where not all pads need to be operating in the
+same mode.</p>
+<p>So far, we have only discussed <code>_chain ()</code>-operating elements, i.e.
+elements that have a chain-function set on their sink pad and push
+buffers on their source pad(s). We call this the push-mode because a
+peer element will use <code>gst_pad_push ()</code> on a srcpad, which will cause
+our <code>_chain ()</code>-function to be called, which in turn causes our element
+to push out a buffer on the source pad. The initiative to start the
+dataflow happens somewhere upstream when it pushes out a buffer and all
+downstream elements get scheduled when their <code>_chain ()</code>-functions are
+called in turn.</p>
+<p>Before we explain pull-mode scheduling, let's first understand how the
+different scheduling modes are selected and activated on a pad.</p>
+<h2 id="the-pad-activation-stage">The pad activation stage</h2>
+<p>During the element state change of READY-&gt;PAUSED, the pads of an
+element will be activated. This happens first on the source pads and
+then on the sink pads of the element. GStreamer calls the <code>_activate ()</code>
+of a pad. By default this function will activate the pad in push-mode by
+calling <code>gst_pad_activate_mode ()</code> with the GST_PAD_MODE_PUSH
+scheduling mode. It is possible to override the <code>_activate ()</code> of a pad
+and decide on a different scheduling mode. You can know in what
+scheduling mode a pad is activated by overriding the <code>_activate_mode ()</code>-function.</p>
+<p>GStreamer allows the different pads of an element to operate in
+different scheduling modes. This allows for many different possible
+use-cases. What follows is an overview of some typical use-cases.</p>
+<ul>
+<li>
+<p>If all pads of an element are activated in push-mode scheduling, the
+element as a whole is operating in push-mode. For source elements
+this means that they will have to start a task that pushes out
+buffers on the source pad to the downstream elements. Downstream
+elements will have data pushed to them by upstream elements using
+the sinkpads <code>_chain ()</code>-function which will push out buffers on the
+source pads. Prerequisites for this scheduling mode are that a
+chain-function was set for each sinkpad using
+<code>gst_pad_set_chain_function ()</code> and that all downstream elements
+operate in the same mode.</p>
+</li>
+<li>
+<p>Alternatively, sinkpads can be the driving force behind a pipeline
+by operating in pull-mode, while the sourcepads of the element still
+operate in push-mode. In order to be the driving force, those pads
+start a <code>GstTask</code> when they are activated. This task is a thread,
+which will call a function specified by the element. When called,
+this function will have random data access (through
+<code>gst_pad_pull_range ()</code>) over all sinkpads, and can push data over
+the sourcepads, which effectively means that this element controls
+data flow in the pipeline. Prerequisites for this mode are that all
+downstream elements can act in push mode, and that all upstream
+elements operate in pull-mode (see below).</p>
+<p>Source pads can be activated in PULL mode by a downstream element
+when they return GST_PAD_MODE_PULL from the
+GST_QUERY_SCHEDULING query. Prerequisites for this scheduling mode
+are that a getrange-function was set for the source pad using
+<code>gst_pad_set_getrange_function ()</code>.</p>
+</li>
+<li>
+<p>Lastly, all pads in an element can be activated in PULL-mode.
+However, contrary to the above, this does not mean that they start a
+task on their own. Rather, it means that they are pull slave for the
+downstream element, and have to provide random data access to it
+from their <code>_get_range ()</code>-function. Requirements are that the a
+<code>_get_range ()</code>-function was set on this pad using the function
+<code>gst_pad_set_getrange_function ()</code>. Also, if the element has any
+sinkpads, all those pads (and thereby their peers) need to operate
+in PULL access mode, too.</p>
+<p>When a sink element is activated in PULL mode, it should start a
+task that calls <code>gst_pad_pull_range ()</code> on its sinkpad. It can only
+do this when the upstream SCHEDULING query returns support for the
+GST_PAD_MODE_PULL scheduling mode.</p>
+</li>
+</ul>
+<p>In the next two sections, we will go closer into pull-mode scheduling
+(elements/pads driving the pipeline, and elements/pads providing random
+access), and some specific use cases will be given.</p>
+<h2 id="pads-driving-the-pipeline">Pads driving the pipeline</h2>
+<p>Sinkpads operating in pull-mode, with the sourcepads operating in
+push-mode (or it has no sourcepads when it is a sink), can start a task
+that will drive the pipeline data flow. Within this task function, you
+have random access over all of the sinkpads, and push data over the
+sourcepads. This can come in useful for several different kinds of
+elements:</p>
+<ul>
+<li>
+<p>Demuxers, parsers and certain kinds of decoders where data comes in
+unparsed (such as MPEG-audio or video streams), since those will
+prefer byte-exact (random) access from their input. If possible,
+however, such elements should be prepared to operate in push-mode
+mode, too.</p>
+</li>
+<li>
+<p>Certain kind of audio outputs, which require control over their
+input data flow, such as the Jack sound server.</p>
+</li>
+</ul>
+<p>First you need to perform a SCHEDULING query to check if the upstream
+element(s) support pull-mode scheduling. If that is possible, you can
+activate the sinkpad in pull-mode. Inside the activate_mode function
+you can then start the task.</p>
+<pre><code class="language-c">#include "filter.h"
+#include &lt;string.h&gt;
+
+static gboolean gst_my_filter_activate      (GstPad      * pad,
+                                             GstObject   * parent);
+static gboolean gst_my_filter_activate_mode (GstPad      * pad,
+                                             GstObject   * parent,
+                                             GstPadMode    mode,
+                         gboolean      active);
+static void gst_my_filter_loop      (GstMyFilter * filter);
+
+G_DEFINE_TYPE (GstMyFilter, gst_my_filter, GST_TYPE_ELEMENT);
+
+
+static void
+gst_my_filter_init (GstMyFilter * filter)
+{
+
+[..]
+
+  gst_pad_set_activate_function (filter-&gt;sinkpad, gst_my_filter_activate);
+  gst_pad_set_activatemode_function (filter-&gt;sinkpad,
+      gst_my_filter_activate_mode);
+
+
+[..]
+}
+
+[..]
+
+static gboolean
+gst_my_filter_activate (GstPad * pad, GstObject * parent)
+{
+  GstQuery *query;
+  gboolean pull_mode;
+
+  /* first check what upstream scheduling is supported */
+  query = gst_query_new_scheduling ();
+
+  if (!gst_pad_peer_query (pad, query)) {
+    gst_query_unref (query);
+    goto activate_push;
+  }
+
+  /* see if pull-mode is supported */
+  pull_mode = gst_query_has_scheduling_mode_with_flags (query,
+      GST_PAD_MODE_PULL, GST_SCHEDULING_FLAG_SEEKABLE);
+  gst_query_unref (query);
+
+  if (!pull_mode)
+    goto activate_push;
+
+  /* now we can activate in pull-mode. GStreamer will also
+   * activate the upstream peer in pull-mode */
+  return gst_pad_activate_mode (pad, GST_PAD_MODE_PULL, TRUE);
+
+activate_push:
+  {
+    /* something not right, we fallback to push-mode */
+    return gst_pad_activate_mode (pad, GST_PAD_MODE_PUSH, TRUE);
+  }
+}
+
+static gboolean
+gst_my_filter_activate_pull (GstPad    * pad,
+                 GstObject * parent,
+                 GstPadMode  mode,
+                 gboolean    active)
+{
+  gboolean res;
+  GstMyFilter *filter = GST_MY_FILTER (parent);
+
+  switch (mode) {
+    case GST_PAD_MODE_PUSH:
+      res = TRUE;
+      break;
+    case GST_PAD_MODE_PULL:
+      if (active) {
+        filter-&gt;offset = 0;
+        res = gst_pad_start_task (pad,
+            (GstTaskFunction) gst_my_filter_loop, filter, NULL);
+      } else {
+        res = gst_pad_stop_task (pad);
+      }
+      break;
+    default:
+      /* unknown scheduling mode */
+      res = FALSE;
+      break;
+  }
+  return res;
+}
+
+</code></pre>
+<p>Once started, your task has full control over input and output. The most
+simple case of a task function is one that reads input and pushes that
+over its source pad. It's not all that useful, but provides some more
+flexibility than the old push-mode case that we've been looking at so
+far.</p>
+<pre><code class="language-c">    #define BLOCKSIZE 2048
+
+    static void
+    gst_my_filter_loop (GstMyFilter * filter)
+    {
+      GstFlowReturn ret;
+      guint64 len;
+      GstFormat fmt = GST_FORMAT_BYTES;
+      GstBuffer *buf = NULL;
+
+      if (!gst_pad_query_duration (filter-&gt;sinkpad, fmt, &amp;len)) {
+        GST_DEBUG_OBJECT (filter, "failed to query duration, pausing");
+        goto stop;
+      }
+
+       if (filter-&gt;offset &gt;= len) {
+        GST_DEBUG_OBJECT (filter, "at end of input, sending EOS, pausing");
+        gst_pad_push_event (filter-&gt;srcpad, gst_event_new_eos ());
+        goto stop;
+      }
+
+      /* now, read BLOCKSIZE bytes from byte offset filter-&gt;offset */
+      ret = gst_pad_pull_range (filter-&gt;sinkpad, filter-&gt;offset,
+          BLOCKSIZE, &amp;buf);
+
+      if (ret != GST_FLOW_OK) {
+        GST_DEBUG_OBJECT (filter, "pull_range failed: %s", gst_flow_get_name (ret));
+        goto stop;
+      }
+
+      /* now push buffer downstream */
+      ret = gst_pad_push (filter-&gt;srcpad, buf);
+
+      buf = NULL; /* gst_pad_push() took ownership of buffer */
+
+      if (ret != GST_FLOW_OK) {
+        GST_DEBUG_OBJECT (filter, "pad_push failed: %s", gst_flow_get_name (ret));
+        goto stop;
+      }
+
+      /* everything is fine, increase offset and wait for us to be called again */
+      filter-&gt;offset += BLOCKSIZE;
+      return;
+
+    stop:
+      GST_DEBUG_OBJECT (filter, "pausing task");
+      gst_pad_pause_task (filter-&gt;sinkpad);
+    }
+</code></pre>
+<h2 id="providing-random-access">Providing random access</h2>
+<p>In the previous section, we have talked about how elements (or pads)
+that are activated to drive the pipeline using their own task, must use
+pull-mode scheduling on their sinkpads. This means that all pads linked
+to those pads need to be activated in pull-mode. Source pads activated
+in pull-mode must implement a <code>_get_range ()</code>-function set using
+<code>gst_pad_set_getrange_function ()</code>, and that function will be called
+when the peer pad requests some data with <code>gst_pad_pull_range ()</code>. The
+element is then responsible for seeking to the right offset and
+providing the requested data. Several elements can implement random
+access:</p>
+<ul>
+<li>
+<p>Data sources, such as a file source, that can provide data from any
+offset with reasonable low latency.</p>
+</li>
+<li>
+<p>Filters that would like to provide a pull-mode scheduling over the
+whole pipeline.</p>
+</li>
+<li>
+<p>Parsers who can easily provide this by skipping a small part of
+their input and are thus essentially "forwarding" getrange requests
+literally without any own processing involved. Examples include tag
+readers (e.g. ID3) or single output parsers, such as a WAVE parser.</p>
+</li>
+</ul>
+<p>The following example will show how a <code>_get_range ()</code>-function can be implemented in a source element:</p>
+<pre><code>#include "filter.h"
+static GstFlowReturn
+        gst_my_filter_get_range (GstPad     * pad,
+                     GstObject  * parent,
+                     guint64      offset,
+                     guint        length,
+                     GstBuffer ** buf);
+
+G_DEFINE_TYPE (GstMyFilter, gst_my_filter, GST_TYPE_ELEMENT);
+
+
+
+static void
+gst_my_filter_init (GstMyFilter * filter)
+{
+
+[..]
+
+  gst_pad_set_getrange_function (filter-&gt;srcpad,
+      gst_my_filter_get_range);
+
+[..]
+}
+
+static GstFlowReturn
+gst_my_filter_get_range (GstPad     * pad,
+             GstObject  * parent,
+             guint64      offset,
+             guint        length,
+             GstBuffer ** buf)
+{
+
+  GstMyFilter *filter = GST_MY_FILTER (parent);
+
+  [.. here, you would fill *buf ..]
+
+  return GST_FLOW_OK;
+}
+</code></pre>
+<p>In practice, many elements that could theoretically do random access,
+may in practice often be activated in push-mode scheduling anyway, since
+there is no downstream element able to start its own task. Therefore, in
+practice, those elements should implement both a <code>_get_range ()</code>-function and a <code>_chain ()</code>-function (for filters and parsers) or a <code>_get_range ()</code>-function and be prepared to start their own task by providing
+<code>_activate_* ()</code>-functions (for source elements).</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

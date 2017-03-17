@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Playback tutorial 5: Color Balance</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="tutorials/playback/color-balance.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="color-balance.md">
+<h1 id="playback-tutorial-5-color-balance">Playback tutorial 5: Color Balance</h1>
+<h2 id="goal">Goal</h2>
+<p>Brightness, Contrast, Hue and Saturation are common video adjustments,
+which are collectively known as Color Balance settings in GStreamer.
+This tutorial shows:</p>
+<ul>
+<li>How to find out the available color balance channels</li>
+<li>How to change them</li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p><a href="../basic/toolkit-integration.html">Basic tutorial 5: GUI toolkit integration</a> has
+already explained the concept of GObject interfaces: applications use
+them to find out if certain functionality is available, regardless of
+the actual element which implements it.</p>
+<p><code>playbin</code> implements the Color Balance interface (<code>GstColorBalance</code>),
+which allows access to the color balance settings. If any of the
+elements in the <code>playbin</code> pipeline support this interface,
+<code>playbin</code> simply forwards it to the application, otherwise, a
+colorbalance element is inserted in the pipeline.</p>
+<p>This interface allows querying for the available color balance channels
+(<code>GstColorBalanceChannel</code>), along with their name and valid range of
+values, and then modify the current value of any of them.</p>
+<h2 id="color-balance-example">Color balance example</h2>
+<p>Copy this code into a text file named <code>playback-tutorial-5.c</code>.</p>
+<p><strong>playback-tutorial-5.c</strong></p>
+<pre><code class="language-c">#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;gst/gst.h&gt;
+#include &lt;gst/video/colorbalance.h&gt;
+
+typedef struct _CustomData {
+  GstElement *pipeline;
+  GMainLoop *loop;
+} CustomData;
+
+/* Process a color balance command */
+static void update_color_channel (const gchar *channel_name, gboolean increase, GstColorBalance *cb) {
+  gdouble step;
+  gint value;
+  GstColorBalanceChannel *channel = NULL;
+  const GList *channels, *l;
+
+  /* Retrieve the list of channels and locate the requested one */
+  channels = gst_color_balance_list_channels (cb);
+  for (l = channels; l != NULL; l = l-&gt;next) {
+    GstColorBalanceChannel *tmp = (GstColorBalanceChannel *)l-&gt;data;
+
+    if (g_strrstr (tmp-&gt;label, channel_name)) {
+      channel = tmp;
+      break;
+    }
+  }
+  if (!channel)
+    return;
+
+  /* Change the channel's value */
+  step = 0.1 * (channel-&gt;max_value - channel-&gt;min_value);
+  value = gst_color_balance_get_value (cb, channel);
+  if (increase) {
+    value = (gint)(value + step);
+    if (value &gt; channel-&gt;max_value)
+      value = channel-&gt;max_value;
+  } else {
+    value = (gint)(value - step);
+    if (value &lt; channel-&gt;min_value)
+      value = channel-&gt;min_value;
+  }
+  gst_color_balance_set_value (cb, channel, value);
+}
+
+/* Output the current values of all Color Balance channels */
+static void print_current_values (GstElement *pipeline) {
+  const GList *channels, *l;
+
+  /* Output Color Balance values */
+  channels = gst_color_balance_list_channels (GST_COLOR_BALANCE (pipeline));
+  for (l = channels; l != NULL; l = l-&gt;next) {
+    GstColorBalanceChannel *channel = (GstColorBalanceChannel *)l-&gt;data;
+    gint value = gst_color_balance_get_value (GST_COLOR_BALANCE (pipeline), channel);
+    g_print ("%s: %3d%% ", channel-&gt;label,
+        100 * (value - channel-&gt;min_value) / (channel-&gt;max_value - channel-&gt;min_value));
+  }
+  g_print ("\n");
+}
+
+/* Process keyboard input */
+static gboolean handle_keyboard (GIOChannel *source, GIOCondition cond, CustomData *data) {
+  gchar *str = NULL;
+
+  if (g_io_channel_read_line (source, &amp;str, NULL, NULL, NULL) != G_IO_STATUS_NORMAL) {
+    return TRUE;
+  }
+
+  switch (g_ascii_tolower (str[0])) {
+  case 'c':
+    update_color_channel ("CONTRAST", g_ascii_isupper (str[0]), GST_COLOR_BALANCE (data-&gt;pipeline));
+    break;
+  case 'b':
+    update_color_channel ("BRIGHTNESS", g_ascii_isupper (str[0]), GST_COLOR_BALANCE (data-&gt;pipeline));
+    break;
+  case 'h':
+    update_color_channel ("HUE", g_ascii_isupper (str[0]), GST_COLOR_BALANCE (data-&gt;pipeline));
+    break;
+  case 's':
+    update_color_channel ("SATURATION", g_ascii_isupper (str[0]), GST_COLOR_BALANCE (data-&gt;pipeline));
+    break;
+  case 'q':
+    g_main_loop_quit (data-&gt;loop);
+    break;
+  default:
+    break;
+  }
+
+  g_free (str);
+
+  print_current_values (data-&gt;pipeline);
+
+  return TRUE;
+}
+
+int main(int argc, char *argv[]) {
+  CustomData data;
+  GstStateChangeReturn ret;
+  GIOChannel *io_stdin;
+
+  /* Initialize GStreamer */
+  gst_init (&amp;argc, &amp;argv);
+
+  /* Initialize our data structure */
+  memset (&amp;data, 0, sizeof (data));
+
+  /* Print usage map */
+  g_print (
+    "USAGE: Choose one of the following options, then press enter:\n"
+    " 'C' to increase contrast, 'c' to decrease contrast\n"
+    " 'B' to increase brightness, 'b' to decrease brightness\n"
+    " 'H' to increase hue, 'h' to decrease hue\n"
+    " 'S' to increase saturation, 's' to decrease saturation\n"
+    " 'Q' to quit\n");
+
+  /* Build the pipeline */
+  data.pipeline = gst_parse_launch ("playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm", NULL);
+
+  /* Add a keyboard watch so we get notified of keystrokes */
+#ifdef G_OS_WIN32
+  io_stdin = g_io_channel_win32_new_fd (fileno (stdin));
+#else
+  io_stdin = g_io_channel_unix_new (fileno (stdin));
+#endif
+  g_io_add_watch (io_stdin, G_IO_IN, (GIOFunc)handle_keyboard, &amp;data);
+
+  /* Start playing */
+  ret = gst_element_set_state (data.pipeline, GST_STATE_PLAYING);
+  if (ret == GST_STATE_CHANGE_FAILURE) {
+    g_printerr ("Unable to set the pipeline to the playing state.\n");
+    gst_object_unref (data.pipeline);
+    return -1;
+  }
+  print_current_values (data.pipeline);
+
+  /* Create a GLib Main Loop and set it to run */
+  data.loop = g_main_loop_new (NULL, FALSE);
+  g_main_loop_run (data.loop);
+
+  /* Free resources */
+  g_main_loop_unref (data.loop);
+  g_io_channel_unref (io_stdin);
+  gst_element_set_state (data.pipeline, GST_STATE_NULL);
+  gst_object_unref (data.pipeline);
+  return 0;
+}
+</code></pre>
+<blockquote>
+<p><img src="images/icons/emoticons/information.png" alt="information" id="information"> If you need help to compile this code, refer to the
+<strong>Building the tutorials</strong> section for your platform: <a href="../../installing/on-mac-osx.html">Mac</a> or
+<a href="../../installing/on-windows.html">Windows</a> or use this specific command on Linux:</p>
+<p><code>gcc playback-tutorial-5.c -o playback-tutorial-5 `pkg-config --cflags --libs gstreamer-1.0 gstreamer-video-1.0`</code></p>
+<p>If you need help to run this code, refer to the <strong>Running the
+tutorials</strong> section for your platform: <a href="../../installing/on-mac-osx.html#building-the-tutorials">Mac OS X</a>, <a href="../../installing/on-windows.html#running-the-tutorials">Windows</a>, for
+<a href="../../installing/for-ios-development.html#building-the-tutorials">iOS</a> or for <a href="../../installing/for-android-development.html#building-the-tutorials">android</a>.</p>
+<p>This tutorial opens a window and displays a movie, with accompanying audio. The media is fetched from the Internet, so the window might take a few seconds to appear, depending on your connection speed.</p>
+<p>The console should print all commands (Each command is a single upper-case or lower-case letter) and list all available Color Balance channels, typically, CONTRAST, BRIGHTNESS, HUE and SATURATION. Type each command (letter) followed by the Enter key.</p>
+<p>Required libraries: <code>gstreamer-1.0 gstreamer-video-1.0</code></p>
+</blockquote>
+<h2 id="walkthrough">Walkthrough</h2>
+<p>The <code>main()</code> function is fairly simple. A <code>playbin</code> pipeline is
+instantiated and set to run, and a keyboard watch is installed so
+keystrokes can be monitored.</p>
+<pre><code class="language-c">/* Output the current values of all Color Balance channels */
+static void print_current_values (GstElement *pipeline) {
+  const GList *channels, *l;
+
+  /* Output Color Balance values */
+  channels = gst_color_balance_list_channels (GST_COLOR_BALANCE (pipeline));
+  for (l = channels; l != NULL; l = l-&gt;next) {
+    GstColorBalanceChannel *channel = (GstColorBalanceChannel *)l-&gt;data;
+    gint value = gst_color_balance_get_value (GST_COLOR_BALANCE (pipeline), channel);
+    g_print ("%s: %3d%% ", channel-&gt;label,
+        100 * (value - channel-&gt;min_value) / (channel-&gt;max_value - channel-&gt;min_value));
+  }
+  g_print ("\n");
+}
+</code></pre>
+<p>This method prints the current value for all channels, and exemplifies
+how to retrieve the list of channels. This is accomplished through the
+<code>gst_color_balance_list_channels()</code> method. It returns a <code>GList</code> which
+needs to be traversed.</p>
+<p>Each element in the list is a <code>GstColorBalanceChannel</code> structure,
+informing of the channel’s name, minimum value and maximum value.
+<code>gst_color_balance_get_value()</code> can then be called on each channel to
+retrieve the current value.</p>
+<p>In this example, the minimum and maximum values are used to output the
+current value as a percentage.</p>
+<pre><code class="language-c">/* Process a color balance command */
+static void update_color_channel (const gchar *channel_name, gboolean increase, GstColorBalance *cb) {
+  gdouble step;
+  gint value;
+  GstColorBalanceChannel *channel = NULL;
+  const GList *channels, *l;
+
+  /* Retrieve the list of channels and locate the requested one */
+  channels = gst_color_balance_list_channels (cb);
+  for (l = channels; l != NULL; l = l-&gt;next) {
+    GstColorBalanceChannel *tmp = (GstColorBalanceChannel *)l-&gt;data;
+
+    if (g_strrstr (tmp-&gt;label, channel_name)) {
+      channel = tmp;
+      break;
+    }
+  }
+  if (!channel)
+    return;
+</code></pre>
+<p>This method locates the specified channel by name and increases or
+decreases it as requested. Again, the list of channels is retrieved and
+parsed looking for the channel with the specified name. Obviously, this
+list could be parsed only once and the pointers to the channels be
+stored and indexed by something more efficient than a string.</p>
+<pre><code class="language-c">  /* Change the channel's value */
+  step = 0.1 * (channel-&gt;max_value - channel-&gt;min_value);
+  value = gst_color_balance_get_value (cb, channel);
+  if (increase) {
+    value = (gint)(value + step);
+    if (value &gt; channel-&gt;max_value)
+      value = channel-&gt;max_value;
+  } else {
+    value = (gint)(value - step);
+    if (value &lt; channel-&gt;min_value)
+      value = channel-&gt;min_value;
+  }
+  gst_color_balance_set_value (cb, channel, value);
+}
+</code></pre>
+<p>The current value for the channel is then retrieved, changed (the
+increment is proportional to its dynamic range), clamped (to avoid
+out-of-range values) and set using <code>gst_color_balance_set_value()</code>.</p>
+<p>And there is not much more to it. Run the program and observe the effect
+of changing each of the channels in real time.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This tutorial has shown how to use the color balance interface.
+Particularly, it has shown:</p>
+<ul>
+<li>How to retrieve the list of color available balance channels
+with <code>gst_color_balance_list_channels()</code></li>
+<li>How to manipulate the current value of each channel using
+<code>gst_color_balance_get_value()</code> and <code>gst_color_balance_set_value()</code></li>
+</ul>
+<p>It has been a pleasure having you here, and see you soon!</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

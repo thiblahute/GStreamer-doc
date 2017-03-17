@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "config.h", "urls": ["GStreamer-doc-1.0/design/orc-integration.html#page-description", "libgstreamer-doc-1.0/c/gstplugin.html#GST_PLUGIN_DEFINE"]});
+urls_downloaded_cb({"token": "config.h", "urls": ["GStreamer-doc-1.0/design/orc-integration.html#page-description", "design/orc-integration.html#page-description", "libgstreamer-doc-1.0/c/gstplugin.html#GST_PLUGIN_DEFINE"]});

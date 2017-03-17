@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Progress Reporting</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="design/progress.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="progress.md">
+<h1 id="progress-reporting">Progress Reporting</h1>
+<p>This document describes the design and use cases for the progress
+reporting messages.</p>
+<p>PROGRESS messages are posted on the bus to inform the application about
+the progress of asynchronous operations in the pipeline. This should not
+be confused with asynchronous state changes.</p>
+<p>We accommodate for the following requirements:</p>
+<ul>
+<li>
+<p>Application is informed when an async operation starts and
+completes.</p>
+</li>
+<li>
+<p>It should be possible for the application to generically detect
+common operations and incorporate their progress into the GUI.</p>
+</li>
+<li>
+<p>Applications can cancel pending operations by doing regular state
+changes.</p>
+</li>
+<li>
+<p>Applications should be able to wait for completion of async
+operations.</p>
+</li>
+</ul>
+<p>We allow for the following scenarios:</p>
+<ul>
+<li>
+<p>Elements want to inform the application about asynchronous DNS
+lookups and pending network requests. This includes starting and
+completing the lookup.</p>
+</li>
+<li>
+<p>Elements opening devices and resources asynchronously.</p>
+</li>
+<li>
+<p>Applications having more freedom to implement timeout and
+cancelation of operations that currently block the state changes or
+happen invisibly behind the scenes.</p>
+</li>
+</ul>
+<h2 id="rationale">Rationale</h2>
+<p>The main reason for adding these extra progress notifications is
+twofold:</p>
+<h3 id="to-give-the-application-more-information-of-what-is-going-on">To give the application more information of what is going on</h3>
+<p>When there are well defined progress information codes, applications
+can let the user know about the status of the progress. We anticipate to
+have at least DNS resolving and server connections and requests be well
+defined.</p>
+<h3 id="to-make-the-state-changes-nonblocking-and-cancellable">To make the state changes non-blocking and cancellable.</h3>
+<p>Currently state changes such as going to the READY or PAUSED state often do
+blocking calls such as resolving DNS or connecting to a remote server. These
+operations often block the main thread and are often not cancellable, causing
+application lockups.</p>
+<p>We would like to make the state change function, instead, start a separate
+thread that performs the blocking operations in a cancellable way. When going
+back to the NULL state, all pending operations would be canceled immediately.</p>
+<p>For downward state changes, we want to let the application implement its own
+timeout mechanism. For example: when stopping an RTSP stream, the clients
+needs to send a TEARDOWN request to the server. This can however take an
+unlimited amount of time in case of network problems. We want to give the
+application an opportunity to wait (and timeout) for the completion of the
+async operation before setting the element to the final NULL state.</p>
+<p>Progress updates are very similar to buffering messages in the same way
+that the application can decide to wait for the completion of the
+buffering process before performing the next state change. It might make
+sense to implement buffering with the progress messages in the future.</p>
+<h2 id="async-state-changes">Async state changes</h2>
+<p>GStreamer currently has a <code>GST_STATE_CHANGE_ASYNC</code> return value to note
+to the application that a state change is happening asynchronously.</p>
+<p>The main purpose of this return value is to make the pipeline wait for
+preroll and delay a future (upwards) state changes until the sinks are
+prerolled.</p>
+<p>In the case of async operations on source, this will automatically force
+sinks to stay async because they will not preroll before the source can
+produce data.</p>
+<p>The fact that other asynchronous operations happen behind the scenes is
+irrelevant for the prerolling process so it is not implemented with the
+ASYNC state change return value in order to not complicate the state
+changes and mix concepts.</p>
+<h2 id="use-cases">Use cases</h2>
+<h3 id="rtsp-client-but-also-http-mms-">RTSP client (but also HTTP, MMS, …)</h3>
+<p>When the client goes from the READY to the PAUSED state, it opens a socket,
+performs a DNS lookup, retrieves the SDP and negotiates the streams. All these
+operations currently block the state change function for an indefinite amount
+of time and while they are blocking cannot be canceled.</p>
+<p>Instead, a thread would be started to perform these operations asynchronously
+and the state change would complete with the usual <code>NO_PREROLL</code> return value.
+Before starting the thread a PROGRESS message would be posted to mark the
+start of the async operation.</p>
+<p>As the DNS lookup completes and the connection is established, PROGRESS
+messages are posted on the bus to inform the application of the progress. When
+something fails, an error is posted and a PROGRESS CANCELED message is posted.
+The application can then stop the pipeline.</p>
+<p>If there are no errors and the setup of the streams completed successfully, a
+PROGRESS COMPLETED is posted on the bus. The thread then goes to sleep and the
+asynchronous operation completed.</p>
+<p>The RTSP protocol requires to send a TEARDOWN request to the server
+before closing the connection and destroying the socket. A state change to the
+READY state will issue the TEARDOWN request in the background and notify the
+application of this pending request with a PROGRESS message.</p>
+<p>The application might want to only go to the NULL state after it got confirmation
+that the TEARDOWN request completed or it might choose to go to NULL after a
+timeout. It might also be possible that the application just want to close the
+socket as fast as possible without waiting for completion of the TEARDOWN request.</p>
+<h3 id="network-performance-measuring">Network performance measuring</h3>
+<p>DNS lookup and connection times can be measured by calculating the elapsed
+time between the various PROGRESS messages.</p>
+<h2 id="messages">Messages</h2>
+<p>A new <code>PROGRESS</code> message will be created.</p>
+<p>The following fields will be contained in the message:</p>
+<ul>
+<li>
+<p><strong><code>type</code></strong>, <code>GST_TYPE_PROGRESS_TYPE</code>: A set of types to define the type of progress</p>
+<ul>
+<li><code>GST_PROGRESS_TYPE_START</code>: A new task is started in the background</li>
+<li><code>GST_PROGRESS_TYPE_CONTINUE</code>: The previous tasks completed and a new one
+continues. This is done so that the application can follow a set of
+continuous tasks and react to COMPLETE only when the element completely
+finished.</li>
+<li><code>GST_PROGRESS_TYPE_CANCELED</code>: A task is canceled by the user.</li>
+<li><code>GST_PROGRESS_TYPE_ERROR</code>: A task stopped because of an error. In case of
+an error, an error message will have been posted before.</li>
+<li><code>GST_PROGRESS_TYPE_COMPLETE</code>: A task completed successfully.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>code</code></strong>, <code>G_TYPE_STRING</code>: A generic extensible string that can be used to
+programmatically determine the action that is in progress. Some standard
+predefined codes will be defined.</p>
+</li>
+<li>
+<p><strong><code>text</code></strong>, <code>G_TYPE_STRING</code>: A user visible string detailing the action.</p>
+</li>
+<li>
+<p><strong><code>percent</code></strong>, <code>G_TYPE_INT</code>: between 0 and 100 Progress of the action as
+a percentage, the following values are allowed:</p>
+<ul>
+<li><code>GST_PROGRESS_TYPE_START</code> always has a 0% value.</li>
+<li><code>GST_PROGRESS_TYPE_CONTINUE</code> have a value between 0 and 100</li>
+<li><code>GST_PROGRESS_TYPE_CANCELED</code>, <code>GST_PROGRESS_TYPE_ERROR</code> and
+<code>GST_PROGRESS_TYPE_COMPLETE</code> always have a 100% value.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>timeout</code></strong>, <code>G_TYPE_INT</code> in milliseconds: The timeout of the async
+operation. -1 if unknown/unlimited.. This field can be interesting to the
+application when it wants to display some sort of progress indication.</p>
+</li>
+<li>
+<p>….</p>
+</li>
+</ul>
+<p>Depending on the code, more fields can be put here.</p>
+<h2 id="implementation">Implementation</h2>
+<p>Elements should not do blocking operations from the state change
+function. Instead, elements should post an appropriate progress message
+with the right code and of type <code>GST_PROGRESS_TYPE_START</code> and then
+start a thread to perform the blocking calls in a cancellable manner.</p>
+<p>It is highly recommended to only start async operations from the READY
+to PAUSED state and onwards and not from the NULL to READY state. The
+reason for this is that streaming threads are usually started in the
+READY to PAUSED state and that the current NULL to READY state change is
+used to perform a blocking check for the presence of devices.</p>
+<p>The progress message needs to be posted from the state change function
+so that the application can immediately take appropriate action after
+setting the state.</p>
+<p>The threads will usually perform many blocking calls with different
+codes in a row, a client might first do a DNS query and then continue
+with establishing a connection to the server. For this purpose the
+<code>GST_PROGRESS_TYPE_CONTINUE</code> must be used.</p>
+<p>Usually, the thread used to perform the blocking operations can be used
+to implement the streaming threads when needed.</p>
+<p>Upon downward state changes, operations that are busy in the thread are
+canceled and <code>GST_PROGRESS_TYPE_CANCELED</code> is posted.</p>
+<p>The application can know about pending tasks because they received the
+<code>GST_PROGRESS_TYPE_START</code> messages that didn’t complete with a
+<code>GST_PROGRESS_TYPE_COMPLETE</code> message, got canceled with a
+<code>GST_PROGRESS_TYPE_CANCELED</code> or errored with
+<code>GST_PROGRESS_TYPE_ERROR.</code> Applications should be able to choose if
+they wait for the pending operation or cancel them.</p>
+<p>If an async operation fails, an error message is posted first before the
+<code>GST_PROGRESS_TYPE_ERROR</code> progress message.</p>
+<h2 id="categories">Categories</h2>
+<p>We want to propose some standard codes here:</p>
+<ul>
+<li>
+<p>"open" : A resource is being opened</p>
+</li>
+<li>
+<p>"close" : A resource is being closed</p>
+</li>
+<li>
+<p>"name-lookup" : A DNS lookup.</p>
+</li>
+<li>
+<p>"connect" : A socket connection is established</p>
+</li>
+<li>
+<p>"disconnect" : a socket connection is closed</p>
+</li>
+<li>
+<p>"request" : A request is sent to a server and we are waiting for a reply.
+This message is posted right before the request is sent and completed when the
+reply has arrived completely. * "mount" : A volume is being mounted</p>
+</li>
+<li>
+<p>"unmount" : A volume is being unmounted</p>
+</li>
+</ul>
+<p>More codes can be posted by elements and can be made official later.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

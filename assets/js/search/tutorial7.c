@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "tutorial7.c", "urls": ["GStreamer-doc-1.0/tutorials/playback/custom-playbin-sinks.html#page-description"]});
+urls_downloaded_cb({"token": "tutorial7.c", "urls": ["tutorials/playback/custom-playbin-sinks.html#page-description", "GStreamer-doc-1.0/tutorials/playback/custom-playbin-sinks.html#page-description"]});

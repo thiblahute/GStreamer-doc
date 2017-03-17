@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Building from source using Cerbero</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="installing/building-from-source-using-cerbero.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="building-from-source-using-cerbero.md">
+<h1 id="building-from-source-using-cerbero">Building from source using Cerbero</h1>
+<blockquote>
+<p><img src="images/icons/emoticons/warning.png" alt="Warning" id="warning"> This section is intended for advanced users.</p>
+</blockquote>
+<h2 id="build-requirements">Build requirements</h2>
+<p>The GStreamer build system provides bootstrapping facilities for all
+platforms, but it still needs a minimum base to bootstrap:</p>
+<ul>
+<li>python &gt; 2.6 and python's <code>argparse</code> module, which is already
+included in python2.7.</li>
+<li>git</li>
+</ul>
+<h3 id="windows-users">Windows users</h3>
+<p>Cerbero can be used on Windows using the Msys/MinGW shell (a Unix-like
+shell for Windows). There is a bit of setup that you need to do before
+Cerbero can take control.</p>
+<p>You need to install the following programs:</p>
+<ul>
+<li><a href="http://www.python.org/getit/releases/2.7/">Python 2.7</a></li>
+<li><a href="http://code.google.com/p/msysgit/downloads/list?q=full+installer+official+git">Git</a> (Select the install option "Checkout as-is, Commit as-is" and
+install it in a path without spaces, eg: c:\Git)</li>
+<li><a href="https://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/">Msys/MinGW</a> (Install it with all the options enabled)</li>
+<li><a href="http://www.cmake.org/cmake/resources/software.htm">CMake</a> (Select the option "Add CMake in system path for the
+current user")</li>
+<li><a href="http://yasm.tortall.net/Download.html">Yasm</a> (Download the win32 or win64 version for your platform, name
+it <code>yasm.exe</code>, and place it in your MinGW <code>bin</code> directory,
+typically, <code>C:\MinGW\bin</code>)</li>
+<li><a href="http://wix.codeplex.com/releases/view/60102">WiX 3.5</a></li>
+<li><a href="http://www.microsoft.com/en-us/download/details.aspx?id=8279">Microsoft SDK 7.1</a> (Install the SDK samples and the Visual C++
+Compilers, required to build the DirectShow base classes. Might need
+installing the .NET 4 Framework first if the SDK installer doesn't
+find it)</li>
+<li><a href="http://msdn.microsoft.com/en-us/windows/hardware/hh852365">Windows Driver Kit 7.1.0</a></li>
+</ul>
+<p>Your user ID can't have spaces (eg: John Smith). Paths with spaces are
+not correctly handled in the build system and msys uses the user ID for
+the home folder.</p>
+<p>Cerbero must be run in the MinGW shell, which is accessible from the
+main menu once MinGW is installed.</p>
+<p>The last step is making <code>python</code> and <code>git</code> available from the shell, for
+which you will need to create a <code>.profile</code> file. Issue this command from
+within the MinGW shell:</p>
+<p><code>echo "export PATH=\"\$PATH:/c/Python27:/c/Git/bin\"" &gt;&gt; ~/.profile</code></p>
+<p>Using the appropriate paths to where you installed <code>python</code> and <code>git</code></p>
+<p>(Note that inside the shell, / is mapped to c:\Mingw\msys\1.0 )</p>
+<h3 id="os-x-users">OS X users</h3>
+<p>To use cerbero on OS X you need to install the "Command Line Tools" from
+XCode. They are available from the "Preferences" dialog under
+"Downloads".</p>
+<h3 id="ios-developers">iOS developers</h3>
+<p>If you want to build GStreamer for iOS, you also need the iOS
+SDK. The minimum required iOS SDK version is 6.0 and is included in
+<a href="https://developer.apple.com/devcenter/ios/index.action#downloads">XCode</a> since version 4.</p>
+<h2 id="download-the-sources">Download the sources</h2>
+<p>To build GStreamer, you first need to download <strong>Cerbero</strong>.
+Cerbero is a multi-platform build system for Open Source projects that
+builds and creates native packages for different platforms,
+architectures and distributions.</p>
+<p>Get a copy of Cerbero by cloning the git repository:</p>
+<pre><code>git clone git://anongit.freedesktop.org/gstreamer/cerbero
+</code></pre>
+<p>Cerbero can be run uninstalled and for convenience you can create an
+alias in your <code>.bashrc</code> file*. *If you prefer to skip this step,
+remember that you need to replace the calls to <code>cerbero</code> with
+<code>./cerbero-uninstalled</code> in the next steps.</p>
+<pre><code>echo "alias cerbero='~/git/cerbero/cerbero-uninstalled'" &gt;&gt; ~/.bashrc
+</code></pre>
+<h2 id="setup-environment">Setup environment</h2>
+<p>After Cerbero and the base requirements are in place, you need to setup
+the build environment.</p>
+<p>Cerbero reads the configuration file <code>$HOME/.cerbero/cerbero.cbc</code> to
+determine the build options. This file is a python code which allows
+overriding/defining some options.</p>
+<p>If the file does not exist, Cerbero will try to determine the distro you
+are running and will use default build options such as the default build
+directory. The default options should work fine on the supported
+distributions.</p>
+<p>An example configuration file with detailed comments can be found <a href="http://www.freedesktop.org/software/gstreamer-sdk/cerbero.cbc.template">here</a></p>
+<p>To fire up the bootstrapping process, go to the directory where you
+cloned/unpacked Cerbero and type:</p>
+<pre><code>cerbero bootstrap
+</code></pre>
+<p>Enter the superuser/root password when prompted.</p>
+<p>The bootstrap process will then install all packages required to build
+GStreamer.</p>
+<h2 id="build-gstreamer">Build GSTreamer</h2>
+<p>To generate GStreamer binaries, use the following command:</p>
+<pre><code>cerbero package gstreamer-1.0
+</code></pre>
+<p>This should build all required GStreamer components and create packages for
+your distribution at the Cerbero source directory.</p>
+<p>A list of supported packages to build can be retrieved using:</p>
+<pre><code>cerbero list-packages
+</code></pre>
+<p>Packages are composed of 0 (in case of a meta package) or more
+components that can be built separately if desired. The components are
+defined as individual recipes and can be listed with:</p>
+<pre><code>cerbero list
+</code></pre>
+<p>To build an individual recipe and its dependencies, do the following:</p>
+<pre><code>cerbero build &lt;recipe_name&gt;
+</code></pre>
+<p>Or to build or force a rebuild of a recipe without building its
+dependencies use:</p>
+<pre><code>cerbero buildone &lt;recipe_name&gt;
+</code></pre>
+<p>To wipe everything and start from scratch:</p>
+<pre><code>cerbero wipe
+</code></pre>
+<p>Once built, the output of the recipes will be installed at the prefix
+defined in the Cerbero configuration file <code>$HOME/.cerbero/cerbero.cbc</code>
+or at <code>$HOME/cerbero/dist</code> if no prefix is defined.</p>
+<h3 id="build-a-single-project-with-gstreamer">Build a single project with GStreamer</h3>
+<p>Rebuilding the whole GStreamer is relatively fast on Linux and OS X, but it
+can be very slow on Windows, so if you only need to rebuild a single
+project (eg: gst-plugins-good to patch qtdemux) there is a much faster
+way of doing it. You will need to follow the steps detailed in this
+page, but skipping the step "<strong>Build GStreamer</strong>", and installing the
+GStreamer's development files as explained in <a href="index.html">Installing GStreamer</a>.</p>
+<p>By default, Cerbero uses as prefix a folder in the user directory with
+the following schema ~/cerbero/dist/$platform_$arch, but for GStreamer
+we must change this prefix to use its installation directory. This can
+be done with a custom configuration file named <em>custom.cbc</em>:</p>
+<pre><code># For Windows x86
+prefix='/c/gstreamer/1.0/x86/'
+
+# For Windows x86_64
+#prefix='/c/gstreamer/1.0/x86_64'
+
+# For Linux
+#prefix='/opt/gstreamer'
+
+# For OS X
+#prefix='/Library/Frameworks/GStreamer.framework/Versions/1.0'
+</code></pre>
+<p>The prefix path might not be writable by your current user. Make sure
+you fix it before, for instance with:</p>
+<pre><code>$ sudo chown -R &lt;username&gt; /Library/Frameworks/GStreamer.framework/
+</code></pre>
+<p>Cerbero has a shell command that starts a new shell with all the
+environment set up to target GStreamer. You can start a new shell using
+the installation prefix defined in *custom.cbc *with the following
+command:</p>
+<pre><code>$ cerbero -c custom.cbc shell
+</code></pre>
+<p>Once you are in Cerbero's shell you can compile new projects targeting
+GStreamer using the regular build process:</p>
+<pre><code>$ git clone git://anongit.freedesktop.org/gstreamer/gst-plugins-good; cd gst-plugins-good
+$ sh autogen.sh --disable-gtk-doc --prefix=&lt;prefix&gt;
+$ make -C gst/isomp4
+</code></pre>
+<h3 id="crosscompilation-of-gstreamer">Cross-compilation of GStreamer</h3>
+<p>Cerbero can be used to cross-compile GStreamer to other platforms like
+Android or Windows. You only need to use a configuration file that sets
+the target platform, but we also provide a set of of pre-defined
+configuration files for the supported platforms (you will find them in
+the <code>config</code> folder with the <code>.cbc</code> extension</p>
+<h4 id="android">Android</h4>
+<p>You can cross-compile GStreamer for Android from a Linux host using the
+configuration file <code>config/cross-android.cbc</code>. Replace all the previous
+commands with:</p>
+<pre><code>cerbero -c config/cross-android.cbc &lt;command&gt;
+</code></pre>
+<h4 id="windows">Windows</h4>
+<p>GStreamer can also be cross-compiled to Windows from Linux, but you should
+only use it for testing purpose. The DirectShow plugins cannot be
+cross-compiled yet and WiX can't be used with Wine yet, so packages can
+only be created from Windows.</p>
+<p>Replace all the above commands for Windows 32bits with:</p>
+<pre><code>cerbero -c config/cross-win32.cbc &lt;command&gt;
+</code></pre>
+<p>Or with using the following for Windows 64bits:</p>
+<pre><code>cerbero -c config/cross-win64.cbc &lt;command&gt;
+</code></pre>
+<h4 id="ios">iOS</h4>
+<p>To cross compile for iOS from OS X, use the configuration file
+<code>config/cross-ios-universal.cbc</code>. Replace all previous commands with:</p>
+<pre><code>cerbero -c config/cross-ios-universal.cbc &lt;command&gt;
+</code></pre>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

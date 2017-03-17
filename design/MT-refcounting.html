@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Conventions for thread a safe API</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="design/MT-refcounting.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="MT-refcounting.md">
+<h1 id="conventions-for-thread-a-safe-api">Conventions for thread a safe API</h1>
+<p>The GStreamer API is designed to be thread safe. This means that API functions
+can be called from multiple threads at the same time. GStreamer internally uses
+threads to perform the data passing and various asynchronous services such as
+the clock can also use threads.</p>
+<p>This design decision has implications for the usage of the API and the objects
+which this document explains.</p>
+<h2 id="mt-safety-techniques">MT safety techniques</h2>
+<p>Several design patterns are used to guarantee object consistency in GStreamer.
+This is an overview of the methods used in various GStreamer subsystems.</p>
+<h3 id="refcounting">Refcounting:</h3>
+<p>All shared objects have a refcount associated with them. Each reference
+obtained to the object should increase the refcount and each reference lost
+should decrease the refcount.</p>
+<p>The refcounting is used to make sure that when another thread destroys the
+object, the ones which still hold a reference to the object do not read from
+invalid memory when accessing the object.</p>
+<p>Refcounting is also used to ensure that mutable data structures are only
+modified when they are owned by the calling code.</p>
+<p>It is a requirement that when two threads have a handle on an object, the
+refcount must be more than one. This means that when one thread passes an
+object to another thread it must increase the refcount. This requirement makes
+sure that one thread cannot suddenly dispose the object making the other
+thread crash when it tries to access the pointer to invalid memory.</p>
+<h3 id="shared-data-structures-and-writability">Shared data structures and writability:</h3>
+<p>All objects have a refcount associated with them. Each reference obtained to
+the object should increase the refcount and each reference lost should
+decrease the refcount.</p>
+<p>Each thread having a refcount to the object can safely read from the object.
+but modifications made to the object should be preceded with a
+<code>_get_writable()</code> function call. This function will check the refcount of the
+object and if the object is referenced by more than one instance, a copy is
+made of the object that is then by definition only referenced from the calling
+thread. This new copy is then modifiable without being visible to other
+refcount holders.</p>
+<p>This technique is used for information objects that, once created, never
+change their values. The lifetime of these objects is generally short, the
+objects are usually simple and cheap to copy/create.</p>
+<p>The advantage of this method is that no reader/writers locks are needed. all
+threads can concurrently read but writes happen locally on a new copy. In most
+cases <code>_get_writable()</code> can avoid a real copy because the calling method is the
+only one holding a reference, which makes read/write very cheap.</p>
+<p>The drawback is that sometimes 1 needless copy can be done. This would happen
+when N threads call <code>_get_writable()</code> at the same time, all seeing that N
+references are held on the object. In this case 1 copy too many will be done.
+This is not a problem in any practical situation because the copy operation is
+fast.</p>
+<h3 id="mutable-substructures">Mutable substructures:</h3>
+<p>Special techniques are necessary to ensure the consistency of compound shared
+objects. As mentioned above, shared objects need to have a reference count of
+1 if they are to be modified. Implicit in this assumption is that all parts of
+the shared object belong only to the object. For example, a <code>GstStructure</code> in
+one <code>GstCaps</code> object should not belong to any other <code>GstCaps</code> object. This
+condition suggests a parent-child relationship: structures can only be added
+to parent object if they do not already have a parent object.</p>
+<p>In addition, these substructures must not be modified while more than one code
+segment has a reference on the parent object. For example, if the user creates
+a <code>GstStructure</code>, adds it to a <code>GstCaps</code>, and the <code>GstCaps</code> is then referenced by
+other code segments, the <code>GstStructure</code> should then become immutable, so that
+changes to that data structure do not affect other parts of the code. This
+means that the child is only mutable when the parent's reference count is 1,
+as well as when the child structure has no parent.</p>
+<p>The general solution to this problem is to include a field in child structures
+pointing to the parent's atomic reference count. When set to NULL, this
+indicates that the child has no parent. Otherwise, procedures that modify the
+child structure must check if the parent's refcount is 1, and otherwise must
+cause an error to be signaled.</p>
+<p>Note that this is an internal implementation detail; application or plugin
+code that calls <code>_get_writable()</code> on an object is guaranteed to receive an
+object of refcount 1, which must then be writable. The only trick is that a
+pointer to a child structure of an object is only valid while the calling code
+has a reference on the parent object, because the parent is the owner of the
+child.</p>
+<h3 id="object-locking">Object locking:</h3>
+<p>For objects that contain state information and generally have a longer
+lifetime, object locking is used to update the information contained in the
+object.</p>
+<p>All readers and writers acquire the lock before accessing the object. Only one
+thread is allowed access the protected structures at a time.</p>
+<p>Object locking is used for all objects extending from <code>GstObject</code> such as
+<code>GstElement</code>, <code>GstPad</code>.</p>
+<p>Object locking can be done with recursive locks or regular mutexes. Object
+locks in GStreamer are implemented with mutexes which cause deadlocks when
+locked recursively from the same thread. This is done because regular mutexes
+are cheaper.</p>
+<h3 id="atomic-operations">Atomic operations</h3>
+<p>Atomic operations are operations that are performed as one consistent
+operation even when executed by multiple threads. They do however not use the
+conventional aproach of using mutexes to protect the critical section but rely
+on CPU features and instructions.</p>
+<p>The advantages are mostly speed related since there are no heavyweight locks
+involved. Most of these instructions also do not cause a context switch in case
+of concurrent access but use a retry mechanism or spinlocking.</p>
+<p>Disadvantages are that each of these instructions usually cause a cache flush
+on multi-CPU machines when two processors perform concurrent access.</p>
+<p>Atomic operations are generally used for refcounting and for the allocation of
+small fixed size objects in a memchunk. They can also be used to implement a
+lockfree list or stack.</p>
+<h3 id="compare-and-swap">Compare and swap</h3>
+<p>As part of the atomic operations, compare-and-swap (CAS) can be used to access
+or update a single property or pointer in an object without having to take a
+lock.</p>
+<p>This technique is currently not used in GStreamer but might be added in the
+future in performance critical places.</p>
+<h2 id="objects">Objects</h2>
+<h3 id="locking-involved">Locking involved:</h3>
+<ul>
+<li>atomic operations for refcounting</li>
+<li>object locking</li>
+</ul>
+<p>All objects should have a lock associated with them. This lock is used to keep
+internal consistency when multiple threads call API function on the object.</p>
+<p>For objects that extend the GStreamer base object class this lock can be
+obtained with the macros <code>GST_OBJECT_LOCK()</code> and <code>GST_OBJECT_UNLOCK()</code>. For other object that do
+not extend from the base <code>GstObject</code> class these macros can be different.</p>
+<h3 id="refcounting1">refcounting</h3>
+<p>All new objects created have the <code>FLOATING</code> flag set. This means that the object
+is not owned or managed yet by anybody other than the one holding a reference
+to the object. The object in this state has a reference count of 1.</p>
+<p>Various object methods can take ownership of another object, this means that
+after calling a method on object A with an object B as an argument, the object
+B is made sole property of object A. This means that after the method call you
+are not allowed to access the object anymore unless you keep an extra
+reference to the object. An example of such a method is the <code>_bin_add()</code> method.
+As soon as this function is called in a Bin, the element passed as an argument
+is owned by the bin and you are not allowed to access it anymore without
+taking a <code>_ref()</code> before adding it to the bin. The reason being that after the
+<code>_bin_add()</code> call disposing the bin also destroys the element.</p>
+<p>Taking ownership of an object happens through the process of "sinking" the
+object. the <code>_sink()</code> method on an object will decrease the refcount of the
+object if the FLOATING flag is set. The act of taking ownership of an object
+is then performed as a <code>_ref()</code> followed by a <code>_sink()</code> call on the object.</p>
+<p>The float/sink process is very useful when initializing elements that will
+then be placed under control of a parent. The floating ref keeps the object
+alive until it is parented, and once the object is parented you can forget
+about it.</p>
+<p>also see <a href="relations.html">relations</a></p>
+<h3 id="parentchild-relations">parent-child relations</h3>
+<p>One can create parent-child relationships with the <code>_object_set_parent()</code>
+method. This method refs and sinks the object and assigns its parent property
+to that of the managing parent.</p>
+<p>The child is said to have a weak link to the parent since the refcount of the
+parent is not increased in this process. This means that if the parent is
+disposed it has to unset itself as the parent of the object before disposing
+itself, else the child object holds a parent pointer to invalid memory.</p>
+<p>The responsibilities for an object that sinks other objects are summarised as:</p>
+<ul>
+<li>
+<p>taking ownership of the object</p>
+<ul>
+<li>call <code>_object_set_parent()</code> to set itself as the object parent, this call
+will <code>_ref()</code> and <code>_sink()</code> the object.</li>
+<li>keep reference to object in a datastructure such as a list or array.</li>
+</ul>
+</li>
+<li>
+<p>on dispose</p>
+<ul>
+<li>call <code>_object_unparent()</code> to reset the parent property and unref the
+object.</li>
+<li>remove the object from the list.</li>
+</ul>
+</li>
+</ul>
+<p>also see <a href="relations.html">relations</a></p>
+<h3 id="properties">Properties</h3>
+<p>Most objects also expose state information with public properties in the
+object. Two types of properties might exist: accessible with or without
+holding the object lock. All properties should only be accessed with their
+corresponding macros. The public object properties are marked in the .h files
+with /<em>&lt; public &gt;</em>/. The public properties that require a lock to be held are
+marked with <code>/*&lt; public &gt;*/</code> <code>/* with &lt;lock_type&gt; */</code>, where <code>&lt;lock_type&gt;</code> can
+be <code>LOCK</code> or <code>STATE_LOCK</code> or any other lock to mark the type(s) of lock to be
+held.</p>
+<p><strong>Example</strong>:</p>
+<p>in <code>GstPad</code> there is a public property <code>direction</code>. It can be found in the
+section marked as public and requiring the LOCK to be held. There exists
+also a macro to access the property.</p>
+<pre><code class="language-c">struct _GstRealPad {
+  ...
+  /*&lt; public &gt;*/ /* with LOCK */
+  ...
+  GstPadDirection                direction;
+  ...
+};
+
+#define GST_RPAD_DIRECTION(pad)      (GST_REAL_PAD_CAST(pad)-&gt;direction)
+</code></pre>
+<p>Accessing the property is therefore allowed with the following code example:</p>
+<pre><code class="language-c">GST_OBJECT_LOCK (pad);
+direction = GST_RPAD_DIRECTION (pad);
+GST_OBJECT_UNLOCK (pad);
+</code></pre>
+<h3 id="property-lifetime">Property lifetime</h3>
+<p>All properties requiring a lock can change after releasing the associated
+lock. This means that as long as you hold the lock, the state of the
+object regarding the locked properties is consistent with the information
+obtained. As soon as the lock is released, any values acquired from the
+properties might not be valid anymore and can as best be described as a
+snapshot of the state when the lock was held.</p>
+<p>This means that all properties that require access beyond the scope of the
+critial section should be copied or refcounted before releasing the lock.</p>
+<p>Most object provide a <code>_get_&lt;property&gt;()</code> method to get a copy or refcounted
+instance of the property value. The caller should not wory about any locks
+but should unref/free the object after usage.</p>
+<p><strong>Example</strong>:</p>
+<p>the following example correctly gets the peer pad of an element. It is
+required to increase the refcount of the peer pad because as soon as the
+lock is released, the peer could be unreffed and disposed, making the
+pointer obtained in the critical section point to invalid memory.</p>
+<pre><code class="language-c">GST_OBJECT_LOCK (pad);
+peer = GST_RPAD_PEER (pad);
+if (peer)
+gst_object_ref (GST_OBJECT (peer));
+GST_OBJECT_UNLOCK (pad);
+... use peer ...
+
+if (peer)
+  gst_object_unref (GST_OBJECT (peer));
+</code></pre>
+<p>Note that after releasing the lock the peer might not actually be the peer
+anymore of the pad. If you need to be sure it is, you need to extend the
+critical section to include the operations on the peer.</p>
+<p>The following code is equivalent to the above but with using the functions
+to access object properties.</p>
+<pre><code class="language-c">peer = gst_pad_get_peer (pad);
+if (peer) {
+  ... use peer ...
+
+  gst_object_unref (GST_OBJECT (peer));
+}
+</code></pre>
+<p><strong>Example</strong>:</p>
+<p>Accessing the name of an object makes a copy of the name. The caller of the
+function should <code>g_free()</code> the name after usage.</p>
+<pre><code class="language-c">GST_OBJECT_LOCK (object)
+name = g_strdup (GST_OBJECT_NAME (object));
+GST_OBJECT_UNLOCK (object)
+... use name ...
+
+g_free (name);
+</code></pre>
+<p>or:</p>
+<pre><code class="language-c">name = gst_object_get_name (object);
+
+... use name ...
+
+g_free (name);
+</code></pre>
+<h3 id="accessor-methods">Accessor methods</h3>
+<p>For aplications it is encouraged to use the public methods of the object. Most
+useful operations can be performed with the methods so it is seldom required
+to access the public fields manually.</p>
+<p>All accessor methods that return an object should increase the refcount of the
+returned object. The caller should <code>_unref()</code> the object after usage. Each
+method should state this refcounting policy in the documentation.</p>
+<h3 id="accessing-lists">Accessing lists</h3>
+<p>If the object property is a list, concurrent list iteration is needed to get
+the contents of the list. GStreamer uses the cookie mechanism to mark the last
+update of a list. The list and the cookie are protected by the same lock. Each
+update to a list requires the following actions:</p>
+<ul>
+<li>acquire lock</li>
+<li>update list</li>
+<li>update cookie</li>
+<li>release lock</li>
+</ul>
+<p>Updating the cookie is usually done by incrementing its value by one. Since
+cookies use guint32 its wraparound is for all practical reasons is not a
+problem.</p>
+<p>Iterating a list can safely be done by surrounding the list iteration with a
+lock/unlock of the lock.</p>
+<p>In some cases it is not a good idea to hold the lock for a long time while
+iterating the list. The state change code for a bin in GStreamer, for example,
+has to iterate over each element and perform a blocking call on each of them
+potentially causing infinite bin locking. In this case the cookie can be used
+to iterate a list.</p>
+<p><strong>Example</strong>:</p>
+<p>The following algorithm iterates a list and reverses the updates in the
+case a concurrent update was done to the list while iterating. The idea is
+that whenever we reacquire the lock, we check for updates to the cookie to
+decide if we are still iterating the right list.</p>
+<pre><code class="language-c">GST_OBJECT_LOCK (lock);
+/* grab list and cookie */
+cookie = object-&gt;list_cookie;
+list = object-list;
+while (list) {
+  GstObject *item = GST_OBJECT (list-&gt;data);
+  /* need to ref the item before releasing the lock */
+  gst_object_ref (item);
+  GST_OBJECT_UNLOCK (lock);
+
+  ... use/change item here...
+
+  /* release item here */
+  gst_object_unref (item);
+
+  GST_OBJECT_LOCK (lock);
+  if (cookie != object-&gt;list_cookie) {
+    /* handle rollback caused by concurrent modification
+     * of the list here */
+
+    ...rollback changes to items...
+
+    /* grab new cookie and list */
+    cookie = object-&gt;list_cookie;
+    list = object-&gt;list;
+  }
+  else {
+    list = g_list_next (list);
+  }
+}
+GST_OBJECT_UNLOCK (lock);
+</code></pre>
+<h3 id="gstiterator">GstIterator</h3>
+<p><code>GstIterator</code> provides an easier way of retrieving elements in a concurrent
+list. The following code example is equivalent to the previous example.</p>
+<p><strong>Example</strong>:</p>
+<pre><code class="language-c">it = _get_iterator(object);
+while (!done) {
+    switch (gst_iterator_next (it, &amp;item)) {
+    case GST_ITERATOR_OK:
+
+        ... use/change item here...
+
+        /* release item here */
+        gst_object_unref (item);
+    break;
+    case GST_ITERATOR_RESYNC:
+        /* handle rollback caused by concurrent modification
+    * of the list here */
+
+    ...rollback changes to items...
+
+    /* resync iterator to start again */
+    gst_iterator_resync (it);
+    break;
+    case GST_ITERATOR_DONE:
+    done = TRUE;
+    break;
+    }
+}
+gst_iterator_free (it);
+</code></pre>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

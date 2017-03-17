@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Trickmodes</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="design/trickmodes.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="trickmodes.md">
+<h1 id="trickmodes">Trickmodes</h1>
+<p>GStreamer provides API for performing various trickmode playback. This
+includes:</p>
+<ul>
+<li>
+<p>server side trickmodes</p>
+</li>
+<li>
+<p>client side fast/slow forward playback</p>
+</li>
+<li>
+<p>client side fast/slow backwards playback</p>
+</li>
+</ul>
+<p>Server side trickmodes mean that a source (network source) can provide a
+stream with different playback speed and direction. The client does not
+have to perform any special algorithms to decode this stream.</p>
+<p>Client side trickmodes mean that the decoding client (GStreamer)
+performs the needed algorithms to change the direction and speed of the
+media file.</p>
+<p>Seeking can both be done in a playback pipeline and a transcoding
+pipeline.</p>
+<h2 id="general-seeking-overview">General seeking overview</h2>
+<p>Consider a typical playback pipeline:</p>
+<pre><code>                        .---------.  .------.
+            .-------.   | decoder |-&gt;| sink |
+.--------.  |       |--&gt;'---------'  '------'
+| source |-&gt;| demux |
+'--------'  |       |--&gt;.---------.  .------.
+            '-------'   | decoder |-&gt;| sink |
+                        '---------'  '------'
+</code></pre>
+<p>The pipeline is initially configured to play back at speed 1.0 starting
+from position 0 and stopping at the total duration of the file.</p>
+<p>When performing a seek, the following steps have to be taken by the
+application:</p>
+<h3 id="create-a-seek-event">Create a seek event</h3>
+<p>The seek event contains:</p>
+<ul>
+<li>
+<p>various flags describing:</p>
+</li>
+<li>
+<p>where to seek to (KEY_UNIT)</p>
+</li>
+<li>
+<p>how accurate the seek should be (ACCURATE)</p>
+</li>
+<li>
+<p>how to perform the seek (FLUSH)</p>
+</li>
+<li>
+<p>what to do when the stop position is reached (SEGMENT).</p>
+</li>
+<li>
+<p>extra playback options (SKIP)</p>
+</li>
+<li>
+<p>a format to seek in, this can be time, bytes, units (frames,
+samples), …</p>
+</li>
+<li>
+<p>a playback rate, 1.0 is normal playback speed, positive values
+bigger than 1.0 mean fast playback. negative values mean reverse
+playback. A playback speed of 0.0 is not allowed (but is equivalent
+to PAUSING the pipeline).</p>
+</li>
+<li>
+<p>a start position, this value has to be between 0 and the total
+duration of the file. It can also be relative to the previously
+configured start value.</p>
+</li>
+<li>
+<p>a stop position, this value has to be between 0 and the total
+duration. It can also be relative to the previously configured stop
+value.</p>
+</li>
+</ul>
+<p>See also <code>gst_event_new_seek()</code>.</p>
+<h3 id="send-the-seek-event">Send the seek event</h3>
+<p>Send the new seek event to the pipeline with
+<code>gst_element_send_event()</code>.</p>
+<p>By default the pipeline will send the event to all sink elements. By
+default an element will forward the event upstream on all sinkpads.
+Elements can modify the format of the seek event. The most common format
+is GST_FORMAT_TIME.</p>
+<p>One element will actually perform the seek, this is usually the demuxer
+or source element. For more information on how to perform the different
+seek types see <a href="seeking.html">seeking</a>.</p>
+<p>For client side trickmode a SEGMENT event will be sent downstream with
+the new rate and start/stop positions. All elements prepare themselves
+to handle the rate (see below). The applied rate of the SEGMENT event
+will be set to 1.0 to indicate that no rate adjustment has been done.</p>
+<p>for server side trick mode a SEGMENT event is sent downstream with a
+rate of 1.0 and the start/stop positions. The elements will configure
+themselves for normal playback speed since the server will perform the
+rate conversions. The applied rate will be set to the rate that will be
+applied by the server. This is done to insure that the position
+reporting performed in the sink is aware of the trick mode.</p>
+<p>When the seek succeeds, the <code>_send_event()</code> function will return TRUE.</p>
+<h2 id="server-side-trickmode">Server side trickmode</h2>
+<p>The source element operates in push mode. It can reopen a server
+connection requesting a new byte or time position and a new playback
+speed. The capabilities can be queried from the server when the
+connection is opened.</p>
+<p>We assume the source element is derived from the GstPushSrc base class.
+The base source should be configured with gst_base_src_set_format
+(src, GST_FORMAT_TIME).</p>
+<p>The do_seek method will be called on the push src subclass with the
+seek information passed in the GstSegment argument.</p>
+<p>The rate value in the segment should be used to reopen the connection to
+the server requesting data at the new speed and possibly a new playback
+position.</p>
+<p>When the server connection was successfully reopened, set the rate of
+the segment to 1.0 so that the client side trickmode is not enabled. The
+applied rate in the segment is set to the rate transformation done by
+the server.</p>
+<p>Alternatively a combination of client side and serverside trickmode can
+be used, for example if the server does not support certain rates, the
+client can perform rate conversion for the remainder.</p>
+<pre><code>            source               server
+do_seek       |                     |
+  -----------&gt;|                     |
+              |  reopen connection  |
+              |--------------------&gt;|
+              |                     .
+              |   success           .
+              |&lt;--------------------|
+    modify    |                     |
+  rate to 1.0 |                     |
+              |                     |
+   return     |                     |
+    TRUE      |                     |
+              |                     |
+</code></pre>
+<p>After performing the seek, the source will inform the downstream
+elements of the new segment that is to be played back. Since the segment
+will have a rate of 1.0, no client side trick modes are enabled. The
+segment will have an applied rate different from 1.0 to indicate that
+the media contains data with non-standard playback speed or direction.</p>
+<h2 id="client-side-forward-trickmodes">client side forward trickmodes</h2>
+<p>The seek happens as stated above. a SEGMENT event is sent downstream
+with a rate different from 1.0. Plugins receiving the SEGMENT can decide
+to perform the rate conversion of the media data (retimestamp video
+frames, resample audio, …).</p>
+<p>If a plugin decides to resample or retimestamp, it should modify the
+SEGMENT with a rate of 1.0 and update the applied rate so that
+downstream elements don’t resample again but are aware that the media
+has been modified.</p>
+<p>The GStreamer base audio and video sinks will resample automatically if
+they receive a SEGMENT event with a rate different from 1.0. The
+position reporting in the base audio and video sinks will also depend on
+the applied rate of the segment information.</p>
+<p>When the SKIP flag is set, frames can be dropped in the elements. If S
+is the speedup factor, a good algorithm for implementing frame skipping
+is to send audio in chunks of Nms (usually 300ms is good) and then skip
+((S-1) * Nns) of audio data. For the video we send only the keyframes
+in the (S * Nns) interval. In this case, the demuxer would scale the
+timestamps and would set an applied rate of S.</p>
+<h2 id="client-side-backwards-trickmode">client side backwards trickmode</h2>
+<p>For backwards playback the following rules apply:</p>
+<ul>
+<li>
+<p>the rate in the SEGMENT is less than 0.0.</p>
+</li>
+<li>
+<p>the SEGMENT start position is less than the stop position, playback
+will however happen from stop to start in reverse.</p>
+</li>
+<li>
+<p>the time member in the SEGMENT is set to the stream time of the
+start position.</p>
+</li>
+</ul>
+<p>For plugins the following rules apply:</p>
+<ul>
+<li>
+<p>A source plugin sends data in chunks starting from the last chunk of
+the file. The actual bytes are not reversed. Each chunk that is not
+forward continuous with the previous chunk is marked with a DISCONT
+flag.</p>
+</li>
+<li>
+<p>A demuxer accumulates the chunks. As soon as a keyframe is found,
+everything starting from the keyframe up to the accumulated data is
+sent downstream. Timestamps on the buffers are set starting from the
+stop position to start, effectively going backwards. Chunks are
+marked with DISCONT when they are not forward continuous with the
+previous buffer.</p>
+</li>
+<li>
+<p>A video decoder decodes and accumulates all decoded frames. If a
+buffer with a DISCONT, SEGMENT or EOS is received, all accumulated
+frames are sent downsteam in reverse.</p>
+</li>
+<li>
+<p>An audio decoder decodes and accumulates all decoded audio. If a
+buffer with a DISCONT, SEGMENT or EOS is received, all accumulated
+audio is sent downstream in reverse order. Some audio codecs need
+the previous data buffer to decode the current one, in that case,
+the previous DISCONT buffer needs to be combined with the last
+non-DISCONT buffer to generate the last bit of output.</p>
+</li>
+<li>
+<p>A sink reverses (for audio) and retimestamps (audio, video) the
+buffers before playing them back. Retimestamping occurs relative to
+the stop position, making the timestamps increase again and suitable
+for synchronizing against the clock. Audio sinks also have to
+perform simple resampling before playing the samples.</p>
+</li>
+<li>
+<p>for transcoding, audio and video resamplers can be used to reverse,
+resample and retimestamp the buffers. Any rate adjustments performed
+on the media must be added to the applied_rate and subtracted from
+the rate members in the SEGMENT
+event.</p>
+</li>
+</ul>
+<p>In SKIP mode, the same algorithm as for forward SKIP mode can be used.</p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>
+<p>The clock/running_time keeps running forward.</p>
+</li>
+<li>
+<p>backwards playback potentially uses a lot of memory as frames and
+undecoded data gets buffered.</p>
+</li>
+</ul>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

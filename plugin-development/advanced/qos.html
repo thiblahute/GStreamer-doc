@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Quality Of Service (QoS)</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="plugin-development/advanced/qos.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="qos.md">
+<h1 id="quality-of-service-qos">Quality Of Service (QoS)</h1>
+<p>Quality of Service in GStreamer is about measuring and adjusting the
+real-time performance of a pipeline. The real-time performance is always
+measured relative to the pipeline clock and typically happens in the
+sinks when they synchronize buffers against the clock.</p>
+<p>When buffers arrive late in the sink, i.e. when their running-time is
+smaller than that of the clock, we say that the pipeline is having a
+quality of service problem. These are a few possible reasons:</p>
+<ul>
+<li>
+<p>High CPU load, there is not enough CPU power to handle the stream,
+causing buffers to arrive late in the sink.</p>
+</li>
+<li>
+<p>Network problems</p>
+</li>
+<li>
+<p>Other resource problems such as disk load, memory bottlenecks etc</p>
+</li>
+</ul>
+<p>The measurements result in QOS events that aim to adjust the datarate in
+one or more upstream elements. Two types of adjustments can be made:</p>
+<ul>
+<li>
+<p>Short time "emergency" corrections based on latest observation in
+the sinks.</p>
+<p>Long term rate corrections based on trends observed in the sinks.</p>
+</li>
+</ul>
+<p>It is also possible for the application to artificially introduce delay
+between synchronized buffers, this is called throttling. It can be used
+to limit or reduce the framerate, for example.</p>
+<h2 id="measuring-qos">Measuring QoS</h2>
+<p>Elements that synchronize buffers on the pipeline clock will usually
+measure the current QoS. They will also need to keep some statistics in
+order to generate the QOS event.</p>
+<p>For each buffer that arrives in the sink, the element needs to calculate
+how late or how early it was. This is called the jitter. Negative jitter
+values mean that the buffer was early, positive values mean that the
+buffer was late. the jitter value gives an indication of how early/late
+a buffer was.</p>
+<p>A synchronizing element will also need to calculate how much time
+elapsed between receiving two consecutive buffers. We call this the
+processing time because that is the amount of time it takes for the
+upstream element to produce/process the buffer. We can compare this
+processing time to the duration of the buffer to have a measurement of
+how fast upstream can produce data, called the proportion. If, for
+example, upstream can produce a buffer in 0.5 seconds of 1 second long,
+it is operating at twice the required speed. If, on the other hand, it
+takes 2 seconds to produce a buffer with 1 seconds worth of data,
+upstream is producing buffers too slow and we won't be able to keep
+synchronization. Usually, a running average is kept of the proportion.</p>
+<p>A synchronizing element also needs to measure its own performance in
+order to figure out if the performance problem is upstream of itself.</p>
+<p>These measurements are used to construct a QOS event that is sent
+upstream. Note that a QoS event is sent for each buffer that arrives in
+the sink.</p>
+<h2 id="handling-qos">Handling QoS</h2>
+<p>An element will have to install an event function on its source pads in
+order to receive QOS events. Usually, the element will need to store the
+value of the QOS event and use them in the data processing function. The
+element will need to use a lock to protect these QoS values as shown in
+the example below. Also make sure to pass the QoS event upstream.</p>
+<pre><code class="language-c">
+    [...]
+
+    case GST_EVENT_QOS:
+    {
+      GstQOSType type;
+      gdouble proportion;
+      GstClockTimeDiff diff;
+      GstClockTime timestamp;
+
+      gst_event_parse_qos (event, &amp;type, &amp;proportion, &amp;diff, &amp;timestamp);
+
+      GST_OBJECT_LOCK (decoder);
+      priv-&gt;qos_proportion = proportion;
+      priv-&gt;qos_timestamp = timestamp;
+      priv-&gt;qos_diff = diff;
+      GST_OBJECT_UNLOCK (decoder);
+
+      res = gst_pad_push_event (decoder-&gt;sinkpad, event);
+      break;
+    }
+
+    [...]
+
+
+</code></pre>
+<p>With the QoS values, there are two types of corrections that an element
+can do:</p>
+<h3 id="short-term-correction">Short term correction</h3>
+<p>The timestamp and the jitter value in the QOS event can be used to
+perform a short term correction. If the jitter is positive, the previous
+buffer arrived late and we can be sure that a buffer with a timestamp &lt;
+timestamp + jitter is also going to be late. We can thus drop all
+buffers with a timestamp less than timestamp + jitter.</p>
+<p>If the buffer duration is known, a better estimation for the next likely
+timestamp as: timestamp + 2 * jitter + duration.</p>
+<p>A possible algorithm typically looks like this:</p>
+<pre><code class="language-c">
+  [...]
+
+  GST_OBJECT_LOCK (dec);
+  qos_proportion = priv-&gt;qos_proportion;
+  qos_timestamp = priv-&gt;qos_timestamp;
+  qos_diff = priv-&gt;qos_diff;
+  GST_OBJECT_UNLOCK (dec);
+
+  /* calculate the earliest valid timestamp */
+  if (G_LIKELY (GST_CLOCK_TIME_IS_VALID (qos_timestamp))) {
+    if (G_UNLIKELY (qos_diff &gt; 0)) {
+      earliest_time = qos_timestamp + 2 * qos_diff + frame_duration;
+    } else {
+      earliest_time = qos_timestamp + qos_diff;
+    }
+  } else {
+    earliest_time = GST_CLOCK_TIME_NONE;
+  }
+
+  /* compare earliest_time to running-time of next buffer */
+  if (earliest_time &gt; timestamp)
+    goto drop_buffer;
+
+  [...]
+
+
+</code></pre>
+<h3 id="long-term-correction">Long term correction</h3>
+<p>Long term corrections are a bit more difficult to perform. They rely on
+the value of the proportion in the QOS event. Elements should reduce the
+amount of resources they consume by the proportion field in the QoS
+message.</p>
+<p>Here are some possible strategies to achieve this:</p>
+<ul>
+<li>
+<p>Permanently dropping frames or reducing the CPU or bandwidth
+requirements of the element. Some decoders might be able to skip
+decoding of B frames.</p>
+</li>
+<li>
+<p>Switch to lower quality processing or reduce the algorithmic
+complexity. Care should be taken that this doesn't introduce
+disturbing visual or audible glitches.</p>
+</li>
+<li>
+<p>Switch to a lower quality source to reduce network bandwidth.</p>
+</li>
+<li>
+<p>Assign more CPU cycles to critical parts of the pipeline. This
+could, for example, be done by increasing the thread priority.</p>
+</li>
+</ul>
+<p>In all cases, elements should be prepared to go back to their normal
+processing rate when the proportion member in the QOS event approaches
+the ideal proportion of 1.0 again.</p>
+<h2 id="throttling">Throttling</h2>
+<p>Elements synchronizing to the clock should expose a property to
+configure them in throttle mode. In throttle mode, the time distance
+between buffers is kept to a configurable throttle interval. This means
+that effectively the buffer rate is limited to 1 buffer per throttle
+interval. This can be used to limit the framerate, for example.</p>
+<p>When an element is configured in throttling mode (this is usually only
+implemented on sinks) it should produce QoS events upstream with the
+jitter field set to the throttle interval. This should instruct upstream
+elements to skip or drop the remaining buffers in the configured
+throttle interval.</p>
+<p>The proportion field is set to the desired slowdown needed to get the
+desired throttle interval. Implementations can use the QoS Throttle
+type, the proportion and the jitter member to tune their
+implementations.</p>
+<p>The default sink base class, has the “throttle-time” property for this
+feature. You can test this with: <code>gst-launch-1.0 videotestsrc ! xvimagesink throttle-time=500000000</code></p>
+<h2 id="qos-messages">QoS Messages</h2>
+<p>In addition to the QOS events that are sent between elements in the
+pipeline, there are also QOS messages posted on the pipeline bus to
+inform the application of QoS decisions. The QOS message contains the
+timestamps of when something was dropped along with the amount of
+dropped vs processed items. Elements must post a QOS message under these
+conditions:</p>
+<ul>
+<li>
+<p>The element dropped a buffer because of QoS reasons.</p>
+</li>
+<li>
+<p>An element changes its processing strategy because of QoS reasons
+(quality). This could include a decoder that decides to drop every B
+frame to increase its processing speed or an effect element
+switching to a lower quality algorithm.</p>
+</li>
+</ul>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

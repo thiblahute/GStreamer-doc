@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gsttag.c", "urls": ["GStreamer-doc-1.0/plugin-development/advanced/tagging.html#page-description"]});
+urls_downloaded_cb({"token": "gsttag.c", "urls": ["GStreamer-doc-1.0/plugin-development/advanced/tagging.html#page-description", "plugin-development/advanced/tagging.html#page-description"]});

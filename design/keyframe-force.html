@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Forcing keyframes</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-project="" data-hotdoc-ref="design/keyframe-force.html" class="page_container" id="page-wrapper">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sidenav-search" role="search">
+			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
+		</div>
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+			<!-- FIXME -->
+			<div style="height: 76px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="keyframe-force.md">
+<h1 id="forcing-keyframes">Forcing keyframes</h1>
+<p>Consider the following use case:</p>
+<p>We have a pipeline that performs video and audio capture from a live
+source, compresses and muxes the streams and writes the resulting data
+into a file.</p>
+<p>Inside the uncompressed video data we have a specific pattern inserted
+at specific moments that should trigger a switch to a new file, meaning,
+we close the existing file we are writing to and start writing to a new
+file.</p>
+<p>We want the new file to start with a keyframe so that one can start
+decoding the file immediately.</p>
+<h2 id="components">Components</h2>
+<ol>
+<li>
+<p>We need an element that is able to detect the pattern in the video
+stream.</p>
+</li>
+<li>
+<p>We need to inform the video encoder that it should start encoding a
+keyframe starting from exactly the frame with the pattern.</p>
+</li>
+<li>
+<p>We need to inform the demuxer that it should flush out any pending
+data and start creating the start of a new file with the keyframe as
+a first video frame.</p>
+</li>
+<li>
+<p>We need to inform the sink element that it should start writing to
+the next file. This requires application interaction to instruct the
+sink of the new filename. The application should also be free to
+ignore the boundary and continue to write to the existing file. The
+application will typically use an event pad probe to detect the
+custom event.</p>
+</li>
+</ol>
+<h2 id="implementation">Implementation</h2>
+<h3 id="downstream">Downstream</h3>
+<p>The implementation would consist of generating a <code>GST_EVENT_CUSTOM_DOWNSTREAM</code>
+event that marks the keyframe boundary. This event is inserted into the
+pipeline by the application upon a certain trigger. In the above use case
+this trigger would be given by the element that detects the pattern, in the
+form of an element message.</p>
+<p>The custom event would travel further downstream to instruct encoder,
+muxer and sink about the possible switch.</p>
+<p>The information passed in the event consists of:</p>
+<p><strong>GstForceKeyUnit</strong></p>
+<ul>
+<li>
+<p><strong>"timestamp"</strong> (<code>G_TYPE_UINT64</code>): the timestamp of the buffer that
+triggered the event.</p>
+</li>
+<li>
+<p><strong>"stream-time"</strong> (<code>G_TYPE_UINT64</code>): the stream position that triggered the event.</p>
+</li>
+<li>
+<p><strong>"running-time"</strong> (<code>G_TYPE_UINT64</code>): the running time of the stream when
+the event was triggered.</p>
+</li>
+<li>
+<p><strong>"all-headers"</strong> (<code>G_TYPE_BOOLEAN</code>): Send all headers, including
+those in the caps or those sent at the start of the stream.</p>
+</li>
+<li>
+<p><strong>...</strong>: optional other data fields.</p>
+</li>
+</ul>
+<p>Note that this event is purely informational, no element is required to
+perform an action but it should forward the event downstream, just like
+any other event it does not handle.</p>
+<p>Elements understanding the event should behave as follows:</p>
+<ol>
+<li>
+<p>The video encoder receives the event before the next frame. Upon
+reception of the event it schedules to encode the next frame as a
+keyframe. Before pushing out the encoded keyframe it must push the
+<code>GstForceKeyUnit</code> event downstream.</p>
+</li>
+<li>
+<p>The muxer receives the <code>GstForceKeyUnit</code> event and flushes out its
+current state, preparing to produce data that can be used as a
+keyunit. Before pushing out the new data it pushes the
+<code>GstForceKeyUnit</code> event downstream.</p>
+</li>
+<li>
+<p>The application receives the <code>GstForceKeyUnit</code> on a sink padprobe of
+the sink and reconfigures the sink to make it perform new actions
+after receiving the next buffer.</p>
+</li>
+</ol>
+<h3 id="upstream">Upstream</h3>
+<p>When using RTP packets can get lost or receivers can be added at any
+time, they may request a new key frame.</p>
+<p>An downstream element sends an upstream <code>GstForceKeyUnit</code> event up the
+pipeline.</p>
+<p>When an element produces some kind of key unit in output, but has no
+such concept in its input (like an encoder that takes raw frames), it
+consumes the event (doesn't pass it upstream), and instead sends a
+downstream <code>GstForceKeyUnit</code> event and a new keyframe.</p>
+
+</div>
+
+
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>
