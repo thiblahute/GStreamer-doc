@@ -104,7 +104,10 @@ hd_navigation.panel_unfold_template = [
 ].join('\n');
 
 hd_navigation.url_for_node = (function(node) {
-	var url = utils.hd_context.hd_root + node.project_name + '/';
+	var url = utils.hd_context.hd_root;
+
+    if (node.in_toplevel == false)
+        url += node.project_name + '/';
 
 	if (node.extension == 'gi-extension') {
 		if (utils.hd_context.gi_language === undefined) {
@@ -163,6 +166,10 @@ function sitemap_downloaded_cb(sitemap_json) {
 		}
 		level -= 1;
 
+        var node_project = '';
+        if (node.in_toplevel == false)
+            node_project = node.project_name;
+
 		var res = Mustache.to_html(
 				hd_navigation.panel_template,
 				{
@@ -172,7 +179,7 @@ function sitemap_downloaded_cb(sitemap_json) {
 					'title': node.title,
 					'panel_unfold': panel_unfold,
 					'name': name,
-					'node_project': node.project_name,
+					'node_project': node_project,
 					'node_url': node.url,
 					'subpages': rendered_subpages,
 				});

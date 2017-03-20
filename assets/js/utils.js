@@ -91,13 +91,14 @@ utils.HDContext = (class {
 		this.extension = $('#page-wrapper').attr('data-extension');
 		this.hd_basename = $('#page-wrapper').attr('data-hotdoc-ref');
 		this.project_name = $('#page-wrapper').attr('data-hotdoc-project');
+		this.in_toplevel = $('#page-wrapper').attr('data-hotdoc-in-toplevel');
 		if (this.parsedUri.file == '') {
 			this.parsedUri.file = 'index.html';
 			this.parsedUri.path += 'index.html';
 		}
 		this.hd_root = this.parsedUri['scheme'] + '://' + this.parsedUri['authority'] + this.parsedUri['path'];
 
-		if (this.in_toplevel)
+		if (this.in_toplevel == "True")
 			project_url_path = ''
 		else
 			project_url_path = this.project_name + '/';
