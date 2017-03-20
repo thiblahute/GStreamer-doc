@@ -166,10 +166,6 @@ function sitemap_downloaded_cb(sitemap_json) {
 		}
 		level -= 1;
 
-        var node_project = '';
-        if (node.in_toplevel == false)
-            node_project = node.project_name;
-
 		var res = Mustache.to_html(
 				hd_navigation.panel_template,
 				{
@@ -179,7 +175,7 @@ function sitemap_downloaded_cb(sitemap_json) {
 					'title': node.title,
 					'panel_unfold': panel_unfold,
 					'name': name,
-					'node_project': node_project,
+					'node_project': node.project_name,
 					'node_url': node.url,
 					'subpages': rendered_subpages,
 				});
