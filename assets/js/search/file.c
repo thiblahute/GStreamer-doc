@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "file.c", "urls": ["GStreamer-doc-1.0/contribute/index.html#page-description", "contribute/index.html#page-description"]});
+urls_downloaded_cb({"token": "file.c", "urls": ["contribute/index.html#page-description"]});

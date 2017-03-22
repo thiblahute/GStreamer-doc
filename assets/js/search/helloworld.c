@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "helloworld.c", "urls": ["application-development/basics/helloworld.html#page-description", "GStreamer-doc-1.0/application-development/basics/helloworld.html#page-description"]});
+urls_downloaded_cb({"token": "helloworld.c", "urls": ["application-development/basics/helloworld.html#page-description"]});

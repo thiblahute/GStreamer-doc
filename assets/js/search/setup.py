@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "setup.py", "urls": ["GStreamer-doc-1.0/frequently-asked-questions/developing.html#page-description", "frequently-asked-questions/developing.html#page-description"]});
+urls_downloaded_cb({"token": "setup.py", "urls": ["frequently-asked-questions/developing.html#page-description"]});

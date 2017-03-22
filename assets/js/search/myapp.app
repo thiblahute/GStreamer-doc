@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "myapp.app", "urls": ["deploying/mac-osx.html#page-description", "GStreamer-doc-1.0/deploying/mac-osx.html#page-description"]});
+urls_downloaded_cb({"token": "myapp.app", "urls": ["deploying/mac-osx.html#page-description"]});

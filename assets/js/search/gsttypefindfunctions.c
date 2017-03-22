@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gsttypefindfunctions.c", "urls": ["GStreamer-doc-1.0/plugin-development/advanced/media-types.html#page-description", "plugin-development/advanced/media-types.html#page-description"]});
+urls_downloaded_cb({"token": "gsttypefindfunctions.c", "urls": ["plugin-development/advanced/media-types.html#page-description"]});
