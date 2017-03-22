@@ -104,31 +104,31 @@ a parser and share a lot of rather complex code.</p>
 <h2 id="setup-phase">Set-up phase</h2>
 <ul>
 <li>
-<p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> calls <em>start</em> to inform subclass that data processing is
+<p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> calls <em>start</em> to inform subclass that data processing is
 about to start now.</p>
 </li>
 <li>
-<p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> class calls <em>set_sink_caps</em> to inform the subclass about
+<p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> class calls <em>set_sink_caps</em> to inform the subclass about
 incoming sinkpad caps. Subclass could already set the srcpad caps
 accordingly, but this might be delayed until calling
 <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#gst_base_parse_finish_frame">gst_base_parse_finish_frame</a> with a non-queued frame.</p>
 </li>
 <li>
-<p>At least at this point subclass needs to tell the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> class
+<p>At least at this point subclass needs to tell the <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> class
 how big data chunks it wants to receive (min_frame_size). It can do
 this with <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#gst_base_parse_set_min_frame_size">gst_base_parse_set_min_frame_size</a>.</p>
 </li>
 <li>
-<p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> class sets up appropriate data passing mode (pull/push)
+<p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> class sets up appropriate data passing mode (pull/push)
 and starts to process the data.</p>
 </li>
 </ul>
 <h2 id="parsing-phase">Parsing phase</h2>
 <ul>
 <li>
-<p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> gathers at least min_frame_size bytes of data either
+<p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> gathers at least min_frame_size bytes of data either
 by pulling it from upstream or collecting buffers in an internal
-<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstAdapter.html#GstAdapter-struct">GstAdapter</a>.</p>
+<a href="../../libgstbase-doc-1.0/c/gstadapter.html#GstAdapter">GstAdapter</a>.</p>
 </li>
 <li>
 <p>A buffer of (at least) min_frame_size bytes is passed to subclass with
@@ -152,7 +152,7 @@ but other state is only updated upon each call to <em>handle_frame</em>
 (such as tracking upstream input timestamp).</p>
 <p>Subclass is also responsible for setting the buffer metadata
 (e.g. buffer timestamp and duration, or keyframe if applicable).
-(although the latter can also be done by <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> if it is
+(although the latter can also be done by <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> if it is
 appropriately configured, see below).  Frame is provided with
 timestamp derived from upstream (as much as generally possible),
 duration obtained from configuration (see below), and offset
@@ -175,7 +175,7 @@ and sinkpad events. They will be passed to subclass if <em>event</em> or
 </ul>
 <h2 id="shutdown-phase">Shutdown phase</h2>
 <ul>
-<li><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> class calls <em>stop</em> to inform the subclass that data
+<li><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> class calls <em>stop</em> to inform the subclass that data
 parsing will be stopped.</li>
 </ul>
 <p>Subclass is responsible for providing pad template caps for
@@ -186,7 +186,7 @@ when base class calls subclass' <em>set_sink_caps</em> function).</p>
 subclass conversion routine needs to know that conversion from
 <a href="../../libgstreamer-doc-1.0/c/gstformat.html#GST_FORMAT_TIME">GST_FORMAT_TIME</a> to <a href="../../libgstreamer-doc-1.0/c/gstformat.html#GST_FORMAT_DEFAULT">GST_FORMAT_DEFAULT</a> must return the
 frame number that can be found from the given byte position.</p>
-<p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> uses subclasses conversion methods also for seeking (or
+<p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> uses subclasses conversion methods also for seeking (or
 otherwise uses its own default one, see also below).</p>
 <p>Subclass <em>start</em> and <em>stop</em> functions will be called to inform the beginning
 and end of data processing.</p>
@@ -224,15 +224,45 @@ and <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#gst_base_parse_set_fra
 <li>
 <p>In particular, if subclass is unable to determine a duration, but
 parsing (or specs) yields a frames per seconds rate, then this can be
-provided to <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> to enable it to cater for
+provided to <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> to enable it to cater for
 buffer time metadata (which will be taken from upstream as much as
 possible). Internally keeping track of frame durations and respective
-sizes that have been pushed provides <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> with an estimated
+sizes that have been pushed provides <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> with an estimated
 bitrate. A default <em>convert</em> (used if not overridden) will then use these
 rates to perform obvious conversions.  These rates are also used to
 update (estimated) duration at regular frame intervals.</p>
 </li>
 </ul>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse">
+		<h3 id="gstbaseparse1">
+	GstBaseParse
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="../../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../../libgstreamer-doc-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span>GstBaseParse
+</pre>
+
+</div>
+
+</div>
+
+<div class="class_details">
+	<p>The opaque <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> data structure.</p>
+
+</div>
 
 </div>
 
@@ -249,7 +279,7 @@ update (estimated) duration at regular frame intervals.</p>
 
 <pre class="prototype">
 <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
-gst_base_parse_add_index_entry (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_add_index_entry (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                                 <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset,
                                 <a title="GstClockTime" href="../../libgstreamer-doc-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> ts,
                                 <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a> key,
@@ -270,7 +300,7 @@ to the new entry, etc.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a>.</p>
 </td>
 <td>
 
@@ -385,13 +415,13 @@ to the new entry, etc.</p>
 
 <pre class="prototype">
 <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
-gst_base_parse_convert_default (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_convert_default (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                                 <a title="GstFormat" href="../../GstFormat/c">GstFormat</a> src_format,
                                 <a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a> src_value,
                                 <a title="GstFormat" href="../../GstFormat/c">GstFormat</a> dest_format,
                                 <a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a> * dest_value)</pre>
 
-<p>Default implementation of "convert" vmethod in <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> class.</p>
+<p>Default implementation of "convert" vmethod in <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> class.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters1">Parameters</h4>
@@ -403,7 +433,7 @@ gst_base_parse_convert_default (<a title="GstBaseParse" href="http://gstreamer.f
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a>.</p>
 </td>
 <td>
 
@@ -518,7 +548,7 @@ gst_base_parse_convert_default (<a title="GstBaseParse" href="http://gstreamer.f
 
 <pre class="prototype">
 void
-gst_base_parse_drain (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse)</pre>
+gst_base_parse_drain (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse)</pre>
 
 <p>Drains the adapter until it is empty. It decreases the min_frame_size to
 match the current adapter size and calls chain method until the adapter
@@ -534,7 +564,7 @@ is emptied or chain returns with error.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a></p>
 </td>
 <td>
 
@@ -565,7 +595,7 @@ is emptied or chain returns with error.</p>
 
 <pre class="prototype">
 <a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
-gst_base_parse_finish_frame (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_finish_frame (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                              <a title="GstBaseParseFrame" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParseFrame">GstBaseParseFrame</a> * frame,
                              <a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a> size)</pre>
 
@@ -589,7 +619,7 @@ caller retains ownership of <em>frame</em>.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a></p>
 </td>
 <td>
 
@@ -676,7 +706,7 @@ caller retains ownership of <em>frame</em>.</p>
 
 <pre class="prototype">
 void
-gst_base_parse_merge_tags (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_merge_tags (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                            <a title="GstTagList" href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GstTagList">GstTagList</a> * tags,
                            <a title="GstTagMergeMode" href="../../libgstreamer-doc-1.0/c/gsttaglist.html#GstTagMergeMode">GstTagMergeMode</a> mode)</pre>
 
@@ -696,7 +726,7 @@ not required to use this and can still do tag handling on its own.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a></p>
 </td>
 <td>
 
@@ -757,7 +787,7 @@ previously-set tags</p>
 
 <pre class="prototype">
 <a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
-gst_base_parse_push_frame (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_push_frame (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                            <a title="GstBaseParseFrame" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParseFrame">GstBaseParseFrame</a> * frame)</pre>
 
 <p>Pushes the frame's buffer downstream, sends any pending events and
@@ -775,7 +805,7 @@ frame's buffer, though caller retains ownership of <em>frame</em>.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a>.</p>
 </td>
 <td>
 
@@ -849,7 +879,7 @@ frame's buffer, though caller retains ownership of <em>frame</em>.</p>
 
 <pre class="prototype">
 void
-gst_base_parse_set_average_bitrate (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_set_average_bitrate (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                                     <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> bitrate)</pre>
 
 <p>Optionally sets the average bitrate detected in media (if non-zero),
@@ -869,7 +899,7 @@ a seek position, if there's no index and the format is syncable
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a>.</p>
 </td>
 <td>
 
@@ -911,7 +941,7 @@ a seek position, if there's no index and the format is syncable
 
 <pre class="prototype">
 void
-gst_base_parse_set_duration (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_set_duration (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                              <a title="GstFormat" href="../../GstFormat/c">GstFormat</a> fmt,
                              <a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a> duration,
                              <a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a> interval)</pre>
@@ -932,7 +962,7 @@ frames.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a>.</p>
 </td>
 <td>
 
@@ -1002,7 +1032,7 @@ frames.</p>
 
 <pre class="prototype">
 void
-gst_base_parse_set_frame_rate (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_set_frame_rate (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                                <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> fps_num,
                                <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> fps_den,
                                <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> lead_in,
@@ -1024,7 +1054,7 @@ entirely filled upon decoding.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> to set</p>
+		<td><p>the <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> to set</p>
 </td>
 <td>
 
@@ -1108,7 +1138,7 @@ entirely filled upon decoding.</p>
 
 <pre class="prototype">
 void
-gst_base_parse_set_has_timing_info (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_set_has_timing_info (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                                     <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a> has_timing)</pre>
 
 <p>Set if frames carry timing information which the subclass can (generally)
@@ -1125,7 +1155,7 @@ can be obtained following a seek.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a></p>
 </td>
 <td>
 
@@ -1167,7 +1197,7 @@ can be obtained following a seek.</p>
 
 <pre class="prototype">
 void
-gst_base_parse_set_infer_ts (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_set_infer_ts (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                              <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a> infer_ts)</pre>
 
 <p>By default, the base class might try to infer PTS from DTS and vice
@@ -1185,7 +1215,7 @@ timestamp inferring.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a></p>
 </td>
 <td>
 
@@ -1227,7 +1257,7 @@ timestamp inferring.</p>
 
 <pre class="prototype">
 void
-gst_base_parse_set_latency (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_set_latency (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                             <a title="GstClockTime" href="../../libgstreamer-doc-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> min_latency,
                             <a title="GstClockTime" href="../../libgstreamer-doc-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> max_latency)</pre>
 
@@ -1245,7 +1275,7 @@ particular parsing of the format, it typically corresponds to 1 frame duration.<
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a></p>
 </td>
 <td>
 
@@ -1301,7 +1331,7 @@ particular parsing of the format, it typically corresponds to 1 frame duration.<
 
 <pre class="prototype">
 void
-gst_base_parse_set_min_frame_size (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_set_min_frame_size (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                                    <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> min_size)</pre>
 
 <p>Subclass can use this function to tell the base class that it needs to
@@ -1317,7 +1347,7 @@ give at least min_size buffers.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a>.</p>
+		<td><p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a>.</p>
 </td>
 <td>
 
@@ -1360,7 +1390,7 @@ subclass.</p>
 
 <pre class="prototype">
 void
-gst_base_parse_set_passthrough (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_set_passthrough (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                                 <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a> passthrough)</pre>
 
 <p>Set if the nature of the format or configuration does not allow (much)
@@ -1381,7 +1411,7 @@ passthrough semantics in <em>pre_push_frame</em>.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a></p>
 </td>
 <td>
 
@@ -1423,7 +1453,7 @@ passthrough semantics in <em>pre_push_frame</em>.</p>
 
 <pre class="prototype">
 void
-gst_base_parse_set_pts_interpolation (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_set_pts_interpolation (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                                       <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a> pts_interpolate)</pre>
 
 <p>By default, the base class will guess PTS timestamps using a simple
@@ -1441,7 +1471,7 @@ implementing such formats should disable PTS interpolation.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a></p>
 </td>
 <td>
 
@@ -1483,7 +1513,7 @@ implementing such formats should disable PTS interpolation.</p>
 
 <pre class="prototype">
 void
-gst_base_parse_set_syncable (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_set_syncable (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                              <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a> syncable)</pre>
 
 <p>Set if frame starts can be identified. This is set by default and
@@ -1500,7 +1530,7 @@ is possible for a format/stream.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a></p>
 </td>
 <td>
 
@@ -1542,11 +1572,11 @@ is possible for a format/stream.</p>
 
 <pre class="prototype">
 void
-gst_base_parse_set_ts_at_offset (<a title="GstBaseParse" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> * parse,
+gst_base_parse_set_ts_at_offset (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
                                  <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> offset)</pre>
 
 <p>This function should only be called from a <em>handle_frame</em> implementation.</p>
-<p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> creates initial timestamps for frames by using the last
+<p><a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> creates initial timestamps for frames by using the last
 timestamp seen in the stream before the frame starts.  In certain
 cases, the correct timestamps will occur in the stream after the
 start of the frame, but before the start of the actual picture data.
@@ -1563,7 +1593,7 @@ into the frame data that the picture starts.</p>
 		<i><em><code>parse:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a></p>
+		<td><p>a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a></p>
 </td>
 <td>
 
@@ -1685,7 +1715,7 @@ Set to -1 to mark the entire frame as metadata. If in doubt, set to 0.</p>
 	</td>
 	<td>
 		<p>a newly-allocated <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParseFrame">GstBaseParseFrame</a>. Free with
-<a href="../../Miscellaneous.html#gst_base_parse_frame_free">gst_base_parse_frame_free</a> when no longer needed.</p>
+<a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#gst_base_parse_frame_free">gst_base_parse_frame_free</a> when no longer needed.</p>
 
 	</td>
 	<td>
@@ -1708,6 +1738,46 @@ Set to -1 to mark the entire frame as metadata. If in doubt, set to 0.</p>
 
 
 
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_parse_frame_free">
+		<h3 id="gst_base_parse_frame_free1">
+	<span><code>gst_base_parse_frame_free</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_base_parse_frame_free (<a title="GstBaseParseFrame" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParseFrame">GstBaseParseFrame</a> * frame)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>frame:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
 <div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_parse_frame_init">
 		<h3 id="gst_base_parse_frame_init1">
 	<span><code>gst_base_parse_frame_init</code></span>
@@ -1721,12 +1791,12 @@ gst_base_parse_frame_init (<a title="GstBaseParseFrame" href="../../libgstbase-d
 
 <p>Sets a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParseFrame">GstBaseParseFrame</a> to initial state.  Currently this means
 all public fields are zero-ed and a private flag is set to make
-sure <a href="../../Miscellaneous.html#gst_base_parse_frame_free">gst_base_parse_frame_free</a> only frees the contents but not
+sure <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#gst_base_parse_frame_free">gst_base_parse_frame_free</a> only frees the contents but not
 the actual frame. Use this function to initialise a <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParseFrame">GstBaseParseFrame</a>
 allocated on the stack.</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters18">Parameters</h4>
+		<h4 id="parameters19">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -1783,10 +1853,10 @@ allocated on the stack.</p>
 #define GST_BASE_PARSE_SRC_PAD(obj)    (GST_BASE_PARSE_CAST (obj)-&gt;srcpad)
 </pre>
 
-<p>Gives the pointer to the source <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html#GstPad-struct">GstPad</a> object of the element.</p>
+<p>Gives the pointer to the source <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a> object of the element.</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters19">Parameters</h4>
+		<h4 id="parameters20">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -1823,10 +1893,10 @@ allocated on the stack.</p>
 #define GST_BASE_PARSE_SINK_PAD(obj)    (GST_BASE_PARSE_CAST (obj)-&gt;sinkpad)
 </pre>
 
-<p>Gives the pointer to the sink <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html#GstPad-struct">GstPad</a> object of the element.</p>
+<p>Gives the pointer to the sink <a href="../../libgstreamer-doc-1.0/c/gstpad.html#GstPad">GstPad</a> object of the element.</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters20">Parameters</h4>
+		<h4 id="parameters21">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -1866,7 +1936,7 @@ allocated on the stack.</p>
 <p>Obtains current sync status.</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters21">Parameters</h4>
+		<h4 id="parameters22">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -1907,7 +1977,7 @@ allocated on the stack.</p>
 the parser is now processing the frames at the end of the stream)</p>
 
 	<div class="parameter_container">
-		<h4 id="parameters22">Parameters</h4>
+		<h4 id="parameters23">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -1930,6 +2000,40 @@ the parser is now processing the frames at the end of the stream)</p>
 
 
 
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:disable-passthrough">
+		<h3 class="method" id="gstbaseparsedisablepassthrough">
+	<span><code>GstBaseParse:disable-passthrough</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstBaseParse:disable-passthrough” <span class="type"><a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>If set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>, baseparse will unconditionally force parsing of the
+incoming data. This can be required in the rare cases where the incoming
+side-data (caps, pts, dts, ...) is not trusted by the user and wants to
+force validation and parsing of the incoming data.
+If set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>, decision of whether to parse the data or not is up to
+the implementation (standard behaviour).</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
 
 </div>
 
@@ -2181,7 +2285,7 @@ of each frame's processing, i.e. parsing virtual method invocation sequence.</p>
 	</td>
 		<td><p>a combination of input and output <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParseFrameFlags">GstBaseParseFrameFlags</a> that
 convey additional context to subclass or allow subclass to tune
-subsequent <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseParse.html#GstBaseParse-struct">GstBaseParse</a> actions.</p>
+subsequent <a href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> actions.</p>
 </td>
 </tr>
 
@@ -2249,6 +2353,1044 @@ skipped in bitrate calculation.</p>
 		</table>
 	</div>
 </div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Virtual_Methods">Virtual Methods</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::convert">
+		<h3 id="convert">
+	<span><code>convert</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+convert (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
+         <a title="GstFormat" href="../../GstFormat/c">GstFormat</a> src_format,
+         <a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a> src_value,
+         <a title="GstFormat" href="../../GstFormat/c">GstFormat</a> dest_format,
+         <a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a> * dest_value)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src_format:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>src_value:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dest_format:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dest_value:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::detect">
+		<h3 id="detect">
+	<span><code>detect</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+detect (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
+        <a title="GstBuffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::get_sink_caps">
+		<h3 id="get_sink_caps">
+	<span><code>get_sink_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+get_sink_caps (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
+               <a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * filter)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>filter:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::handle_frame">
+		<h3 id="handle_frame">
+	<span><code>handle_frame</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+handle_frame (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
+              <a title="GstBaseParseFrame" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParseFrame">GstBaseParseFrame</a> * frame,
+              <a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a> * skipsize)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters27">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>frame:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>skipsize:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::pre_push_frame">
+		<h3 id="pre_push_frame">
+	<span><code>pre_push_frame</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+pre_push_frame (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
+                <a title="GstBaseParseFrame" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParseFrame">GstBaseParseFrame</a> * frame)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters28">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>frame:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../gst-plugins-bad-plugins-doc-1.0/c/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::set_sink_caps">
+		<h3 id="set_sink_caps">
+	<span><code>set_sink_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+set_sink_caps (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
+               <a title="GstCaps" href="../../libgstreamer-doc-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters29">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::sink_event">
+		<h3 id="sink_event">
+	<span><code>sink_event</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+sink_event (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
+            <a title="GstEvent" href="../../libgstreamer-doc-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters30">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::sink_query">
+		<h3 id="sink_query">
+	<span><code>sink_query</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+sink_query (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
+            <a title="GstQuery" href="../../libgstreamer-doc-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters31">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::src_event">
+		<h3 id="src_event">
+	<span><code>src_event</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+src_event (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
+           <a title="GstEvent" href="../../libgstreamer-doc-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters32">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::src_query">
+		<h3 id="src_query">
+	<span><code>src_query</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+src_query (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse,
+           <a title="GstQuery" href="../../libgstreamer-doc-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters33">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::start">
+		<h3 id="start">
+	<span><code>start</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+start (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters34">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseParse:::stop">
+		<h3 id="stop">
+	<span><code>stop</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+stop (<a title="GstBaseParse" href="../../libgstbase-doc-1.0/c/gstbaseparse.html#GstBaseParse">GstBaseParse</a> * parse)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters35">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parse:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
 
 
 </div>
