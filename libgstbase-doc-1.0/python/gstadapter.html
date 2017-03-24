@@ -59,6 +59,12 @@
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
 			<ul class="nav navbar-nav" id="menu">
 							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
 		</div>
 	</div>
 </nav>
@@ -68,16 +74,11 @@
 	<div class="row">
 		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sidenav-search" role="search">
-			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
-		</div>
 		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
 			<div class="sidenav-main-panel-body">
 				<div id="site-navigation">
 				</div>
 			</div>
-			<!-- FIXME -->
-			<div style="height: 76px;"></div>
 		</div>
 	</div>
 </div>
@@ -91,15 +92,15 @@ While for example raw video contains one image per buffer, the same is not
 true for a lot of other formats, especially those that come directly from
 a file. So if you have undefined buffer sizes and require a specific size,
 this object is for you.</p>
-<p>An adapter is created with <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_new">GstBase.Adapter.new</a>. It can be freed again with
+<p>An adapter is created with <a href="gstadapter.html#gst_adapter_new">GstBase.Adapter.new</a>. It can be freed again with
 <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#g-object-unref">GObject.Object.unref</a>.</p>
 <p>The theory of operation is like this: All buffers received are put
-into the adapter using <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_push">GstBase.Adapter.push</a> and the data is then read back
-in chunks of the desired size using <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_map">GstBase.Adapter.map</a>/<a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_unmap">GstBase.Adapter.unmap</a>
-and/or <a href="../../libgstbase-doc-1.0/c/gstadapter.html#gst_adapter_copy">gst_adapter_copy (not introspectable)</a>. After the data has been processed, it is freed
-using <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_unmap">GstBase.Adapter.unmap</a>.</p>
-<p>Other methods such as <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_take">GstBase.Adapter.take</a> and <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_take_buffer">GstBase.Adapter.take_buffer</a>
-combine <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_map">GstBase.Adapter.map</a> and <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_unmap">GstBase.Adapter.unmap</a> in one method and are
+into the adapter using <a href="gstadapter.html#gst_adapter_push">GstBase.Adapter.push</a> and the data is then read back
+in chunks of the desired size using <a href="gstadapter.html#gst_adapter_map">GstBase.Adapter.map</a>/<a href="gstadapter.html#gst_adapter_unmap">GstBase.Adapter.unmap</a>
+and/or <a href="../c/gstadapter.html#gst_adapter_copy">gst_adapter_copy (not introspectable)</a>. After the data has been processed, it is freed
+using <a href="gstadapter.html#gst_adapter_unmap">GstBase.Adapter.unmap</a>.</p>
+<p>Other methods such as <a href="gstadapter.html#gst_adapter_take">GstBase.Adapter.take</a> and <a href="gstadapter.html#gst_adapter_take_buffer">GstBase.Adapter.take_buffer</a>
+combine <a href="gstadapter.html#gst_adapter_map">GstBase.Adapter.map</a> and <a href="gstadapter.html#gst_adapter_unmap">GstBase.Adapter.unmap</a> in one method and are
 potentially more convenient for some use cases.</p>
 <p>For example, a sink pad's chain function that needs to pass data to a library
 in 512-byte chunks could be implemented like this:</p>
@@ -128,46 +129,46 @@ in 512-byte chunks could be implemented like this:</p>
    return ret;
  }
 </code></pre>
-<p>For another example, a simple element inside GStreamer that uses <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<p>For another example, a simple element inside GStreamer that uses <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 is the libvisual element.</p>
-<p>An element using <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a> in its sink pad chain function should ensure that
+<p>An element using <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a> in its sink pad chain function should ensure that
 when the FLUSH_STOP event is received, that any queued data is cleared using
-<a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_clear">GstBase.Adapter.clear</a>. Data should also be cleared or processed on EOS and
+<a href="gstadapter.html#gst_adapter_clear">GstBase.Adapter.clear</a>. Data should also be cleared or processed on EOS and
 when changing state from <a href="../../libgstreamer-doc-1.0/c/gstelement.html#GST_STATE_PAUSED">Gst.State.paused</a> to <a href="../../libgstreamer-doc-1.0/c/gstelement.html#GST_STATE_READY">Gst.State.ready</a>.</p>
 <p>Also check the GST_BUFFER_FLAG_DISCONT flag on the buffer. Some elements might
 need to clear the adapter after a discontinuity.</p>
 <p>The adapter will keep track of the timestamps of the buffers
 that were pushed. The last seen timestamp before the current position
-can be queried with <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_prev_pts">GstBase.Adapter.prev_pts</a>. This function can
+can be queried with <a href="gstadapter.html#gst_adapter_prev_pts">GstBase.Adapter.prev_pts</a>. This function can
 optionally return the number of bytes between the start of the buffer that
 carried the timestamp and the current adapter position. The distance is
 useful when dealing with, for example, raw audio samples because it allows
 you to calculate the timestamp of the current adapter position by using the
 last seen timestamp and the amount of bytes since.  Additionally, the
-<a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_prev_pts_at_offset">GstBase.Adapter.prev_pts_at_offset</a> can be used to determine the last
+<a href="gstadapter.html#gst_adapter_prev_pts_at_offset">GstBase.Adapter.prev_pts_at_offset</a> can be used to determine the last
 seen timestamp at a particular offset in the adapter.</p>
 <p>The adapter will also keep track of the offset of the buffers
 (#GST_BUFFER_OFFSET) that were pushed. The last seen offset before the
-current position can be queried with <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_prev_offset">GstBase.Adapter.prev_offset</a>. This function
+current position can be queried with <a href="gstadapter.html#gst_adapter_prev_offset">GstBase.Adapter.prev_offset</a>. This function
 can optionally return the number of bytes between the start of the buffer
 that carried the offset and the current adapter position.</p>
 <p>Additionally the adapter also keeps track of the PTS, DTS and buffer offset
 at the last discontinuity, which can be retrieved with
-<a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_pts_at_discont">GstBase.Adapter.pts_at_discont</a>, <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_dts_at_discont">GstBase.Adapter.dts_at_discont</a> and
-<a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_offset_at_discont">GstBase.Adapter.offset_at_discont</a>. The number of bytes that were consumed
-since then can be queried with <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_distance_from_discont">GstBase.Adapter.distance_from_discont</a>.</p>
-<p>A last thing to note is that while <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a> is pretty optimized,
+<a href="gstadapter.html#gst_adapter_pts_at_discont">GstBase.Adapter.pts_at_discont</a>, <a href="gstadapter.html#gst_adapter_dts_at_discont">GstBase.Adapter.dts_at_discont</a> and
+<a href="gstadapter.html#gst_adapter_offset_at_discont">GstBase.Adapter.offset_at_discont</a>. The number of bytes that were consumed
+since then can be queried with <a href="gstadapter.html#gst_adapter_distance_from_discont">GstBase.Adapter.distance_from_discont</a>.</p>
+<p>A last thing to note is that while <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a> is pretty optimized,
 merging buffers still might be an operation that requires a malloc and
 memcpy operation, and these operations are not the fastest. Because of
-this, some functions like <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_available_fast">GstBase.Adapter.available_fast</a> are provided to help
+this, some functions like <a href="gstadapter.html#gst_adapter_available_fast">GstBase.Adapter.available_fast</a> are provided to help
 speed up such cases should you want to. To avoid repeated memory allocations,
-<a href="../../libgstbase-doc-1.0/c/gstadapter.html#gst_adapter_copy">gst_adapter_copy (not introspectable)</a> can be used to copy data into a (statically allocated)
+<a href="../c/gstadapter.html#gst_adapter_copy">gst_adapter_copy (not introspectable)</a> can be used to copy data into a (statically allocated)
 user provided buffer.</p>
-<p><a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a> is not MT safe. All operations on an adapter must be serialized by
+<p><a href="gstadapter.html#GstAdapter">GstBase.Adapter</a> is not MT safe. All operations on an adapter must be serialized by
 the caller. This is not normally a problem, however, as the normal use case
-of <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a> is inside one pad's chain function, in which case access is
+of <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a> is inside one pad's chain function, in which case access is
 serialized via the pad's STREAM_LOCK.</p>
-<p>Note that <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_push">GstBase.Adapter.push</a> takes ownership of the buffer passed. Use
+<p>Note that <a href="gstadapter.html#gst_adapter_push">GstBase.Adapter.push</a> takes ownership of the buffer passed. Use
 <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBuffer.html#gst-buffer-ref">gst_buffer_ref (not introspectable)</a> before pushing it into the adapter if you still want to
 access the buffer later. The adapter will never modify the data in the
 buffer pushed in it.</p>
@@ -195,7 +196,7 @@ buffer pushed in it.</p>
 </div>
 
 <div class="class_details">
-	<p>The opaque <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a> data structure.</p>
+	<p>The opaque <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a> data structure.</p>
 
 </div>
 
@@ -214,7 +215,7 @@ buffer pushed in it.</p>
 def GstBase.Adapter.new ():
     #python wrapper for 'gst_adapter_new'</pre>
 
-<p>Creates a new <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>. Free with <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#g-object-unref">GObject.Object.unref</a>.</p>
+<p>Creates a new <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a>. Free with <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#g-object-unref">GObject.Object.unref</a>.</p>
 
 
 	<div class="multi_return_value_container">
@@ -232,11 +233,11 @@ def GstBase.Adapter.new ():
 				</p>
 	</td>
 	<td>
-		<p>a new <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<p>a new <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 
 	</td>
 	<td>
-		<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+		<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 	</td>
 	</tr>
 
@@ -261,7 +262,7 @@ def GstBase.Adapter.available (self):
     #python wrapper for 'gst_adapter_available'</pre>
 
 <p>Gets the maximum amount of bytes available, that is it returns the maximum
-value that can be supplied to <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_map">GstBase.Adapter.map</a> without that function
+value that can be supplied to <a href="gstadapter.html#gst_adapter_map">GstBase.Adapter.map</a> without that function
 returning <a href="https://docs.python.org/2/library/constants.html#None">None</a>.</p>
 
 	<div class="parameter_container">
@@ -274,10 +275,10 @@ returning <a href="https://docs.python.org/2/library/constants.html#None">None</
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -342,10 +343,10 @@ temporary buffer).</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -409,10 +410,10 @@ def GstBase.Adapter.clear (self):
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -451,10 +452,10 @@ the value of the <em>size</em> argument an empty <a href="https://developer.gnom
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -547,7 +548,7 @@ def GstBase.Adapter.distance_from_discont (self):
 	</td>
 		<td></td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -610,10 +611,10 @@ flag, or GST_CLOCK_TIME_NONE.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -669,7 +670,7 @@ def GstBase.Adapter.flush (self, flush):
 
 <p>Flushes the first <em>flush</em> bytes in the <em>adapter</em>. The caller must ensure that
 at least this many bytes are available.</p>
-<p>See also: <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_map">GstBase.Adapter.map</a>, <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_unmap">GstBase.Adapter.unmap</a></p>
+<p>See also: <a href="gstadapter.html#gst_adapter_map">GstBase.Adapter.map</a>, <a href="gstadapter.html#gst_adapter_unmap">GstBase.Adapter.unmap</a></p>
 
 	<div class="parameter_container">
 		<h4 id="parameters6">Parameters</h4>
@@ -681,10 +682,10 @@ at least this many bytes are available.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -722,7 +723,7 @@ def GstBase.Adapter.get_buffer (self, nbytes):
     #python wrapper for 'gst_adapter_get_buffer'</pre>
 
 <p>Returns a <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> containing the first <em>nbytes</em> of the <em>adapter</em>, but
-does not flush them from the adapter. See <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_take_buffer">GstBase.Adapter.take_buffer</a>
+does not flush them from the adapter. See <a href="gstadapter.html#gst_adapter_take_buffer">GstBase.Adapter.take_buffer</a>
 for details.</p>
 <p>Caller owns a reference to the returned buffer. <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBuffer.html#gst-buffer-unref">gst_buffer_unref (not introspectable)</a> after
 usage.</p>
@@ -738,10 +739,10 @@ usage.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -811,7 +812,7 @@ def GstBase.Adapter.get_buffer_fast (self, nbytes):
     #python wrapper for 'gst_adapter_get_buffer_fast'</pre>
 
 <p>Returns a <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> containing the first <em>nbytes</em> of the <em>adapter</em>, but
-does not flush them from the adapter. See <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_take_buffer_fast">GstBase.Adapter.take_buffer_fast</a>
+does not flush them from the adapter. See <a href="gstadapter.html#gst_adapter_take_buffer_fast">GstBase.Adapter.take_buffer_fast</a>
 for details.</p>
 <p>Caller owns a reference to the returned buffer. <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBuffer.html#gst-buffer-unref">gst_buffer_unref (not introspectable)</a> after
 usage.</p>
@@ -827,10 +828,10 @@ usage.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -901,7 +902,7 @@ def GstBase.Adapter.get_buffer_list (self, nbytes):
 
 <p>Returns a <a href="../../libgstreamer-doc-1.0/c/gstbufferlist.html#GstBufferList">Gst.BufferList</a> of buffers containing the first <em>nbytes</em> bytes of
 the <em>adapter</em> but does not flush them from the adapter. See
-<a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_take_buffer_list">GstBase.Adapter.take_buffer_list</a> for details.</p>
+<a href="gstadapter.html#gst_adapter_take_buffer_list">GstBase.Adapter.take_buffer_list</a> for details.</p>
 <p>Caller owns the returned list. Call <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBufferList.html#gst-buffer-list-unref">gst_buffer_list_unref (not introspectable)</a> to free
 the list after usage.</p>
 
@@ -915,10 +916,10 @@ the list after usage.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -989,7 +990,7 @@ def GstBase.Adapter.get_list (self, nbytes):
 
 <p>Returns a <a href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GLib.List</a> of buffers containing the first <em>nbytes</em> bytes of the
 <em>adapter</em>, but does not flush them from the adapter. See
-<a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_take_list">GstBase.Adapter.take_list</a> for details.</p>
+<a href="gstadapter.html#gst_adapter_take_list">GstBase.Adapter.take_list</a> for details.</p>
 <p>Caller owns returned list and contained buffers. <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBuffer.html#gst-buffer-unref">gst_buffer_unref (not introspectable)</a> each
 buffer in the list before freeing the list after usage.</p>
 
@@ -1003,10 +1004,10 @@ buffer in the list before freeing the list after usage.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -1082,9 +1083,9 @@ incorrect for general-purpose plugins. The reason is that if a downstream
 element stores the buffer so that it has access to it outside of the bounds
 of its chain function, the buffer will have an invalid data pointer after
 your element flushes the bytes. In that case you should use
-<a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_take">GstBase.Adapter.take</a>, which returns a freshly-allocated buffer that you can set
+<a href="gstadapter.html#gst_adapter_take">GstBase.Adapter.take</a>, which returns a freshly-allocated buffer that you can set
 as <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> memory or the potentially more performant
-<a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_take_buffer">GstBase.Adapter.take_buffer</a>.</p>
+<a href="gstadapter.html#gst_adapter_take_buffer">GstBase.Adapter.take_buffer</a>.</p>
 <p>Returns <a href="https://docs.python.org/2/library/constants.html#None">None</a> if <em>size</em> bytes are not available.</p>
 
 	<div class="parameter_container">
@@ -1097,10 +1098,10 @@ as <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -1175,7 +1176,7 @@ of endianness.  All four bytes of the pattern must be present in the
 adapter for it to match, even if the first or last bytes are masked out.</p>
 <p>It is an error to call this function without making sure that there is
 enough data (offset+size bytes) in the adapter.</p>
-<p>This function calls <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_masked_scan_uint32_peek">GstBase.Adapter.masked_scan_uint32_peek</a> passing <a href="https://docs.python.org/2/library/constants.html#None">None</a>
+<p>This function calls <a href="gstadapter.html#gst_adapter_masked_scan_uint32_peek">GstBase.Adapter.masked_scan_uint32_peek</a> passing <a href="https://docs.python.org/2/library/constants.html#None">None</a>
 for value.</p>
 
 	<div class="parameter_container">
@@ -1188,10 +1189,10 @@ for value.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -1332,10 +1333,10 @@ enough data (offset+size bytes) in the adapter.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -1467,10 +1468,10 @@ flag, or GST_BUFFER_OFFSET_NONE.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -1542,10 +1543,10 @@ and distance returned are GST_CLOCK_TIME_NONE and 0 respectively.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -1629,10 +1630,10 @@ and distance returned are GST_CLOCK_TIME_NONE and 0 respectively.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -1732,10 +1733,10 @@ and distance returned are GST_BUFFER_OFFSET_NONE and 0 respectively.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -1822,10 +1823,10 @@ and distance returned are GST_CLOCK_TIME_NONE and 0 respectively.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -1909,10 +1910,10 @@ and distance returned are GST_CLOCK_TIME_NONE and 0 respectively.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -2007,10 +2008,10 @@ flag, or GST_CLOCK_TIME_NONE.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -2077,10 +2078,10 @@ ownership of the buffer.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -2132,10 +2133,10 @@ def GstBase.Adapter.take (self):
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -2206,7 +2207,7 @@ def GstBase.Adapter.take_buffer (self, nbytes):
 <p>Returns a <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> containing the first <em>nbytes</em> bytes of the
 <em>adapter</em>. The returned bytes will be flushed from the adapter.
 This function is potentially more performant than
-<a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_take">GstBase.Adapter.take</a> since it can reuse the memory in pushed buffers
+<a href="gstadapter.html#gst_adapter_take">GstBase.Adapter.take</a> since it can reuse the memory in pushed buffers
 by subbuffering or merging. This function will always return a
 buffer with a single memory region.</p>
 <p>Note that no assumptions should be made as to whether certain buffer
@@ -2229,10 +2230,10 @@ usage.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -2300,9 +2301,9 @@ def GstBase.Adapter.take_buffer_fast (self, nbytes):
 
 <p>Returns a <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a> containing the first <em>nbytes</em> of the <em>adapter</em>.
 The returned bytes will be flushed from the adapter.  This function
-is potentially more performant than <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_take_buffer">GstBase.Adapter.take_buffer</a> since
+is potentially more performant than <a href="gstadapter.html#gst_adapter_take_buffer">GstBase.Adapter.take_buffer</a> since
 it can reuse the memory in pushed buffers by subbuffering or
-merging. Unlike <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_take_buffer">GstBase.Adapter.take_buffer</a>, the returned buffer may
+merging. Unlike <a href="gstadapter.html#gst_adapter_take_buffer">GstBase.Adapter.take_buffer</a>, the returned buffer may
 be composed of multiple non-contiguous <a href="../../libgstreamer-doc-1.0/c/gstmemory.html#GstMemory">Gst.Memory</a> objects, no
 copies are made.</p>
 <p>Note that no assumptions should be made as to whether certain buffer
@@ -2312,7 +2313,7 @@ unset.</p>
 <p>This will also copy over all GstMeta of the input buffers except
 for meta with the <a href="../../libgstreamer-doc-1.0/c/gstmeta.html#GST_META_FLAG_POOLED">Gst.MetaFlags.pooled</a> flag or with the "memory" tag.</p>
 <p>This function can return buffer up to the return value of
-<a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_available">GstBase.Adapter.available</a> without making copies if possible.</p>
+<a href="gstadapter.html#gst_adapter_available">GstBase.Adapter.available</a> without making copies if possible.</p>
 <p>Caller owns a reference to the returned buffer. <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBuffer.html#gst-buffer-unref">gst_buffer_unref (not introspectable)</a> after
 usage.</p>
 <p>Free-function: gst_buffer_unref</p>
@@ -2327,10 +2328,10 @@ usage.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -2416,10 +2417,10 @@ the list after usage.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -2505,10 +2506,10 @@ buffer in the list before freeing the list after usage.</p>
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 
@@ -2574,7 +2575,7 @@ bytes are not available</p>
 def GstBase.Adapter.unmap (self):
     #python wrapper for 'gst_adapter_unmap'</pre>
 
-<p>Releases the memory obtained with the last <a href="../../libgstbase-doc-1.0/python/gstadapter.html#gst_adapter_map">GstBase.Adapter.map</a>.</p>
+<p>Releases the memory obtained with the last <a href="gstadapter.html#gst_adapter_map">GstBase.Adapter.map</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters27">Parameters</h4>
@@ -2586,10 +2587,10 @@ def GstBase.Adapter.unmap (self):
 		<i><em><code>adapter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
+		<td><p>a <a href="gstadapter.html#GstAdapter">GstBase.Adapter</a></p>
 </td>
 <td>
-<a title="GstBase.Adapter" href="../../libgstbase-doc-1.0/python/gstadapter.html#GstAdapter">GstBase.Adapter</a>
+<a title="GstBase.Adapter" href="gstadapter.html#GstAdapter">GstBase.Adapter</a>
 </td>
 </tr>
 

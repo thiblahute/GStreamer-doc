@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>multiqueue</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gst-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="GStreamer-core-plugins-doc-1.0" data-hotdoc-ref="element-multiqueue.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="element-multiqueue">
+<h1 id="multiqueue1">multiqueue</h1><p>Multiqueue is similar to a normal <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-plugins/html/gstreamer-plugins-queue.html#GstQueue-struct">GstQueue</a> with the following additional
+features:</p>
+<ol>
+<li>Multiple streamhandling</li>
+</ol>
+<ul>
+<li>The element handles queueing data on more than one stream at once. To
+achieve such a feature it has request sink pads (sink%u) and
+'sometimes' src pads (src%u). When requesting a given sinkpad with <a href="../libgstreamer-doc-1.0/c/gstelement.html#gst_element_request_pad">gst_element_request_pad</a>,
+the associated srcpad for that stream will be created.
+Example: requesting sink1 will generate src1.</li>
+</ul>
+<ol start="2">
+<li>Non-starvation on multiple stream</li>
+</ol>
+<ul>
+<li>If more than one stream is used with the element, the streams' queues
+will be dynamically grown (up to a limit), in order to ensure that no
+stream is risking data starvation. This guarantees that at any given
+time there are at least N bytes queued and available for each individual
+stream. If an EOS event comes through a srcpad, the associated queue will be
+considered as 'not-empty' in the queue-size-growing algorithm.</li>
+</ul>
+<ol start="3">
+<li>Non-linked srcpads graceful handling</li>
+</ol>
+<ul>
+<li>In order to better support dynamic switching between streams, the multiqueue
+(unlike the current GStreamer queue) continues to push buffers on non-linked
+pads rather than shutting down. In addition, to prevent a non-linked stream from very quickly consuming all
+available buffers and thus 'racing ahead' of the other streams, the element
+must ensure that buffers and inlined events for a non-linked stream are pushed
+in the same order as they were received, relative to the other streams
+controlled by the element. This means that a buffer cannot be pushed to a
+non-linked pad any sooner than buffers in any other stream which were received
+before it.</li>
+</ul>
+<p>Data is queued until one of the limits specified by the
+<a href="element-multiqueue.html#GstMultiQueue:max-size-buffers">max-size-buffers</a>, <a href="element-multiqueue.html#GstMultiQueue:max-size-bytes">max-size-bytes</a> and/or
+<a href="element-multiqueue.html#GstMultiQueue:max-size-time">max-size-time</a> properties has been reached. Any attempt to push
+more buffers into the queue will block the pushing thread until more space
+becomes available. <a href="element-multiqueue.html#GstMultiQueue:extra-size-buffers">extra-size-buffers</a>,</p>
+<p><a href="element-multiqueue.html#GstMultiQueue:extra-size-bytes">extra-size-bytes</a> and <a href="element-multiqueue.html#GstMultiQueue:extra-size-time">extra-size-time</a> are
+currently unused.</p>
+<p>The default queue size limits are 5 buffers, 10MB of data, or
+two second worth of data, whichever is reached first. Note that the number
+of buffers will dynamically grow depending on the fill level of
+other queues.</p>
+<p>The <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-plugins/html/gstreamer-plugins-multiqueue.html#GstMultiQueue-underrun">GstMultiQueue::underrun</a> signal is emitted when all of the queues
+are empty. The <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-plugins/html/gstreamer-plugins-multiqueue.html#GstMultiQueue-overrun">GstMultiQueue::overrun</a> signal is emitted when one of the
+queues is filled.
+Both signals are emitted from the context of the streaming thread.</p>
+<p>When using <a href="element-multiqueue.html#GstMultiQueue:sync-by-running-time">sync-by-running-time</a> the unlinked streams will
+be throttled by the highest running-time of linked streams. This allows
+further relinking of those unlinked streams without them being in the
+future (i.e. to achieve gapless playback).
+When dealing with streams which have got different consumption requirements
+downstream (ex: video decoders which will consume more buffer (in time) than
+audio decoders), it is recommended to group streams of the same type
+by using the pad "group-id" property. This will further throttle streams
+in time within that group.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue">
+		<h3 id="multiqueue2">
+	multiqueue
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../libgstreamer-doc-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span>multiqueue
+</pre>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue-&gt;sink_%u">
+		<h3 id="sink_u">
+    sink_%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>ANY</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue-&gt;src_%u">
+		<h3 id="src_u">
+    src_%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>sometimes</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>ANY</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+<h2 class="symbol_section" id="Signals">Signals</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue::no-more-pads">
+		<h3 id="nomorepads">
+	<span><code>no-more-pads</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+no_more_pads_callback (multiqueue * param_0,
+                       gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue::overrun">
+		<h3 id="overrun">
+	<span><code>overrun</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+overrun_callback (multiqueue * param_0,
+                  gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue::pad-added">
+		<h3 id="padadded">
+	<span><code>pad-added</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+pad_added_callback (multiqueue * param_0,
+                    GstPad * param_1,
+                    gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue::pad-removed">
+		<h3 id="padremoved">
+	<span><code>pad-removed</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+pad_removed_callback (multiqueue * param_0,
+                      GstPad * param_1,
+                      gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="multiqueue::underrun">
+		<h3 id="underrun">
+	<span><code>underrun</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+underrun_callback (multiqueue * param_0,
+                   gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:extra-size-buffers">
+		<h3 class="method" id="extrasizebuffers">
+	<span><code>extra-size-buffers</code></span>
+</h3>
+
+		<pre class="property_signature">
+“extra-size-buffers” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	5
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:extra-size-bytes">
+		<h3 class="method" id="extrasizebytes">
+	<span><code>extra-size-bytes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“extra-size-bytes” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	10485760
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:extra-size-time">
+		<h3 class="method" id="extrasizetime">
+	<span><code>extra-size-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“extra-size-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	3000000000
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:high-percent">
+		<h3 class="method" id="highpercent">
+	<span><code>high-percent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“high-percent” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+<p>High threshold percent for buffering to finish.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	99
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="GstMultiQueue:high-watermark">
+		<h3 class="method" id="highwatermark">
+	<span><code>high-watermark</code></span>
+</h3>
+
+		<pre class="property_signature">
+“high-watermark” <span class="type"><a title="gdouble" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a></span>
+</pre>
+
+<p>High threshold watermark for buffering to finish.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0.99
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:low-percent">
+		<h3 class="method" id="lowpercent">
+	<span><code>low-percent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“low-percent” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+<p>Low threshold percent for buffering to start.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	1
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="GstMultiQueue:low-watermark">
+		<h3 class="method" id="lowwatermark">
+	<span><code>low-watermark</code></span>
+</h3>
+
+		<pre class="property_signature">
+“low-watermark” <span class="type"><a title="gdouble" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a></span>
+</pre>
+
+<p>Low threshold watermark for buffering to start.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0.01
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:max-size-buffers">
+		<h3 class="method" id="maxsizebuffers">
+	<span><code>max-size-buffers</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-size-buffers” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	5
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:max-size-bytes">
+		<h3 class="method" id="maxsizebytes">
+	<span><code>max-size-bytes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-size-bytes” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	10485760
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:max-size-time">
+		<h3 class="method" id="maxsizetime">
+	<span><code>max-size-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-size-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	2000000000
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:min-interleave-time">
+		<h3 class="method" id="mininterleavetime">
+	<span><code>min-interleave-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“min-interleave-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	250000000
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	multiqueue0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-doc-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:sync-by-running-time">
+		<h3 class="method" id="syncbyrunningtime">
+	<span><code>sync-by-running-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“sync-by-running-time” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>If enabled multiqueue will synchronize deactivated or not-linked streams
+to the activated and linked streams by taking the running time.
+Otherwise multiqueue will synchronize the deactivated or not-linked
+streams by keeping the order in which buffers and events arrived compared
+to active and linked streams.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:unlinked-cache-time">
+		<h3 class="method" id="unlinkedcachetime">
+	<span><code>unlinked-cache-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“unlinked-cache-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	250000000
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:use-buffering">
+		<h3 class="method" id="usebuffering">
+	<span><code>use-buffering</code></span>
+</h3>
+
+		<pre class="property_signature">
+“use-buffering” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Enable the buffering option in multiqueue so that BUFFERING messages are
+emitted based on low-/high-percent thresholds.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstMultiQueue:use-interleave">
+		<h3 class="method" id="useinterleave">
+	<span><code>use-interleave</code></span>
+</h3>
+
+		<pre class="property_signature">
+“use-interleave” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -59,6 +59,12 @@
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
 			<ul class="nav navbar-nav" id="menu">
 							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
 		</div>
 	</div>
 </nav>
@@ -68,16 +74,11 @@
 	<div class="row">
 		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sidenav-search" role="search">
-			<input type="text" class="form-control" placeholder="Fetching index" id="sidenav-lookup-field" disabled>
-		</div>
 		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
 			<div class="sidenav-main-panel-body">
 				<div id="site-navigation">
 				</div>
 			</div>
-			<!-- FIXME -->
-			<div style="height: 76px;"></div>
 		</div>
 	</div>
 </div>
@@ -88,8 +89,8 @@
 <div id="page-description" data-hotdoc-source="gstbuffer.h">
 <h1 id="gstbuffer">GstBuffer</h1><p>Buffers are the basic unit of data transfer in GStreamer. They contain the
 timing and offset along with other arbitrary metadata that is associated
-with the <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a> blocks that the buffer contains.</p>
-<p>Buffers are usually created with <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_new">Gst.Buffer.new</a>. After a buffer has been
+with the <a href="gstmemory.html#GstMemory">Gst.Memory</a> blocks that the buffer contains.</p>
+<p>Buffers are usually created with <a href="gstbuffer.html#gst_buffer_new">Gst.Buffer.new</a>. After a buffer has been
 created one will typically allocate memory for it and add it to the buffer.
 The following example creates a buffer that can hold a given video frame
 with a given width, height and bits per plane.</p>
@@ -103,15 +104,15 @@ with a given width, height and bits per plane.</p>
    gst_buffer_insert_memory (buffer, -1, memory);
    ...
 </code></pre>
-<p>Alternatively, use <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_new_allocate">Gst.Buffer.new_allocate</a> to create a buffer with
+<p>Alternatively, use <a href="gstbuffer.html#gst_buffer_new_allocate">Gst.Buffer.new_allocate</a> to create a buffer with
 preallocated data of a given size.</p>
-<p>Buffers can contain a list of <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a> objects. You can retrieve how many
-memory objects with <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_n_memory">Gst.Buffer.n_memory</a> and you can get a pointer
-to memory with <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_peek_memory">Gst.Buffer.peek_memory</a></p>
+<p>Buffers can contain a list of <a href="gstmemory.html#GstMemory">Gst.Memory</a> objects. You can retrieve how many
+memory objects with <a href="gstbuffer.html#gst_buffer_n_memory">Gst.Buffer.n_memory</a> and you can get a pointer
+to memory with <a href="gstbuffer.html#gst_buffer_peek_memory">Gst.Buffer.peek_memory</a></p>
 <p>A buffer will usually have timestamps, and a duration, but neither of these
-are guaranteed (they may be set to <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a>). Whenever a
+are guaranteed (they may be set to <a href="gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a>). Whenever a
 meaningful value can be given for these, they should be set. The timestamps
-and duration are measured in nanoseconds (they are <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a> values).</p>
+and duration are measured in nanoseconds (they are <a href="gstclock.html#GstClockTime">Gst.ClockTime</a> values).</p>
 <p>The buffer DTS refers to the timestamp when the buffer should be decoded and
 is usually monotonically increasing. The buffer PTS refers to the timestamp when
 the buffer content should be presented to the user and is not always
@@ -123,39 +124,39 @@ produced so far. For compressed data, it could be the byte offset in a
 source or destination file. Likewise, the end offset will be the offset of
 the end of the buffer. These can only be meaningfully interpreted if you
 know the media type of the buffer (the preceding CAPS event). Either or both
-can be set to <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.</p>
+can be set to <a href="gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.</p>
 <p><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBuffer.html#gst-buffer-ref">gst_buffer_ref (not introspectable)</a> is used to increase the refcount of a buffer. This must be
 done when you want to keep a handle to the buffer after pushing it to the
 next element. The buffer refcount determines the writability of the buffer, a
 buffer is only writable when the refcount is exactly 1, i.e. when the caller
 has the only reference to the buffer.</p>
 <p>To efficiently create a smaller buffer out of an existing one, you can
-use <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_copy_region">Gst.Buffer.copy_region</a>. This method tries to share the memory objects
+use <a href="gstbuffer.html#gst_buffer_copy_region">Gst.Buffer.copy_region</a>. This method tries to share the memory objects
 between the two buffers.</p>
 <p>If a plug-in wants to modify the buffer data or metadata in-place, it should
 first obtain a buffer that is safe to modify by using
-<a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#gst_buffer_make_writable">gst_buffer_make_writable (not introspectable)</a>.  This function is optimized so that a copy will
+<a href="../c/gstbuffer.html#gst_buffer_make_writable">gst_buffer_make_writable (not introspectable)</a>.  This function is optimized so that a copy will
 only be made when it is necessary.</p>
 <p>Several flags of the buffer can be set and unset with the
-<a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GST_BUFFER_FLAG_SET">GST_BUFFER_FLAG_SET (not introspectable)</a> and <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GST_BUFFER_FLAG_UNSET">GST_BUFFER_FLAG_UNSET (not introspectable)</a> macros. Use
-<a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GST_BUFFER_FLAG_IS_SET">GST_BUFFER_FLAG_IS_SET (not introspectable)</a> to test if a certain <a href="../../plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> flag is set.</p>
+<a href="../c/gstbuffer.html#GST_BUFFER_FLAG_SET">GST_BUFFER_FLAG_SET (not introspectable)</a> and <a href="../c/gstbuffer.html#GST_BUFFER_FLAG_UNSET">GST_BUFFER_FLAG_UNSET (not introspectable)</a> macros. Use
+<a href="../c/gstbuffer.html#GST_BUFFER_FLAG_IS_SET">GST_BUFFER_FLAG_IS_SET (not introspectable)</a> to test if a certain <a href="../../GStreamer-core-plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> flag is set.</p>
 <p>Buffers can be efficiently merged into a larger buffer with
-<a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_append">Gst.Buffer.append</a>. Copying of memory will only be done when absolutely
+<a href="gstbuffer.html#gst_buffer_append">Gst.Buffer.append</a>. Copying of memory will only be done when absolutely
 needed.</p>
-<p>Arbitrary extra metadata can be set on a buffer with <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_add_meta">Gst.Buffer.add_meta</a>.
-Metadata can be retrieved with <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_get_meta">Gst.Buffer.get_meta</a>. See also <a href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMeta">Gst.Meta</a></p>
+<p>Arbitrary extra metadata can be set on a buffer with <a href="gstbuffer.html#gst_buffer_add_meta">Gst.Buffer.add_meta</a>.
+Metadata can be retrieved with <a href="gstbuffer.html#gst_buffer_get_meta">Gst.Buffer.get_meta</a>. See also <a href="gstmeta.html#GstMeta">Gst.Meta</a></p>
 <p>An element should either unref the buffer or push it out on a src pad
-using <a href="../../libgstreamer-doc-1.0/python/gstpad.html#gst_pad_push">Gst.Pad.push</a> (see <a href="../../libgstreamer-doc-1.0/python/gstpad.html#GstPad">Gst.Pad</a>).</p>
+using <a href="gstpad.html#gst_pad_push">Gst.Pad.push</a> (see <a href="gstpad.html#GstPad">Gst.Pad</a>).</p>
 <p>Buffers are usually freed by unreffing them with <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBuffer.html#gst-buffer-unref">gst_buffer_unref (not introspectable)</a>. When
 the refcount drops to 0, any memory and metadata pointed to by the buffer is
-unreffed as well. Buffers allocated from a <a href="../../libgstreamer-doc-1.0/python/gstbufferpool.html#GstBufferPool">Gst.BufferPool</a> will be returned to
+unreffed as well. Buffers allocated from a <a href="gstbufferpool.html#GstBufferPool">Gst.BufferPool</a> will be returned to
 the pool when the refcount drops to 0.</p>
-<p>The <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is a meta which can be attached to a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<p>The <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is a meta which can be attached to a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 to hold a reference to another buffer that is only released when the child
-<a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> is released.</p>
-<p>Typically, <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is used when the child buffer is directly
-using the <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a> of the parent buffer, and wants to prevent the parent
-buffer from being returned to a buffer pool until the <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a> is available
+<a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> is released.</p>
+<p>Typically, <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is used when the child buffer is directly
+using the <a href="gstmemory.html#GstMemory">Gst.Memory</a> of the parent buffer, and wants to prevent the parent
+buffer from being returned to a buffer pool until the <a href="gstmemory.html#GstMemory">Gst.Memory</a> is available
 for re-use. (Since 1.6)</p>
 
 </div>
@@ -192,11 +193,11 @@ def Gst.Buffer.new ():
 				</p>
 	</td>
 	<td>
-		<p>the new <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<p>the new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -237,11 +238,11 @@ allocated, <a href="https://docs.python.org/2/library/constants.html#None">None<
 		<i><em><code>allocator:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../libgstreamer-doc-1.0/python/gstallocator.html#GstAllocator">Gst.Allocator</a> to use, or <a href="https://docs.python.org/2/library/constants.html#None">None</a> to use the
+		<td><p>the <a href="gstallocator.html#GstAllocator">Gst.Allocator</a> to use, or <a href="https://docs.python.org/2/library/constants.html#None">None</a> to use the
 default allocator</p>
 </td>
 <td>
-<a title="Gst.Allocator" href="../../libgstreamer-doc-1.0/python/gstallocator.html#GstAllocator">Gst.Allocator</a>
+<a title="Gst.Allocator" href="gstallocator.html#GstAllocator">Gst.Allocator</a>
 </td>
 </tr>
 
@@ -267,7 +268,7 @@ default allocator</p>
 		<td><p>optional parameters</p>
 </td>
 <td>
-<a title="Gst.AllocationParams" href="../../libgstreamer-doc-1.0/python/gstallocator.html#GstAllocationParams">Gst.AllocationParams</a>
+<a title="Gst.AllocationParams" href="gstallocator.html#GstAllocationParams">Gst.AllocationParams</a>
 </td>
 </tr>
 
@@ -290,12 +291,12 @@ default allocator</p>
 				</p>
 	</td>
 	<td>
-		<p>a new <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>, or <a href="https://docs.python.org/2/library/constants.html#None">None</a> if
+		<p>a new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>, or <a href="https://docs.python.org/2/library/constants.html#None">None</a> if
 the memory couldn't be allocated.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -372,11 +373,11 @@ with g_free and will be marked writable.</p>
 				</p>
 	</td>
 	<td>
-		<p>a new <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<p>a new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -405,7 +406,7 @@ def Gst.Buffer.new_wrapped_full (flags, data, maxsize, offset, size, user_data, 
 <em>size</em> visible.</p>
 <p>When the buffer is destroyed, <em>notify</em> will be called with <em>user_data</em>.</p>
 <p>The prefix/padding must be filled with 0 if <em>flags</em> contains
-<a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GST_MEMORY_FLAG_ZERO_PREFIXED">Gst.MemoryFlags.zero_prefixed</a> and <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GST_MEMORY_FLAG_ZERO_PADDED">Gst.MemoryFlags.zero_padded</a> respectively.</p>
+<a href="gstmemory.html#GST_MEMORY_FLAG_ZERO_PREFIXED">Gst.MemoryFlags.zero_prefixed</a> and <a href="gstmemory.html#GST_MEMORY_FLAG_ZERO_PADDED">Gst.MemoryFlags.zero_padded</a> respectively.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters2">Parameters</h4>
@@ -417,10 +418,10 @@ def Gst.Buffer.new_wrapped_full (flags, data, maxsize, offset, size, user_data, 
 		<i><em><code>flags:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemoryFlags">Gst.MemoryFlags</a></p>
+		<td><p><a href="gstmemory.html#GstMemoryFlags">Gst.MemoryFlags</a></p>
 </td>
 <td>
-<a title="Gst.MemoryFlags" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemoryFlags">Gst.MemoryFlags</a>
+<a title="Gst.MemoryFlags" href="gstmemory.html#GstMemoryFlags">Gst.MemoryFlags</a>
 </td>
 </tr>
 
@@ -521,11 +522,11 @@ def Gst.Buffer.new_wrapped_full (flags, data, maxsize, offset, size, user_data, 
 				</p>
 	</td>
 	<td>
-		<p>a new <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<p>a new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -561,10 +562,10 @@ def Gst.Buffer.add_meta (self, info, params):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -574,10 +575,10 @@ def Gst.Buffer.add_meta (self, info, params):
 		<i><em><code>info:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMetaInfo">Gst.MetaInfo</a></p>
+		<td><p>a <a href="gstmeta.html#GstMetaInfo">Gst.MetaInfo</a></p>
 </td>
 <td>
-<a title="Gst.MetaInfo" href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMetaInfo">Gst.MetaInfo</a>
+<a title="Gst.MetaInfo" href="gstmeta.html#GstMetaInfo">Gst.MetaInfo</a>
 </td>
 </tr>
 
@@ -617,7 +618,7 @@ def Gst.Buffer.add_meta (self, info, params):
 
 	</td>
 	<td>
-		<a title="Gst.Meta" href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMeta">Gst.Meta</a>
+		<a title="Gst.Meta" href="gstmeta.html#GstMeta">Gst.Meta</a>
 	</td>
 	</tr>
 
@@ -641,7 +642,7 @@ def Gst.Buffer.add_meta (self, info, params):
 def Gst.Buffer.add_parent_buffer_meta (self, ref):
     #python wrapper for 'gst_buffer_add_parent_buffer_meta'</pre>
 
-<p>Add a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> to <em>buffer</em> that holds a reference on
+<p>Add a <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> to <em>buffer</em> that holds a reference on
 <em>ref</em> until the buffer is freed.</p>
 
 	<div class="parameter_container">
@@ -654,10 +655,10 @@ def Gst.Buffer.add_parent_buffer_meta (self, ref):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -667,10 +668,10 @@ def Gst.Buffer.add_parent_buffer_meta (self, ref):
 		<i><em><code>ref:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> to ref</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> to ref</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -693,11 +694,11 @@ def Gst.Buffer.add_parent_buffer_meta (self, ref):
 				</p>
 	</td>
 	<td>
-		<p>The <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> that was added to the buffer</p>
+		<p>The <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> that was added to the buffer</p>
 
 	</td>
 	<td>
-		<a title="Gst.ParentBufferMeta" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a>
+		<a title="Gst.ParentBufferMeta" href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a>
 	</td>
 	</tr>
 
@@ -724,7 +725,7 @@ def Gst.Buffer.add_parent_buffer_meta (self, ref):
 def Gst.Buffer.add_protection_meta (self, info):
     #python wrapper for 'gst_buffer_add_protection_meta'</pre>
 
-<p>Attaches protection metadata to a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+<p>Attaches protection metadata to a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters5">Parameters</h4>
@@ -736,11 +737,11 @@ def Gst.Buffer.add_protection_meta (self, info):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> holding an encrypted sample, to which protection
+		<td><p><a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> holding an encrypted sample, to which protection
 metadata should be added.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -750,12 +751,12 @@ metadata should be added.</p>
 		<i><em><code>info:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gststructure.html#GstStructure">Gst.Structure</a> holding cryptographic
+		<td><p>a <a href="gststructure.html#GstStructure">Gst.Structure</a> holding cryptographic
 information relating to the sample contained in <em>buffer</em>. This
 function takes ownership of <em>info</em>.</p>
 </td>
 <td>
-<a title="Gst.Structure" href="../../libgstreamer-doc-1.0/python/gststructure.html#GstStructure">Gst.Structure</a>
+<a title="Gst.Structure" href="gststructure.html#GstStructure">Gst.Structure</a>
 </td>
 </tr>
 
@@ -778,12 +779,12 @@ function takes ownership of <em>info</em>.</p>
 				</p>
 	</td>
 	<td>
-		<p>a pointer to the added <a href="../../libgstreamer-doc-1.0/python/gstprotection.html#GstProtectionMeta">Gst.ProtectionMeta</a> if successful; <a href="https://docs.python.org/2/library/constants.html#None">None</a> if
+		<p>a pointer to the added <a href="gstprotection.html#GstProtectionMeta">Gst.ProtectionMeta</a> if successful; <a href="https://docs.python.org/2/library/constants.html#None">None</a> if
 unsuccessful.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ProtectionMeta" href="../../libgstreamer-doc-1.0/python/gstprotection.html#GstProtectionMeta">Gst.ProtectionMeta</a>
+		<a title="Gst.ProtectionMeta" href="gstprotection.html#GstProtectionMeta">Gst.ProtectionMeta</a>
 	</td>
 	</tr>
 
@@ -823,10 +824,10 @@ concatenation of the memory of <em>buf1</em> and <em>buf2</em>.</p>
 		<i><em><code>buf1:</code></em></i>
 		</p>
 	</td>
-		<td><p>the first source <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
+		<td><p>the first source <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -836,10 +837,10 @@ concatenation of the memory of <em>buf1</em> and <em>buf2</em>.</p>
 		<i><em><code>buf2:</code></em></i>
 		</p>
 	</td>
-		<td><p>the second source <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
+		<td><p>the second source <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -862,12 +863,12 @@ concatenation of the memory of <em>buf1</em> and <em>buf2</em>.</p>
 				</p>
 	</td>
 	<td>
-		<p>the new <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> that contains the memory
+		<p>the new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> that contains the memory
 of the two source buffers.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -893,8 +894,8 @@ def Gst.Buffer.append_memory (self, mem):
 
 <p>Append the memory block <em>mem</em> to <em>buffer</em>. This function takes
 ownership of <em>mem</em> and thus doesn't increase its refcount.</p>
-<p>This function is identical to <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.insert_memory</a> with an index of -1.
-See <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.insert_memory</a> for more details.</p>
+<p>This function is identical to <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.insert_memory</a> with an index of -1.
+See <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.insert_memory</a> for more details.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters7">Parameters</h4>
@@ -906,10 +907,10 @@ See <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_insert_
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -919,10 +920,10 @@ See <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_insert_
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>.</p>
+		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 </td>
 <td>
-<a title="Gst.Memory" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -960,10 +961,10 @@ contain a concatenation of the memory of <em>buf1</em> and the requested region 
 		<i><em><code>buf1:</code></em></i>
 		</p>
 	</td>
-		<td><p>the first source <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
+		<td><p>the first source <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -973,10 +974,10 @@ contain a concatenation of the memory of <em>buf1</em> and the requested region 
 		<i><em><code>buf2:</code></em></i>
 		</p>
 	</td>
-		<td><p>the second source <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
+		<td><p>the second source <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1025,12 +1026,12 @@ contain a concatenation of the memory of <em>buf1</em> and the requested region 
 				</p>
 	</td>
 	<td>
-		<p>the new <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> that contains the memory
+		<p>the new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> that contains the memory
 of the two source buffers.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -1067,10 +1068,10 @@ copy of the data the source buffer contains.</p>
 		<i><em><code>buf:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1097,7 +1098,7 @@ copy of the data the source buffer contains.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -1139,10 +1140,10 @@ the memory from <em>src</em> will be appended to <em>dest</em>.</p>
 		<i><em><code>dest:</code></em></i>
 		</p>
 	</td>
-		<td><p>a destination <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a destination <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1152,10 +1153,10 @@ the memory from <em>src</em> will be appended to <em>dest</em>.</p>
 		<i><em><code>src:</code></em></i>
 		</p>
 	</td>
-		<td><p>a source <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a source <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1248,11 +1249,11 @@ def Gst.Buffer.copy_region (self, flags, offset, size):
 <p>Creates a sub-buffer from <em>parent</em> at <em>offset</em> and <em>size</em>.
 This sub-buffer uses the actual memory space of the parent buffer.
 This function will copy the offset and timestamp fields when the
-offset is 0. If not, they will be set to <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> and
-<a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.
+offset is 0. If not, they will be set to <a href="gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> and
+<a href="gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.
 If <em>offset</em> equals 0 and <em>size</em> equals the total size of <em>buffer</em>, the
 duration and offset end fields are also copied. If not they will be set
-to <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> and <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.</p>
+to <a href="gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> and <a href="gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.</p>
 <p>MT safe.</p>
 
 	<div class="parameter_container">
@@ -1265,10 +1266,10 @@ to <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_TIME_NONE"
 		<i><em><code>parent:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1291,7 +1292,7 @@ to <a href="../../libgstreamer-doc-1.0/python/gstclock.html#GST_CLOCK_TIME_NONE"
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>the offset into parent <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> at which the new sub-buffer
+		<td><p>the offset into parent <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> at which the new sub-buffer
 begins.</p>
 </td>
 <td>
@@ -1305,7 +1306,7 @@ begins.</p>
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the size of the new <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> sub-buffer, in bytes. If -1, all
+		<td><p>the size of the new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> sub-buffer, in bytes. If -1, all
 data is copied.</p>
 </td>
 <td>
@@ -1332,12 +1333,12 @@ data is copied.</p>
 				</p>
 	</td>
 	<td>
-		<p>the new <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> or <a href="https://docs.python.org/2/library/constants.html#None">None</a> if the arguments were
+		<p>the new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> or <a href="https://docs.python.org/2/library/constants.html#None">None</a> if the arguments were
 invalid.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -1373,10 +1374,10 @@ def Gst.Buffer.extract (self, offset, dest, size):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1480,10 +1481,10 @@ newly-allocated memory. <em>dest</em> must be freed using <a href="https://devel
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1589,10 +1590,10 @@ def Gst.Buffer.fill (self, offset, src, size):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1702,10 +1703,10 @@ for <em>offset</em>.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1846,10 +1847,10 @@ in the buffer should be skipped.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1859,10 +1860,10 @@ in the buffer should be skipped.</p>
 		<i><em><code>func:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBufferForeachMetaFunc">Gst.BufferForeachMetaFunc</a> to call</p>
+		<td><p>a <a href="gstbuffer.html#GstBufferForeachMetaFunc">Gst.BufferForeachMetaFunc</a> to call</p>
 </td>
 <td>
-<a title="Gst.BufferForeachMetaFunc" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBufferForeachMetaFunc">Gst.BufferForeachMetaFunc</a>
+<a title="Gst.BufferForeachMetaFunc" href="gstbuffer.html#GstBufferForeachMetaFunc">Gst.BufferForeachMetaFunc</a>
 </td>
 </tr>
 
@@ -1927,7 +1928,7 @@ def Gst.Buffer.get_all_memory (self):
     #python wrapper for 'gst_buffer_get_all_memory'</pre>
 
 <p>Get all the memory block in <em>buffer</em>. The memory blocks will be merged
-into one large <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>.</p>
+into one large <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters17">Parameters</h4>
@@ -1939,10 +1940,10 @@ into one large <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemo
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1965,12 +1966,12 @@ into one large <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemo
 				</p>
 	</td>
 	<td>
-		<p>a <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a> that contains the merged memory.
+		<p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a> that contains the merged memory.
 Use gst_memory_unref () after usage.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Memory" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>
+		<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
 	</td>
 	</tr>
 
@@ -1994,7 +1995,7 @@ Use gst_memory_unref () after usage.</p>
 def Gst.Buffer.get_flags (self):
     #python wrapper for 'gst_buffer_get_flags'</pre>
 
-<p>Get the <a href="../../plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> flags set on this buffer.</p>
+<p>Get the <a href="../../GStreamer-core-plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> flags set on this buffer.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters18">Parameters</h4>
@@ -2006,10 +2007,10 @@ def Gst.Buffer.get_flags (self):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2036,7 +2037,7 @@ def Gst.Buffer.get_flags (self):
 
 	</td>
 	<td>
-		<a title="Gst.BufferFlags" href="../../plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
+		<a title="Gst.BufferFlags" href="../../GStreamer-core-plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
 	</td>
 	</tr>
 
@@ -2075,10 +2076,10 @@ def Gst.Buffer.get_memory (self, idx):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2114,12 +2115,12 @@ def Gst.Buffer.get_memory (self, idx):
 				</p>
 	</td>
 	<td>
-		<p>a <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a> that contains the data of the
+		<p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a> that contains the data of the
 memory block at <em>idx</em>. Use gst_memory_unref () after usage.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Memory" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>
+		<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
 	</td>
 	</tr>
 
@@ -2144,7 +2145,7 @@ def Gst.Buffer.get_memory_range (self, idx, length):
     #python wrapper for 'gst_buffer_get_memory_range'</pre>
 
 <p>Get <em>length</em> memory blocks in <em>buffer</em> starting at <em>idx</em>. The memory blocks will
-be merged into one large <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>.</p>
+be merged into one large <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 <p>If <em>length</em> is -1, all memory starting from <em>idx</em> is merged.</p>
 
 	<div class="parameter_container">
@@ -2157,10 +2158,10 @@ be merged into one large <a href="../../libgstreamer-doc-1.0/python/gstmemory.ht
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2209,12 +2210,12 @@ be merged into one large <a href="../../libgstreamer-doc-1.0/python/gstmemory.ht
 				</p>
 	</td>
 	<td>
-		<p>a <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a> that contains the merged data of <em>length</em>
+		<p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a> that contains the merged data of <em>length</em>
 blocks starting at <em>idx</em>. Use gst_memory_unref () after usage.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Memory" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>
+		<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
 	</td>
 	</tr>
 
@@ -2241,7 +2242,7 @@ def Gst.Buffer.get_meta (self, api):
 <p>Get the metadata for <em>api</em> on buffer. When there is no such metadata, <a href="https://docs.python.org/2/library/constants.html#None">None</a> is
 returned. If multiple metadata with the given <em>api</em> are attached to this
 buffer only the first one is returned.  To handle multiple metadata with a
-given API use <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#gst_buffer_iterate_meta">gst_buffer_iterate_meta (not introspectable)</a> or <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.foreach_meta</a> instead
+given API use <a href="../c/gstbuffer.html#gst_buffer_iterate_meta">gst_buffer_iterate_meta (not introspectable)</a> or <a href="gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.foreach_meta</a> instead
 and check the meta-&gt;info.api member for the API type.</p>
 
 	<div class="parameter_container">
@@ -2254,10 +2255,10 @@ and check the meta-&gt;info.api member for the API type.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2298,7 +2299,7 @@ and check the meta-&gt;info.api member for the API type.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Meta" href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMeta">Gst.Meta</a>
+		<a title="Gst.Meta" href="gstmeta.html#GstMeta">Gst.Meta</a>
 	</td>
 	</tr>
 
@@ -2334,10 +2335,10 @@ def Gst.Buffer.get_size (self):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2393,7 +2394,7 @@ def Gst.Buffer.get_sizes (self):
 first memory block in <em>buffer</em> and <em>maxsize</em> will contain the sum of
 the size and <em>offset</em> and the amount of extra padding on the last
 memory block.  <em>offset</em> and <em>maxsize</em> can be used to resize the
-buffer memory blocks with <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_resize">Gst.Buffer.resize</a>.</p>
+buffer memory blocks with <a href="gstbuffer.html#gst_buffer_resize">Gst.Buffer.resize</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters23">Parameters</h4>
@@ -2405,10 +2406,10 @@ buffer memory blocks with <a href="../../libgstreamer-doc-1.0/python/gstbuffer.h
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2495,7 +2496,7 @@ memory block in <em>buffer</em> at <em>idx</em> and <em>maxsize</em> will contai
 and <em>offset</em> and the amount of extra padding on the memory block at <em>idx</em> +
 <em>length</em> -1.
 <em>offset</em> and <em>maxsize</em> can be used to resize the buffer memory blocks with
-<a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_resize_range">Gst.Buffer.resize_range</a>.</p>
+<a href="gstbuffer.html#gst_buffer_resize_range">Gst.Buffer.resize_range</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters24">Parameters</h4>
@@ -2507,10 +2508,10 @@ and <em>offset</em> and the amount of extra padding on the memory block at <em>i
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2630,7 +2631,7 @@ def Gst.Buffer.has_flags (self, flags):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2642,7 +2643,7 @@ def Gst.Buffer.has_flags (self, flags):
 	</td>
 		<td></td>
 <td>
-<a title="Gst.BufferFlags" href="../../plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
+<a title="Gst.BufferFlags" href="../../GStreamer-core-plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
 </td>
 </tr>
 
@@ -2694,7 +2695,7 @@ def Gst.Buffer.insert_memory (self, idx, mem):
 
 <p>Insert the memory block <em>mem</em> to <em>buffer</em> at <em>idx</em>. This function takes ownership
 of <em>mem</em> and thus doesn't increase its refcount.</p>
-<p>Only <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_get_max_memory">Gst.buffer_get_max_memory</a> can be added to a buffer. If more memory is
+<p>Only <a href="gstbuffer.html#gst_buffer_get_max_memory">Gst.buffer_get_max_memory</a> can be added to a buffer. If more memory is
 added, existing memory blocks will automatically be merged to make room for
 the new memory.</p>
 
@@ -2708,10 +2709,10 @@ the new memory.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2734,10 +2735,10 @@ the new memory.</p>
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>.</p>
+		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 </td>
 <td>
-<a title="Gst.Memory" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -2763,7 +2764,7 @@ def Gst.Buffer.is_all_memory_writable (self):
 
 <p>Check if all memory blocks in <em>buffer</em> are writable.</p>
 <p>Note that this function does not check if <em>buffer</em> is writable, use
-<a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a> to check that if needed.</p>
+<a href="../c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a> to check that if needed.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters27">Parameters</h4>
@@ -2775,10 +2776,10 @@ def Gst.Buffer.is_all_memory_writable (self):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2835,7 +2836,7 @@ def Gst.Buffer.is_memory_range_writable (self, idx, length):
 <p>Check if <em>length</em> memory blocks in <em>buffer</em> starting from <em>idx</em> are writable.</p>
 <p><em>length</em> can be -1 to check all the memory blocks after <em>idx</em>.</p>
 <p>Note that this function does not check if <em>buffer</em> is writable, use
-<a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a> to check that if needed.</p>
+<a href="../c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a> to check that if needed.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters28">Parameters</h4>
@@ -2847,10 +2848,10 @@ def Gst.Buffer.is_memory_range_writable (self, idx, length):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2930,15 +2931,15 @@ def Gst.Buffer.is_memory_range_writable (self, idx, length):
 def Gst.Buffer.map (self, flags):
     #python wrapper for 'gst_buffer_map'</pre>
 
-<p>This function fills <em>info</em> with the <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMapInfo">Gst.MapInfo</a> of all merged memory
+<p>This function fills <em>info</em> with the <a href="gstmemory.html#GstMapInfo">Gst.MapInfo</a> of all merged memory
 blocks in <em>buffer</em>.</p>
 <p><em>flags</em> describe the desired access of the memory. When <em>flags</em> is
-<a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GST_MAP_WRITE">Gst.MapFlags.write</a>, <em>buffer</em> should be writable (as returned from
-<a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a>).</p>
+<a href="gstmemory.html#GST_MAP_WRITE">Gst.MapFlags.write</a>, <em>buffer</em> should be writable (as returned from
+<a href="../c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a>).</p>
 <p>When <em>buffer</em> is writable but the memory isn't, a writable copy will
 automatically be created and returned. The readonly copy of the
 buffer memory will then also be replaced with this writable copy.</p>
-<p>The memory in <em>info</em> should be unmapped with <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_unmap">Gst.Buffer.unmap</a> after
+<p>The memory in <em>info</em> should be unmapped with <a href="gstbuffer.html#gst_buffer_unmap">Gst.Buffer.unmap</a> after
 usage.</p>
 
 	<div class="parameter_container">
@@ -2951,10 +2952,10 @@ usage.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2967,7 +2968,7 @@ usage.</p>
 		<td><p>flags for the mapping</p>
 </td>
 <td>
-<a title="Gst.MapFlags" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMapFlags">Gst.MapFlags</a>
+<a title="Gst.MapFlags" href="gstmemory.html#GstMapFlags">Gst.MapFlags</a>
 </td>
 </tr>
 
@@ -3009,7 +3010,7 @@ usage.</p>
 
 	</td>
 	<td>
-		<a title="Gst.MapInfo" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMapInfo">Gst.MapInfo</a>
+		<a title="Gst.MapInfo" href="gstmemory.html#GstMapInfo">Gst.MapInfo</a>
 	</td>
 	</tr>
 
@@ -3033,16 +3034,16 @@ usage.</p>
 def Gst.Buffer.map_range (self, idx, length, flags):
     #python wrapper for 'gst_buffer_map_range'</pre>
 
-<p>This function fills <em>info</em> with the <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMapInfo">Gst.MapInfo</a> of <em>length</em> merged memory blocks
+<p>This function fills <em>info</em> with the <a href="gstmemory.html#GstMapInfo">Gst.MapInfo</a> of <em>length</em> merged memory blocks
 starting at <em>idx</em> in <em>buffer</em>. When <em>length</em> is -1, all memory blocks starting
 from <em>idx</em> are merged and mapped.</p>
 <p><em>flags</em> describe the desired access of the memory. When <em>flags</em> is
-<a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GST_MAP_WRITE">Gst.MapFlags.write</a>, <em>buffer</em> should be writable (as returned from
-<a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a>).</p>
+<a href="gstmemory.html#GST_MAP_WRITE">Gst.MapFlags.write</a>, <em>buffer</em> should be writable (as returned from
+<a href="../c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a>).</p>
 <p>When <em>buffer</em> is writable but the memory isn't, a writable copy will
 automatically be created and returned. The readonly copy of the buffer memory
 will then also be replaced with this writable copy.</p>
-<p>The memory in <em>info</em> should be unmapped with <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_unmap">Gst.Buffer.unmap</a> after usage.</p>
+<p>The memory in <em>info</em> should be unmapped with <a href="gstbuffer.html#gst_buffer_unmap">Gst.Buffer.unmap</a> after usage.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters30">Parameters</h4>
@@ -3054,10 +3055,10 @@ will then also be replaced with this writable copy.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3096,7 +3097,7 @@ will then also be replaced with this writable copy.</p>
 		<td><p>flags for the mapping</p>
 </td>
 <td>
-<a title="Gst.MapFlags" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMapFlags">Gst.MapFlags</a>
+<a title="Gst.MapFlags" href="gstmemory.html#GstMapFlags">Gst.MapFlags</a>
 </td>
 </tr>
 
@@ -3140,7 +3141,7 @@ data.</p>
 
 	</td>
 	<td>
-		<a title="Gst.MapInfo" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMapInfo">Gst.MapInfo</a>
+		<a title="Gst.MapInfo" href="gstmemory.html#GstMapInfo">Gst.MapInfo</a>
 	</td>
 	</tr>
 
@@ -3176,10 +3177,10 @@ def Gst.Buffer.memcmp (self, offset, mem, size):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3281,10 +3282,10 @@ def Gst.Buffer.memset (self, offset, val, size):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3376,7 +3377,7 @@ def Gst.Buffer.n_memory (self):
     #python wrapper for 'gst_buffer_n_memory'</pre>
 
 <p>Get the amount of memory blocks that this buffer has. This amount is never
-larger than what <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_get_max_memory">Gst.buffer_get_max_memory</a> returns.</p>
+larger than what <a href="gstbuffer.html#gst_buffer_get_max_memory">Gst.buffer_get_max_memory</a> returns.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters33">Parameters</h4>
@@ -3388,10 +3389,10 @@ larger than what <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_b
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3456,10 +3457,10 @@ any call that modifies the memory in <em>buffer</em>.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3495,11 +3496,11 @@ any call that modifies the memory in <em>buffer</em>.</p>
 				</p>
 	</td>
 	<td>
-		<p>the <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a> at <em>idx</em>.</p>
+		<p>the <a href="gstmemory.html#GstMemory">Gst.Memory</a> at <em>idx</em>.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Memory" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>
+		<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
 	</td>
 	</tr>
 
@@ -3525,8 +3526,8 @@ def Gst.Buffer.prepend_memory (self, mem):
 
 <p>Prepend the memory block <em>mem</em> to <em>buffer</em>. This function takes
 ownership of <em>mem</em> and thus doesn't increase its refcount.</p>
-<p>This function is identical to <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.insert_memory</a> with an index of 0.
-See <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.insert_memory</a> for more details.</p>
+<p>This function is identical to <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.insert_memory</a> with an index of 0.
+See <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.insert_memory</a> for more details.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters35">Parameters</h4>
@@ -3538,10 +3539,10 @@ See <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_insert_
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3551,10 +3552,10 @@ See <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_insert_
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>.</p>
+		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 </td>
 <td>
-<a title="Gst.Memory" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -3590,10 +3591,10 @@ def Gst.Buffer.remove_all_memory (self):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3629,10 +3630,10 @@ def Gst.Buffer.remove_memory (self, idx):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3682,10 +3683,10 @@ def Gst.Buffer.remove_memory_range (self, idx, length):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3747,10 +3748,10 @@ def Gst.Buffer.remove_meta (self, meta):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3760,10 +3761,10 @@ def Gst.Buffer.remove_meta (self, meta):
 		<i><em><code>meta:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMeta">Gst.Meta</a></p>
+		<td><p>a <a href="gstmeta.html#GstMeta">Gst.Meta</a></p>
 </td>
 <td>
-<a title="Gst.Meta" href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMeta">Gst.Meta</a>
+<a title="Gst.Meta" href="gstmeta.html#GstMeta">Gst.Meta</a>
 </td>
 </tr>
 
@@ -3827,10 +3828,10 @@ def Gst.Buffer.replace_all_memory (self, mem):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3840,10 +3841,10 @@ def Gst.Buffer.replace_all_memory (self, mem):
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a></p>
+		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a></p>
 </td>
 <td>
-<a title="Gst.Memory" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -3879,10 +3880,10 @@ def Gst.Buffer.replace_memory (self, idx, mem):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3905,10 +3906,10 @@ def Gst.Buffer.replace_memory (self, idx, mem):
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a></p>
+		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a></p>
 </td>
 <td>
-<a title="Gst.Memory" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -3947,10 +3948,10 @@ replaced with <em>mem</em>.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3986,10 +3987,10 @@ replaced with <em>mem</em>.</p>
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a></p>
+		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a></p>
 </td>
 <td>
-<a title="Gst.Memory" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -4025,10 +4026,10 @@ def Gst.Buffer.resize (self, offset, size):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4091,10 +4092,10 @@ def Gst.Buffer.resize_range (self, idx, length, offset, size):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4209,10 +4210,10 @@ def Gst.Buffer.set_flags (self, flags):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4222,10 +4223,10 @@ def Gst.Buffer.set_flags (self, flags):
 		<i><em><code>flags:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> to set.</p>
+		<td><p>the <a href="../../GStreamer-core-plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> to set.</p>
 </td>
 <td>
-<a title="Gst.BufferFlags" href="../../plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
+<a title="Gst.BufferFlags" href="../../GStreamer-core-plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
 </td>
 </tr>
 
@@ -4291,10 +4292,10 @@ def Gst.Buffer.set_size (self, size):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4331,7 +4332,7 @@ def Gst.Buffer.set_size (self, size):
 def Gst.Buffer.unmap (self, info):
     #python wrapper for 'gst_buffer_unmap'</pre>
 
-<p>Release the memory previously mapped with <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_map">Gst.Buffer.map</a>.</p>
+<p>Release the memory previously mapped with <a href="gstbuffer.html#gst_buffer_map">Gst.Buffer.map</a>.</p>
 
 	<div class="parameter_container">
 		<h4 id="parameters47">Parameters</h4>
@@ -4343,10 +4344,10 @@ def Gst.Buffer.unmap (self, info):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4356,10 +4357,10 @@ def Gst.Buffer.unmap (self, info):
 		<i><em><code>info:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMapInfo">Gst.MapInfo</a></p>
+		<td><p>a <a href="gstmemory.html#GstMapInfo">Gst.MapInfo</a></p>
 </td>
 <td>
-<a title="Gst.MapInfo" href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMapInfo">Gst.MapInfo</a>
+<a title="Gst.MapInfo" href="gstmemory.html#GstMapInfo">Gst.MapInfo</a>
 </td>
 </tr>
 
@@ -4395,10 +4396,10 @@ def Gst.Buffer.unset_flags (self, flags):
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4408,10 +4409,10 @@ def Gst.Buffer.unset_flags (self, flags):
 		<i><em><code>flags:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> to clear</p>
+		<td><p>the <a href="../../GStreamer-core-plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> to clear</p>
 </td>
 <td>
-<a title="Gst.BufferFlags" href="../../plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
+<a title="Gst.BufferFlags" href="../../GStreamer-core-plugins-doc-1.0/python/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
 </td>
 </tr>
 
@@ -4517,7 +4518,7 @@ together to make room for the new block.</p>
 def Gst.parent_buffer_meta_get_info ():
     #python wrapper for 'gst_parent_buffer_meta_get_info'</pre>
 
-<p>Get the global <a href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMetaInfo">Gst.MetaInfo</a> describing  the <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> meta.</p>
+<p>Get the global <a href="gstmeta.html#GstMetaInfo">Gst.MetaInfo</a> describing  the <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> meta.</p>
 
 
 	<div class="multi_return_value_container">
@@ -4535,11 +4536,11 @@ def Gst.parent_buffer_meta_get_info ():
 				</p>
 	</td>
 	<td>
-		<p>The <a href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMetaInfo">Gst.MetaInfo</a></p>
+		<p>The <a href="gstmeta.html#GstMetaInfo">Gst.MetaInfo</a></p>
 
 	</td>
 	<td>
-		<a title="Gst.MetaInfo" href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMetaInfo">Gst.MetaInfo</a>
+		<a title="Gst.MetaInfo" href="gstmeta.html#GstMetaInfo">Gst.MetaInfo</a>
 	</td>
 	</tr>
 
@@ -4562,7 +4563,7 @@ def Gst.parent_buffer_meta_get_info ():
 	<h3 id="gstbuffer1">
 		Gst.Buffer
 	</h3>
-		<p>The structure of a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>. Use the associated macros to access the public
+		<p>The structure of a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>. Use the associated macros to access the public
 variables.</p>
 
 		
@@ -4574,7 +4575,7 @@ variables.</p>
 						<tr id="GstBuffer.mini_object">
 		<td>
 		<p>
-		<i><em><code><a title="GstMiniObject" href="../../libgstreamer-doc-1.0/c/gstminiobject.html#GstMiniObject">GstMiniObject</a> <em><code>mini_object</code></em>:</code></em></i>
+		<i><em><code><a title="GstMiniObject" href="gstminiobject.html#GstMiniObject">GstMiniObject</a> <em><code>mini_object</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>the parent structure</p>
@@ -4584,7 +4585,7 @@ variables.</p>
 						<tr id="GstBuffer.pool">
 		<td>
 		<p>
-		<i><em><code><a title="GstBufferPool" href="../../libgstreamer-doc-1.0/c/gstbufferpool.html#GstBufferPool">GstBufferPool</a> * <em><code>pool</code></em>:</code></em></i>
+		<i><em><code><a title="GstBufferPool" href="gstbufferpool.html#GstBufferPool">GstBufferPool</a> * <em><code>pool</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>pointer to the pool owner of the buffer</p>
@@ -4594,10 +4595,10 @@ variables.</p>
 						<tr id="GstBuffer.pts">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockTime" href="../../libgstreamer-doc-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> <em><code>pts</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> <em><code>pts</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>presentation timestamp of the buffer, can be <a href="../../libgstreamer-doc-1.0/c/gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a> when the
+		<td><p>presentation timestamp of the buffer, can be <a href="gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a> when the
 pts is not known or relevant. The pts contains the timestamp when the
 media should be presented to the user.</p>
 </td>
@@ -4606,10 +4607,10 @@ media should be presented to the user.</p>
 						<tr id="GstBuffer.dts">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockTime" href="../../libgstreamer-doc-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> <em><code>dts</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> <em><code>dts</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>decoding timestamp of the buffer, can be <a href="../../libgstreamer-doc-1.0/c/gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a> when the
+		<td><p>decoding timestamp of the buffer, can be <a href="gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a> when the
 dts is not known or relevant. The dts contains the timestamp when the
 media should be processed.</p>
 </td>
@@ -4618,10 +4619,10 @@ media should be processed.</p>
 						<tr id="GstBuffer.duration">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockTime" href="../../libgstreamer-doc-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> <em><code>duration</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> <em><code>duration</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>duration in time of the buffer data, can be <a href="../../libgstreamer-doc-1.0/c/gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a>
+		<td><p>duration in time of the buffer data, can be <a href="gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a>
 when the duration is not known or relevant.</p>
 </td>
 </tr>
@@ -4663,12 +4664,12 @@ format as <em>offset</em>.</p>
 	<h3 id="gstparentbuffermeta">
 		Gst.ParentBufferMeta
 	</h3>
-		<p>The <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is a <a href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMeta">Gst.Meta</a> which can be attached to a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<p>The <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is a <a href="gstmeta.html#GstMeta">Gst.Meta</a> which can be attached to a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 to hold a reference to another buffer that is only released when the child
-<a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a> is released.</p>
-<p>Typically, <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is used when the child buffer is directly
-using the <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a> of the parent buffer, and wants to prevent the parent
-buffer from being returned to a buffer pool until the <a href="../../libgstreamer-doc-1.0/python/gstmemory.html#GstMemory">Gst.Memory</a> is available
+<a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> is released.</p>
+<p>Typically, <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is used when the child buffer is directly
+using the <a href="gstmemory.html#GstMemory">Gst.Memory</a> of the parent buffer, and wants to prevent the parent
+buffer from being returned to a buffer pool until the <a href="gstmemory.html#GstMemory">Gst.Memory</a> is available
 for re-use.</p>
 
 		
@@ -4680,20 +4681,20 @@ for re-use.</p>
 						<tr id="GstParentBufferMeta.parent">
 		<td>
 		<p>
-		<i><em><code><a title="GstMeta" href="../../libgstreamer-doc-1.0/c/gstmeta.html#GstMeta">GstMeta</a> <em><code>parent</code></em>:</code></em></i>
+		<i><em><code><a title="GstMeta" href="gstmeta.html#GstMeta">GstMeta</a> <em><code>parent</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>the parent <a href="../../libgstreamer-doc-1.0/c/gstmeta.html#GstMeta">GstMeta</a> structure</p>
+		<td><p>the parent <a href="gstmeta.html#GstMeta">GstMeta</a> structure</p>
 </td>
 </tr>
 
 						<tr id="GstParentBufferMeta.buffer">
 		<td>
 		<p>
-		<i><em><code><a title="GstBuffer" href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * <em><code>buffer</code></em>:</code></em></i>
+		<i><em><code><a title="GstBuffer" href="gstbuffer.html#GstBuffer">GstBuffer</a> * <em><code>buffer</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../libgstreamer-doc-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> on which a reference is being held.</p>
+		<td><p>the <a href="gstbuffer.html#GstBuffer">GstBuffer</a> on which a reference is being held.</p>
 </td>
 </tr>
 
@@ -4713,7 +4714,7 @@ for re-use.</p>
 		enum Gst.BufferCopyFlags
 	</h3>
 
-		<p>A set of flags that can be provided to the <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.copy_into</a>
+		<p>A set of flags that can be provided to the <a href="gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.copy_into</a>
 function to specify which items should be copied.</p>
 
 
@@ -4842,7 +4843,7 @@ copied instead of reffed (Since 1.2)</p>
 		enum Gst.BufferFlags
 	</h3>
 
-		<p>A set of buffer flags used to describe properties of a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<p>A set of buffer flags used to describe properties of a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 
 
 <div class="member_details">
@@ -5080,7 +5081,7 @@ this flag.</p>
 </h3>
 
 		<p>Combination of all possible metadata fields that can be copied with
-<a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.copy_into</a>.</p>
+<a href="gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.copy_into</a>.</p>
 
 
 </div>
@@ -5093,7 +5094,7 @@ this flag.</p>
 </h3>
 
 		<p>Combination of all possible fields that can be copied with
-<a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.copy_into</a>.</p>
+<a href="gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.copy_into</a>.</p>
 
 
 </div>
@@ -5111,15 +5112,15 @@ this flag.</p>
 
 <pre class="prototype">
 <a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
-(*Gst.BufferForeachMetaFunc) (<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>,
-                              <a title="Gst.Meta" href="../../libgstreamer-doc-1.0/python/gstmeta.html#GstMeta">Gst.Meta</a>,
+(*Gst.BufferForeachMetaFunc) (<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>,
+                              <a title="Gst.Meta" href="gstmeta.html#GstMeta">Gst.Meta</a>,
                               <a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>)</pre>
 
-<p>A function that will be called from <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.foreach_meta</a>. The <em>meta</em>
+<p>A function that will be called from <a href="gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.foreach_meta</a>. The <em>meta</em>
 field will point to a the reference of the meta.</p>
 <p><em>buffer</em> should not be modified from this callback.</p>
 <p>When this function returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>, the next meta will be
-returned. When <a href="https://docs.python.org/2/library/constants.html#False">False</a> is returned, <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.foreach_meta</a> will return.</p>
+returned. When <a href="https://docs.python.org/2/library/constants.html#False">False</a> is returned, <a href="gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.foreach_meta</a> will return.</p>
 <p>When <em>meta</em> is set to <a href="https://docs.python.org/2/library/constants.html#None">None</a>, the item will be removed from the buffer.</p>
 
 	<div class="parameter_container">
@@ -5132,10 +5133,10 @@ returned. When <a href="https://docs.python.org/2/library/constants.html#False">
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="../../libgstreamer-doc-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -5145,7 +5146,7 @@ returned. When <a href="https://docs.python.org/2/library/constants.html#False">
 		<i><em><code>user_data:</code></em></i>
 		</p>
 	</td>
-		<td><p>user data passed to <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.foreach_meta</a></p>
+		<td><p>user data passed to <a href="gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.foreach_meta</a></p>
 </td>
 <td>
 <a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>
@@ -5171,7 +5172,7 @@ returned. When <a href="https://docs.python.org/2/library/constants.html#False">
 				</p>
 	</td>
 	<td>
-		<p><a href="https://docs.python.org/2/library/constants.html#False">False</a> when <a href="../../libgstreamer-doc-1.0/python/gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.foreach_meta</a> should stop</p>
+		<p><a href="https://docs.python.org/2/library/constants.html#False">False</a> when <a href="gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.foreach_meta</a> should stop</p>
 
 	</td>
 	<td>
