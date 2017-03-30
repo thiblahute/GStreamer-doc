@@ -1,0 +1,3706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstAudioDecoder</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-base-audio-1.0" data-hotdoc-ref="gstaudiodecoder.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstaudiodecoder.h">
+<h1 id="gstaudiodecoder">GstAudioDecoder</h1><p>This base class is for audio decoders turning encoded data into
+raw audio samples.</p>
+<p>GstAudioDecoder and subclass should cooperate as follows.</p>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li>Initially, GstAudioDecoder calls <em>start</em> when the decoder element
+is activated, which allows subclass to perform any global setup.
+Base class (context) parameters can already be set according to subclass
+capabilities (or possibly upon receive more information in subsequent
+<em>set_format</em>).</li>
+<li>GstAudioDecoder calls <em>set_format</em> to inform subclass of the format
+of input audio data that it is about to receive.
+While unlikely, it might be called more than once, if changing input
+parameters require reconfiguration.</li>
+<li>GstAudioDecoder calls <em>stop</em> at end of all processing.</li>
+</ul>
+<p>As of configuration stage, and throughout processing, GstAudioDecoder
+provides various (context) parameters, e.g. describing the format of
+output audio data (valid when output caps have been set) or current parsing state.
+Conversely, subclass can and should configure context to inform
+base class of its expectation w.r.t. buffer handling.</p>
+<h2 id="data-processing">Data processing</h2>
+<pre><code> * Base class gathers input data, and optionally allows subclass
+   to parse this into subsequently manageable (as defined by subclass)
+   chunks.  Such chunks are subsequently referred to as 'frames',
+   though they may or may not correspond to 1 (or more) audio format frame.
+ * Input frame is provided to subclass' @handle_frame.
+ * If codec processing results in decoded data, subclass should call
+   @gst_audio_decoder_finish_frame to have decoded data pushed
+   downstream.
+ * Just prior to actually pushing a buffer downstream,
+   it is passed to @pre_push.  Subclass should either use this callback
+   to arrange for additional downstream pushing or otherwise ensure such
+   custom pushing occurs after at least a method call has finished since
+   setting src pad caps.
+ * During the parsing process GstAudioDecoderClass will handle both
+   srcpad and sinkpad events. Sink events will be passed to subclass
+   if @event callback has been provided.
+</code></pre>
+<h2 id="shutdown-phase">Shutdown phase</h2>
+<ul>
+<li>GstAudioDecoder class calls <em>stop</em> to inform the subclass that data
+parsing will be stopped.</li>
+</ul>
+<p>Subclass is responsible for providing pad template caps for
+source and sink pads. The pads need to be named "sink" and "src". It also
+needs to set the fixed caps on srcpad, when the format is ensured.  This
+is typically when base class calls subclass' <em>set_format</em> function, though
+it might be delayed until calling <em>gst_audio_decoder_finish_frame</em>.</p>
+<p>In summary, above process should have subclass concentrating on
+codec data processing while leaving other matters to base class,
+such as most notably timestamp handling.  While it may exert more control
+in this area (see e.g. <em>pre_push</em>), it is very much not recommended.</p>
+<p>In particular, base class will try to arrange for perfect output timestamps
+as much as possible while tracking upstream timestamps.
+To this end, if deviation between the next ideal expected perfect timestamp
+and upstream exceeds <a href="gstaudiodecoder.html#GstAudioDecoder:tolerance">tolerance</a>, then resync to upstream
+occurs (which would happen always if the tolerance mechanism is disabled).</p>
+<p>In non-live pipelines, baseclass can also (configurably) arrange for
+output buffer aggregation which may help to redue large(r) numbers of
+small(er) buffers being pushed and processed downstream.</p>
+<p>On the other hand, it should be noted that baseclass only provides limited
+seeking support (upon explicit subclass request), as full-fledged support
+should rather be left to upstream demuxer, parser or alike.  This simple
+approach caters for seeking and duration reporting using estimated input
+bitrates.</p>
+<p>Things that subclass need to take care of:</p>
+<ul>
+<li>
+<p>Provide pad templates</p>
+</li>
+<li>
+<p>Set source pad caps when appropriate</p>
+</li>
+<li>
+<p>Set user-configurable properties to sane defaults for format and
+implementing codec at hand, and convey some subclass capabilities and
+expectations in context.</p>
+</li>
+<li>
+<p>Accept data in <em>handle_frame</em> and provide encoded results to
+<em>gst_audio_decoder_finish_frame</em>.  If it is prepared to perform
+PLC, it should also accept NULL data in <em>handle_frame</em> and provide for
+data for indicated duration.</p>
+</li>
+</ul>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder">
+		<h3 id="gstaudioaudiodecoder">
+	GstAudio.AudioDecoder
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject.Object" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a>
+    <span class="lineart">╰──</span><a title="GObject.InitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GObject.InitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="Gst.Object" href="../../libgstreamer-1.0/c/gstobject.html#GstObject">Gst.Object</a>
+            <span class="lineart">╰──</span><a title="Gst.Element" href="../../libgstreamer-1.0/c/gstelement.html#GstElement">Gst.Element</a>
+                <span class="lineart">╰──</span>GstAudio.AudioDecoder
+</pre>
+
+</div>
+
+</div>
+
+<div class="class_details">
+	<p>The opaque <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a> data structure.</p>
+
+</div>
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstAudioDecoder.element">
+		<td>
+		<p>
+		<i><em><code><a title="GstElement" href="../../libgstreamer-1.0/c/gstelement.html#GstElement">GstElement</a> <em><code>element</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAudioDecoder.sinkpad">
+		<td>
+		<p>
+		<i><em><code><a title="GstPad" href="../../libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * <em><code>sinkpad</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAudioDecoder.srcpad">
+		<td>
+		<p>
+		<i><em><code><a title="GstPad" href="../../libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * <em><code>srcpad</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAudioDecoder.stream_lock">
+		<td>
+		<p>
+		<i><em><code><a title="GRecMutex" href="https://developer.gnome.org/glib/unstable/glib-Threads.html#GRecMutex">GRecMutex</a> <em><code>stream_lock</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAudioDecoder.input_segment">
+		<td>
+		<p>
+		<i><em><code><a title="GstSegment" href="../../libgstreamer-1.0/c/gstsegment.html#GstSegment">GstSegment</a> <em><code>input_segment</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAudioDecoder.output_segment">
+		<td>
+		<p>
+		<i><em><code><a title="GstSegment" href="../../libgstreamer-1.0/c/gstsegment.html#GstSegment">GstSegment</a> <em><code>output_segment</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAudioDecoder.priv">
+		<td>
+		<p>
+		<i><em><code>GstAudioDecoderPrivate* <em><code>priv</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAudioDecoder._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_allocate_output_buffer">
+		<h3 id="gstaudioaudiodecoderprototypeallocate_output_buffer">
+	<span><code>GstAudio.AudioDecoder.prototype.allocate_output_buffer</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.allocate_output_buffer(size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_audio_decoder_allocate_output_buffer'
+}</pre>
+
+<p>Helper function that allocates a buffer to hold an audio frame
+for <em>dec</em>'s current output format.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+	</td>
+		<td><p>size of the buffer</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>allocated buffer</p>
+
+	</td>
+	<td>
+		<a title="Gst.Buffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_finish_frame">
+		<h3 id="gstaudioaudiodecoderprototypefinish_frame">
+	<span><code>GstAudio.AudioDecoder.prototype.finish_frame</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.finish_frame(buf: <a title="Gst.Buffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>, frames: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_audio_decoder_finish_frame'
+}</pre>
+
+<p>Collects decoded data and pushes it downstream.</p>
+<p><em>buf</em> may be NULL in which case the indicated number of frames
+are discarded and considered to have produced no output
+(e.g. lead-in or setup frames).
+Otherwise, source pad caps must be set when it is called with valid
+data in <em>buf</em>.</p>
+<p>Note that a frame received in gst_audio_decoder_handle_frame may be
+invalidated by a call to this function.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buf:</code></em></i>
+		</p>
+	</td>
+		<td><p>decoded data</p>
+</td>
+<td>
+<a title="Gst.Buffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>frames:</code></em></i>
+		</p>
+	</td>
+		<td><p>number of decoded frames represented by decoded data</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a> that should be escalated to caller (of caller)</p>
+
+	</td>
+	<td>
+		<a title="Gst.FlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_allocator">
+		<h3 id="gstaudioaudiodecoderprototypeget_allocator">
+	<span><code>GstAudio.AudioDecoder.prototype.get_allocator</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_allocator(): {
+    // javascript wrapper for 'gst_audio_decoder_get_allocator'
+}</pre>
+
+<p>Lets <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a> sub-classes to know the memory <em>allocator</em>
+used by the base class and its <em>params</em>.</p>
+<p>Unref the <em>allocator</em> after use it.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>allocator:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Allocator" href="../../libgstreamer-1.0/c/gstallocator.html#GstAllocator">Gst.Allocator</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>params:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.AllocationParams" href="../../libgstreamer-1.0/c/gstallocator.html#GstAllocationParams">Gst.AllocationParams</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_audio_info">
+		<h3 id="gstaudioaudiodecoderprototypeget_audio_info">
+	<span><code>GstAudio.AudioDecoder.prototype.get_audio_info</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_audio_info(): {
+    // javascript wrapper for 'gst_audio_decoder_get_audio_info'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="audio-info.html#GstAudioInfo">GstAudio.AudioInfo</a> describing the input audio format</p>
+
+	</td>
+	<td>
+		<a title="GstAudio.AudioInfo" href="audio-info.html#GstAudioInfo">GstAudio.AudioInfo</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_delay">
+		<h3 id="gstaudioaudiodecoderprototypeget_delay">
+	<span><code>GstAudio.AudioDecoder.prototype.get_delay</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_delay(): {
+    // javascript wrapper for 'gst_audio_decoder_get_delay'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>currently configured decoder delay</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_drainable">
+		<h3 id="gstaudioaudiodecoderprototypeget_drainable">
+	<span><code>GstAudio.AudioDecoder.prototype.get_drainable</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_drainable(): {
+    // javascript wrapper for 'gst_audio_decoder_get_drainable'
+}</pre>
+
+<p>Queries decoder drain handling.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>TRUE if drainable handling is enabled.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_estimate_rate">
+		<h3 id="gstaudioaudiodecoderprototypeget_estimate_rate">
+	<span><code>GstAudio.AudioDecoder.prototype.get_estimate_rate</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_estimate_rate(): {
+    // javascript wrapper for 'gst_audio_decoder_get_estimate_rate'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>currently configured byte to time conversion setting</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_latency">
+		<h3 id="gstaudioaudiodecoderprototypeget_latency">
+	<span><code>GstAudio.AudioDecoder.prototype.get_latency</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_latency(): {
+    // javascript wrapper for 'gst_audio_decoder_get_latency'
+}</pre>
+
+<p>Sets the variables pointed to by <em>min</em> and <em>max</em> to the currently configured
+latency.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of1">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>min:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>max:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_max_errors">
+		<h3 id="gstaudioaudiodecoderprototypeget_max_errors">
+	<span><code>GstAudio.AudioDecoder.prototype.get_max_errors</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_max_errors(): {
+    // javascript wrapper for 'gst_audio_decoder_get_max_errors'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>currently configured decoder tolerated error count.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_min_latency">
+		<h3 id="gstaudioaudiodecoderprototypeget_min_latency">
+	<span><code>GstAudio.AudioDecoder.prototype.get_min_latency</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_min_latency(): {
+    // javascript wrapper for 'gst_audio_decoder_get_min_latency'
+}</pre>
+
+<p>Queries decoder's latency aggregation.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>aggregation latency.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_needs_format">
+		<h3 id="gstaudioaudiodecoderprototypeget_needs_format">
+	<span><code>GstAudio.AudioDecoder.prototype.get_needs_format</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_needs_format(): {
+    // javascript wrapper for 'gst_audio_decoder_get_needs_format'
+}</pre>
+
+<p>Queries decoder required format handling.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>TRUE if required format handling is enabled.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_parse_state">
+		<h3 id="gstaudioaudiodecoderprototypeget_parse_state">
+	<span><code>GstAudio.AudioDecoder.prototype.get_parse_state</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_parse_state(sync: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, eos: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_audio_decoder_get_parse_state'
+}</pre>
+
+<p>Return current parsing (sync and eos) state.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>sync:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a variable to hold the current sync state</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>eos:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a variable to hold the current eos state</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_plc">
+		<h3 id="gstaudioaudiodecoderprototypeget_plc">
+	<span><code>GstAudio.AudioDecoder.prototype.get_plc</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_plc(): {
+    // javascript wrapper for 'gst_audio_decoder_get_plc'
+}</pre>
+
+<p>Queries decoder packet loss concealment handling.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>TRUE if packet loss concealment is enabled.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_plc_aware">
+		<h3 id="gstaudioaudiodecoderprototypeget_plc_aware">
+	<span><code>GstAudio.AudioDecoder.prototype.get_plc_aware</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_plc_aware(): {
+    // javascript wrapper for 'gst_audio_decoder_get_plc_aware'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>currently configured plc handling</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_get_tolerance">
+		<h3 id="gstaudioaudiodecoderprototypeget_tolerance">
+	<span><code>GstAudio.AudioDecoder.prototype.get_tolerance</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.get_tolerance(): {
+    // javascript wrapper for 'gst_audio_decoder_get_tolerance'
+}</pre>
+
+<p>Queries current audio jitter tolerance threshold.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>decoder audio jitter tolerance threshold.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_merge_tags">
+		<h3 id="gstaudioaudiodecoderprototypemerge_tags">
+	<span><code>GstAudio.AudioDecoder.prototype.merge_tags</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.merge_tags(tags: <a title="Gst.TagList" href="../../libgstreamer-1.0/c/gsttaglist.html#GstTagList">Gst.TagList</a>, mode: <a title="Gst.TagMergeMode" href="../../libgstreamer-1.0/c/gsttaglist.html#GstTagMergeMode">Gst.TagMergeMode</a>): {
+    // javascript wrapper for 'gst_audio_decoder_merge_tags'
+}</pre>
+
+<p>Sets the audio decoder tags and how they should be merged with any
+upstream stream tags. This will override any tags previously-set
+with <a href="gstaudiodecoder.html#gst_audio_decoder_merge_tags">GstAudio.AudioDecoder.prototype.merge_tags</a>.</p>
+<p>Note that this is provided for convenience, and the subclass is
+not required to use this and can still do tag handling on its own.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>tags:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-1.0/c/gsttaglist.html#GstTagList">Gst.TagList</a> to merge, or NULL</p>
+</td>
+<td>
+<a title="Gst.TagList" href="../../libgstreamer-1.0/c/gsttaglist.html#GstTagList">Gst.TagList</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>mode:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../libgstreamer-1.0/c/gsttaglist.html#GstTagMergeMode">Gst.TagMergeMode</a> to use, usually <a href="../../libgstreamer-1.0/c/gsttaglist.html#GST_TAG_MERGE_REPLACE">Gst.TagMergeMode.prototype.replace</a></p>
+</td>
+<td>
+<a title="Gst.TagMergeMode" href="../../libgstreamer-1.0/c/gsttaglist.html#GstTagMergeMode">Gst.TagMergeMode</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_negotiate">
+		<h3 id="gstaudioaudiodecoderprototypenegotiate">
+	<span><code>GstAudio.AudioDecoder.prototype.negotiate</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.negotiate(): {
+    // javascript wrapper for 'gst_audio_decoder_negotiate'
+}</pre>
+
+<p>Negotiate with downstream elements to currently configured <a href="audio-info.html#GstAudioInfo">GstAudio.AudioInfo</a>.
+Unmark GST_PAD_FLAG_NEED_RECONFIGURE in any case. But mark it again if
+negotiate fails.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the negotiation succeeded, else <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a>.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_audio_decoder_proxy_getcaps">
+		<h3 id="gstaudioaudiodecoderprototypeproxy_getcaps">
+	<span><code>GstAudio.AudioDecoder.prototype.proxy_getcaps</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.proxy_getcaps(caps: <a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>, filter: <a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>): {
+    // javascript wrapper for 'gst_audio_decoder_proxy_getcaps'
+}</pre>
+
+<p>Returns caps that express <em>caps</em> (or sink template caps if <em>caps</em> == NULL)
+restricted to rate/channels/... combinations supported by downstream
+elements.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>decoder:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>initial caps</p>
+</td>
+<td>
+<a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>filter:</code></em></i>
+		</p>
+	</td>
+		<td><p>filter caps</p>
+</td>
+<td>
+<a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a> owned by caller</p>
+
+	</td>
+	<td>
+		<a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_audio_decoder_set_allocation_caps">
+		<h3 id="gstaudioaudiodecoderprototypeset_allocation_caps">
+	<span><code>GstAudio.AudioDecoder.prototype.set_allocation_caps</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_allocation_caps(allocation_caps: <a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_allocation_caps'
+}</pre>
+
+<p>Sets a caps in allocation query which are different from the set
+pad's caps. Use this function before calling
+<a href="gstaudiodecoder.html#gst_audio_decoder_negotiate">GstAudio.AudioDecoder.prototype.negotiate</a>. Setting to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a> the allocation
+query will use the caps from the pad.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>allocation_caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a> or <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></p>
+</td>
+<td>
+<a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_set_drainable">
+		<h3 id="gstaudioaudiodecoderprototypeset_drainable">
+	<span><code>GstAudio.AudioDecoder.prototype.set_drainable</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_drainable(enabled: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_drainable'
+}</pre>
+
+<p>Configures decoder drain handling.  If drainable, subclass might
+be handed a NULL buffer to have it return any leftover decoded data.
+Otherwise, it is not considered so capable and will only ever be passed
+real data.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>enabled:</code></em></i>
+		</p>
+	</td>
+		<td><p>new state</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_set_estimate_rate">
+		<h3 id="gstaudioaudiodecoderprototypeset_estimate_rate">
+	<span><code>GstAudio.AudioDecoder.prototype.set_estimate_rate</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_estimate_rate(enabled: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_estimate_rate'
+}</pre>
+
+<p>Allows baseclass to perform byte to time estimated conversion.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>enabled:</code></em></i>
+		</p>
+	</td>
+		<td><p>whether to enable byte to time conversion</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_set_latency">
+		<h3 id="gstaudioaudiodecoderprototypeset_latency">
+	<span><code>GstAudio.AudioDecoder.prototype.set_latency</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_latency(min: <a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>, max: <a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_latency'
+}</pre>
+
+<p>Sets decoder latency.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>min:</code></em></i>
+		</p>
+	</td>
+		<td><p>minimum latency</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>max:</code></em></i>
+		</p>
+	</td>
+		<td><p>maximum latency</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_set_max_errors">
+		<h3 id="gstaudioaudiodecoderprototypeset_max_errors">
+	<span><code>GstAudio.AudioDecoder.prototype.set_max_errors</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_max_errors(num: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_max_errors'
+}</pre>
+
+<p>Sets numbers of tolerated decoder errors, where a tolerated one is then only
+warned about, but more than tolerated will lead to fatal error. You can set
+-1 for never returning fatal errors. Default is set to
+GST_AUDIO_DECODER_MAX_ERRORS.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>num:</code></em></i>
+		</p>
+	</td>
+		<td><p>max tolerated errors</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_set_min_latency">
+		<h3 id="gstaudioaudiodecoderprototypeset_min_latency">
+	<span><code>GstAudio.AudioDecoder.prototype.set_min_latency</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_min_latency(num: <a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_min_latency'
+}</pre>
+
+<p>Sets decoder minimum aggregation latency.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters23">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>num:</code></em></i>
+		</p>
+	</td>
+		<td><p>new minimum latency</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_set_needs_format">
+		<h3 id="gstaudioaudiodecoderprototypeset_needs_format">
+	<span><code>GstAudio.AudioDecoder.prototype.set_needs_format</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_needs_format(enabled: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_needs_format'
+}</pre>
+
+<p>Configures decoder format needs.  If enabled, subclass needs to be
+negotiated with format caps before it can process any data.  It will then
+never be handed any data before it has been configured.
+Otherwise, it might be handed data without having been configured and
+is then expected being able to do so either by default
+or based on the input data.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>enabled:</code></em></i>
+		</p>
+	</td>
+		<td><p>new state</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_set_output_format">
+		<h3 id="gstaudioaudiodecoderprototypeset_output_format">
+	<span><code>GstAudio.AudioDecoder.prototype.set_output_format</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_output_format(info: <a title="GstAudio.AudioInfo" href="audio-info.html#GstAudioInfo">GstAudio.AudioInfo</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_output_format'
+}</pre>
+
+<p>Configure output info on the srcpad of <em>dec</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>info:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="audio-info.html#GstAudioInfo">GstAudio.AudioInfo</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioInfo" href="audio-info.html#GstAudioInfo">GstAudio.AudioInfo</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> on success.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_set_plc">
+		<h3 id="gstaudioaudiodecoderprototypeset_plc">
+	<span><code>GstAudio.AudioDecoder.prototype.set_plc</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_plc(enabled: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_plc'
+}</pre>
+
+<p>Enable or disable decoder packet loss concealment, provided subclass
+and codec are capable and allow handling plc.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>enabled:</code></em></i>
+		</p>
+	</td>
+		<td><p>new state</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_set_plc_aware">
+		<h3 id="gstaudioaudiodecoderprototypeset_plc_aware">
+	<span><code>GstAudio.AudioDecoder.prototype.set_plc_aware</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_plc_aware(plc: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_plc_aware'
+}</pre>
+
+<p>Indicates whether or not subclass handles packet loss concealment (plc).</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters27">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>plc:</code></em></i>
+		</p>
+	</td>
+		<td><p>new plc state</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_decoder_set_tolerance">
+		<h3 id="gstaudioaudiodecoderprototypeset_tolerance">
+	<span><code>GstAudio.AudioDecoder.prototype.set_tolerance</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_tolerance(tolerance: <a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_tolerance'
+}</pre>
+
+<p>Configures decoder audio jitter tolerance threshold.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters28">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>tolerance:</code></em></i>
+		</p>
+	</td>
+		<td><p>new tolerance</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_audio_decoder_set_use_default_pad_acceptcaps">
+		<h3 id="gstaudioaudiodecoderprototypeset_use_default_pad_acceptcaps">
+	<span><code>GstAudio.AudioDecoder.prototype.set_use_default_pad_acceptcaps</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GstAudio.AudioDecoder.prototype.set_use_default_pad_acceptcaps(use: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_audio_decoder_set_use_default_pad_acceptcaps'
+}</pre>
+
+<p>Lets <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a> sub-classes decide if they want the sink pad
+to use the default pad query handler to reply to accept-caps queries.</p>
+<p>By setting this to true it is possible to further customize the default
+handler with <a href="../../libgstreamer-1.0/c/gstpad.html#GST_PAD_SET_ACCEPT_INTERSECT">GST_PAD_SET_ACCEPT_INTERSECT (not introspectable)</a> and
+<a href="../../libgstreamer-1.0/c/gstpad.html#GST_PAD_SET_ACCEPT_TEMPLATE">GST_PAD_SET_ACCEPT_TEMPLATE (not introspectable)</a></p>
+
+	<div class="parameter_container">
+		<h4 id="parameters29">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>decoder:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a></p>
+</td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>use:</code></em></i>
+		</p>
+	</td>
+		<td><p>if the default pad accept-caps query handling should be used</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:min-latency">
+		<h3 class="method" id="minlatency">
+	<span><code>min-latency</code></span>
+</h3>
+
+		<pre class="property_signature">
+“min-latency” <span class="type"><a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:plc">
+		<h3 class="method" id="plc">
+	<span><code>plc</code></span>
+</h3>
+
+		<pre class="property_signature">
+“plc” <span class="type"><a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:tolerance">
+		<h3 class="method" id="tolerance">
+	<span><code>tolerance</code></span>
+</h3>
+
+		<pre class="property_signature">
+“tolerance” <span class="type"><a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoderClass">
+		<h3 id="gstaudioaudiodecoderclass">
+	GstAudio.AudioDecoderClass
+</h3>
+
+		<p>Subclasses can override any of the available virtual methods or not, as
+needed. At minimum <em>handle_frame</em> (and likely <em>set_format</em>) needs to be
+overridden.</p>
+
+
+<div class="member_details">
+	<h4 id="attributes">Attributes</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstAudioDecoderClass.element_class">
+		<td>
+		<p>
+		<i><em><code><a title="GstElementClass" href="../../libgstreamer-1.0/c/gstelement.html#GstElementClass">GstElementClass</a> <em><code>element_class</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>The parent class structure</p>
+</td>
+</tr>
+
+						<tr id="GstAudioDecoderClass._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Virtual_Methods">Virtual Methods</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::close">
+		<h3 id="close">
+	<span><code>close</code></span>
+</h3>
+
+		<pre class="programlisting">
+function close(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>): {
+    // javascript implementation of the 'close' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters30">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::decide_allocation">
+		<h3 id="decide_allocation">
+	<span><code>decide_allocation</code></span>
+</h3>
+
+		<pre class="programlisting">
+function decide_allocation(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, query: <a title="Gst.Query" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">Gst.Query</a>): {
+    // javascript implementation of the 'decide_allocation' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters31">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Query" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">Gst.Query</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::flush">
+		<h3 id="flush">
+	<span><code>flush</code></span>
+</h3>
+
+		<pre class="programlisting">
+function flush(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, hard: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript implementation of the 'flush' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters32">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>hard:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::getcaps">
+		<h3 id="getcaps">
+	<span><code>getcaps</code></span>
+</h3>
+
+		<pre class="programlisting">
+function getcaps(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, filter: <a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'getcaps' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters33">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>filter:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns17">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::handle_frame">
+		<h3 id="handle_frame">
+	<span><code>handle_frame</code></span>
+</h3>
+
+		<pre class="programlisting">
+function handle_frame(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, buffer: <a title="Gst.Buffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'handle_frame' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters34">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Buffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns18">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.FlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::negotiate">
+		<h3 id="negotiate">
+	<span><code>negotiate</code></span>
+</h3>
+
+		<pre class="programlisting">
+function negotiate(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>): {
+    // javascript implementation of the 'negotiate' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters35">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns19">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::open">
+		<h3 id="open">
+	<span><code>open</code></span>
+</h3>
+
+		<pre class="programlisting">
+function open(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>): {
+    // javascript implementation of the 'open' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters36">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns20">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::pre_push">
+		<h3 id="pre_push">
+	<span><code>pre_push</code></span>
+</h3>
+
+		<pre class="programlisting">
+function pre_push(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, buffer: <a title="Gst.Buffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'pre_push' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters37">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Buffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns21">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.FlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::propose_allocation">
+		<h3 id="propose_allocation">
+	<span><code>propose_allocation</code></span>
+</h3>
+
+		<pre class="programlisting">
+function propose_allocation(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, query: <a title="Gst.Query" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">Gst.Query</a>): {
+    // javascript implementation of the 'propose_allocation' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters38">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Query" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">Gst.Query</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns22">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::set_format">
+		<h3 id="set_format">
+	<span><code>set_format</code></span>
+</h3>
+
+		<pre class="programlisting">
+function set_format(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, caps: <a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'set_format' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters39">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Caps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">Gst.Caps</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns23">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::sink_event">
+		<h3 id="sink_event">
+	<span><code>sink_event</code></span>
+</h3>
+
+		<pre class="programlisting">
+function sink_event(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, event: <a title="Gst.Event" href="../../libgstreamer-1.0/c/gstevent.html#GstEvent">Gst.Event</a>): {
+    // javascript implementation of the 'sink_event' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters40">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Event" href="../../libgstreamer-1.0/c/gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns24">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::sink_query">
+		<h3 id="sink_query">
+	<span><code>sink_query</code></span>
+</h3>
+
+		<pre class="programlisting">
+function sink_query(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, query: <a title="Gst.Query" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">Gst.Query</a>): {
+    // javascript implementation of the 'sink_query' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters41">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Query" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">Gst.Query</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns25">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::src_event">
+		<h3 id="src_event">
+	<span><code>src_event</code></span>
+</h3>
+
+		<pre class="programlisting">
+function src_event(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, event: <a title="Gst.Event" href="../../libgstreamer-1.0/c/gstevent.html#GstEvent">Gst.Event</a>): {
+    // javascript implementation of the 'src_event' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters42">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Event" href="../../libgstreamer-1.0/c/gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns26">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::src_query">
+		<h3 id="src_query">
+	<span><code>src_query</code></span>
+</h3>
+
+		<pre class="programlisting">
+function src_query(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, query: <a title="Gst.Query" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">Gst.Query</a>): {
+    // javascript implementation of the 'src_query' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters43">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Query" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">Gst.Query</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns27">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::start">
+		<h3 id="start">
+	<span><code>start</code></span>
+</h3>
+
+		<pre class="programlisting">
+function start(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>): {
+    // javascript implementation of the 'start' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters44">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns28">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::stop">
+		<h3 id="stop">
+	<span><code>stop</code></span>
+</h3>
+
+		<pre class="programlisting">
+function stop(dec: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>): {
+    // javascript implementation of the 'stop' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters45">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>dec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns29">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioDecoder:::transform_meta">
+		<h3 id="transform_meta">
+	<span><code>transform_meta</code></span>
+</h3>
+
+		<pre class="programlisting">
+function transform_meta(enc: <a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>, outbuf: <a title="Gst.Buffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>, meta: <a title="Gst.Meta" href="../../libgstreamer-1.0/c/gstmeta.html#GstMeta">Gst.Meta</a>, inbuf: <a title="Gst.Buffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'transform_meta' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters46">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>enc:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GstAudio.AudioDecoder" href="gstaudiodecoder.html#GstAudioDecoder">GstAudio.AudioDecoder</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>outbuf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Buffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>meta:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Meta" href="../../libgstreamer-1.0/c/gstmeta.html#GstMeta">Gst.Meta</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>inbuf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Buffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns30">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

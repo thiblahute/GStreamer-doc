@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "Gst.EventType.gap", "urls": ["libgstreamer-doc-1.0/python/gstevent.html#gst_event_parse_gap", "libgstreamer-doc-1.0/python/gstevent.html#GstEventType"]});
+urls_downloaded_cb({"token": "Gst.EventType.gap", "urls": ["libgstreamer-1.0/python/gstevent.html#gst_event_parse_gap", "libgstreamer-1.0/python/gstevent.html#GstEventType"]});

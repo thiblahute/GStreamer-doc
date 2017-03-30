@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gstgl.glformat.prototype.red", "urls": ["gst-plugins-bad-gl-doc-1.0/javascript/Miscellaneous.html#GstGLFormat"]});
+urls_downloaded_cb({"token": "gstgl.glformat.prototype.red", "urls": ["gst-plugins-bad-gl-1.0/javascript/Miscellaneous.html#GstGLFormat"]});

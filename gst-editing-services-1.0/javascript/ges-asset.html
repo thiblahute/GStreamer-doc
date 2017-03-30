@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GESAsset</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-editing-services-1.0" data-hotdoc-ref="ges-asset.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="ges-asset.h">
+<h1 id="gesasset">GESAsset</h1><p>The Assets in the GStreamer Editing Services represent the resources
+that can be used. You can create assets for any type that implements the <a href="ges-extractable.html#GESExtractable">GES.Extractable</a>
+interface, for example <a href="ges-clip.html#GESClip">GES.Clip</a>, <a href="ges-formatter.html#GESFormatter">GES.Formatter</a>, and <a href="ges-track-element.html#GESTrackElement">GES.TrackElement</a> do implement it.
+This means that assets will represent for example a <a href="ges-uri-clip.html#GESUriClip">GES.UriClip</a>, <a href="ges-base-effect.html#GESBaseEffect">GES.BaseEffect</a> etc,
+and then you can extract objects of those types with the appropriate parameters from the asset
+using the <a href="ges-asset.html#ges_asset_extract">GES.Asset.prototype.extract</a> method:</p>
+<pre><code class="language-["> GESAsset *effect_asset;
+ GESEffect *effect;
+
+ // You create an asset for an effect
+ effect_asset = ges_asset_request (GES_TYPE_EFFECT, "agingtv", NULL);
+
+ // And now you can extract an instance of GESEffect from that asset
+ effect = GES_EFFECT (ges_asset_extract (effect_asset));
+
+</code></pre>
+<p>In that example, the advantages of having a <a href="ges-asset.html#GESAsset">GES.Asset</a> are that you can know what effects
+you are working with and let your user know about the avalaible ones, you can add metadata
+to the <a href="ges-asset.html#GESAsset">GES.Asset</a> through the <a href="ges-meta-container.html#GESMetaContainer">GES.MetaContainer</a> interface and you have a model for your
+custom effects. Note that <a href="ges-asset.html#GESAsset">GES.Asset</a> management is making easier thanks to the <a href="ges-project.html#GESProject">GES.Project</a> class.</p>
+<p>Each asset is represented by a pair of <em>extractable_type</em> and <em>id</em> (string). Actually the <em>extractable_type</em>
+is the type that implements the <a href="ges-extractable.html#GESExtractable">GES.Extractable</a> interface, that means that for example for a <a href="ges-uri-clip.html#GESUriClip">GES.UriClip</a>,
+the type that implements the <a href="ges-extractable.html#GESExtractable">GES.Extractable</a> interface is <a href="ges-clip.html#GESClip">GES.Clip</a>.
+The identifier represents different things depending on the <em>extractable_type</em> and you should check
+the documentation of each type to know what the ID of <a href="ges-asset.html#GESAsset">GES.Asset</a> actually represents for that type. By default,
+we only have one <a href="ges-asset.html#GESAsset">GES.Asset</a> per type, and the <em>id</em> is the name of the type, but this behaviour is overriden
+to be more useful. For example, for GESTransitionClips, the ID is the vtype of the transition
+you will extract from it (ie crossfade, box-wipe-rc etc..) For <a href="ges-effect.html#GESEffect">GES.Effect</a> the ID is the
+<em>bin</em>-description property of the extracted objects (ie the gst-launch style description of the bin that
+will be used).</p>
+<p>Each and every <a href="ges-asset.html#GESAsset">GES.Asset</a> is cached into GES, and you can query those with the <a href="ges-asset.html#ges_list_assets">GES.prototype.list_assets</a> function.
+Also the system will automatically register <a href="ges-asset.html#GESAsset">GES.Asset</a> for <a href="ges-formatter.html#GESFormatter">GES.Formatter</a> and <a href="ges-transition-clip.html#GESTransitionClip">GES.TransitionClip</a>
+and standard effects (actually not implemented yet) and you can simply query those calling:</p>
+<pre><code class="language-[">    GList *formatter_assets, *tmp;
+
+    //  List all  the transitions
+    formatter_assets = ges_list_assets (GES_TYPE_FORMATTER);
+
+    // Print some infos about the formatter GESAsset
+    for (tmp = formatter_assets; tmp; tmp = tmp-&gt;next) {
+      g_print ("Name of the formatter: %s, file extension it produces: %s",
+        ges_meta_container_get_string (GES_META_CONTAINER (tmp-&gt;data), GES_META_FORMATTER_NAME),
+        ges_meta_container_get_string (GES_META_CONTAINER (tmp-&gt;data), GES_META_FORMATTER_EXTENSION));
+    }
+
+    g_list_free (transition_assets);
+
+</code></pre>
+<p>You can request the creation of <a href="ges-asset.html#GESAsset">GES.Asset</a> using either <a href="ges-asset.html#ges_asset_request_async">GES.Asset.prototype.request_async</a> or
+<a href="ges-asset.html#ges_asset_request_async">GES.Asset.prototype.request_async</a>. All the <a href="ges-asset.html#GESAsset">GES.Asset</a> are cached and thus any asset that has already
+been created can be requested again without overhead.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GESAsset">
+		<h3 id="gesasset1">
+	GES.Asset
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject.Object" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a>
+    <span class="lineart">╰──</span>GES.Asset
+        <span class="lineart">╰──</span><a title="GES.ClipAsset" href="ges-clip-asset.html#GESClipAsset">GES.ClipAsset</a>
+        <span class="lineart">╰──</span><a title="GES.TrackElementAsset" href="ges-track-element-asset.html#GESTrackElementAsset">GES.TrackElementAsset</a>
+        <span class="lineart">╰──</span><a title="GES.Project" href="ges-project.html#GESProject">GES.Project</a>
+</pre>
+
+</div>
+
+</div>
+
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GESAsset.parent">
+		<td>
+		<p>
+		<i><em><code><a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a> <em><code>parent</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GESAsset.priv">
+		<td>
+		<p>
+		<i><em><code>GESAssetPrivate* <em><code>priv</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GESAsset._ges_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_ges_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_asset_needs_reload">
+		<h3 id="gesassetprototypeneeds_reload">
+	<span><code>GES.Asset.prototype.needs_reload</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.needs_reload(extractable_type: <a title="GLib.Type" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a>, id: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): {
+    // javascript wrapper for 'ges_asset_needs_reload'
+}</pre>
+
+<p>Sets an asset from the internal cache as needing reload. An asset needs reload
+in the case where, for example, we were missing a GstPlugin to use it and that
+plugin has been installed, or, that particular asset content as changed
+meanwhile (in the case of the usage of proxies).</p>
+<p>Once an asset has been set as "needs reload", requesting that asset again
+will lead to it being re discovered, and reloaded as if it was not in the
+cache before.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>extractable_type:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a> of the object that can be extracted from the
+asset to be reloaded.</p>
+</td>
+<td>
+<a title="GLib.Type" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>id:</code></em></i>
+		</p>
+	</td>
+		<td><p>The identifier of the asset to mark as needing reload</p>
+</td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if the asset was in the cache and could be set as needing reload,
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> otherwise.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_asset_request">
+		<h3 id="gesassetprototyperequest">
+	<span><code>GES.Asset.prototype.request</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.request(extractable_type: <a title="GLib.Type" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a>, id: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): {
+    // javascript wrapper for 'ges_asset_request'
+}</pre>
+
+<p>Create a <a href="ges-asset.html#GESAsset">GES.Asset</a> in the most simple cases, you should look at the <em>extractable_type</em>
+documentation to see if that constructor can be called for this particular type</p>
+<p>As it is recommanded not to instanciate assets for GESUriClip synchronously,
+it will not work with this method, but you can instead use the specific
+<a href="ges-uri-asset.html#ges_uri_clip_asset_request_sync">GES.UriClipAsset.prototype.request_sync</a> method if you really want to.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>extractable_type:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a> of the object that can be extracted from the new asset.</p>
+</td>
+<td>
+<a title="GLib.Type" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>id:</code></em></i>
+		</p>
+	</td>
+		<td><p>The Identifier or <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></p>
+</td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>A reference to the wanted <a href="ges-asset.html#GESAsset">GES.Asset</a> or <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></p>
+
+	</td>
+	<td>
+		<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_asset_request_async">
+		<h3 id="gesassetprototyperequest_async">
+	<span><code>GES.Asset.prototype.request_async</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.request_async(extractable_type: <a title="GLib.Type" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a>, id: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>, cancellable: <a title="Gio.Cancellable" href="https://developer.gnome.org/gio/unstable/GCancellable.html#GCancellable-struct">Gio.Cancellable</a>, callback: <a title="Gio.AsyncReadyCallback" href="https://developer.gnome.org/gio/unstable/GAsyncResult.html#GAsyncReadyCallback">Gio.AsyncReadyCallback</a>, user_data: <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): {
+    // javascript wrapper for 'ges_asset_request_async'
+}</pre>
+
+<p>Request a new <a href="ges-asset.html#GESAsset">GES.Asset</a> asyncronously, <em>callback</em> will be called when the materail is
+ready to be used or if an error occured.</p>
+<p>Example of request of a GESAsset async:</p>
+<pre><code class="language-["> // The request callback
+ static void
+ asset_loaded_cb (GESAsset * source, GAsyncResult * res, gpointer user_data)
+ {
+   GESAsset *asset;
+   GError *error = NULL;
+
+   asset = ges_asset_request_finish (res, &amp;error);
+   if (asset) {
+    g_print ("The file: %s is usable as a FileSource",
+        ges_asset_get_id (asset));
+   } else {
+    g_print ("The file: %s is *not* usable as a FileSource because: %s",
+        ges_asset_get_id (source), error-&gt;message);
+   }
+
+   gst_object_unref (mfs);
+ }
+
+ // The request:
+ ges_asset_request_async (GES_TYPE_URI_CLIP, some_uri, NULL,
+    (GAsyncReadyCallback) asset_loaded_cb, user_data);
+</code></pre>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>extractable_type:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a> of the object that can be extracted from the
+new asset. The class must implement the <a href="ges-extractable.html#GESExtractable">GES.Extractable</a> interface.</p>
+</td>
+<td>
+<a title="GLib.Type" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>id:</code></em></i>
+		</p>
+	</td>
+		<td><p>The Identifier of the asset we want to create. This identifier depends of the extractable,
+type you want. By default it is the name of the class itself (or <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a>), but for example for a
+GESEffect, it will be the pipeline description, for a GESUriClip it
+will be the name of the file, etc... You should refer to the documentation of the <a href="ges-extractable.html#GESExtractable">GES.Extractable</a>
+type you want to create a <a href="ges-asset.html#GESAsset">GES.Asset</a> for.</p>
+</td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>cancellable:</code></em></i>
+		</p>
+	</td>
+		<td><p>optional <a href="https://developer.gnome.org/gio/unstable/GCancellable.html#GCancellable-struct">Gio.Cancellable</a> object, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a> to ignore.</p>
+</td>
+<td>
+<a title="Gio.Cancellable" href="https://developer.gnome.org/gio/unstable/GCancellable.html#GCancellable-struct">Gio.Cancellable</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>callback:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="https://developer.gnome.org/gio/unstable/GAsyncResult.html#GAsyncReadyCallback">Gio.AsyncReadyCallback</a> to call when the initialization is finished,
+Note that the <em>source</em> of the callback will be the <a href="ges-asset.html#GESAsset">GES.Asset</a>, but you need to
+make sure that the asset is properly loaded using the <a href="ges-asset.html#ges_asset_request_finish">GES.Asset.prototype.request_finish</a>
+method. This asset can not be used as is.</p>
+</td>
+<td>
+<a title="Gio.AsyncReadyCallback" href="https://developer.gnome.org/gio/unstable/GAsyncResult.html#GAsyncReadyCallback">Gio.AsyncReadyCallback</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>The user data to pass when <em>callback</em> is called</p>
+</td>
+<td>
+<a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_asset_request_finish">
+		<h3 id="gesassetprototyperequest_finish">
+	<span><code>GES.Asset.prototype.request_finish</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.request_finish(res: <a title="Gio.AsyncResult" href="https://developer.gnome.org/gio/unstable/GAsyncResult.html#GAsyncResult-struct">Gio.AsyncResult</a>): {
+    // javascript wrapper for 'ges_asset_request_finish'
+}</pre>
+
+<p>Finalize the request of an async <a href="ges-asset.html#GESAsset">GES.Asset</a></p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>res:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="https://developer.gnome.org/gio/unstable/GAsyncResult.html#GAsyncResult-struct">Gio.AsyncResult</a> from which to get the newly created <a href="ges-asset.html#GESAsset">GES.Asset</a></p>
+</td>
+<td>
+<a title="Gio.AsyncResult" href="https://developer.gnome.org/gio/unstable/GAsyncResult.html#GAsyncResult-struct">Gio.AsyncResult</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The <a href="ges-asset.html#GESAsset">GES.Asset</a> previously requested</p>
+
+	</td>
+	<td>
+		<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_asset_extract">
+		<h3 id="gesassetprototypeextract">
+	<span><code>GES.Asset.prototype.extract</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.extract(): {
+    // javascript wrapper for 'ges_asset_extract'
+}</pre>
+
+<p>Extracts a new <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a> from <em>asset</em>. The type of the object is
+defined by the extractable-type of <em>asset</em>, you can check what
+type will be extracted from <em>asset</em> using
+<a href="ges-asset.html#ges_asset_get_extractable_type">GES.Asset.prototype.get_extractable_type</a></p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="ges-asset.html#GESAsset">GES.Asset</a> to get extract an object from</p>
+</td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>A newly created <a href="ges-extractable.html#GESExtractable">GES.Extractable</a></p>
+
+	</td>
+	<td>
+		<a title="GES.Extractable" href="ges-extractable.html#GESExtractable">GES.Extractable</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="ges_asset_get_error">
+		<h3 id="gesassetprototypeget_error">
+	<span><code>GES.Asset.prototype.get_error</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.get_error(): {
+    // javascript wrapper for 'ges_asset_get_error'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+	</td>
+		<td><p>The asset to retrieve the error from</p>
+</td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The <a href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html#GError">GLib.Error</a> of the asset or <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a> if
+the asset was loaded without issue</p>
+
+	</td>
+	<td>
+		<a title="GLib.Error" href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html#GError">GLib.Error</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.8
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_asset_get_extractable_type">
+		<h3 id="gesassetprototypeget_extractable_type">
+	<span><code>GES.Asset.prototype.get_extractable_type</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.get_extractable_type(): {
+    // javascript wrapper for 'ges_asset_get_extractable_type'
+}</pre>
+
+<p>Gets the type of object that can be extracted from <em>self</em></p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="ges-asset.html#GESAsset">GES.Asset</a></p>
+</td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the type of object that can be extracted from <em>self</em></p>
+
+	</td>
+	<td>
+		<a title="GLib.Type" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_asset_get_id">
+		<h3 id="gesassetprototypeget_id">
+	<span><code>GES.Asset.prototype.get_id</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.get_id(): {
+    // javascript wrapper for 'ges_asset_get_id'
+}</pre>
+
+<p>Gets the ID of a <a href="ges-asset.html#GESAsset">GES.Asset</a></p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="ges-asset.html#GESAsset">GES.Asset</a> to get ID from</p>
+</td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The ID of <em>self</em></p>
+
+	</td>
+	<td>
+		<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_asset_get_proxy">
+		<h3 id="gesassetprototypeget_proxy">
+	<span><code>GES.Asset.prototype.get_proxy</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.get_proxy(): {
+    // javascript wrapper for 'ges_asset_get_proxy'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>asset:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="ges-asset.html#GESAsset">GES.Asset</a> to get currenlty used proxy</p>
+</td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The proxy in use for <em>asset</em></p>
+
+	</td>
+	<td>
+		<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_asset_get_proxy_target">
+		<h3 id="gesassetprototypeget_proxy_target">
+	<span><code>GES.Asset.prototype.get_proxy_target</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.get_proxy_target(): {
+    // javascript wrapper for 'ges_asset_get_proxy_target'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>proxy:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="ges-asset.html#GESAsset">GES.Asset</a> from which to get the the asset it proxies.</p>
+</td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The <a href="ges-asset.html#GESAsset">GES.Asset</a> that is proxied by <em>proxy</em></p>
+
+	</td>
+	<td>
+		<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_asset_list_proxies">
+		<h3 id="gesassetprototypelist_proxies">
+	<span><code>GES.Asset.prototype.list_proxies</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.list_proxies(): {
+    // javascript wrapper for 'ges_asset_list_proxies'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>asset:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="ges-asset.html#GESAsset">GES.Asset</a> to get proxies from</p>
+</td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The list of proxies <em>asset</em> has. Note that the default asset to be
+used is always the first in that list.</p>
+
+	</td>
+	<td>
+		<a title="GLib.List" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GLib.List</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_asset_set_proxy">
+		<h3 id="gesassetprototypeset_proxy">
+	<span><code>GES.Asset.prototype.set_proxy</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.Asset.prototype.set_proxy(proxy: <a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>): {
+    // javascript wrapper for 'ges_asset_set_proxy'
+}</pre>
+
+<p>A proxying asset is an asset that can substitue the real <em>asset</em>. For example if you
+have a full HD <a href="ges-uri-asset.html#GESUriClipAsset">GES.UriClipAsset</a> you might want to set a lower resolution (HD version
+of the same file) as proxy. Note that when an asset is proxied, calling
+<a href="ges-asset.html#ges_asset_request">GES.Asset.prototype.request</a> will actually return the proxy asset.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>asset:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="ges-asset.html#GESAsset">GES.Asset</a> to set proxy on</p>
+</td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>proxy:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="ges-asset.html#GESAsset">GES.Asset</a> that should be used as default proxy for <em>asset</em> or
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a> if you want to use the currently set proxy. Note that an asset can proxy one and only
+one other asset.</p>
+</td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if <em>proxy</em> has been set on <em>asset</em>, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> otherwise.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GESAsset:extractable-type">
+		<h3 class="method" id="extractabletype">
+	<span><code>extractable-type</code></span>
+</h3>
+
+		<pre class="property_signature">
+“extractable-type” <span class="type"><a title="GLib.Type" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct Only
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GESAsset:id">
+		<h3 class="method" id="id">
+	<span><code>id</code></span>
+</h3>
+
+		<pre class="property_signature">
+“id” <span class="type"><a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct Only
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GESAsset:proxy">
+		<h3 class="method" id="proxy">
+	<span><code>proxy</code></span>
+</h3>
+
+		<pre class="property_signature">
+“proxy” <span class="type"><a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GESAsset:proxy-target">
+		<h3 class="method" id="proxytarget">
+	<span><code>proxy-target</code></span>
+</h3>
+
+		<pre class="property_signature">
+“proxy-target” <span class="type"><a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GESAssetClass">
+		<h3 id="gesassetclass">
+	GES.AssetClass
+</h3>
+
+		
+<div class="member_details">
+	<h4 id="attributes">Attributes</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GESAssetClass.parent">
+		<td>
+		<p>
+		<i><em><code><a title="GObjectClass" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass">GObjectClass</a> <em><code>parent</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GESAssetClass._ges_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_ges_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Virtual_Methods">Virtual Methods</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GESAsset:::extract">
+		<h3 id="extract">
+	<span><code>extract</code></span>
+</h3>
+
+		<pre class="programlisting">
+function extract(self: <a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>): {
+    // javascript implementation of the 'extract' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GES.Extractable" href="ges-extractable.html#GESExtractable">GES.Extractable</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GESAsset:::inform_proxy">
+		<h3 id="inform_proxy">
+	<span><code>inform_proxy</code></span>
+</h3>
+
+		<pre class="programlisting">
+function inform_proxy(self: <a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>, proxy_id: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): {
+    // javascript implementation of the 'inform_proxy' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>proxy_id:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GESAsset:::proxied">
+		<h3 id="proxied">
+	<span><code>proxied</code></span>
+</h3>
+
+		<pre class="programlisting">
+function proxied(self: <a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>, proxy: <a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>): {
+    // javascript implementation of the 'proxied' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>proxy:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GESAsset:::request_id_update">
+		<h3 id="request_id_update">
+	<span><code>request_id_update</code></span>
+</h3>
+
+		<pre class="programlisting">
+function request_id_update(self: <a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>, proposed_new_id: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>, error: <a title="GLib.Error" href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html#GError">GLib.Error</a>): {
+    // javascript implementation of the 'request_id_update' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>proposed_new_id:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>error:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GLib.Error" href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html#GError">GLib.Error</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GESAsset:::start_loading">
+		<h3 id="start_loading">
+	<span><code>start_loading</code></span>
+</h3>
+
+		<pre class="programlisting">
+function start_loading(self: <a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>): {
+    // javascript implementation of the 'start_loading' virtual method
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GES.Asset" href="ges-asset.html#GESAsset">GES.Asset</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GES.AssetLoadingReturn" href="Miscellaneous.html#GESAssetLoadingReturn">GES.AssetLoadingReturn</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="ges_list_assets">
+		<h3 id="gesprototypelist_assets">
+	<span><code>GES.prototype.list_assets</code></span>
+</h3>
+
+		<pre class="programlisting">
+function GES.prototype.list_assets(filter: <a title="GLib.Type" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a>): {
+    // javascript wrapper for 'ges_list_assets'
+}</pre>
+
+<p>List all <em>asset</em> filtering per filter as defined by <em>filter</em>.
+It copies the asset and thus will not be updated in time.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>filter:</code></em></i>
+		</p>
+	</td>
+		<td><p>Type of assets to list, GES_TYPE_EXTRACTABLE  will list
+all assets</p>
+</td>
+<td>
+<a title="GLib.Type" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GLib.Type</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The list of
+<a href="ges-asset.html#GESAsset">GES.Asset</a> the object contains</p>
+
+	</td>
+	<td>
+		<a title="GLib.List" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GLib.List</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

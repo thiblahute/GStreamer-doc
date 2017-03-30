@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>lamemp3enc</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gst-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-ugly-1.0" data-hotdoc-ref="element-lamemp3enc.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="element-lamemp3enc">
+<h1 id="lamemp3enc1">lamemp3enc</h1><p>This element encodes raw integer audio into an MPEG-1 layer 3 (MP3) stream.
+Note that <ulink url="http://en.wikipedia.org/wiki/MP3">MP3</ulink> is not
+a free format, there are licensing and patent issues to take into
+consideration. See <ulink url="http://www.vorbis.com/">Ogg/Vorbis</ulink>
+for a royalty free (and often higher quality) alternative.</p>
+<h2 id="output-sample-rate">Output sample rate</h2>
+<p>If no fixed output sample rate is negotiated on the element's src pad,
+the element will choose an optimal sample rate to resample to internally.
+For example, a 16-bit 44.1 KHz mono audio stream encoded at 48 kbit will
+get resampled to 32 KHz.  Use filter caps on the src pad to force a
+particular sample rate.</p>
+<h2 id="example-pipelines">Example pipelines</h2>
+<pre><code class="language-["> gst-launch-1.0 -v audiotestsrc wave=sine num-buffers=100 ! audioconvert ! lamemp3enc ! filesink location=sine.mp3
+ ]| Encode a test sine signal to MP3.
+ |[
+ gst-launch-1.0 -v autoaudiosrc ! audioconvert ! lamemp3enc target=bitrate bitrate=192 ! filesink location=alsasrc.mp3
+ ]| Record from a sound card using ALSA and encode to MP3 with an average bitrate of 192kbps
+ |[
+ gst-launch-1.0 -v filesrc location=music.wav ! decodebin ! audioconvert ! audioresample ! lamemp3enc target=quality quality=0 ! id3v2mux ! filesink location=music.mp3
+ ]| Transcode from a .wav file to MP3 (the id3v2mux element is optional) with best VBR quality
+ |[
+ gst-launch-1.0 -v cdda://5 ! audioconvert ! lamemp3enc target=bitrate cbr=true bitrate=192 ! filesink location=track5.mp3
+ ]| Encode Audio CD track 5 to MP3 with a constant bitrate of 192kbps
+ |[
+ gst-launch-1.0 -v audiotestsrc num-buffers=10 ! audio/x-raw,rate=44100,channels=1 ! lamemp3enc target=bitrate cbr=true bitrate=48 ! filesink location=test.mp3
+ ]| Encode to a fixed sample rate
+</code></pre>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="lamemp3enc">
+		<h3 id="lamemp3enc2">
+	lamemp3enc
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../libgstreamer-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span><a title="GstAudioEncoder" href="../gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a>
+                    <span class="lineart">╰──</span>lamemp3enc
+</pre>
+
+</div>
+
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc-&gt;sink">
+		<h3 id="sink">
+    sink:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>audio/x-raw, format=(string)S16LE, layout=(string)interleaved, rate=(int){ 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000 }, channels=(int)1; audio/x-raw, format=(string)S16LE, layout=(string)interleaved, rate=(int){ 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000 }, channels=(int)2, channel-mask=(bitmask)0x0000000000000003</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc-&gt;src">
+		<h3 id="src">
+    src:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>audio/mpeg, mpegversion=(int)1, layer=(int)3, rate=(int){ 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000 }, channels=(int)[ 1, 2 ]</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:bitrate">
+		<h3 class="method" id="bitrate">
+	<span><code>bitrate</code></span>
+</h3>
+
+		<pre class="property_signature">
+“bitrate” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+<p>Bitrate in kbit/sec (Only valid if target is bitrate, for CBR one of 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256 or 320)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	128
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:cbr">
+		<h3 class="method" id="cbr">
+	<span><code>cbr</code></span>
+</h3>
+
+		<pre class="property_signature">
+“cbr” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Enforce constant bitrate encoding (Only valid if target is bitrate)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:encoding-engine-quality">
+		<h3 class="method" id="encodingenginequality">
+	<span><code>encoding-engine-quality</code></span>
+</h3>
+
+		<pre class="property_signature">
+“encoding-engine-quality” <span class="type"><a title="GstLameMP3EncEncodingEngineQuality" href="element-lamemp3enc.html#GstLameMP3EncEncodingEngineQuality">GstLameMP3EncEncodingEngineQuality</a></span>
+</pre>
+
+<p>Quality/speed of the encoding engine, this does not affect the bitrate!</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	standard (1)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:hard-resync">
+		<h3 class="method" id="hardresync">
+	<span><code>hard-resync</code></span>
+</h3>
+
+		<pre class="property_signature">
+“hard-resync” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Perform clipping and sample flushing upon discontinuity</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:mark-granule">
+		<h3 class="method" id="markgranule">
+	<span><code>mark-granule</code></span>
+</h3>
+
+		<pre class="property_signature">
+“mark-granule” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Apply granule semantics to buffer metadata (implies perfect-timestamp)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:mono">
+		<h3 class="method" id="mono">
+	<span><code>mono</code></span>
+</h3>
+
+		<pre class="property_signature">
+“mono” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Enforce mono encoding</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>The name of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	lamemp3enc0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+<p>The parent of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:perfect-timestamp">
+		<h3 class="method" id="perfecttimestamp">
+	<span><code>perfect-timestamp</code></span>
+</h3>
+
+		<pre class="property_signature">
+“perfect-timestamp” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Favour perfect timestamps over tracking upstream timestamps</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:quality">
+		<h3 class="method" id="quality">
+	<span><code>quality</code></span>
+</h3>
+
+		<pre class="property_signature">
+“quality” <span class="type"><a title="gfloat" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gfloat">gfloat</a></span>
+</pre>
+
+<p>VBR Quality from 0 to 10, 0 being the best (Only valid if target is quality)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	4
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:target">
+		<h3 class="method" id="target">
+	<span><code>target</code></span>
+</h3>
+
+		<pre class="property_signature">
+“target” <span class="type"><a title="GstLameMP3EncTarget" href="element-lamemp3enc.html#GstLameMP3EncTarget">GstLameMP3EncTarget</a></span>
+</pre>
+
+<p>Optimize for quality or bitrate</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	quality (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3Enc:tolerance">
+		<h3 class="method" id="tolerance">
+	<span><code>tolerance</code></span>
+</h3>
+
+		<pre class="property_signature">
+“tolerance” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+<p>Consider discontinuity if timestamp jitter/imperfection exceeds tolerance (ns)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	40000000
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3EncEncodingEngineQuality">
+		<h3 id="enum-gstlamemp3encencodingenginequality">
+		enum GstLameMP3EncEncodingEngineQuality
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>fast</td>
+            <td>Fast</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>standard</td>
+            <td>Standard</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>high</td>
+            <td>High</td>
+            <td>0x00000002</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstLameMP3EncTarget">
+		<h3 id="enum-gstlamemp3enctarget">
+		enum GstLameMP3EncTarget
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>quality</td>
+            <td>Quality</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>bitrate</td>
+            <td>Bitrate</td>
+            <td>0x00000001</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

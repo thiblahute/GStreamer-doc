@@ -1,0 +1,2821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstObject</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="libgstreamer-1.0" data-hotdoc-ref="gstobject.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="python">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstobject.h">
+<h1 id="gstobject">GstObject</h1><p><a href="gstobject.html#GstObject">Gst.Object</a> provides a root for the object hierarchy tree filed in by the
+GStreamer library.  It is currently a thin wrapper on top of
+<a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GObject.InitiallyUnowned</a>. It is an abstract class that is not very usable on its own.</p>
+<p><a href="gstobject.html#GstObject">Gst.Object</a> gives us basic refcounting, parenting functionality and locking.
+Most of the functions are just extended for special GStreamer needs and can be
+found under the same name in the base class of <a href="gstobject.html#GstObject">Gst.Object</a> which is <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a>
+(e.g. <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#g-object-ref">GObject.Object.ref</a> becomes <a href="gstobject.html#gst_object_ref">Gst.Object.ref</a>).</p>
+<p>Since <a href="gstobject.html#GstObject">Gst.Object</a> derives from <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GObject.InitiallyUnowned</a>, it also inherits the
+floating reference. Be aware that functions such as <a href="gstbin.html#gst_bin_add">Gst.Bin.add</a> and
+<a href="gstelement.html#gst_element_add_pad">Gst.Element.add_pad</a> take ownership of the floating reference.</p>
+<p>In contrast to <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a> instances, <a href="gstobject.html#GstObject">Gst.Object</a> adds a name property. The functions
+<a href="gstobject.html#gst_object_set_name">Gst.Object.set_name</a> and <a href="gstobject.html#gst_object_get_name">Gst.Object.get_name</a> are used to set/get the name
+of the object.</p>
+<h2 id="controlled-properties">controlled properties</h2>
+<p>Controlled properties offers a lightweight way to adjust gobject properties
+over stream-time. It works by using time-stamped value pairs that are queued
+for element-properties. At run-time the elements continuously pull value
+changes for the current stream-time.</p>
+<p>What needs to be changed in a <a href="gstelement.html#GstElement">Gst.Element</a>?
+Very little - it is just two steps to make a plugin controllable!</p>
+<ul>
+<li>
+<p>mark gobject-properties paramspecs that make sense to be controlled,
+by GST_PARAM_CONTROLLABLE.</p>
+</li>
+<li>
+<p>when processing data (get, chain, loop function) at the beginning call
+gst_object_sync_values(element,timestamp).
+This will make the controller update all GObject properties that are
+under its control with the current values based on the timestamp.</p>
+</li>
+</ul>
+<p>What needs to be done in applications? Again it's not a lot to change.</p>
+<ul>
+<li>
+<p>create a <a href="gstcontrolsource.html#GstControlSource">Gst.ControlSource</a>.
+csource = gst_interpolation_control_source_new ();
+g_object_set (csource, "mode", GST_INTERPOLATION_MODE_LINEAR, NULL);</p>
+</li>
+<li>
+<p>Attach the <a href="gstcontrolsource.html#GstControlSource">Gst.ControlSource</a> on the controller to a property.
+gst_object_add_control_binding (object, gst_direct_control_binding_new (object, "prop1", csource));</p>
+</li>
+<li>
+<p>Set the control values
+gst_timed_value_control_source_set ((GstTimedValueControlSource *)csource,0 * GST_SECOND, value1);
+gst_timed_value_control_source_set ((GstTimedValueControlSource *)csource,1 * GST_SECOND, value2);</p>
+</li>
+<li>
+<p>start your pipeline</p>
+</li>
+</ul>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstObject">
+		<h3 id="gstobject1">
+	Gst.Object
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject.Object" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a>
+    <span class="lineart">╰──</span><a title="GObject.InitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GObject.InitiallyUnowned</a>
+        <span class="lineart">╰──</span>Gst.Object
+            <span class="lineart">╰──</span><a title="Gst.Allocator" href="gstallocator.html#GstAllocator">Gst.Allocator</a>
+            <span class="lineart">╰──</span><a title="Gst.Element" href="gstelement.html#GstElement">Gst.Element</a>
+            <span class="lineart">╰──</span><a title="Gst.BufferPool" href="gstbufferpool.html#GstBufferPool">Gst.BufferPool</a>
+            <span class="lineart">╰──</span><a title="Gst.Bus" href="gstbus.html#GstBus">Gst.Bus</a>
+            <span class="lineart">╰──</span><a title="Gst.Clock" href="gstclock.html#GstClock">Gst.Clock</a>
+            <span class="lineart">╰──</span><a title="Gst.ControlBinding" href="gstcontrolbinding.html#GstControlBinding">Gst.ControlBinding</a>
+            <span class="lineart">╰──</span><a title="Gst.ControlSource" href="gstcontrolsource.html#GstControlSource">Gst.ControlSource</a>
+            <span class="lineart">╰──</span><a title="Gst.Device" href="gstdevice.html#GstDevice">Gst.Device</a>
+            <span class="lineart">╰──</span><a title="Gst.DeviceMonitor" href="gstdevicemonitor.html#GstDeviceMonitor">Gst.DeviceMonitor</a>
+            <span class="lineart">╰──</span><a title="Gst.DeviceProvider" href="gstdeviceprovider.html#GstDeviceProvider">Gst.DeviceProvider</a>
+            <span class="lineart">╰──</span><a title="Gst.PluginFeature" href="gstpluginfeature.html#GstPluginFeature">Gst.PluginFeature</a>
+            <span class="lineart">╰──</span><a title="Gst.Pad" href="gstpad.html#GstPad">Gst.Pad</a>
+            <span class="lineart">╰──</span><a title="Gst.PadTemplate" href="gstpadtemplate.html#GstPadTemplate">Gst.PadTemplate</a>
+            <span class="lineart">╰──</span><a title="Gst.Plugin" href="gstplugin.html#GstPlugin">Gst.Plugin</a>
+            <span class="lineart">╰──</span><a title="Gst.Registry" href="gstregistry.html#GstRegistry">Gst.Registry</a>
+            <span class="lineart">╰──</span><a title="Gst.Stream" href="gststreams.html#GstStream">Gst.Stream</a>
+            <span class="lineart">╰──</span><a title="Gst.StreamCollection" href="gststreamcollection.html#GstStreamCollection">Gst.StreamCollection</a>
+            <span class="lineart">╰──</span><a title="Gst.Task" href="gsttask.html#GstTask">Gst.Task</a>
+            <span class="lineart">╰──</span><a title="Gst.TaskPool" href="gsttaskpool.html#GstTaskPool">Gst.TaskPool</a>
+            <span class="lineart">╰──</span><a title="Gst.Tracer" href="Miscellaneous.html#GstTracer">Gst.Tracer</a>
+            <span class="lineart">╰──</span><a title="Gst.TracerRecord" href="Miscellaneous.html#GstTracerRecord">Gst.TracerRecord</a>
+</pre>
+
+</div>
+
+</div>
+
+<div class="class_details">
+	<p>GStreamer base object class.</p>
+
+</div>
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstObject.object">
+		<td>
+		<p>
+		<i><em><code><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a> <em><code>object</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstObject.lock">
+		<td>
+		<p>
+		<i><em><code>GMutex <em><code>lock</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>object LOCK</p>
+</td>
+</tr>
+
+						<tr id="GstObject.name">
+		<td>
+		<p>
+		<i><em><code><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * <em><code>name</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>The name of the object</p>
+</td>
+</tr>
+
+						<tr id="GstObject.parent">
+		<td>
+		<p>
+		<i><em><code><a title="GstObject" href="gstobject.html#GstObject">GstObject</a> * <em><code>parent</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>this object's parent, weak ref</p>
+</td>
+</tr>
+
+						<tr id="GstObject.flags">
+		<td>
+		<p>
+		<i><em><code><a title="guint32" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint32">guint32</a> <em><code>flags</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>flags for this object</p>
+</td>
+</tr>
+
+						<tr id="GstObject.control_bindings">
+		<td>
+		<p>
+		<i><em><code><a title="GList" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GList</a> * <em><code>control_bindings</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstObject.control_rate">
+		<td>
+		<p>
+		<i><em><code><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <em><code>control_rate</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstObject.last_sync">
+		<td>
+		<p>
+		<i><em><code><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <em><code>last_sync</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstObject._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_check_uniqueness">
+		<h3 id="gstobjectcheck_uniqueness">
+	<span><code>Gst.Object.check_uniqueness</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.check_uniqueness (list, name):
+    #python wrapper for 'gst_object_check_uniqueness'</pre>
+
+<p>Checks to see if there is any object named <em>name</em> in <em>list</em>. This function
+does not do any locking of any kind. You might want to protect the
+provided list with the lock of the owner of the list. This function
+will lock each <a href="gstobject.html#GstObject">Gst.Object</a> in the list to compare the name, so be
+careful when passing a list with a locked object.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>list:</code></em></i>
+		</p>
+	</td>
+		<td><p>a list of <a href="gstobject.html#GstObject">Gst.Object</a> to
+check through</p>
+</td>
+<td>
+<a title="GLib.List" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GLib.List</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name to search for</p>
+</td>
+<td>
+<a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if a <a href="gstobject.html#GstObject">Gst.Object</a> named <em>name</em> does not appear in <em>list</em>,
+<a href="https://docs.python.org/2/library/constants.html#False">False</a> if it does.</p>
+<p>MT safe. Grabs and releases the LOCK of each object in the list.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_default_deep_notify">
+		<h3 id="gstobjectdefault_deep_notify">
+	<span><code>Gst.Object.default_deep_notify</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.default_deep_notify (object, orig, pspec, excluded_props):
+    #python wrapper for 'gst_object_default_deep_notify'</pre>
+
+<p>A default deep_notify signal callback for an object. The user data
+should contain a pointer to an array of strings that should be excluded
+from the notify. The default handler will print the new value of the property
+using g_print.</p>
+<p>MT safe. This function grabs and releases <em>object</em>'s LOCK for getting its
+path string.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a> that signalled the notify.</p>
+</td>
+<td>
+<a title="GObject.Object" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>orig:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a> that initiated the notify.</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pspec:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="https://developer.gnome.org/gobject/unstable/gobject-GParamSpec.html#GParamSpec">GObject.ParamSpec</a> of the property.</p>
+</td>
+<td>
+<a title="GObject.ParamSpec" href="https://developer.gnome.org/gobject/unstable/gobject-GParamSpec.html#GParamSpec">GObject.ParamSpec</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>excluded_props:</code></em></i>
+		</p>
+	</td>
+		<td><p>(array zero-terminated=1) (element-type gchar*) (allow-none):
+a set of user-specified properties to exclude or <a href="https://docs.python.org/2/library/constants.html#None">None</a> to show
+all changes.</p>
+</td>
+<td>
+<a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_replace">
+		<h3 id="gstobjectreplace">
+	<span><code>Gst.Object.replace</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.replace (oldobj, newobj):
+    #python wrapper for 'gst_object_replace'</pre>
+
+<p>Atomically modifies a pointer to point to a new object.
+The reference count of <em>oldobj</em> is decreased and the reference count of
+<em>newobj</em> is increased.</p>
+<p>Either <em>newobj</em> and the value pointed to by <em>oldobj</em> may be <a href="https://docs.python.org/2/library/constants.html#None">None</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>oldobj:</code></em></i>
+		</p>
+	</td>
+		<td><p>pointer to a place of
+a <a href="gstobject.html#GstObject">Gst.Object</a> to replace</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>newobj:</code></em></i>
+		</p>
+	</td>
+		<td><p>a new <a href="gstobject.html#GstObject">Gst.Object</a></p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if <em>newobj</em> was different from <em>oldobj</em></p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>oldobj:</i>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if <em>newobj</em> was different from <em>oldobj</em></p>
+
+	</td>
+	<td>
+		<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_add_control_binding">
+		<h3 id="gstobjectadd_control_binding">
+	<span><code>Gst.Object.add_control_binding</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.add_control_binding (self, binding):
+    #python wrapper for 'gst_object_add_control_binding'</pre>
+
+<p>Attach the <a href="gstcontrolbinding.html#GstControlBinding">Gst.ControlBinding</a> to the object. If there already was a
+<a href="gstcontrolbinding.html#GstControlBinding">Gst.ControlBinding</a> for this property it will be replaced.</p>
+<p>The <em>object</em> will take ownership of the <em>binding</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the controller object</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>binding:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="gstcontrolbinding.html#GstControlBinding">Gst.ControlBinding</a> that should be used</p>
+</td>
+<td>
+<a title="Gst.ControlBinding" href="gstcontrolbinding.html#GstControlBinding">Gst.ControlBinding</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#False">False</a> if the given <em>binding</em> has not been setup for this object or
+has been setup for a non suitable property, <a href="https://docs.python.org/2/library/constants.html#True">True</a> otherwise.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_default_error">
+		<h3 id="gstobjectdefault_error">
+	<span><code>Gst.Object.default_error</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.default_error (self, error, debug):
+    #python wrapper for 'gst_object_default_error'</pre>
+
+<p>A default error function that uses <a href="https://developer.gnome.org/glib/unstable/glib-Warnings-and-Assertions.html#g-printerr">g_printerr (not introspectable)</a> to display the error message
+and the optional debug sting..</p>
+<p>The default handler will simply print the error string using g_print.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>source:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="gstobject.html#GstObject">Gst.Object</a> that initiated the error.</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>error:</code></em></i>
+		</p>
+	</td>
+		<td><p>the GError.</p>
+</td>
+<td>
+<a title="GLib.Error" href="https://developer.gnome.org/glib/unstable/glib-Error-Reporting.html#GError">GLib.Error</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>debug:</code></em></i>
+		</p>
+	</td>
+		<td><p>an additional debug information string, or <a href="https://docs.python.org/2/library/constants.html#None">None</a></p>
+</td>
+<td>
+<a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_get_control_binding">
+		<h3 id="gstobjectget_control_binding">
+	<span><code>Gst.Object.get_control_binding</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.get_control_binding (self, property_name):
+    #python wrapper for 'gst_object_get_control_binding'</pre>
+
+<p>Gets the corresponding <a href="gstcontrolbinding.html#GstControlBinding">Gst.ControlBinding</a> for the property. This should be
+unreferenced again after use.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>property_name:</code></em></i>
+		</p>
+	</td>
+		<td><p>name of the property</p>
+</td>
+<td>
+<a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the <a href="gstcontrolbinding.html#GstControlBinding">Gst.ControlBinding</a> for
+<em>property_name</em> or <a href="https://docs.python.org/2/library/constants.html#None">None</a> if the property is not controlled.</p>
+
+	</td>
+	<td>
+		<a title="Gst.ControlBinding" href="gstcontrolbinding.html#GstControlBinding">Gst.ControlBinding</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_get_control_rate">
+		<h3 id="gstobjectget_control_rate">
+	<span><code>Gst.Object.get_control_rate</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.get_control_rate (self):
+    #python wrapper for 'gst_object_get_control_rate'</pre>
+
+<p>Obtain the control-rate for this <em>object</em>. Audio processing <a href="gstelement.html#GstElement">Gst.Element</a>
+objects will use this rate to sub-divide their processing loop and call
+<a href="gstobject.html#gst_object_sync_values">Gst.Object.sync_values</a> inbetween. The length of the processing segment
+should be up to <em>control</em>-rate nanoseconds.</p>
+<p>If the <em>object</em> is not under property control, this will return
+<a href="gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a>. This allows the element to avoid the sub-dividing.</p>
+<p>The control-rate is not expected to change if the element is in
+<a href="gstelement.html#GST_STATE_PAUSED">Gst.State.paused</a> or <a href="gstelement.html#GST_STATE_PLAYING">Gst.State.playing</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object that has controlled properties</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the control rate in nanoseconds</p>
+
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_get_g_value_array">
+		<h3 id="gstobjectget_g_value_array">
+	<span><code>Gst.Object.get_g_value_array</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.get_g_value_array (self, property_name, timestamp, interval, n_values, values):
+    #python wrapper for 'gst_object_get_g_value_array'</pre>
+
+<p>Gets a number of <a href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GObject.Value</a> for the given controlled property starting at the
+requested time. The array <em>values</em> need to hold enough space for <em>n_values</em> of
+<a href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GObject.Value</a>.</p>
+<p>This function is useful if one wants to e.g. draw a graph of the control
+curve or apply a control curve sample by sample.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object that has controlled properties</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>property_name:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the property to get</p>
+</td>
+<td>
+<a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timestamp:</code></em></i>
+		</p>
+	</td>
+		<td><p>the time that should be processed</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>interval:</code></em></i>
+		</p>
+	</td>
+		<td><p>the time spacing between subsequent values</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>n_values:</code></em></i>
+		</p>
+	</td>
+		<td><p>the number of values</p>
+</td>
+<td>
+<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>values:</code></em></i>
+		</p>
+	</td>
+		<td><p>array to put control-values in</p>
+</td>
+<td>
+<a title="GObject.Value" href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GObject.Value</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the given array could be filled, <a href="https://docs.python.org/2/library/constants.html#False">False</a> otherwise</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_get_name">
+		<h3 id="gstobjectget_name">
+	<span><code>Gst.Object.get_name</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.get_name (self):
+    #python wrapper for 'gst_object_get_name'</pre>
+
+<p>Returns a copy of the name of <em>object</em>.
+Caller should <a href="https://developer.gnome.org/glib/unstable/glib-Memory-Allocation.html#g-free">GLib.free</a> the return value after usage.
+For a nameless object, this returns <a href="https://docs.python.org/2/library/constants.html#None">None</a>, which you can safely <a href="https://developer.gnome.org/glib/unstable/glib-Memory-Allocation.html#g-free">GLib.free</a>
+as well.</p>
+<p>Free-function: g_free</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a></p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the name of <em>object</em>. <a href="https://developer.gnome.org/glib/unstable/glib-Memory-Allocation.html#g-free">GLib.free</a>
+after usage.</p>
+<p>MT safe. This function grabs and releases <em>object</em>'s LOCK.</p>
+
+	</td>
+	<td>
+		<a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_get_parent">
+		<h3 id="gstobjectget_parent">
+	<span><code>Gst.Object.get_parent</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.get_parent (self):
+    #python wrapper for 'gst_object_get_parent'</pre>
+
+<p>Returns the parent of <em>object</em>. This function increases the refcount
+of the parent object so you should <a href="gstobject.html#gst_object_unref">Gst.Object.unref</a> it after usage.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a></p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>parent of <em>object</em>, this can be
+<a href="https://docs.python.org/2/library/constants.html#None">None</a> if <em>object</em> has no parent. unref after usage.</p>
+<p>MT safe. Grabs and releases <em>object</em>'s LOCK.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_get_path_string">
+		<h3 id="gstobjectget_path_string">
+	<span><code>Gst.Object.get_path_string</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.get_path_string (self):
+    #python wrapper for 'gst_object_get_path_string'</pre>
+
+<p>Generates a string describing the path of <em>object</em> in
+the object hierarchy. Only useful (or used) for debugging.</p>
+<p>Free-function: g_free</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a></p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a string describing the path of <em>object</em>. You must
+<a href="https://developer.gnome.org/glib/unstable/glib-Memory-Allocation.html#g-free">GLib.free</a> the string after usage.</p>
+<p>MT safe. Grabs and releases the <a href="gstobject.html#GstObject">Gst.Object</a>'s LOCK for all objects
+in the hierarchy.</p>
+
+	</td>
+	<td>
+		<a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_get_value">
+		<h3 id="gstobjectget_value">
+	<span><code>Gst.Object.get_value</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.get_value (self, property_name, timestamp):
+    #python wrapper for 'gst_object_get_value'</pre>
+
+<p>Gets the value for the given controlled property at the requested time.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object that has controlled properties</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>property_name:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the property to get</p>
+</td>
+<td>
+<a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timestamp:</code></em></i>
+		</p>
+	</td>
+		<td><p>the time the control-change should be read from</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the GValue of the property at the given time,
+or <a href="https://docs.python.org/2/library/constants.html#None">None</a> if the property isn't controlled.</p>
+
+	</td>
+	<td>
+		<a title="GObject.Value" href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GObject.Value</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_get_value_array">
+		<h3 id="gstobjectget_value_array">
+	<span><code>Gst.Object.get_value_array</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.get_value_array (self, property_name, timestamp, interval, n_values, values):
+    #python wrapper for 'gst_object_get_value_array'</pre>
+
+<p>Gets a number of values for the given controlled property starting at the
+requested time. The array <em>values</em> need to hold enough space for <em>n_values</em> of
+the same type as the objects property's type.</p>
+<p>This function is useful if one wants to e.g. draw a graph of the control
+curve or apply a control curve sample by sample.</p>
+<p>The values are unboxed and ready to be used. The similar function
+<a href="gstobject.html#gst_object_get_g_value_array">Gst.Object.get_g_value_array</a> returns the array as <a href="https://developer.gnome.org/gobject/unstable/gobject-Generic-values.html#GValue">GObject.Value</a> and is
+better suites for bindings.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object that has controlled properties</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>property_name:</code></em></i>
+		</p>
+	</td>
+		<td><p>the name of the property to get</p>
+</td>
+<td>
+<a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timestamp:</code></em></i>
+		</p>
+	</td>
+		<td><p>the time that should be processed</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>interval:</code></em></i>
+		</p>
+	</td>
+		<td><p>the time spacing between subsequent values</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>n_values:</code></em></i>
+		</p>
+	</td>
+		<td><p>the number of values</p>
+</td>
+<td>
+<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>values:</code></em></i>
+		</p>
+	</td>
+		<td><p>array to put control-values in</p>
+</td>
+<td>
+<a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the given array could be filled, <a href="https://docs.python.org/2/library/constants.html#False">False</a> otherwise</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_has_active_control_bindings">
+		<h3 id="gstobjecthas_active_control_bindings">
+	<span><code>Gst.Object.has_active_control_bindings</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.has_active_control_bindings (self):
+    #python wrapper for 'gst_object_has_active_control_bindings'</pre>
+
+<p>Check if the <em>object</em> has active controlled properties.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object that has controlled properties</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the object has active controlled properties</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="deprecated:;" id="gst_object_has_ancestor">
+		<h3 id="gstobjecthas_ancestor">
+	<span><code>Gst.Object.has_ancestor</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.has_ancestor (self, ancestor):
+    #python wrapper for 'gst_object_has_ancestor'</pre>
+
+<p>Check if <em>object</em> has an ancestor <em>ancestor</em> somewhere up in
+the hierarchy. One can e.g. check if a <a href="gstelement.html#GstElement">Gst.Element</a> is inside a <a href="gstpipeline.html#GstPipeline">Gst.Pipeline</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a> to check</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ancestor:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a> to check as ancestor</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if <em>ancestor</em> is an ancestor of <em>object</em>.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	deprecated			: Use gst_object_has_as_ancestor() instead.
+
+ MT safe. Grabs and releases @object's locks.
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_has_as_ancestor">
+		<h3 id="gstobjecthas_as_ancestor">
+	<span><code>Gst.Object.has_as_ancestor</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.has_as_ancestor (self, ancestor):
+    #python wrapper for 'gst_object_has_as_ancestor'</pre>
+
+<p>Check if <em>object</em> has an ancestor <em>ancestor</em> somewhere up in
+the hierarchy. One can e.g. check if a <a href="gstelement.html#GstElement">Gst.Element</a> is inside a <a href="gstpipeline.html#GstPipeline">Gst.Pipeline</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a> to check</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ancestor:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a> to check as ancestor</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if <em>ancestor</em> is an ancestor of <em>object</em>.</p>
+<p>MT safe. Grabs and releases <em>object</em>'s locks.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_object_has_as_parent">
+		<h3 id="gstobjecthas_as_parent">
+	<span><code>Gst.Object.has_as_parent</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.has_as_parent (self, parent):
+    #python wrapper for 'gst_object_has_as_parent'</pre>
+
+<p>Check if <em>parent</em> is the parent of <em>object</em>.
+E.g. a <a href="gstelement.html#GstElement">Gst.Element</a> can check if it owns a given <a href="gstpad.html#GstPad">Gst.Pad</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a> to check</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parent:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a> to check as parent</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#False">False</a> if either <em>object</em> or <em>parent</em> is <a href="https://docs.python.org/2/library/constants.html#None">None</a>. <a href="https://docs.python.org/2/library/constants.html#True">True</a> if <em>parent</em> is
+the parent of <em>object</em>. Otherwise <a href="https://docs.python.org/2/library/constants.html#False">False</a>.</p>
+<p>MT safe. Grabs and releases <em>object</em>'s locks.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_ref">
+		<h3 id="gstobjectref">
+	<span><code>Gst.Object.ref</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.ref (self):
+    #python wrapper for 'gst_object_ref'</pre>
+
+<p>Increments the reference count on <em>object</em>. This function
+does not take the lock on <em>object</em> because it relies on
+atomic refcounting.</p>
+<p>This object returns the input parameter to ease writing
+constructs like :
+result = gst_object_ref (object-&gt;parent);</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a> to reference</p>
+</td>
+<td>
+<a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>A pointer to <em>object</em></p>
+
+	</td>
+	<td>
+		<a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_remove_control_binding">
+		<h3 id="gstobjectremove_control_binding">
+	<span><code>Gst.Object.remove_control_binding</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.remove_control_binding (self, binding):
+    #python wrapper for 'gst_object_remove_control_binding'</pre>
+
+<p>Removes the corresponding <a href="gstcontrolbinding.html#GstControlBinding">Gst.ControlBinding</a>. If it was the
+last ref of the binding, it will be disposed.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>binding:</code></em></i>
+		</p>
+	</td>
+		<td><p>the binding</p>
+</td>
+<td>
+<a title="Gst.ControlBinding" href="gstcontrolbinding.html#GstControlBinding">Gst.ControlBinding</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the binding could be removed.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_set_control_binding_disabled">
+		<h3 id="gstobjectset_control_binding_disabled">
+	<span><code>Gst.Object.set_control_binding_disabled</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.set_control_binding_disabled (self, property_name, disabled):
+    #python wrapper for 'gst_object_set_control_binding_disabled'</pre>
+
+<p>This function is used to disable the control bindings on a property for
+some time, i.e. <a href="gstobject.html#gst_object_sync_values">Gst.Object.sync_values</a> will do nothing for the
+property.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object that has controlled properties</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>property_name:</code></em></i>
+		</p>
+	</td>
+		<td><p>property to disable</p>
+</td>
+<td>
+<a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>disabled:</code></em></i>
+		</p>
+	</td>
+		<td><p>boolean that specifies whether to disable the controller
+or not.</p>
+</td>
+<td>
+<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_set_control_bindings_disabled">
+		<h3 id="gstobjectset_control_bindings_disabled">
+	<span><code>Gst.Object.set_control_bindings_disabled</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.set_control_bindings_disabled (self, disabled):
+    #python wrapper for 'gst_object_set_control_bindings_disabled'</pre>
+
+<p>This function is used to disable all controlled properties of the <em>object</em> for
+some time, i.e. <a href="gstobject.html#gst_object_sync_values">Gst.Object.sync_values</a> will do nothing.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object that has controlled properties</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>disabled:</code></em></i>
+		</p>
+	</td>
+		<td><p>boolean that specifies whether to disable the controller
+or not.</p>
+</td>
+<td>
+<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_set_control_rate">
+		<h3 id="gstobjectset_control_rate">
+	<span><code>Gst.Object.set_control_rate</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.set_control_rate (self, control_rate):
+    #python wrapper for 'gst_object_set_control_rate'</pre>
+
+<p>Change the control-rate for this <em>object</em>. Audio processing <a href="gstelement.html#GstElement">Gst.Element</a>
+objects will use this rate to sub-divide their processing loop and call
+<a href="gstobject.html#gst_object_sync_values">Gst.Object.sync_values</a> inbetween. The length of the processing segment
+should be up to <em>control</em>-rate nanoseconds.</p>
+<p>The control-rate should not change if the element is in <a href="gstelement.html#GST_STATE_PAUSED">Gst.State.paused</a> or
+<a href="gstelement.html#GST_STATE_PLAYING">Gst.State.playing</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object that has controlled properties</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>control_rate:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new control-rate in nanoseconds.</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_set_name">
+		<h3 id="gstobjectset_name">
+	<span><code>Gst.Object.set_name</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.set_name (self, name):
+    #python wrapper for 'gst_object_set_name'</pre>
+
+<p>Sets the name of <em>object</em>, or gives <em>object</em> a guaranteed unique
+name (if <em>name</em> is <a href="https://docs.python.org/2/library/constants.html#None">None</a>).
+This function makes a copy of the provided name, so the caller
+retains ownership of the name it sent.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a></p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>new name of object</p>
+</td>
+<td>
+<a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the name could be set. Since Objects that have
+a parent cannot be renamed, this function returns <a href="https://docs.python.org/2/library/constants.html#False">False</a> in those
+cases.</p>
+<p>MT safe.  This function grabs and releases <em>object</em>'s LOCK.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_set_parent">
+		<h3 id="gstobjectset_parent">
+	<span><code>Gst.Object.set_parent</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.set_parent (self, parent):
+    #python wrapper for 'gst_object_set_parent'</pre>
+
+<p>Sets the parent of <em>object</em> to <em>parent</em>. The object's reference count will
+be incremented, and any floating reference will be removed (see <a href="../c/gstobject.html#gst_object_ref_sink">gst_object_ref_sink (not introspectable)</a>).</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters23">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a></p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>parent:</code></em></i>
+		</p>
+	</td>
+		<td><p>new parent of object</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns17">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if <em>parent</em> could be set or <a href="https://docs.python.org/2/library/constants.html#False">False</a> when <em>object</em>
+already had a parent or <em>object</em> and <em>parent</em> are the same.</p>
+<p>MT safe. Grabs and releases <em>object</em>'s LOCK.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_suggest_next_sync">
+		<h3 id="gstobjectsuggest_next_sync">
+	<span><code>Gst.Object.suggest_next_sync</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.suggest_next_sync (self):
+    #python wrapper for 'gst_object_suggest_next_sync'</pre>
+
+<p>Returns a suggestion for timestamps where buffers should be split
+to get best controller results.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object that has controlled properties</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns18">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>Returns the suggested timestamp or <a href="gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a>
+if no control-rate was set.</p>
+
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_sync_values">
+		<h3 id="gstobjectsync_values">
+	<span><code>Gst.Object.sync_values</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.sync_values (self, timestamp):
+    #python wrapper for 'gst_object_sync_values'</pre>
+
+<p>Sets the properties of the object, according to the <a href="gstcontrolsource.html#GstControlSource">Gst.ControlSource</a> that
+(maybe) handle them and for the given timestamp.</p>
+<p>If this function fails, it is most likely the application developers fault.
+Most probably the control sources are not setup correctly.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object that has controlled properties</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timestamp:</code></em></i>
+		</p>
+	</td>
+		<td><p>the time that should be processed</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns19">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the controller values could be applied to the object
+properties, <a href="https://docs.python.org/2/library/constants.html#False">False</a> otherwise</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_unparent">
+		<h3 id="gstobjectunparent">
+	<span><code>Gst.Object.unparent</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.unparent (self):
+    #python wrapper for 'gst_object_unparent'</pre>
+
+<p>Clear the parent of <em>object</em>, removing the associated reference.
+This function decreases the refcount of <em>object</em>.</p>
+<p>MT safe. Grabs and releases <em>object</em>'s lock.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a> to unparent</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_object_unref">
+		<h3 id="gstobjectunref">
+	<span><code>Gst.Object.unref</code></span>
+</h3>
+
+		<pre class="programlisting">
+def Gst.Object.unref (self):
+    #python wrapper for 'gst_object_unref'</pre>
+
+<p>Decrements the reference count on <em>object</em>.  If reference count hits
+zero, destroy <em>object</em>. This function does not take the lock
+on <em>object</em> as it relies on atomic refcounting.</p>
+<p>The unref method should never be called with the LOCK held since
+this might deadlock the dispose function.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters27">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstobject.html#GstObject">Gst.Object</a> to unreference</p>
+</td>
+<td>
+<a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Signals">Signals</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstObject::deep-notify">
+		<h3 id="deepnotify">
+	<span><code>deep-notify</code></span>
+</h3>
+
+		<pre class="programlisting">
+def deep_notify_callback (prop_object, prop):
+    #python callback for the 'deep-notify' signal</pre>
+
+<p>The deep notify signal is used to be notified of property changes. It is
+typically attached to the toplevel bin to receive notifications from all
+the elements contained in that bin.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters28">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>prop_object:</code></em></i>
+		</p>
+	</td>
+		<td><p>the object that originated the signal</p>
+</td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>prop:</code></em></i>
+		</p>
+	</td>
+		<td><p>the property that changed</p>
+</td>
+<td>
+<a title="GObject.ParamSpec" href="https://developer.gnome.org/gobject/unstable/gobject-GParamSpec.html#GParamSpec">GObject.ParamSpec</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-FIRST:CAPS">Run First</a>
+			
+				/		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-NO-HOOKS:CAPS">No Hooks</a>
+			
+</p>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstObject:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="unicode" href="https://docs.python.org/2/library/functions.html#unicode">unicode</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstObject:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a></span>
+</pre>
+
+<p>The parent of the object. Please note, that when changing the 'parent'
+property, we don't emit <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-notify">GObject::notify</a> and <a href="gstobject.html#GstObject::deep-notify">deep-notify</a>
+signals due to locking issues. In some cases one can use
+<a href="gstbin.html#GstBin::element-added">element-added</a> or <a href="gstbin.html#GstBin::element-removed">element-removed</a> signals on the parent to
+achieve a similar effect.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstObjectClass">
+		<h3 id="gstobjectclass">
+	Gst.ObjectClass
+</h3>
+
+		<p>GStreamer base object class.</p>
+
+
+<div class="member_details">
+	<h4 id="attributes">Attributes</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstObjectClass.parent_class">
+		<td>
+		<p>
+		<i><em><code><a title="GInitiallyUnownedClass" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnownedClass">GInitiallyUnownedClass</a> <em><code>parent_class</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>parent</p>
+</td>
+</tr>
+
+						<tr id="GstObjectClass.path_string_separator">
+		<td>
+		<p>
+		<i><em><code>const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * <em><code>path_string_separator</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>separator used by <a href="gstobject.html#gst_object_get_path_string">gst_object_get_path_string</a></p>
+</td>
+</tr>
+
+						<tr id="GstObjectClass._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Virtual_Methods">Virtual Methods</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstObject:::deep_notify">
+		<h3 id="deep_notify">
+	<span><code>deep_notify</code></span>
+</h3>
+
+		<pre class="programlisting">
+def deep_notify (object, orig, pspec):
+    #python implementation of the 'deep_notify' virtual method</pre>
+
+<p>default signal handler</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters29">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>object:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>orig:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="Gst.Object" href="gstobject.html#GstObject">Gst.Object</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pspec:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+<a title="GObject.ParamSpec" href="https://developer.gnome.org/gobject/unstable/gobject-GParamSpec.html#GParamSpec">GObject.ParamSpec</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstObjectFlags">
+		<h3 id="enum-gstobjectflags">
+		enum Gst.ObjectFlags
+	</h3>
+
+		<p>The standard flags that an gstobject may have.</p>
+
+
+<div class="member_details">
+	<h4 id="members1">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_OBJECT_FLAG_MAY_BE_LEAKED"></a>
+		Gst.ObjectFlags.may_be_leaked
+		</p>
+	</td>
+	<td><p>the object is expected to stay alive even
+after <a href="gst.html#gst_deinit">Gst.deinit</a> has been called and so should be ignored by leak
+detection tools. (Since 1.10)</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_OBJECT_FLAG_LAST"></a>
+		Gst.ObjectFlags.last
+		</p>
+	</td>
+	<td><p>subclasses can add additional flags starting from this flag</p>
+</td>
+	<td>
+		<span class="value">Value: 16</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

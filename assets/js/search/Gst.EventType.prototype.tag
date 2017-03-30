@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "Gst.EventType.prototype.tag", "urls": ["libgstreamer-doc-1.0/javascript/gsttaglist.html#GstTagMergeMode", "libgstreamer-doc-1.0/javascript/gstevent.html#GstEventType"]});
+urls_downloaded_cb({"token": "Gst.EventType.prototype.tag", "urls": ["libgstreamer-1.0/javascript/gsttaglist.html#GstTagMergeMode", "libgstreamer-1.0/javascript/gstevent.html#GstEventType"]});

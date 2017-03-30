@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstContext</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="libgstreamer-1.0" data-hotdoc-ref="gstcontext.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstcontext.h">
+<h1 id="gstcontext">GstContext</h1><p><a href="gstcontext.html#GstContext">GstContext</a> is a container object used to store contexts like a device
+context, a display server connection and similar concepts that should
+be shared between multiple elements.</p>
+<p>Applications can set a context on a complete pipeline by using
+<a href="gstelement.html#gst_element_set_context">gst_element_set_context</a>, which will then be propagated to all
+child elements. Elements can handle these in GstElementClass.set_context
+and merge them with the context information they already have.</p>
+<p>When an element needs a context it will do the following actions in this
+order until one step succeeds:</p>
+<ol>
+<li>Check if the element already has a context</li>
+<li>Query downstream with GST_QUERY_CONTEXT for the context</li>
+<li>Query upstream with GST_QUERY_CONTEXT for the context</li>
+<li>Post a GST_MESSAGE_NEED_CONTEXT message on the bus with the required
+context types and afterwards check if a usable context was set now</li>
+<li>Create a context by itself and post a GST_MESSAGE_HAVE_CONTEXT message
+on the bus.</li>
+</ol>
+<p>Bins will catch GST_MESSAGE_NEED_CONTEXT messages and will set any previously
+known context on the element that asks for it if possible. Otherwise the
+application should provide one if it can.</p>
+<p><a href="gstcontext.html#GstContext">GstContext</a><!-- -->s can be persistent.
+A persistent <a href="gstcontext.html#GstContext">GstContext</a> is kept in elements when they reach
+<a href="gstelement.html#GST_STATE_NULL">GST_STATE_NULL</a>, non-persistent ones will be removed.
+Also, a non-persistent context won't override a previous persistent
+context set to an element.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_context_new">
+		<h3 id="gst_context_new1">
+	<span><code>gst_context_new</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstContext" href="gstcontext.html#GstContext">GstContext</a> *
+gst_context_new (const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * context_type,
+                 <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> persistent)</pre>
+
+<p>Create a new context.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>context_type:</code></em></i>
+		</p>
+	</td>
+		<td><p>Context type</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>persistent:</code></em></i>
+		</p>
+	</td>
+		<td><p>Persistent context</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The new context.</p>
+
+	</td>
+	<td>
+		<a title="GstContext" href="gstcontext.html#GstContext">GstContext</a> *
+	</td>
+				<td>
+	
+<span class="annotation">[<abbr title="Free data after the code is done"><span class="acronym">transfer: full</span></abbr>]</span>
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_context_get_context_type">
+		<h3 id="gst_context_get_context_type1">
+	<span><code>gst_context_get_context_type</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_context_get_context_type (const <a title="GstContext" href="gstcontext.html#GstContext">GstContext</a> * context)</pre>
+
+<p>Get the type of <em>context</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>context:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="gstcontext.html#GstContext">GstContext</a>.</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The type of the context.</p>
+
+	</td>
+	<td>
+		const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_context_get_structure">
+		<h3 id="gst_context_get_structure1">
+	<span><code>gst_context_get_structure</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+const <a title="GstStructure" href="gststructure.html#GstStructure">GstStructure</a> *
+gst_context_get_structure (const <a title="GstContext" href="gstcontext.html#GstContext">GstContext</a> * context)</pre>
+
+<p>Access the structure of the context.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>context:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="gstcontext.html#GstContext">GstContext</a>.</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The structure of the context. The structure is
+still owned by the context, which means that you should not modify it,
+free it and that the pointer becomes invalid when you free the context.</p>
+
+	</td>
+	<td>
+		const <a title="GstStructure" href="gststructure.html#GstStructure">GstStructure</a> *
+	</td>
+				<td>
+	
+<span class="annotation">[<abbr title="Don't free data after the code is done"><span class="acronym">transfer: none</span></abbr>]</span>
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_context_has_context_type">
+		<h3 id="gst_context_has_context_type1">
+	<span><code>gst_context_has_context_type</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_context_has_context_type (const <a title="GstContext" href="gstcontext.html#GstContext">GstContext</a> * context,
+                              const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * context_type)</pre>
+
+<p>Checks if <em>context</em> has <em>context_type</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>context:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="gstcontext.html#GstContext">GstContext</a>.</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>context_type:</code></em></i>
+		</p>
+	</td>
+		<td><p>Context type to check.</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>context</em> has <em>context_type</em>.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_context_is_persistent">
+		<h3 id="gst_context_is_persistent1">
+	<span><code>gst_context_is_persistent</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_context_is_persistent (const <a title="GstContext" href="gstcontext.html#GstContext">GstContext</a> * context)</pre>
+
+<p>Check if <em>context</em> is persistent.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>context:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="gstcontext.html#GstContext">GstContext</a>.</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the context is persistent.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_context_writable_structure">
+		<h3 id="gst_context_writable_structure1">
+	<span><code>gst_context_writable_structure</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstStructure" href="gststructure.html#GstStructure">GstStructure</a> *
+gst_context_writable_structure (<a title="GstContext" href="gstcontext.html#GstContext">GstContext</a> * context)</pre>
+
+<p>Get a writable version of the structure.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>context:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="gstcontext.html#GstContext">GstContext</a>.</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The structure of the context. The structure is still
+owned by the context, which means that you should not free it and
+that the pointer becomes invalid when you free the context.
+This function checks if <em>context</em> is writable.</p>
+
+	</td>
+	<td>
+		<a title="GstStructure" href="gststructure.html#GstStructure">GstStructure</a> *
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Function_Macros">Function Macros</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_IS_CONTEXT">
+		<h3 id="gst_is_context">
+	<span><code>GST_IS_CONTEXT</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_IS_CONTEXT(obj)                      (GST_IS_MINI_OBJECT_TYPE (obj, GST_TYPE_CONTEXT))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CONTEXT_CAST">
+		<h3 id="gst_context_cast">
+	<span><code>GST_CONTEXT_CAST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_CONTEXT_CAST(obj)                    ((GstContext*)(obj))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_CONTEXT">
+		<h3 id="gst_context">
+	<span><code>GST_CONTEXT</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_CONTEXT(obj)                         (GST_CONTEXT_CAST(obj))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_context_is_writable">
+		<h3 id="gst_context_is_writable1">
+	<span><code>gst_context_is_writable</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define gst_context_is_writable(context)     gst_mini_object_is_writable (GST_MINI_OBJECT_CAST (context))
+</pre>
+
+<p>Tests if you can safely write into a context's structure or validly
+modify the seqnum and timestamp fields.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>context:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstcontext.html#GstContext">GstContext</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_context_make_writable">
+		<h3 id="gst_context_make_writable1">
+	<span><code>gst_context_make_writable</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define gst_context_make_writable(context)  GST_CONTEXT_CAST (gst_mini_object_make_writable (GST_MINI_OBJECT_CAST (context)))
+</pre>
+
+<p>Checks if a context is writable. If not, a writable copy is made and
+returned.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>context:</code></em></i>
+		</p>
+	</td>
+		<td><p>the context to make writable</p>
+</td>
+<td>
+
+<span class="annotation">[<abbr title="Free data after the code is done"><span class="acronym">transfer: full</span></abbr>]</span>
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a context (possibly a duplicate) that is writable.</p>
+<p>MT safe</p>
+
+	</td>
+	<td>
+		
+	</td>
+				<td>
+	
+<span class="annotation">[<abbr title="Free data after the code is done"><span class="acronym">transfer: full</span></abbr>]</span>
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstContext">
+		<h3 id="struct-gstcontext">
+		struct GstContext
+	</h3>
+
+		
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TYPE_CONTEXT">
+		<h3 class="constant" id="gst_type_context">
+	GST_TYPE_CONTEXT
+</h3>
+
+		<pre class="raw_code">
+#define GST_TYPE_CONTEXT                         (_gst_context_type)
+</pre>
+
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

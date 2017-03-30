@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>encodebin</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gst-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-base-plugins-1.0" data-hotdoc-ref="element-encodebin.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="element-encodebin">
+<h1 id="encodebin1">encodebin</h1><p>EncodeBin provides a bin for encoding/muxing various streams according to
+a specified <a href="../gst-plugins-base-pbutils-1.0/c/encoding-profile.html#GstEncodingProfile">GstEncodingProfile</a>.</p>
+<p>Based on the profile that was set (via the <a href="element-encodebin.html#GstEncodeBin:profile">profile</a> property),
+EncodeBin will internally select and configure the required elements
+(encoders, muxers, but also audio and video converters) so that you can
+provide it raw or pre-encoded streams of data in input and have your
+encoded/muxed/converted stream in output.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>
+<p>Automatic encoder and muxer selection based on elements available on the
+system.</p>
+</li>
+<li>
+<p>Conversion of raw audio/video streams (scaling, framerate conversion,
+colorspace conversion, samplerate conversion) to conform to the profile
+output format.</p>
+</li>
+<li>
+<p>Variable number of streams. If the presence property for a stream encoding
+profile is 0, you can request any number of sink pads for it via the
+standard request pad gstreamer API or the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-encodebin.html#GstEncodeBin-request-pad">GstEncodeBin::request-pad</a> action
+signal.</p>
+</li>
+<li>
+<p>Avoid reencoding (passthrough). If the input stream is already encoded and is
+compatible with what the <a href="../gst-plugins-base-pbutils-1.0/c/encoding-profile.html#GstEncodingProfile">GstEncodingProfile</a> expects, then the stream won't
+be re-encoded but just passed through downstream to the muxer or the output.</p>
+</li>
+<li>
+<p>Mix pre-encoded and raw streams as input. In addition to the passthrough
+feature above, you can feed both raw audio/video <em>AND</em> already-encoded data
+to a pad. <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-encodebin.html#GstEncodeBin-struct">GstEncodeBin</a> will take care of passing through the compatible
+segments and re-encoding the segments of media that need encoding.</p>
+</li>
+<li>
+<p>Standard behaviour is to use a <a href="../gst-plugins-base-pbutils-1.0/c/encoding-profile.html#GstEncodingContainerProfile">GstEncodingContainerProfile</a> to have both
+encoding and muxing performed. But you can also provide a single stream
+profile (like <a href="../gst-plugins-base-pbutils-1.0/c/encoding-profile.html#GstEncodingAudioProfile">GstEncodingAudioProfile</a>) to only have the encoding done and
+handle the encoded output yourself.</p>
+</li>
+<li>
+<p>Audio imperfection corrections. Incoming audio streams can have non perfect
+timestamps (jitter), like the streams coming from ASF files. <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base/html/gst-plugins-base-plugins-encodebin.html#GstEncodeBin-struct">GstEncodeBin</a>
+will automatically fix those imperfections for you. See
+<a href="element-encodebin.html#GstEncodeBin:audio-jitter-tolerance">audio-jitter-tolerance</a> for more details.</p>
+</li>
+<li>
+<p>Variable or Constant video framerate. If your <a href="../gst-plugins-base-pbutils-1.0/c/encoding-profile.html#GstEncodingVideoProfile">GstEncodingVideoProfile</a> has
+the variableframerate property deactivated (default), then the incoming
+raw video stream will be retimestampped in order to produce a constant
+framerate.</p>
+</li>
+<li>
+<p>Cross-boundary re-encoding. When feeding compatible pre-encoded streams that
+fall on segment boundaries, and for supported formats (right now only H263),
+the GOP will be decoded/reencoded when needed to produce an encoded output
+that fits exactly within the request GstSegment.</p>
+</li>
+<li>
+<p>Missing plugin support. If a <a href="../libgstreamer-1.0/c/gstelement.html#GstElement">GstElement</a> is missing to encode/mux to the
+request profile formats, a missing-plugin <a href="../libgstreamer-1.0/c/gstmessage.html#GstMessage">GstMessage</a> will be posted on the
+<a href="../libgstreamer-1.0/c/gstbus.html#GstBus">GstBus</a>, allowing systems that support the missing-plugin system to offer the
+user a way to install the missing element.</p>
+</li>
+</ul>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="encodebin">
+		<h3 id="encodebin2">
+	encodebin
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../libgstreamer-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span><a title="GstBin" href="../libgstreamer-1.0/c/gstbin.html#GstBin">GstBin</a>
+                    <span class="lineart">╰──</span>encodebin
+</pre>
+
+</div>
+
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin-&gt;audio_%u">
+		<h3 id="audio_u">
+    audio_%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>ANY</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin-&gt;private_%u">
+		<h3 id="private_u">
+    private_%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>ANY</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin-&gt;src">
+		<h3 id="src">
+    src:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>ANY</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin-&gt;video_%u">
+		<h3 id="video_u">
+    video_%u:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>request</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>ANY</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+<h2 class="symbol_section" id="Signals">Signals</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="encodebin::request-pad">
+		<h3 id="requestpad">
+	<span><code>request-pad</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstPad
+request_pad_callback (encodebin * param_0,
+                      GstCaps * param_1,
+                      gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstPad
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="encodebin::request-profile-pad">
+		<h3 id="requestprofilepad">
+	<span><code>request-profile-pad</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstPad
+request_profile_pad_callback (encodebin * param_0,
+                              gchararray param_1,
+                              gpointer udata)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_0:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>param_1:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstPad
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin:async-handling">
+		<h3 class="method" id="asynchandling">
+	<span><code>async-handling</code></span>
+</h3>
+
+		<pre class="property_signature">
+“async-handling” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>The bin will handle Asynchronous state changes</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin:audio-jitter-tolerance">
+		<h3 class="method" id="audiojittertolerance">
+	<span><code>audio-jitter-tolerance</code></span>
+</h3>
+
+		<pre class="property_signature">
+“audio-jitter-tolerance” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Amount of timestamp jitter/imperfection to allow on audio streams before inserting/dropping samples (ns)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	20000000
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin:avoid-reencoding">
+		<h3 class="method" id="avoidreencoding">
+	<span><code>avoid-reencoding</code></span>
+</h3>
+
+		<pre class="property_signature">
+“avoid-reencoding” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Whether to re-encode portions of compatible video streams that lay on segment boundaries</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin:flags">
+		<h3 class="method" id="flags">
+	<span><code>flags</code></span>
+</h3>
+
+		<pre class="property_signature">
+“flags” <span class="type"><a title="GstEncodeBinFlags" href="element-encodebin.html#GstEncodeBinFlags">GstEncodeBinFlags</a></span>
+</pre>
+
+<p>Control the behaviour of encodebin.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	(none)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin:message-forward">
+		<h3 class="method" id="messageforward">
+	<span><code>message-forward</code></span>
+</h3>
+
+		<pre class="property_signature">
+“message-forward” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Forwards all children messages</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>The name of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	encodebin0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+<p>The parent of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin:profile">
+		<h3 class="method" id="profile">
+	<span><code>profile</code></span>
+</h3>
+
+		<pre class="property_signature">
+“profile” <span class="type"><a title="GstEncodingProfile" href="../gst-plugins-base-pbutils-1.0/c/encoding-profile.html#GstEncodingProfile">GstEncodingProfile</a> *</span>
+</pre>
+
+<p>The <a href="../gst-plugins-base-pbutils-1.0/c/encoding-profile.html#GstEncodingProfile">GstEncodingProfile</a> to use. This property must be set before going
+to <a href="../libgstreamer-1.0/c/gstelement.html#GST_STATE_PAUSED">GST_STATE_PAUSED</a> or higher.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin:queue-buffers-max">
+		<h3 class="method" id="queuebuffersmax">
+	<span><code>queue-buffers-max</code></span>
+</h3>
+
+		<pre class="property_signature">
+“queue-buffers-max” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Max. number of buffers in the queue (0=disable)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	200
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin:queue-bytes-max">
+		<h3 class="method" id="queuebytesmax">
+	<span><code>queue-bytes-max</code></span>
+</h3>
+
+		<pre class="property_signature">
+“queue-bytes-max” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Max. amount of data in the queue (bytes, 0=disable)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	10485760
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBin:queue-time-max">
+		<h3 class="method" id="queuetimemax">
+	<span><code>queue-time-max</code></span>
+</h3>
+
+		<pre class="property_signature">
+“queue-time-max” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Max. amount of data in the queue (in ns, 0=disable)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	1000000000
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEncodeBinFlags">
+		<h3 id="enum-gstencodebinflags">
+		enum GstEncodeBinFlags
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>no-audio-conversion</td>
+            <td>Do not use audio conversion elements</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>no-video-conversion</td>
+            <td>Do not use video conversion elements</td>
+            <td>0x00000002</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

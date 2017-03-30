@@ -70,7 +70,7 @@
 </nav>
 
 <main class="page-row page-row-expanded">
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/gstpipeline.html" class="page_container" id="page-wrapper">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/gstpipeline.html" class="page_container" id="page-wrapper">
 	<div class="row">
 		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
@@ -91,7 +91,7 @@
 <p>A <code>GstPipeline</code> is usually a toplevel bin and provides all of its children
 with a clock.</p>
 <p>A <code>GstPipeline</code> also provides a toplevel <code>GstBus</code> (see <a href="gstbus.html">gstbus</a>)</p>
-<p>The pipeline also calculates the running_time based on the selected
+<p>The pipeline also calculates the <code>running_time</code> based on the selected
 clock (see also clocks.txt and <a href="synchronisation.html">synchronisation</a>).</p>
 <p>The pipeline will calculate a global latency for the elements in the
 pipeline. (See also <a href="latency.html">latency</a>).</p>
@@ -100,44 +100,44 @@ pipeline. (See also <a href="latency.html">latency</a>).</p>
 <code>GstBin</code>, the pipeline performs the following actions during a state
 change:</p>
 <ul>
-<li>NULL → READY:
+<li><code>NULL</code> → <code>READY</code>:
 <ul>
 <li>set the bus to non-flushing</li>
 </ul>
 </li>
-<li>READY → PAUSED:
+<li><code>READY</code> → <code>PAUSED</code>:
 <ul>
-<li>reset the running_time to 0</li>
+<li>reset the <code>running_time</code> to 0</li>
 </ul>
 </li>
-<li>PAUSED → PLAYING:
+<li><code>PAUSED</code> → <code>PLAYING</code>:
 <ul>
-<li>Select and a clock.</li>
-<li>calculate base_time using the running_time.</li>
+<li>Select a clock.</li>
+<li>calculate <code>base_time</code> using the <code>running_time</code>.</li>
 <li>calculate and distribute latency.</li>
-<li>set clock and base_time on all elements before performing the state
+<li>set clock and <code>base_time</code> on all elements before performing the state
 change.</li>
 </ul>
 </li>
-<li>PLAYING → PAUSED:
+<li><code>PLAYING</code> → <code>PAUSED</code>:
 <ul>
-<li>calculate the running_time when the pipeline was PAUSED.</li>
+<li>calculate the <code>running_time</code> when the pipeline was <code>PAUSED</code>.</li>
 </ul>
 </li>
-<li>READY → NULL:
+<li><code>READY</code> → <code>NULL</code>:
 <ul>
 <li>set the bus to flushing (when auto-flushing is enabled)</li>
 </ul>
 </li>
 </ul>
-<p>The running_time represents the total elapsed time, measured in clock
+<p>The <code>running_time</code> represents the total elapsed time, measured in clock
 units, that the pipeline spent in the PLAYING state (see
-<a href="synchronisation.html">synchronisation</a>). The running_time is set to 0 after a
+<a href="synchronisation.html">synchronisation</a>). The <code>running_time</code> is set to 0 after a
 flushing seek.</p>
 <h2 id="clock-selection">Clock selection</h2>
 <p>Since all of the children of a <code>GstPipeline</code> must use the same clock, the
 pipeline must select one. This clock selection happens when the
-pipeline goes to the PLAYING state.</p>
+pipeline goes to the <code>PLAYING</code> state.</p>
 <p>The default clock selection algorithm works as follows:</p>
 <ul>
 <li>
@@ -148,7 +148,7 @@ pipeline goes to the PLAYING state.</p>
 This selection is performed by iterating the element starting from
 the sinks going upstream.</p>
 <ul>
-<li>since this selection procedure happens in the PAUSED→PLAYING
+<li>since this selection procedure happens in the <code>PAUSED</code> → <code>PLAYING</code>
 state change, all the sinks are prerolled and we can thus be
 sure that each sink is linked to some upstream element.</li>
 <li>in the case of a live pipeline (<code>NO_PREROLL</code>), the sink will not
@@ -157,16 +157,16 @@ of a more upstream element.</li>
 </ul>
 </li>
 <li>
-<p>use <code>GstSystemClock</code>, this only happens when no element provides a
+<p>Use <code>GstSystemClock</code>, this only happens when no element provides a
 usable clock.</p>
 </li>
 </ul>
 <p>The application can influence this clock selection with two methods:
 <code>gst_pipeline_use_clock()</code> and <code>gst_pipeline_auto_clock()</code>.</p>
 <p>The <code>_use_clock()</code> method forces the use of a specific clock on the
-pipeline regardless of what clock providers are children of the
-pipeline. Setting NULL disables the clock completely and makes the
-pipeline run as fast as possible.</p>
+pipeline regardless of what clock providers are available. Passing a
+NULL <code>GstClock *clock</code> parameter to this method disables all clocking
+and makes the pipeline run as fast as possible.</p>
 <p>The <code>_auto_clock()</code> method removes the fixed clock and reactivates the
 auto- matic clock selection algorithm described above.</p>
 <h2 id="gstbus">GstBus</h2>

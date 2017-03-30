@@ -70,7 +70,7 @@
 </nav>
 
 <main class="page-row page-row-expanded">
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/decodebin.html" class="page_container" id="page-wrapper">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/decodebin.html" class="page_container" id="page-wrapper">
 	<div class="row">
 		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
@@ -129,38 +129,41 @@ and the 'unknown-type' signal is emitted.</p>
 are emitted in the following way in order to allow the application/user
 to assist or fine-tune the process.</p>
 <ul>
-<li>
-<p><strong>'autoplug-continue'</strong>:</p>
-<pre><code> gboolean user_function (GstElement * decodebin, GstPad *pad, GstCaps * caps)
+<li><strong>'autoplug-continue'</strong>:</li>
+</ul>
+<pre><code>    gboolean user_function (GstElement * decodebin, GstPad *pad, GstCaps * caps)
 </code></pre>
-<p>This signal is fired at the very beginning with the source pad <code>GstCaps</code>. If
+<pre><code>This signal is fired at the very beginning with the source pad `GstCaps`. If
 the callback returns TRUE, the process continues normally. If the
-callback returns FALSE, then the <code>GstCaps</code> are considered as a target caps
-and the autoplugging process stops.</p>
-</li>
-<li>
-<p><strong>'autoplug-factories'</strong>:</p>
-<pre><code>GValueArray user_function (GstElement* decodebin, GstPad* pad, GstCaps* caps);
+callback returns FALSE, then the `GstCaps` are considered as a target caps
+and the autoplugging process stops.
 </code></pre>
-<p>Get a list of elementfactories for @pad with @caps. This function is
+<ul>
+<li><strong>'autoplug-factories'</strong>:</li>
+</ul>
+<pre><code>    GValueArray user_function (GstElement* decodebin, GstPad* pad, GstCaps* caps);
+</code></pre>
+<pre><code>Get a list of elementfactories for @pad with @caps. This function is
 used to instruct decodebin2 of the elements it should try to
 autoplug. The default behaviour when this function is not overriden
 is to get all elements that can handle @caps from the registry
-sorted by rank.</p>
-</li>
-<li>
-<p><strong>'autoplug-select'</strong>:</p>
-<pre><code>gint user_function (GstElement* decodebin, GstPad* pad, GstCaps*caps, GValueArray* factories);
+sorted by rank.
 </code></pre>
-<p>This signal is fired once autoplugging has got a list of compatible
-<code>GstElementFactory</code>. The signal is emitted with the <code>GstCaps</code> of the
-source pad and a pointer on the GValueArray of compatible factories.</p>
-<p>The callback should return the index of the elementfactory in
-@factories that should be tried next.</p>
-<p>If the callback returns -1, the autoplugging process will stop as if
-no compatible factories were found.</p>
-</li>
+<ul>
+<li><strong>'autoplug-select'</strong>:</li>
 </ul>
+<pre><code>    gint user_function (GstElement* decodebin, GstPad* pad, GstCaps*caps, GValueArray* factories);
+</code></pre>
+<pre><code>This signal is fired once autoplugging has got a list of compatible
+`GstElementFactory`. The signal is emitted with the `GstCaps` of the
+source pad and a pointer on the GValueArray of compatible factories.
+
+The callback should return the index of the elementfactory in
+@factories that should be tried next.
+
+If the callback returns -1, the autoplugging process will stop as if
+no compatible factories were found.
+</code></pre>
 <p>The default implementation of this function will try to autoplug the
 first factory of the list.</p>
 <h3 id="target-caps">Target Caps</h3>
@@ -179,11 +182,11 @@ first factory of the list.</p>
 </ul>
 <h3 id="media-chaingroup-handling">Media chain/group handling</h3>
 <p>When autoplugging, all streams coming out of a demuxer will be grouped
-in a DecodeGroup.</p>
+in a <code>DecodeGroup</code>.</p>
 <p>All new source pads created on that demuxer after it has emitted the
 'no-more-pads' signal will be put in another DecodeGroup.</p>
 <p>Only one decodegroup can be active at any given time. If a new
-decodegroup is created while another one exists, that decodegroup will
+decodegroup is created while another one exists, that <code>DecodeGroup</code> will
 be set as blocking until the existing one has drained.</p>
 <h2 id="decodegroup">DecodeGroup</h2>
 <h3 id="description1">Description</h3>
@@ -200,10 +203,10 @@ requested target pads.</p>
 </li>
 </ul>
 <h3 id="proper-group-draining">Proper group draining</h3>
-<p>The DecodeGroup takes care that all the streams in the group are
+<p>The <code>DecodeGroup</code> takes care that all the streams in the group are
 completely drained (EOS has come through all source ghost pads).</p>
 <h3 id="preroll-and-block">Pre-roll and block</h3>
-<p>The DecodeGroup has a global blocking feature. If enabled, all the
+<p>The <code>DecodeGroup</code> has a global blocking feature. If enabled, all the
 ghosted source pads for that group will be blocked.</p>
 <p>A method is available to unblock all blocked pads for that group.</p>
 <h2 id="gstmultiqueue">GstMultiQueue</h2>
@@ -214,10 +217,10 @@ few differences:</p>
 <li>
 <p>Multiple streams handling.</p>
 <p>The element handles queueing data on more than one stream at once.
-To achieve such a feature it has request sink pads (sink_%u) and
-'sometimes' src pads (src_%u).</p>
+To achieve such a feature it has request sink pads (<code>sink_%u</code>) and
+'sometimes' src pads (<code>src_%u</code>).</p>
 <p>When requesting a given sinkpad, the associated srcpad for that
-stream will be created. Ex: requesting sink_1 will generate src_1.</p>
+stream will be created. Ex: requesting <code>sink_1</code> will generate <code>src_1</code>.</p>
 </li>
 <li>
 <p>Non-starvation on multiple streams.</p>
@@ -246,13 +249,11 @@ synchronously in relation to the order in which it arrived globally
 in the element (see 'Synchronous data pushing' below).</p>
 </li>
 </ul>
-<p>When woken up by the GCondition, the <code>GstTask</code> will try to push the
-next <code>GstBuffer</code>/<code>GstEvent</code> on the queue. If pushing the
-<code>GstBuffer</code>/<code>GstEvent</code> returns <code>GST_FLOW_NOT_LINKED</code>, then the
-associated queue is marked as 'not-linked'. If pushing the
-<code>GstBuffer</code>/<code>GstEvent</code> succeeded the queue will no longer be marked as
-'not-linked'.</p>
-<p>If pushing on all srcpads returns <code>GstFlowReturn</code> different from
+<p>When woken up by the <code>GCondition</code>, the <code>GstTask</code> will try to push the
+next <code>GstBuffer</code>/<code>GstEvent</code> on the queue. If pushing returns
+<code>GST_FLOW_NOT_LINKED</code>, the associated queue is marked as <code>not-linked</code>.
+If pushing succeeds, the queue will no longer be marked as <code>not-linked</code>.</p>
+<p>If pushing on all srcpads returns a <code>GstFlowReturn</code> different from
 <code>GST_FLOW_OK</code>, then all the srcpads' tasks are stopped and
 subsequent pushes on sinkpads will return <code>GST_FLOW_NOT_LINKED</code>.</p>
 </li>
@@ -286,7 +287,7 @@ handle one particular stream format, and not all of them.</p>
 <p>Where there are multiple stream formats, parsers are usually expected to
 be able to convert between the different formats. This will, if
 implemented correctly, work as expected in a static pipeline such as</p>
-<pre><code>... ! parser ! decoder ! sink
+<pre><code>    ... ! parser ! decoder ! sink
 </code></pre>
 <p>where the parser can query the decoder's capabilities even before
 processing the first piece of data, and configure itself to convert

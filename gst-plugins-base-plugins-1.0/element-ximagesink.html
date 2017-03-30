@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>ximagesink</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gst-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-base-plugins-1.0" data-hotdoc-ref="element-ximagesink.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="element-ximagesink">
+<h1 id="ximagesink">ximagesink</h1><p>XImageSink renders video frames to a drawable (XWindow) on a local or remote
+display. This element can receive a Window ID from the application through
+the <a href="../gst-plugins-base-video-1.0/c/videooverlay.html#GstVideoOverlay">GstVideoOverlay</a> interface and will then render video frames in this
+drawable. If no Window ID was provided by the application, the element will
+create its own internal window and render into it.</p>
+<h2 id="scaling">Scaling</h2>
+<p>As standard XImage rendering to a drawable is not scaled, XImageSink will use
+reverse caps negotiation to try to get scaled video frames for the drawable.
+This is accomplished by asking the peer pad if it accepts some different caps
+which in most cases implies that there is a scaling element in the pipeline,
+or that an element generating the video frames can generate them with a
+different geometry. This mechanism is handled during buffer allocations, for
+each allocation request the video sink will check the drawable geometry, look
+at the <a href="element-ximagesink.html#GstXImageSink:force-aspect-ratio">force-aspect-ratio</a> property, calculate the geometry of
+desired video frames and then check that the peer pad accept those new caps.
+If it does it will then allocate a buffer in video memory with this new
+geometry and return it with the new caps.</p>
+<h2 id="events">Events</h2>
+<p>XImageSink creates a thread to handle events coming from the drawable. There
+are several kind of events that can be grouped in 2 big categories: input
+events and window state related events. Input events will be translated to
+navigation events and pushed upstream for other elements to react on them.
+This includes events such as pointer moves, key press/release, clicks etc...
+Other events are used to handle the drawable appearance even when the data
+is not flowing (GST_STATE_PAUSED). That means that even when the element is
+paused, it will receive expose events from the drawable and draw the latest
+frame with correct borders/aspect-ratio.</p>
+<h2 id="pixel-aspect-ratio">Pixel aspect ratio</h2>
+<p>When changing state to GST_STATE_READY, XImageSink will open a connection to
+the display specified in the <a href="element-ximagesink.html#GstXImageSink:display">display</a> property or the default
+display if nothing specified. Once this connection is open it will inspect
+the display configuration including the physical display geometry and
+then calculate the pixel aspect ratio. When caps negotiation will occur, the
+video sink will set the calculated pixel aspect ratio on the caps to make
+sure that incoming video frames will have the correct pixel aspect ratio for
+this display. Sometimes the calculated pixel aspect ratio can be wrong, it is
+then possible to enforce a specific pixel aspect ratio using the
+<a href="element-ximagesink.html#GstXImageSink:pixel-aspect-ratio">pixel-aspect-ratio</a> property.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-["> gst-launch-1.0 -v videotestsrc ! queue ! ximagesink
+</code></pre>
+<p>A pipeline to test reverse negotiation. When the test video signal appears
+you can resize the window and see that scaled buffers of the desired size are
+going to arrive with a short delay. This illustrates how buffers of desired
+size are allocated along the way. If you take away the queue, scaling will
+happen almost immediately.</p>
+<pre><code class="language-["> gst-launch-1.0 -v videotestsrc ! navigationtest ! videoconvert ! ximagesink
+</code></pre>
+<p>A pipeline to test navigation events.
+While moving the mouse pointer over the test signal you will see a black box
+following the mouse pointer. If you press the mouse button somewhere on the
+video and release it somewhere else a green box will appear where you pressed
+the button and a red one where you released it. (The navigationtest element
+is part of gst-plugins-good.)</p>
+<pre><code class="language-["> gst-launch-1.0 -v videotestsrc ! video/x-raw, pixel-aspect-ratio=(fraction)4/3 ! videoscale ! ximagesink
+</code></pre>
+<p>This is faking a 4/3 pixel aspect ratio caps on video frames produced by
+videotestsrc, in most cases the pixel aspect ratio of the display will be
+1/1. This means that videoscale will have to do the scaling to convert
+incoming frames to a size that will match the display pixel aspect ratio
+(from 320x240 to 320x180 in this case). Note that you might have to escape
+some characters for your shell like '(fraction)'.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink-&gt;sink">
+		<h3 id="sink">
+    sink:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/x-raw, framerate=(fraction)[ 0/1, 2147483647/1 ], width=(int)[ 1, 2147483647 ], height=(int)[ 1, 2147483647 ]</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:async">
+		<h3 class="method" id="async">
+	<span><code>async</code></span>
+</h3>
+
+		<pre class="property_signature">
+“async” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Go asynchronously to PAUSED</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:blocksize">
+		<h3 class="method" id="blocksize">
+	<span><code>blocksize</code></span>
+</h3>
+
+		<pre class="property_signature">
+“blocksize” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Size in bytes to pull per buffer (0 = default)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	4096
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:display">
+		<h3 class="method" id="display">
+	<span><code>display</code></span>
+</h3>
+
+		<pre class="property_signature">
+“display” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>X Display name</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	NULL
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:enable-last-sample">
+		<h3 class="method" id="enablelastsample">
+	<span><code>enable-last-sample</code></span>
+</h3>
+
+		<pre class="property_signature">
+“enable-last-sample” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Enable the last-sample property</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:force-aspect-ratio">
+		<h3 class="method" id="forceaspectratio">
+	<span><code>force-aspect-ratio</code></span>
+</h3>
+
+		<pre class="property_signature">
+“force-aspect-ratio” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>When enabled, reverse caps negotiation (scaling) will respect original aspect ratio</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:handle-events">
+		<h3 class="method" id="handleevents">
+	<span><code>handle-events</code></span>
+</h3>
+
+		<pre class="property_signature">
+“handle-events” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>When enabled, XEvents will be selected and handled</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:handle-expose">
+		<h3 class="method" id="handleexpose">
+	<span><code>handle-expose</code></span>
+</h3>
+
+		<pre class="property_signature">
+“handle-expose” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>When enabled, the current frame will always be drawn in response to X Expose events</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:last-sample">
+		<h3 class="method" id="lastsample">
+	<span><code>last-sample</code></span>
+</h3>
+
+		<pre class="property_signature">
+“last-sample” <span class="type"><a title="GstSample" href="../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *</span>
+</pre>
+
+<p>The last sample received in the sink</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:max-bitrate">
+		<h3 class="method" id="maxbitrate">
+	<span><code>max-bitrate</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-bitrate” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>The maximum bits per second to render (0 = disabled)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:max-lateness">
+		<h3 class="method" id="maxlateness">
+	<span><code>max-lateness</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-lateness” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+<p>Maximum number of nanoseconds that a buffer can be late before it is dropped (-1 unlimited)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	20000000
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>The name of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	ximagesink0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+<p>The parent of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:pixel-aspect-ratio">
+		<h3 class="method" id="pixelaspectratio">
+	<span><code>pixel-aspect-ratio</code></span>
+</h3>
+
+		<pre class="property_signature">
+“pixel-aspect-ratio” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>The pixel aspect ratio of the device</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	NULL
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:qos">
+		<h3 class="method" id="qos">
+	<span><code>qos</code></span>
+</h3>
+
+		<pre class="property_signature">
+“qos” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Generate Quality-of-Service events upstream</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:render-delay">
+		<h3 class="method" id="renderdelay">
+	<span><code>render-delay</code></span>
+</h3>
+
+		<pre class="property_signature">
+“render-delay” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Additional render delay of the sink in nanoseconds</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:show-preroll-frame">
+		<h3 class="method" id="showprerollframe">
+	<span><code>show-preroll-frame</code></span>
+</h3>
+
+		<pre class="property_signature">
+“show-preroll-frame” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Whether to render video frames during preroll</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:sync">
+		<h3 class="method" id="sync">
+	<span><code>sync</code></span>
+</h3>
+
+		<pre class="property_signature">
+“sync” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Sync on the clock</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:synchronous">
+		<h3 class="method" id="synchronous">
+	<span><code>synchronous</code></span>
+</h3>
+
+		<pre class="property_signature">
+“synchronous” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>When enabled, runs the X display in synchronous mode. (unrelated to A/V sync, used only for debugging)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:throttle-time">
+		<h3 class="method" id="throttletime">
+	<span><code>throttle-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“throttle-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>The time to keep between rendered buffers (0 = disabled)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:ts-offset">
+		<h3 class="method" id="tsoffset">
+	<span><code>ts-offset</code></span>
+</h3>
+
+		<pre class="property_signature">
+“ts-offset” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+<p>Timestamp offset in nanoseconds</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:window-height">
+		<h3 class="method" id="windowheight">
+	<span><code>window-height</code></span>
+</h3>
+
+		<pre class="property_signature">
+“window-height” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Actual height of the video window.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstXImageSink:window-width">
+		<h3 class="method" id="windowwidth">
+	<span><code>window-width</code></span>
+</h3>
+
+		<pre class="property_signature">
+“window-width” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Actual width of the video window.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

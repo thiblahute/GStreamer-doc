@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "GstGL.GLSLProfile.es", "urls": ["gst-plugins-bad-gl-doc-1.0/python/gstglsl.html#GstGLSLProfile"]});
+urls_downloaded_cb({"token": "GstGL.GLSLProfile.es", "urls": ["gst-plugins-bad-gl-1.0/python/gstglsl.html#GstGLSLProfile"]});

@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>gsttracerutils</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="libgstreamer-1.0" data-hotdoc-ref="gsttracerutils.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gsttracerutils.h">
+</div>
+
+
+<h2 class="symbol_section" id="Function_Macros">Function Macros</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_QUARK">
+		<h3 id="gst_tracer_quark">
+	<span><code>GST_TRACER_QUARK</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_QUARK(q) _priv_gst_tracer_quark_table[GST_TRACER_QUARK_##q]
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_DISPATCH">
+		<h3 id="gst_tracer_dispatch">
+	<span><code>GST_TRACER_DISPATCH</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_DISPATCH(key,type,args) G_STMT_START{ \
+  if (GST_TRACER_IS_ENABLED) {                                         \
+    GstClockTime ts = GST_TRACER_TS;                                   \
+    GList *__l, *__n;                                                  \
+    GstTracerHook *h;                                                  \
+    __l = g_hash_table_lookup (_priv_tracers, GINT_TO_POINTER (key));  \
+    for (__n = __l; __n; __n = g_list_next (__n)) {                    \
+      h = (GstTracerHook *) __n-&gt;data;                                 \
+      ((type)(h-&gt;func)) args;                                          \
+    }                                                                  \
+    __l = g_hash_table_lookup (_priv_tracers, NULL);                   \
+    for (__n = __l; __n; __n = g_list_next (__n)) {                    \
+      h = (GstTracerHook *) __n-&gt;data;                                 \
+      ((type)(h-&gt;func)) args;                                          \
+    }                                                                  \
+  }                                                                    \
+}G_STMT_END
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_PRE">
+		<h3 id="gst_tracer_pad_push_pre">
+	<span><code>GST_TRACER_PAD_PUSH_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_PRE(pad, buffer)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_POST">
+		<h3 id="gst_tracer_pad_push_post">
+	<span><code>GST_TRACER_PAD_PUSH_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_POST(pad, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_LIST_PRE">
+		<h3 id="gst_tracer_pad_push_list_pre">
+	<span><code>GST_TRACER_PAD_PUSH_LIST_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_LIST_PRE(pad, list)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_LIST_POST">
+		<h3 id="gst_tracer_pad_push_list_post">
+	<span><code>GST_TRACER_PAD_PUSH_LIST_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_LIST_POST(pad, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PULL_RANGE_PRE">
+		<h3 id="gst_tracer_pad_pull_range_pre">
+	<span><code>GST_TRACER_PAD_PULL_RANGE_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PULL_RANGE_PRE(pad, offset, size)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PULL_RANGE_POST">
+		<h3 id="gst_tracer_pad_pull_range_post">
+	<span><code>GST_TRACER_PAD_PULL_RANGE_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PULL_RANGE_POST(pad, buffer, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_EVENT_PRE">
+		<h3 id="gst_tracer_pad_push_event_pre">
+	<span><code>GST_TRACER_PAD_PUSH_EVENT_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_EVENT_PRE(pad, event)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_PUSH_EVENT_POST">
+		<h3 id="gst_tracer_pad_push_event_post">
+	<span><code>GST_TRACER_PAD_PUSH_EVENT_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_PUSH_EVENT_POST(pad, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_QUERY_PRE">
+		<h3 id="gst_tracer_pad_query_pre">
+	<span><code>GST_TRACER_PAD_QUERY_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_QUERY_PRE(pad, query)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_QUERY_POST">
+		<h3 id="gst_tracer_pad_query_post">
+	<span><code>GST_TRACER_PAD_QUERY_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_QUERY_POST(pad, query, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_POST_MESSAGE_PRE">
+		<h3 id="gst_tracer_element_post_message_pre">
+	<span><code>GST_TRACER_ELEMENT_POST_MESSAGE_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_POST_MESSAGE_PRE(element, message)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_POST_MESSAGE_POST">
+		<h3 id="gst_tracer_element_post_message_post">
+	<span><code>GST_TRACER_ELEMENT_POST_MESSAGE_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_POST_MESSAGE_POST(element, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_QUERY_PRE">
+		<h3 id="gst_tracer_element_query_pre">
+	<span><code>GST_TRACER_ELEMENT_QUERY_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_QUERY_PRE(element, query)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_QUERY_POST">
+		<h3 id="gst_tracer_element_query_post">
+	<span><code>GST_TRACER_ELEMENT_QUERY_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_QUERY_POST(element, query, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_NEW">
+		<h3 id="gst_tracer_element_new">
+	<span><code>GST_TRACER_ELEMENT_NEW</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_NEW(element)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_ADD_PAD">
+		<h3 id="gst_tracer_element_add_pad">
+	<span><code>GST_TRACER_ELEMENT_ADD_PAD</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_ADD_PAD(element, pad)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_REMOVE_PAD">
+		<h3 id="gst_tracer_element_remove_pad">
+	<span><code>GST_TRACER_ELEMENT_REMOVE_PAD</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_REMOVE_PAD(element, pad)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_CHANGE_STATE_PRE">
+		<h3 id="gst_tracer_element_change_state_pre">
+	<span><code>GST_TRACER_ELEMENT_CHANGE_STATE_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_CHANGE_STATE_PRE(element, transition)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ELEMENT_CHANGE_STATE_POST">
+		<h3 id="gst_tracer_element_change_state_post">
+	<span><code>GST_TRACER_ELEMENT_CHANGE_STATE_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ELEMENT_CHANGE_STATE_POST(element, transition, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_BIN_ADD_PRE">
+		<h3 id="gst_tracer_bin_add_pre">
+	<span><code>GST_TRACER_BIN_ADD_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_BIN_ADD_PRE(bin, element)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_BIN_ADD_POST">
+		<h3 id="gst_tracer_bin_add_post">
+	<span><code>GST_TRACER_BIN_ADD_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_BIN_ADD_POST(bin, element, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_BIN_REMOVE_PRE">
+		<h3 id="gst_tracer_bin_remove_pre">
+	<span><code>GST_TRACER_BIN_REMOVE_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_BIN_REMOVE_PRE(bin, element)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_BIN_REMOVE_POST">
+		<h3 id="gst_tracer_bin_remove_post">
+	<span><code>GST_TRACER_BIN_REMOVE_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_BIN_REMOVE_POST(bin, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_LINK_PRE">
+		<h3 id="gst_tracer_pad_link_pre">
+	<span><code>GST_TRACER_PAD_LINK_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_LINK_PRE(srcpad, sinkpad)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_LINK_POST">
+		<h3 id="gst_tracer_pad_link_post">
+	<span><code>GST_TRACER_PAD_LINK_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_LINK_POST(srcpad, sinkpad, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_UNLINK_PRE">
+		<h3 id="gst_tracer_pad_unlink_pre">
+	<span><code>GST_TRACER_PAD_UNLINK_PRE</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_UNLINK_PRE(srcpad, sinkpad)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_PAD_UNLINK_POST">
+		<h3 id="gst_tracer_pad_unlink_post">
+	<span><code>GST_TRACER_PAD_UNLINK_POST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_PAD_UNLINK_POST(srcpad, sinkpad, res)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_MINI_OBJECT_CREATED">
+		<h3 id="gst_tracer_mini_object_created">
+	<span><code>GST_TRACER_MINI_OBJECT_CREATED</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_MINI_OBJECT_CREATED(object)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_MINI_OBJECT_DESTROYED">
+		<h3 id="gst_tracer_mini_object_destroyed">
+	<span><code>GST_TRACER_MINI_OBJECT_DESTROYED</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_MINI_OBJECT_DESTROYED(object)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_OBJECT_UNREFFED">
+		<h3 id="gst_tracer_object_unreffed">
+	<span><code>GST_TRACER_OBJECT_UNREFFED</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_OBJECT_UNREFFED(object, new_refcount)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_OBJECT_REFFED">
+		<h3 id="gst_tracer_object_reffed">
+	<span><code>GST_TRACER_OBJECT_REFFED</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_OBJECT_REFFED(object, new_refcount)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_MINI_OBJECT_UNREFFED">
+		<h3 id="gst_tracer_mini_object_unreffed">
+	<span><code>GST_TRACER_MINI_OBJECT_UNREFFED</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_MINI_OBJECT_UNREFFED(object, new_refcount) G_STMT_START{ \
+  GST_TRACER_DISPATCH(GST_TRACER_QUARK(HOOK_MINI_OBJECT_UNREFFED), \
+    GstTracerHookMiniObjectUnreffed, (GST_TRACER_ARGS, object, new_refcount)); \
+}G_STMT_END
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_MINI_OBJECT_REFFED">
+		<h3 id="gst_tracer_mini_object_reffed">
+	<span><code>GST_TRACER_MINI_OBJECT_REFFED</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_MINI_OBJECT_REFFED(object, new_refcount)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_OBJECT_CREATED">
+		<h3 id="gst_tracer_object_created">
+	<span><code>GST_TRACER_OBJECT_CREATED</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_OBJECT_CREATED(object)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_OBJECT_DESTROYED">
+		<h3 id="gst_tracer_object_destroyed">
+	<span><code>GST_TRACER_OBJECT_DESTROYED</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_OBJECT_DESTROYED(object)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_MINI_OBJECT_UNREF">
+		<h3 id="gst_tracer_mini_object_unref">
+	<span><code>GST_TRACER_MINI_OBJECT_UNREF</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_MINI_OBJECT_UNREF(object, new_refcount)
+</pre>
+
+
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_IS_ENABLED">
+		<h3 class="constant" id="gst_tracer_is_enabled">
+	GST_TRACER_IS_ENABLED
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_IS_ENABLED (_priv_tracer_enabled)
+</pre>
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_TS">
+		<h3 class="constant" id="gst_tracer_ts">
+	GST_TRACER_TS
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_TS \
+  GST_CLOCK_DIFF (_priv_gst_start_time, gst_util_get_timestamp ())
+</pre>
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TRACER_ARGS">
+		<h3 class="constant" id="gst_tracer_args">
+	GST_TRACER_ARGS
+</h3>
+
+		<pre class="raw_code">
+#define GST_TRACER_ARGS h-&gt;tracer, ts
+</pre>
+
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>deinterlace</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gst-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-good-1.0" data-hotdoc-ref="element-deinterlace.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="element-deinterlace">
+<h1 id="deinterlace">deinterlace</h1><p>deinterlace deinterlaces interlaced video frames to progressive video frames.
+For this different algorithms can be selected which will be described later.</p>
+<h2 id="example-launch-line">Example launch line</h2>
+<pre><code class="language-["> gst-launch-1.0 -v filesrc location=/path/to/file ! decodebin ! videoconvert ! deinterlace ! videoconvert ! autovideosink
+ ]| This pipeline deinterlaces a video file with the default deinterlacing options.
+</code></pre>
+
+</div>
+
+
+<h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlace-&gt;sink">
+		<h3 id="sink">
+    sink:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/x-raw, format=(string){ AYUV, ARGB, ABGR, RGBA, BGRA, Y444, xRGB, xBGR, RGBx, BGRx, RGB, BGR, YUY2, YVYU, UYVY, Y42B, I420, YV12, Y41B, NV12, NV21 }, width=(int)[ 1, 2147483647 ], height=(int)[ 1, 2147483647 ], framerate=(fraction)[ 0/1, 2147483647/1 ]; video/x-raw(ANY), format=(string){ I420, YV12, YUY2, UYVY, AYUV, RGBx, BGRx, xRGB, xBGR, RGBA, BGRA, ARGB, ABGR, RGB, BGR, Y41B, Y42B, YVYU, Y444, v210, v216, NV12, NV21, GRAY8, GRAY16_BE, GRAY16_LE, v308, RGB16, BGR16, RGB15, BGR15, UYVP, A420, RGB8P, YUV9, YVU9, IYU1, ARGB64, AYUV64, r210, I420_10BE, I420_10LE, I422_10BE, I422_10LE, Y444_10BE, Y444_10LE, GBR, GBR_10BE, GBR_10LE, NV16, NV24, NV12_64Z32, A420_10BE, A420_10LE, A422_10BE, A422_10LE, A444_10BE, A444_10LE, NV61, P010_10BE, P010_10LE, IYU2, VYUY, GBRA, GBRA_10BE, GBRA_10LE, GBR_12BE, GBR_12LE, GBRA_12BE, GBRA_12LE, I420_12BE, I420_12LE, I422_12BE, I422_12LE, Y444_12BE, Y444_12LE }, width=(int)[ 1, 2147483647 ], height=(int)[ 1, 2147483647 ], framerate=(fraction)[ 0/1, 2147483647/1 ]</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlace-&gt;src">
+		<h3 id="src">
+    src:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/x-raw, format=(string){ AYUV, ARGB, ABGR, RGBA, BGRA, Y444, xRGB, xBGR, RGBx, BGRx, RGB, BGR, YUY2, YVYU, UYVY, Y42B, I420, YV12, Y41B, NV12, NV21 }, width=(int)[ 1, 2147483647 ], height=(int)[ 1, 2147483647 ], framerate=(fraction)[ 0/1, 2147483647/1 ]; video/x-raw(ANY), format=(string){ I420, YV12, YUY2, UYVY, AYUV, RGBx, BGRx, xRGB, xBGR, RGBA, BGRA, ARGB, ABGR, RGB, BGR, Y41B, Y42B, YVYU, Y444, v210, v216, NV12, NV21, GRAY8, GRAY16_BE, GRAY16_LE, v308, RGB16, BGR16, RGB15, BGR15, UYVP, A420, RGB8P, YUV9, YVU9, IYU1, ARGB64, AYUV64, r210, I420_10BE, I420_10LE, I422_10BE, I422_10LE, Y444_10BE, Y444_10LE, GBR, GBR_10BE, GBR_10LE, NV16, NV24, NV12_64Z32, A420_10BE, A420_10LE, A422_10BE, A422_10LE, A444_10BE, A444_10LE, NV61, P010_10BE, P010_10LE, IYU2, VYUY, GBRA, GBRA_10BE, GBRA_10LE, GBR_12BE, GBR_12LE, GBRA_12BE, GBRA_12LE, I420_12BE, I420_12LE, I422_12BE, I422_12LE, Y444_12BE, Y444_12LE }, width=(int)[ 1, 2147483647 ], height=(int)[ 1, 2147483647 ], framerate=(fraction)[ 0/1, 2147483647/1 ]</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlace:drop-orphans">
+		<h3 class="method" id="droporphans">
+	<span><code>drop-orphans</code></span>
+</h3>
+
+		<pre class="property_signature">
+“drop-orphans” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>This selects whether to drop orphan fields at the beginning of telecine
+patterns in active locking mode.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlace:fields">
+		<h3 class="method" id="fields">
+	<span><code>fields</code></span>
+</h3>
+
+		<pre class="property_signature">
+“fields” <span class="type"><a title="GstDeinterlaceFields" href="element-deinterlace.html#GstDeinterlaceFields">GstDeinterlaceFields</a></span>
+</pre>
+
+<p>This selects which fields should be output. If "all" is selected
+the output framerate will be double.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	all (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlace:ignore-obscure">
+		<h3 class="method" id="ignoreobscure">
+	<span><code>ignore-obscure</code></span>
+</h3>
+
+		<pre class="property_signature">
+“ignore-obscure” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>This selects whether to ignore obscure/rare telecine patterns.
+NTSC 2:3 pulldown variants are the only really common patterns.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlace:locking">
+		<h3 class="method" id="locking">
+	<span><code>locking</code></span>
+</h3>
+
+		<pre class="property_signature">
+“locking” <span class="type"><a title="GstDeinterlaceLocking" href="element-deinterlace.html#GstDeinterlaceLocking">GstDeinterlaceLocking</a></span>
+</pre>
+
+<p>This selects which approach to pattern locking is used which affects
+processing latency and accuracy of timestamp adjustment for telecine
+streams.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	none (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlace:method">
+		<h3 class="method" id="method">
+	<span><code>method</code></span>
+</h3>
+
+		<pre class="property_signature">
+“method” <span class="type"><a title="GstDeinterlaceMethods" href="element-deinterlace.html#GstDeinterlaceMethods">GstDeinterlaceMethods</a></span>
+</pre>
+
+<p>Selects the different deinterlacing algorithms that can be used.
+These provide different quality and CPU usage.</p>
+<p>Some methods provide parameters which can be set by getting
+the "method" child via the <a href="../libgstreamer-1.0/c/gstchildproxy.html#GstChildProxy">GstChildProxy</a> interface and
+setting the appropiate properties on it.</p>
+<ul>
+<li>tomsmocomp  Motion Adaptive: Motion Search</li>
+<li>greedyh Motion Adaptive: Advanced Detection</li>
+<li>greedyl Motion Adaptive: Simple Detection</li>
+<li>vfir Blur vertical</li>
+<li>linear Linear interpolation</li>
+<li>linearblend Linear interpolation in time domain.
+Any motion causes significant ghosting, so this
+method should not be used.</li>
+<li>scalerbob Double lines</li>
+<li>weave Weave. Bad quality, do not use.</li>
+<li>weavetff Progressive: Top Field First.  Bad quality, do not use.</li>
+<li>weavebff Progressive: Bottom Field First.  Bad quality, do not use.</li>
+</ul>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	linear (4)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlace:mode">
+		<h3 class="method" id="mode">
+	<span><code>mode</code></span>
+</h3>
+
+		<pre class="property_signature">
+“mode” <span class="type"><a title="GstDeinterlaceModes" href="element-deinterlace.html#GstDeinterlaceModes">GstDeinterlaceModes</a></span>
+</pre>
+
+<p>This selects whether the deinterlacing methods should
+always be applied or if they should only be applied
+on content that has the "interlaced" flag on the caps.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	auto (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlace:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>The name of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	deinterlace0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlace:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+<p>The parent of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlace:tff">
+		<h3 class="method" id="tff">
+	<span><code>tff</code></span>
+</h3>
+
+		<pre class="property_signature">
+“tff” <span class="type"><a title="GstDeinterlaceFieldLayout" href="element-deinterlace.html#GstDeinterlaceFieldLayout">GstDeinterlaceFieldLayout</a></span>
+</pre>
+
+<p>Deinterlace top field first</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	auto (0)
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlaceFields">
+		<h3 id="enum-gstdeinterlacefields">
+		enum GstDeinterlaceFields
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>all</td>
+            <td>All fields</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>top</td>
+            <td>Top fields only</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>bottom</td>
+            <td>Bottom fields only</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>auto</td>
+            <td>Automatically detect</td>
+            <td>0x00000003</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlaceLocking">
+		<h3 id="enum-gstdeinterlacelocking">
+		enum GstDeinterlaceLocking
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>none</td>
+            <td>No pattern locking</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>auto</td>
+            <td>Choose passive/active locking depending on whether upstream is live</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>active</td>
+            <td>Block until pattern-locked. Use accurate timestamp interpolation within a pattern repeat.</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>passive</td>
+            <td>Do not block. Use na?ve timestamp adjustment until pattern-locked based on state history.</td>
+            <td>0x00000003</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlaceMethods">
+		<h3 id="enum-gstdeinterlacemethods">
+		enum GstDeinterlaceMethods
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>tomsmocomp</td>
+            <td>Motion Adaptive: Motion Search</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>greedyh</td>
+            <td>Motion Adaptive: Advanced Detection</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>greedyl</td>
+            <td>Motion Adaptive: Simple Detection</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>vfir</td>
+            <td>Blur Vertical</td>
+            <td>0x00000003</td>
+        </tr>
+        <tr>
+            <td>linear</td>
+            <td>Linear</td>
+            <td>0x00000004</td>
+        </tr>
+        <tr>
+            <td>linearblend</td>
+            <td>Blur: Temporal (Do Not Use)</td>
+            <td>0x00000005</td>
+        </tr>
+        <tr>
+            <td>scalerbob</td>
+            <td>Double lines</td>
+            <td>0x00000006</td>
+        </tr>
+        <tr>
+            <td>weave</td>
+            <td>Weave (Do Not Use)</td>
+            <td>0x00000007</td>
+        </tr>
+        <tr>
+            <td>weavetff</td>
+            <td>Progressive: Top Field First (Do Not Use)</td>
+            <td>0x00000008</td>
+        </tr>
+        <tr>
+            <td>weavebff</td>
+            <td>Progressive: Bottom Field First (Do Not Use)</td>
+            <td>0x00000009</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlaceModes">
+		<h3 id="enum-gstdeinterlacemodes">
+		enum GstDeinterlaceModes
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>auto</td>
+            <td>Auto detection (best effort)</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>interlaced</td>
+            <td>Force deinterlacing</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>disabled</td>
+            <td>Run in passthrough mode</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>auto-strict</td>
+            <td>Auto detection (strict)</td>
+            <td>0x00000003</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDeinterlaceFieldLayout">
+		<h3 id="enum-gstdeinterlacefieldlayout">
+		enum GstDeinterlaceFieldLayout
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>auto</td>
+            <td>Auto detection</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>tff</td>
+            <td>Top field first</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>bff</td>
+            <td>Bottom field first</td>
+            <td>0x00000002</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

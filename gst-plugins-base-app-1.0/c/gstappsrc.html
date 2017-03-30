@@ -1,0 +1,2936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstAppSrc</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-base-app-1.0" data-hotdoc-ref="gstappsrc.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstappsrc.h">
+<h1 id="gstappsrc">GstAppSrc</h1><p>The appsrc element can be used by applications to insert data into a
+GStreamer pipeline. Unlike most GStreamer elements, appsrc provides
+external API functions.</p>
+<p>appsrc can be used by linking with the libgstapp library to access the
+methods directly or by using the appsrc action signals.</p>
+<p>Before operating appsrc, the caps property must be set to fixed caps
+describing the format of the data that will be pushed with appsrc. An
+exception to this is when pushing buffers with unknown caps, in which case no
+caps should be set. This is typically true of file-like sources that push raw
+byte buffers. If you don't want to explicitly set the caps, you can use
+gst_app_src_push_sample. This method gets the caps associated with the
+sample and sets them on the appsrc replacing any previously set caps (if
+different from sample's caps).</p>
+<p>The main way of handing data to the appsrc element is by calling the
+<a href="gstappsrc.html#gst_app_src_push_buffer">gst_app_src_push_buffer</a> method or by emitting the push-buffer action signal.
+This will put the buffer onto a queue from which appsrc will read from in its
+streaming thread. It is important to note that data transport will not happen
+from the thread that performed the push-buffer call.</p>
+<p>The "max-bytes" property controls how much data can be queued in appsrc
+before appsrc considers the queue full. A filled internal queue will always
+signal the "enough-data" signal, which signals the application that it should
+stop pushing data into appsrc. The "block" property will cause appsrc to
+block the push-buffer method until free data becomes available again.</p>
+<p>When the internal queue is running out of data, the "need-data" signal is
+emitted, which signals the application that it should start pushing more data
+into appsrc.</p>
+<p>In addition to the "need-data" and "enough-data" signals, appsrc can emit the
+"seek-data" signal when the "stream-mode" property is set to "seekable" or
+"random-access". The signal argument will contain the new desired position in
+the stream expressed in the unit set with the "format" property. After
+receiving the seek-data signal, the application should push-buffers from the
+new position.</p>
+<p>These signals allow the application to operate the appsrc in two different
+ways:</p>
+<p>The push mode, in which the application repeatedly calls the push-buffer/push-sample
+method with a new buffer/sample. Optionally, the queue size in the appsrc
+can be controlled with the enough-data and need-data signals by respectively
+stopping/starting the push-buffer/push-sample calls. This is a typical
+mode of operation for the stream-type "stream" and "seekable". Use this
+mode when implementing various network protocols or hardware devices.</p>
+<p>The pull mode, in which the need-data signal triggers the next push-buffer call.
+This mode is typically used in the "random-access" stream-type. Use this
+mode for file access or other randomly accessable sources. In this mode, a
+buffer of exactly the amount of bytes given by the need-data signal should be
+pushed into appsrc.</p>
+<p>In all modes, the size property on appsrc should contain the total stream
+size in bytes. Setting this property is mandatory in the random-access mode.
+For the stream and seekable modes, setting this property is optional but
+recommended.</p>
+<p>When the application has finished pushing data into appsrc, it should call
+<a href="gstappsrc.html#gst_app_src_end_of_stream">gst_app_src_end_of_stream</a> or emit the end-of-stream action signal. After
+this call, no more buffers can be pushed into appsrc until a flushing seek
+occurs or the state of the appsrc has gone through READY.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc">
+		<h3 id="gstappsrc1">
+	GstAppSrc
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="../../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../../libgstreamer-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span><a title="GstBaseSrc" href="../../libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a>
+                    <span class="lineart">╰──</span>GstAppSrc
+</pre>
+
+</div>
+
+</div>
+
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstAppSrc.basesrc">
+		<td>
+		<p>
+		<i><em><code><a title="GstBaseSrc" href="../../libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> <em><code>basesrc</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAppSrc.priv">
+		<td>
+		<p>
+		<i><em><code>GstAppSrcPrivate* <em><code>priv</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAppSrc._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_end_of_stream">
+		<h3 id="gst_app_src_end_of_stream1">
+	<span><code>gst_app_src_end_of_stream</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+gst_app_src_end_of_stream (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc)</pre>
+
+<p>Indicates to the appsrc element that the last buffer queued in the
+element is the last buffer of the stream.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="../../libgstreamer-1.0/c/gstpad.html#GST_FLOW_OK">GST_FLOW_OK</a> when the EOS was successfuly queued.
+<a href="../../libgstreamer-1.0/c/gstpad.html#GST_FLOW_FLUSHING">GST_FLOW_FLUSHING</a> when <em>appsrc</em> is not PAUSED or PLAYING.</p>
+
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_get_caps">
+		<h3 id="gst_app_src_get_caps1">
+	<span><code>gst_app_src_get_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+gst_app_src_get_caps (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc)</pre>
+
+<p>Get the configured caps on <em>appsrc</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the <a href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> produced by the source. <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstCaps.html#gst-caps-unref">gst_caps_unref</a> after usage.</p>
+
+	</td>
+	<td>
+		<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_app_src_get_current_level_bytes">
+		<h3 id="gst_app_src_get_current_level_bytes1">
+	<span><code>gst_app_src_get_current_level_bytes</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a>
+gst_app_src_get_current_level_bytes (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc)</pre>
+
+<p>Get the number of currently queued bytes inside <em>appsrc</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The number of currently queued bytes.</p>
+
+	</td>
+	<td>
+		<a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_app_src_get_duration">
+		<h3 id="gst_app_src_get_duration1">
+	<span><code>gst_app_src_get_duration</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_app_src_get_duration (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc)</pre>
+
+<p>Get the duration of the stream in nanoseconds. A value of GST_CLOCK_TIME_NONE means that the duration is
+not known.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the duration of the stream previously set with <a href="gstappsrc.html#gst_app_src_set_duration">gst_app_src_set_duration</a>;</p>
+
+	</td>
+	<td>
+		<a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_get_emit_signals">
+		<h3 id="gst_app_src_get_emit_signals1">
+	<span><code>gst_app_src_get_emit_signals</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_app_src_get_emit_signals (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc)</pre>
+
+<p>Check if appsrc will emit the "new-preroll" and "new-buffer" signals.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>appsrc</em> is emitting the "new-preroll" and "new-buffer"
+signals.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_get_latency">
+		<h3 id="gst_app_src_get_latency1">
+	<span><code>gst_app_src_get_latency</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_src_get_latency (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+                         <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> * min,
+                         <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> * max)</pre>
+
+<p>Retrieve the min and max latencies in <em>min</em> and <em>max</em> respectively.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>min:</code></em></i>
+		</p>
+	</td>
+		<td><p>the min latency</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>max:</code></em></i>
+		</p>
+	</td>
+		<td><p>the min latency</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_get_max_bytes">
+		<h3 id="gst_app_src_get_max_bytes1">
+	<span><code>gst_app_src_get_max_bytes</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a>
+gst_app_src_get_max_bytes (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc)</pre>
+
+<p>Get the maximum amount of bytes that can be queued in <em>appsrc</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The maximum amount of bytes that can be queued.</p>
+
+	</td>
+	<td>
+		<a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_get_size">
+		<h3 id="gst_app_src_get_size1">
+	<span><code>gst_app_src_get_size</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a>
+gst_app_src_get_size (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc)</pre>
+
+<p>Get the size of the stream in bytes. A value of -1 means that the size is
+not known.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the size of the stream previously set with <a href="gstappsrc.html#gst_app_src_set_size">gst_app_src_set_size</a>;</p>
+
+	</td>
+	<td>
+		<a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_get_stream_type">
+		<h3 id="gst_app_src_get_stream_type1">
+	<span><code>gst_app_src_get_stream_type</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstAppStreamType" href="gstappsrc.html#GstAppStreamType">GstAppStreamType</a>
+gst_app_src_get_stream_type (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc)</pre>
+
+<p>Get the stream type. Control the stream type of <em>appsrc</em>
+with <a href="gstappsrc.html#gst_app_src_set_stream_type">gst_app_src_set_stream_type</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the stream type.</p>
+
+	</td>
+	<td>
+		<a title="GstAppStreamType" href="gstappsrc.html#GstAppStreamType">GstAppStreamType</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_push_buffer">
+		<h3 id="gst_app_src_push_buffer1">
+	<span><code>gst_app_src_push_buffer</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+gst_app_src_push_buffer (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+                         <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer)</pre>
+
+<p>Adds a buffer to the queue of buffers that the appsrc element will
+push to its source pad.  This function takes ownership of the buffer.</p>
+<p>When the block property is TRUE, this function can block until free
+space becomes available in the queue.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> to push</p>
+</td>
+<td>
+
+<span class="annotation">[<abbr title="Free data after the code is done"><span class="acronym">transfer: full</span></abbr>]</span>
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="../../libgstreamer-1.0/c/gstpad.html#GST_FLOW_OK">GST_FLOW_OK</a> when the buffer was successfuly queued.
+<a href="../../libgstreamer-1.0/c/gstpad.html#GST_FLOW_FLUSHING">GST_FLOW_FLUSHING</a> when <em>appsrc</em> is not PAUSED or PLAYING.
+<a href="../../libgstreamer-1.0/c/gstpad.html#GST_FLOW_EOS">GST_FLOW_EOS</a> when EOS occured.</p>
+
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_app_src_push_sample">
+		<h3 id="gst_app_src_push_sample1">
+	<span><code>gst_app_src_push_sample</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+gst_app_src_push_sample (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+                         <a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> * sample)</pre>
+
+<p>Extract a buffer from the provided sample and adds it to the queue of
+buffers that the appsrc element will push to its source pad. Any
+previous caps that were set on appsrc will be replaced by the caps
+associated with the sample if not equal.</p>
+<p>When the block property is TRUE, this function can block until free
+space becomes available in the queue.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>sample:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> from which buffer and caps may be
+extracted</p>
+</td>
+<td>
+
+<span class="annotation">[<abbr title="Don't free data after the code is done"><span class="acronym">transfer: none</span></abbr>]</span>
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="../../libgstreamer-1.0/c/gstpad.html#GST_FLOW_OK">GST_FLOW_OK</a> when the buffer was successfuly queued.
+<a href="../../libgstreamer-1.0/c/gstpad.html#GST_FLOW_FLUSHING">GST_FLOW_FLUSHING</a> when <em>appsrc</em> is not PAUSED or PLAYING.
+<a href="../../libgstreamer-1.0/c/gstpad.html#GST_FLOW_EOS">GST_FLOW_EOS</a> when EOS occured.</p>
+
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_set_callbacks">
+		<h3 id="gst_app_src_set_callbacks1">
+	<span><code>gst_app_src_set_callbacks</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_src_set_callbacks (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+                           <a title="GstAppSrcCallbacks" href="gstappsrc.html#GstAppSrcCallbacks">GstAppSrcCallbacks</a> * callbacks,
+                           <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> user_data,
+                           <a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a> notify)</pre>
+
+<p>Set callbacks which will be executed when data is needed, enough data has
+been collected or when a seek should be performed.
+This is an alternative to using the signals, it has lower overhead and is thus
+less expensive, but also less flexible.</p>
+<p>If callbacks are installed, no signals will be emitted for performance
+reasons.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>callbacks:</code></em></i>
+		</p>
+	</td>
+		<td><p>the callbacks</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>a user_data argument for the callbacks</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>notify:</code></em></i>
+		</p>
+	</td>
+		<td><p>a destroy notify function</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_set_caps">
+		<h3 id="gst_app_src_set_caps1">
+	<span><code>gst_app_src_set_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_src_set_caps (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+                      const <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps)</pre>
+
+<p>Set the capabilities on the appsrc element.  This function takes
+a copy of the caps structure. After calling this method, the source will
+only produce caps that match <em>caps</em>. <em>caps</em> must be fixed and the caps on the
+buffers must match the caps or left NULL.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>caps to set</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_app_src_set_duration">
+		<h3 id="gst_app_src_set_duration1">
+	<span><code>gst_app_src_set_duration</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_src_set_duration (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+                          <a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> duration)</pre>
+
+<p>Set the duration of the stream in nanoseconds. A value of GST_CLOCK_TIME_NONE means that the duration is
+not known.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>duration:</code></em></i>
+		</p>
+	</td>
+		<td><p>the duration to set</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_set_emit_signals">
+		<h3 id="gst_app_src_set_emit_signals1">
+	<span><code>gst_app_src_set_emit_signals</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_src_set_emit_signals (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+                              <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> emit)</pre>
+
+<p>Make appsrc emit the "new-preroll" and "new-buffer" signals. This option is
+by default disabled because signal emission is expensive and unneeded when
+the application prefers to operate in pull mode.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>emit:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new state</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_set_latency">
+		<h3 id="gst_app_src_set_latency1">
+	<span><code>gst_app_src_set_latency</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_src_set_latency (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+                         <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> min,
+                         <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> max)</pre>
+
+<p>Configure the <em>min</em> and <em>max</em> latency in <em>src</em>. If <em>min</em> is set to -1, the
+default latency calculations for pseudo-live sources will be used.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>min:</code></em></i>
+		</p>
+	</td>
+		<td><p>the min latency</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>max:</code></em></i>
+		</p>
+	</td>
+		<td><p>the min latency</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_set_max_bytes">
+		<h3 id="gst_app_src_set_max_bytes1">
+	<span><code>gst_app_src_set_max_bytes</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_src_set_max_bytes (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+                           <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> max)</pre>
+
+<p>Set the maximum amount of bytes that can be queued in <em>appsrc</em>.
+After the maximum amount of bytes are queued, <em>appsrc</em> will emit the
+"enough-data" signal.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>max:</code></em></i>
+		</p>
+	</td>
+		<td><p>the maximum number of bytes to queue</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_set_size">
+		<h3 id="gst_app_src_set_size1">
+	<span><code>gst_app_src_set_size</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_src_set_size (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+                      <a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a> size)</pre>
+
+<p>Set the size of the stream in bytes. A value of -1 means that the size is
+not known.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+	</td>
+		<td><p>the size to set</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_src_set_stream_type">
+		<h3 id="gst_app_src_set_stream_type1">
+	<span><code>gst_app_src_set_stream_type</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_src_set_stream_type (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+                             <a title="GstAppStreamType" href="gstappsrc.html#GstAppStreamType">GstAppStreamType</a> type)</pre>
+
+<p>Set the stream type on <em>appsrc</em>. For seekable streams, the "seek" signal must
+be connected to.</p>
+<p>A stream_type stream</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsrc.html#GstAppSrc">GstAppSrc</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>type:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new state</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Signals">Signals</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::end-of-stream">
+		<h3 id="gstappsrcendofstream">
+	<span><code>GstAppSrc::end-of-stream</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstAppSrc::end_of_stream_callback ()</pre>
+
+<p>Notify <em>appsrc</em> that no more buffer are available.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::enough-data">
+		<h3 id="gstappsrcenoughdata">
+	<span><code>GstAppSrc::enough-data</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+GstAppSrc::enough_data_callback ()</pre>
+
+<p>Signal that the source has enough data. It is recommended that the
+application stops calling push-buffer until the need-data signal is
+emitted again to avoid excessive buffer queueing.</p>
+
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::need-data">
+		<h3 id="gstappsrcneeddata">
+	<span><code>GstAppSrc::need-data</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+GstAppSrc::need_data_callback (<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> length)</pre>
+
+<p>Signal that the source needs more data. In the callback or from another
+thread you should call push-buffer or end-of-stream.</p>
+<p><em>length</em> is just a hint and when it is set to -1, any number of bytes can be
+pushed into <em>appsrc</em>.</p>
+<p>You can call push-buffer multiple times until the enough-data signal is
+fired.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>length:</code></em></i>
+		</p>
+	</td>
+		<td><p>the amount of bytes needed.</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::push-buffer">
+		<h3 id="gstappsrcpushbuffer">
+	<span><code>GstAppSrc::push-buffer</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstAppSrc::push_buffer_callback (Gst.Buffer* buffer)</pre>
+
+<p>Adds a buffer to the queue of buffers that the appsrc element will
+push to its source pad. This function does not take ownership of the
+buffer so the buffer needs to be unreffed after calling this function.</p>
+<p>When the block property is TRUE, this function can block until free space
+becomes available in the queue.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td><p>a buffer to push</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="GstAppSrc::push-sample">
+		<h3 id="gstappsrcpushsample">
+	<span><code>GstAppSrc::push-sample</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstAppSrc::push_sample_callback (Gst.Sample* sample)</pre>
+
+<p>Extract a buffer from the provided sample and adds the extracted buffer
+to the queue of buffers that the appsrc element will
+push to its source pad. This function set the appsrc caps based on the caps
+in the sample and reset the caps if they change.
+Only the caps and the buffer of the provided sample are used and not
+for example the segment in the sample.
+This function does not take ownership of the
+sample so the sample needs to be unreffed after calling this function.</p>
+<p>When the block property is TRUE, this function can block until free space
+becomes available in the queue.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>sample:</code></em></i>
+		</p>
+	</td>
+		<td><p>a sample from which extract buffer to push</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::seek-data">
+		<h3 id="gstappsrcseekdata">
+	<span><code>GstAppSrc::seek-data</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+GstAppSrc::seek_data_callback (<a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset)</pre>
+
+<p>Seek to the given offset. The next push-buffer should produce buffers from
+the new <em>offset</em>.
+This callback is only called for seekable stream types.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>offset:</code></em></i>
+		</p>
+	</td>
+		<td><p>the offset to seek to</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the seek succeeded.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:block">
+		<h3 class="method" id="gstappsrcblock">
+	<span><code>GstAppSrc:block</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:block” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Block push-buffer when max-bytes are queued</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:caps">
+		<h3 class="method" id="gstappsrccaps">
+	<span><code>GstAppSrc:caps</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:caps” <span class="type">Gst.Caps*</span>
+</pre>
+
+<p>The allowed caps for the src pad</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:current-level-bytes">
+		<h3 class="method" id="gstappsrccurrentlevelbytes">
+	<span><code>GstAppSrc:current-level-bytes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:current-level-bytes” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>The number of currently queued bytes</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:duration">
+		<h3 class="method" id="gstappsrcduration">
+	<span><code>GstAppSrc:duration</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:duration” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>The duration of the data stream in nanoseconds (GST_CLOCK_TIME_NONE if unknown)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:emit-signals">
+		<h3 class="method" id="gstappsrcemitsignals">
+	<span><code>GstAppSrc:emit-signals</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:emit-signals” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Emit need-data, enough-data and seek-data signals</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:format">
+		<h3 class="method" id="gstappsrcformat">
+	<span><code>GstAppSrc:format</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:format” <span class="type"></span>
+</pre>
+
+<p>The format of the segment events and seek</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:is-live">
+		<h3 class="method" id="gstappsrcislive">
+	<span><code>GstAppSrc:is-live</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:is-live” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Whether to act as a live source</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:max-bytes">
+		<h3 class="method" id="gstappsrcmaxbytes">
+	<span><code>GstAppSrc:max-bytes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:max-bytes” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>The maximum number of bytes to queue internally (0 = unlimited)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:max-latency">
+		<h3 class="method" id="gstappsrcmaxlatency">
+	<span><code>GstAppSrc:max-latency</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:max-latency” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+<p>The maximum latency (-1 = unlimited)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:min-latency">
+		<h3 class="method" id="gstappsrcminlatency">
+	<span><code>GstAppSrc:min-latency</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:min-latency” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+<p>The minimum latency (-1 = default)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:min-percent">
+		<h3 class="method" id="gstappsrcminpercent">
+	<span><code>GstAppSrc:min-percent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:min-percent” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Emit need-data when queued bytes drops below this percent of max-bytes</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:size">
+		<h3 class="method" id="gstappsrcsize">
+	<span><code>GstAppSrc:size</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:size” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+<p>The size of the data stream in bytes (-1 if unknown)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:stream-type">
+		<h3 class="method" id="gstappsrcstreamtype">
+	<span><code>GstAppSrc:stream-type</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSrc:stream-type” <span class="type">AppStreamType*</span>
+</pre>
+
+<p>the type of the stream</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrcClass">
+		<h3 id="struct-gstappsrcclass">
+		struct GstAppSrcClass
+	</h3>
+
+		
+<div class="member_details">
+	<h4 id="fields">Fields</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstAppSrcClass.basesrc_class">
+		<td>
+		<p>
+		<i><em><code><a title="GstBaseSrcClass" href="../../libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass">GstBaseSrcClass</a> <em><code>basesrc_class</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAppSrcClass._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Virtual_Methods">Virtual Methods</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:::end_of_stream">
+		<h3 id="end_of_stream">
+	<span><code>end_of_stream</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+end_of_stream (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters23">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:::enough_data">
+		<h3 id="enough_data">
+	<span><code>enough_data</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+enough_data (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:::need_data">
+		<h3 id="need_data">
+	<span><code>need_data</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+need_data (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+           <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> length)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>length:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:::push_buffer">
+		<h3 id="push_buffer">
+	<span><code>push_buffer</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+push_buffer (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+             <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:::push_sample">
+		<h3 id="push_sample">
+	<span><code>push_sample</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+push_sample (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+             <a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> * sample)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters27">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>sample:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:::seek_data">
+		<h3 id="seek_data">
+	<span><code>seek_data</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+seek_data (<a title="GstAppSrc" href="gstappsrc.html#GstAppSrc">GstAppSrc</a> * appsrc,
+           <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters28">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsrc:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>offset:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns17">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrcCallbacks">
+		<h3 id="struct-gstappsrccallbacks">
+		struct GstAppSrcCallbacks
+	</h3>
+
+		<p>A set of callbacks that can be installed on the appsrc with
+<a href="gstappsrc.html#gst_app_src_set_callbacks">gst_app_src_set_callbacks</a>.</p>
+
+
+<div class="member_details">
+	<h4 id="fields1">Fields</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstAppSrcCallbacks._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppStreamType">
+		<h3 id="enum-gstappstreamtype">
+		enum GstAppStreamType
+	</h3>
+
+		<p>The stream type.</p>
+
+
+<div class="member_details">
+	<h4 id="members1">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_APP_STREAM_TYPE_STREAM"></a>
+		GST_APP_STREAM_TYPE_STREAM
+		</p>
+	</td>
+	<td><p>No seeking is supported in the stream, such as a
+live stream.</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_APP_STREAM_TYPE_SEEKABLE"></a>
+		GST_APP_STREAM_TYPE_SEEKABLE
+		</p>
+	</td>
+	<td><p>The stream is seekable but seeking might not
+be very fast, such as data from a webserver.</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_APP_STREAM_TYPE_RANDOM_ACCESS"></a>
+		GST_APP_STREAM_TYPE_RANDOM_ACCESS
+		</p>
+	</td>
+	<td><p>The stream is seekable and seeking is fast,
+such as in a local file.</p>
+</td>
+	<td>
+		<span class="value">Value: 2</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

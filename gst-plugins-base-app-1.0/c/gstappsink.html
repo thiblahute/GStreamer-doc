@@ -1,0 +1,2803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstAppSink</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-base-app-1.0" data-hotdoc-ref="gstappsink.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstappsink.h">
+<h1 id="gstappsink">GstAppSink</h1><p>Appsink is a sink plugin that supports many different methods for making
+the application get a handle on the GStreamer data in a pipeline. Unlike
+most GStreamer elements, Appsink provides external API functions.</p>
+<p>appsink can be used by linking to the gstappsink.h header file to access the
+methods or by using the appsink action signals and properties.</p>
+<p>The normal way of retrieving samples from appsink is by using the
+<a href="gstappsink.html#gst_app_sink_pull_sample">gst_app_sink_pull_sample</a> and <a href="gstappsink.html#gst_app_sink_pull_preroll">gst_app_sink_pull_preroll</a> methods.
+These methods block until a sample becomes available in the sink or when the
+sink is shut down or reaches EOS. There are also timed variants of these
+methods, <a href="gstappsink.html#gst_app_sink_try_pull_sample">gst_app_sink_try_pull_sample</a> and <a href="gstappsink.html#gst_app_sink_try_pull_preroll">gst_app_sink_try_pull_preroll</a>,
+which accept a timeout parameter to limit the amount of time to wait.</p>
+<p>Appsink will internally use a queue to collect buffers from the streaming
+thread. If the application is not pulling samples fast enough, this queue
+will consume a lot of memory over time. The "max-buffers" property can be
+used to limit the queue size. The "drop" property controls whether the
+streaming thread blocks or if older buffers are dropped when the maximum
+queue size is reached. Note that blocking the streaming thread can negatively
+affect real-time performance and should be avoided.</p>
+<p>If a blocking behaviour is not desirable, setting the "emit-signals" property
+to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> will make appsink emit the "new-sample" and "new-preroll" signals
+when a sample can be pulled without blocking.</p>
+<p>The "caps" property on appsink can be used to control the formats that
+appsink can receive. This property can contain non-fixed caps, the format of
+the pulled samples can be obtained by getting the sample caps.</p>
+<p>If one of the pull-preroll or pull-sample methods return <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>, the appsink
+is stopped or in the EOS state. You can check for the EOS state with the
+"eos" property or with the <a href="gstappsink.html#gst_app_sink_is_eos">gst_app_sink_is_eos</a> method.</p>
+<p>The eos signal can also be used to be informed when the EOS state is reached
+to avoid polling.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink">
+		<h3 id="gstappsink1">
+	GstAppSink
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="../../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../../libgstreamer-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span><a title="GstBaseSink" href="../../libgstbase-1.0/c/gstbasesink.html#GstBaseSink">GstBaseSink</a>
+                    <span class="lineart">╰──</span>GstAppSink
+</pre>
+
+</div>
+
+</div>
+
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstAppSink.basesink">
+		<td>
+		<p>
+		<i><em><code><a title="GstBaseSink" href="../../libgstbase-1.0/c/gstbasesink.html#GstBaseSink">GstBaseSink</a> <em><code>basesink</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAppSink.priv">
+		<td>
+		<p>
+		<i><em><code>GstAppSinkPrivate* <em><code>priv</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAppSink._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.12;" id="gst_app_sink_get_buffer_list_support">
+		<h3 id="gst_app_sink_get_buffer_list_support1">
+	<span><code>gst_app_sink_get_buffer_list_support</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_app_sink_get_buffer_list_support (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+<p>Check if <em>appsink</em> supports buffer lists.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>appsink</em> supports buffer lists.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.12
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_get_caps">
+		<h3 id="gst_app_sink_get_caps1">
+	<span><code>gst_app_sink_get_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+gst_app_sink_get_caps (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+<p>Get the configured caps on <em>appsink</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the <a href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> accepted by the sink. <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstCaps.html#gst-caps-unref">gst_caps_unref</a> after usage.</p>
+
+	</td>
+	<td>
+		<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_get_drop">
+		<h3 id="gst_app_sink_get_drop1">
+	<span><code>gst_app_sink_get_drop</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_app_sink_get_drop (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+<p>Check if <em>appsink</em> will drop old buffers when the maximum amount of queued
+buffers is reached.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>appsink</em> is dropping old buffers when the queue is
+filled.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_get_emit_signals">
+		<h3 id="gst_app_sink_get_emit_signals1">
+	<span><code>gst_app_sink_get_emit_signals</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_app_sink_get_emit_signals (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+<p>Check if appsink will emit the "new-preroll" and "new-sample" signals.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>appsink</em> is emiting the "new-preroll" and "new-sample"
+signals.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_get_max_buffers">
+		<h3 id="gst_app_sink_get_max_buffers1">
+	<span><code>gst_app_sink_get_max_buffers</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>
+gst_app_sink_get_max_buffers (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+<p>Get the maximum amount of buffers that can be queued in <em>appsink</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The maximum amount of buffers that can be queued.</p>
+
+	</td>
+	<td>
+		<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_get_wait_on_eos">
+		<h3 id="gst_app_sink_get_wait_on_eos1">
+	<span><code>gst_app_sink_get_wait_on_eos</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_app_sink_get_wait_on_eos (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+<p>Check if <em>appsink</em> will wait for all buffers to be consumed when an EOS is
+received.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>appsink</em> will wait for all buffers to be consumed when an
+EOS is received.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_is_eos">
+		<h3 id="gst_app_sink_is_eos1">
+	<span><code>gst_app_sink_is_eos</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_app_sink_is_eos (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+<p>Check if <em>appsink</em> is EOS, which is when no more samples can be pulled because
+an EOS event was received.</p>
+<p>This function also returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> when the appsink is not in the PAUSED or
+PLAYING state.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if no more samples can be pulled and the appsink is EOS.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_pull_preroll">
+		<h3 id="gst_app_sink_pull_preroll1">
+	<span><code>gst_app_sink_pull_preroll</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+gst_app_sink_pull_preroll (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+<p>Get the last preroll sample in <em>appsink</em>. This was the sample that caused the
+appsink to preroll in the PAUSED state. This sample can be pulled many times
+and remains available to the application even after EOS.</p>
+<p>This function is typically used when dealing with a pipeline in the PAUSED
+state. Calling this function after doing a seek will give the sample right
+after the seek position.</p>
+<p>Note that the preroll sample will also be returned as the first sample
+when calling <a href="gstappsink.html#gst_app_sink_pull_sample">gst_app_sink_pull_sample</a>.</p>
+<p>If an EOS event was received before any buffers, this function returns
+<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>. Use gst_app_sink_is_eos () to check for the EOS condition.</p>
+<p>This function blocks until a preroll sample or EOS is received or the appsink
+element is set to the READY/NULL state.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS.
+Call <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSample.html#gst-sample-unref">gst_sample_unref</a> after usage.</p>
+
+	</td>
+	<td>
+		<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+	</td>
+				<td>
+	
+<span class="annotation">[<abbr title="Free data after the code is done"><span class="acronym">transfer: full</span></abbr>]</span>
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_pull_sample">
+		<h3 id="gst_app_sink_pull_sample1">
+	<span><code>gst_app_sink_pull_sample</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+gst_app_sink_pull_sample (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+<p>This function blocks until a sample or EOS becomes available or the appsink
+element is set to the READY/NULL state.</p>
+<p>This function will only return samples when the appsink is in the PLAYING
+state. All rendered buffers will be put in a queue so that the application
+can pull samples at its own rate. Note that when the application does not
+pull samples fast enough, the queued buffers could consume a lot of memory,
+especially when dealing with raw video frames.</p>
+<p>If an EOS event was received before any buffers, this function returns
+<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>. Use gst_app_sink_is_eos () to check for the EOS condition.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS.
+Call <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSample.html#gst-sample-unref">gst_sample_unref</a> after usage.</p>
+
+	</td>
+	<td>
+		<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+	</td>
+				<td>
+	
+<span class="annotation">[<abbr title="Free data after the code is done"><span class="acronym">transfer: full</span></abbr>]</span>
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.12;" id="gst_app_sink_set_buffer_list_support">
+		<h3 id="gst_app_sink_set_buffer_list_support1">
+	<span><code>gst_app_sink_set_buffer_list_support</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_sink_set_buffer_list_support (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink,
+                                      <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> enable_lists)</pre>
+
+<p>Instruct <em>appsink</em> to enable or disable buffer list support.</p>
+<p>For backwards-compatibility reasons applications need to opt in
+to indicate that they will be able to handle buffer lists.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>enable_lists:</code></em></i>
+		</p>
+	</td>
+		<td><p>enable or disable buffer list support</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.12
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_set_callbacks">
+		<h3 id="gst_app_sink_set_callbacks1">
+	<span><code>gst_app_sink_set_callbacks</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_sink_set_callbacks (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink,
+                            <a title="GstAppSinkCallbacks" href="gstappsink.html#GstAppSinkCallbacks">GstAppSinkCallbacks</a> * callbacks,
+                            <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> user_data,
+                            <a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a> notify)</pre>
+
+<p>Set callbacks which will be executed for each new preroll, new sample and eos.
+This is an alternative to using the signals, it has lower overhead and is thus
+less expensive, but also less flexible.</p>
+<p>If callbacks are installed, no signals will be emitted for performance
+reasons.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>callbacks:</code></em></i>
+		</p>
+	</td>
+		<td><p>the callbacks</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>user_data:</code></em></i>
+		</p>
+	</td>
+		<td><p>a user_data argument for the callbacks</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>notify:</code></em></i>
+		</p>
+	</td>
+		<td><p>a destroy notify function</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_set_caps">
+		<h3 id="gst_app_sink_set_caps1">
+	<span><code>gst_app_sink_set_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_sink_set_caps (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink,
+                       const <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps)</pre>
+
+<p>Set the capabilities on the appsink element.  This function takes
+a copy of the caps structure. After calling this method, the sink will only
+accept caps that match <em>caps</em>. If <em>caps</em> is non-fixed, or incomplete,
+you must check the caps on the samples to get the actual used caps.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>caps to set</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_set_drop">
+		<h3 id="gst_app_sink_set_drop1">
+	<span><code>gst_app_sink_set_drop</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_sink_set_drop (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink,
+                       <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> drop)</pre>
+
+<p>Instruct <em>appsink</em> to drop old buffers when the maximum amount of queued
+buffers is reached.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>drop:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new state</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_set_emit_signals">
+		<h3 id="gst_app_sink_set_emit_signals1">
+	<span><code>gst_app_sink_set_emit_signals</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_sink_set_emit_signals (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink,
+                               <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> emit)</pre>
+
+<p>Make appsink emit the "new-preroll" and "new-sample" signals. This option is
+by default disabled because signal emission is expensive and unneeded when
+the application prefers to operate in pull mode.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>emit:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new state</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_set_max_buffers">
+		<h3 id="gst_app_sink_set_max_buffers1">
+	<span><code>gst_app_sink_set_max_buffers</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_sink_set_max_buffers (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink,
+                              <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> max)</pre>
+
+<p>Set the maximum amount of buffers that can be queued in <em>appsink</em>. After this
+amount of buffers are queued in appsink, any more buffers will block upstream
+elements until a sample is pulled from <em>appsink</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>max:</code></em></i>
+		</p>
+	</td>
+		<td><p>the maximum number of buffers to queue</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_app_sink_set_wait_on_eos">
+		<h3 id="gst_app_sink_set_wait_on_eos1">
+	<span><code>gst_app_sink_set_wait_on_eos</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_app_sink_set_wait_on_eos (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink,
+                              <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> wait)</pre>
+
+<p>Instruct <em>appsink</em> to wait for all buffers to be consumed when an EOS is received.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>wait:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new state</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_app_sink_try_pull_preroll">
+		<h3 id="gst_app_sink_try_pull_preroll1">
+	<span><code>gst_app_sink_try_pull_preroll</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+gst_app_sink_try_pull_preroll (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink,
+                               <a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> timeout)</pre>
+
+<p>Get the last preroll sample in <em>appsink</em>. This was the sample that caused the
+appsink to preroll in the PAUSED state. This sample can be pulled many times
+and remains available to the application even after EOS.</p>
+<p>This function is typically used when dealing with a pipeline in the PAUSED
+state. Calling this function after doing a seek will give the sample right
+after the seek position.</p>
+<p>Note that the preroll sample will also be returned as the first sample
+when calling <a href="gstappsink.html#gst_app_sink_pull_sample">gst_app_sink_pull_sample</a>.</p>
+<p>If an EOS event was received before any buffers or the timeout expires,
+this function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>. Use gst_app_sink_is_eos () to check for the EOS
+condition.</p>
+<p>This function blocks until a preroll sample or EOS is received, the appsink
+element is set to the READY/NULL state, or the timeout expires.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timeout:</code></em></i>
+		</p>
+	</td>
+		<td><p>the maximum amount of time to wait for the preroll sample</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS or the timeout expires.
+Call <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSample.html#gst-sample-unref">gst_sample_unref</a> after usage.</p>
+
+	</td>
+	<td>
+		<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+	</td>
+				<td>
+	
+<span class="annotation">[<abbr title="Free data after the code is done"><span class="acronym">transfer: full</span></abbr>]</span>
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_app_sink_try_pull_sample">
+		<h3 id="gst_app_sink_try_pull_sample1">
+	<span><code>gst_app_sink_try_pull_sample</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+gst_app_sink_try_pull_sample (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink,
+                              <a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> timeout)</pre>
+
+<p>This function blocks until a sample or EOS becomes available or the appsink
+element is set to the READY/NULL state or the timeout expires.</p>
+<p>This function will only return samples when the appsink is in the PLAYING
+state. All rendered buffers will be put in a queue so that the application
+can pull samples at its own rate. Note that when the application does not
+pull samples fast enough, the queued buffers could consume a lot of memory,
+especially when dealing with raw video frames.</p>
+<p>If an EOS event was received before any buffers or the timeout expires,
+this function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>. Use gst_app_sink_is_eos () to check for the EOS
+condition.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstappsink.html#GstAppSink">GstAppSink</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timeout:</code></em></i>
+		</p>
+	</td>
+		<td><p>the maximum amount of time to wait for a sample</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS or the timeout expires.
+Call <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstSample.html#gst-sample-unref">gst_sample_unref</a> after usage.</p>
+
+	</td>
+	<td>
+		<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+	</td>
+				<td>
+	
+<span class="annotation">[<abbr title="Free data after the code is done"><span class="acronym">transfer: full</span></abbr>]</span>
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Signals">Signals</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink::eos">
+		<h3 id="gstappsinkeos">
+	<span><code>GstAppSink::eos</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+GstAppSink::eos_callback ()</pre>
+
+<p>Signal that the end-of-stream has been reached. This signal is emitted from
+the streaming thread.</p>
+
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink::new-preroll">
+		<h3 id="gstappsinknewpreroll">
+	<span><code>GstAppSink::new-preroll</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstAppSink::new_preroll_callback ()</pre>
+
+<p>Signal that a new preroll sample is available.</p>
+<p>This signal is emitted from the streaming thread and only when the
+"emit-signals" property is <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>.</p>
+<p>The new preroll sample can be retrieved with the "pull-preroll" action
+signal or <a href="gstappsink.html#gst_app_sink_pull_preroll">gst_app_sink_pull_preroll</a> either from this signal callback
+or from any other thread.</p>
+<p>Note that this signal is only emitted when the "emit-signals" property is
+set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>, which it is not by default for performance reasons.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink::new-sample">
+		<h3 id="gstappsinknewsample">
+	<span><code>GstAppSink::new-sample</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstAppSink::new_sample_callback ()</pre>
+
+<p>Signal that a new sample is available.</p>
+<p>This signal is emitted from the streaming thread and only when the
+"emit-signals" property is <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>.</p>
+<p>The new sample can be retrieved with the "pull-sample" action
+signal or <a href="gstappsink.html#gst_app_sink_pull_sample">gst_app_sink_pull_sample</a> either from this signal callback
+or from any other thread.</p>
+<p>Note that this signal is only emitted when the "emit-signals" property is
+set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>, which it is not by default for performance reasons.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink::pull-preroll">
+		<h3 id="gstappsinkpullpreroll">
+	<span><code>GstAppSink::pull-preroll</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+Gst.Sample*
+GstAppSink::pull_preroll_callback ()</pre>
+
+<p>Get the last preroll sample in <em>appsink</em>. This was the sample that caused the
+appsink to preroll in the PAUSED state. This sample can be pulled many times
+and remains available to the application even after EOS.</p>
+<p>This function is typically used when dealing with a pipeline in the PAUSED
+state. Calling this function after doing a seek will give the sample right
+after the seek position.</p>
+<p>Note that the preroll sample will also be returned as the first sample
+when calling <a href="gstappsink.html#gst_app_sink_pull_sample">gst_app_sink_pull_sample</a> or the "pull-sample" action signal.</p>
+<p>If an EOS event was received before any buffers, this function returns
+<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>. Use gst_app_sink_is_eos () to check for the EOS condition.</p>
+<p>This function blocks until a preroll sample or EOS is received or the appsink
+element is set to the READY/NULL state.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS.</p>
+
+	</td>
+	<td>
+		Gst.Sample*
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink::pull-sample">
+		<h3 id="gstappsinkpullsample">
+	<span><code>GstAppSink::pull-sample</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+Gst.Sample*
+GstAppSink::pull_sample_callback ()</pre>
+
+<p>This function blocks until a sample or EOS becomes available or the appsink
+element is set to the READY/NULL state.</p>
+<p>This function will only return samples when the appsink is in the PLAYING
+state. All rendered samples will be put in a queue so that the application
+can pull samples at its own rate.</p>
+<p>Note that when the application does not pull samples fast enough, the
+queued samples could consume a lot of memory, especially when dealing with
+raw video frames. It's possible to control the behaviour of the queue with
+the "drop" and "max-buffers" properties.</p>
+<p>If an EOS event was received before any buffers, this function returns
+<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>. Use gst_app_sink_is_eos () to check for the EOS condition.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS.</p>
+
+	</td>
+	<td>
+		Gst.Sample*
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="GstAppSink::try-pull-preroll">
+		<h3 id="gstappsinktrypullpreroll">
+	<span><code>GstAppSink::try-pull-preroll</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+Gst.Sample*
+GstAppSink::try_pull_preroll_callback (<a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> timeout)</pre>
+
+<p>Get the last preroll sample in <em>appsink</em>. This was the sample that caused the
+appsink to preroll in the PAUSED state. This sample can be pulled many times
+and remains available to the application even after EOS.</p>
+<p>This function is typically used when dealing with a pipeline in the PAUSED
+state. Calling this function after doing a seek will give the sample right
+after the seek position.</p>
+<p>Note that the preroll sample will also be returned as the first sample
+when calling <a href="gstappsink.html#gst_app_sink_pull_sample">gst_app_sink_pull_sample</a> or the "pull-sample" action signal.</p>
+<p>If an EOS event was received before any buffers or the timeout expires,
+this function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>. Use gst_app_sink_is_eos () to check for the EOS
+condition.</p>
+<p>This function blocks until a preroll sample or EOS is received, the appsink
+element is set to the READY/NULL state, or the timeout expires.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timeout:</code></em></i>
+		</p>
+	</td>
+		<td><p>the maximum amount of time to wait for the preroll sample</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS or the timeout expires.</p>
+
+	</td>
+	<td>
+		Gst.Sample*
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="GstAppSink::try-pull-sample">
+		<h3 id="gstappsinktrypullsample">
+	<span><code>GstAppSink::try-pull-sample</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+Gst.Sample*
+GstAppSink::try_pull_sample_callback (<a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> timeout)</pre>
+
+<p>This function blocks until a sample or EOS becomes available or the appsink
+element is set to the READY/NULL state or the timeout expires.</p>
+<p>This function will only return samples when the appsink is in the PLAYING
+state. All rendered samples will be put in a queue so that the application
+can pull samples at its own rate.</p>
+<p>Note that when the application does not pull samples fast enough, the
+queued samples could consume a lot of memory, especially when dealing with
+raw video frames. It's possible to control the behaviour of the queue with
+the "drop" and "max-buffers" properties.</p>
+<p>If an EOS event was received before any buffers or the timeout expires,
+this function returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>. Use gst_app_sink_is_eos () to check
+for the EOS condition.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timeout:</code></em></i>
+		</p>
+	</td>
+		<td><p>the maximum amount of time to wait for a sample</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS or the timeout expires.</p>
+
+	</td>
+	<td>
+		Gst.Sample*
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+<p>
+	Flags :	
+	
+		
+				<a href="https://developer.gnome.org/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS">Run Last</a>
+			
+</p>
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:buffer-list">
+		<h3 class="method" id="bufferlist">
+	<span><code>buffer-list</code></span>
+</h3>
+
+		<pre class="property_signature">
+“buffer-list” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Use buffer lists</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:caps">
+		<h3 class="method" id="gstappsinkcaps">
+	<span><code>GstAppSink:caps</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSink:caps” <span class="type">Gst.Caps*</span>
+</pre>
+
+<p>The allowed caps for the sink pad</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:drop">
+		<h3 class="method" id="gstappsinkdrop">
+	<span><code>GstAppSink:drop</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSink:drop” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Drop old buffers when the buffer queue is filled</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:emit-signals">
+		<h3 class="method" id="gstappsinkemitsignals">
+	<span><code>GstAppSink:emit-signals</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSink:emit-signals” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Emit new-preroll and new-sample signals</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:eos">
+		<h3 class="method" id="gstappsinkeos1">
+	<span><code>GstAppSink:eos</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSink:eos” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Check if the sink is EOS or not started</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:max-buffers">
+		<h3 class="method" id="gstappsinkmaxbuffers">
+	<span><code>GstAppSink:max-buffers</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSink:max-buffers” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>The maximum number of buffers to queue internally (0 = unlimited)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:wait-on-eos">
+		<h3 class="method" id="gstappsinkwaitoneos">
+	<span><code>GstAppSink:wait-on-eos</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstAppSink:wait-on-eos” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Wait for all buffers to be processed after receiving an EOS</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSinkClass">
+		<h3 id="struct-gstappsinkclass">
+		struct GstAppSinkClass
+	</h3>
+
+		
+<div class="member_details">
+	<h4 id="fields">Fields</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstAppSinkClass.basesink_class">
+		<td>
+		<p>
+		<i><em><code><a title="GstBaseSinkClass" href="../../libgstbase-1.0/c/gstbasesink.html#GstBaseSinkClass">GstBaseSinkClass</a> <em><code>basesink_class</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstAppSinkClass._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Virtual_Methods">Virtual Methods</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:::eos">
+		<h3 id="eos">
+	<span><code>eos</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+eos (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:::new_preroll">
+		<h3 id="new_preroll">
+	<span><code>new_preroll</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+new_preroll (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns17">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:::new_sample">
+		<h3 id="new_sample">
+	<span><code>new_sample</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+new_sample (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns18">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:::pull_preroll">
+		<h3 id="pull_preroll">
+	<span><code>pull_preroll</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+pull_preroll (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters23">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns19">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:::pull_sample">
+		<h3 id="pull_sample">
+	<span><code>pull_sample</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+pull_sample (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns20">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:::try_pull_preroll">
+		<h3 id="try_pull_preroll">
+	<span><code>try_pull_preroll</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+try_pull_preroll (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink,
+                  <a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> timeout)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timeout:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns21">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink:::try_pull_sample">
+		<h3 id="try_pull_sample">
+	<span><code>try_pull_sample</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+try_pull_sample (<a title="GstAppSink" href="gstappsink.html#GstAppSink">GstAppSink</a> * appsink,
+                 <a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> timeout)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>appsink:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timeout:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns22">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstSample" href="../../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSinkCallbacks">
+		<h3 id="struct-gstappsinkcallbacks">
+		struct GstAppSinkCallbacks
+	</h3>
+
+		<p>A set of callbacks that can be installed on the appsink with
+<a href="gstappsink.html#gst_app_sink_set_callbacks">gst_app_sink_set_callbacks</a>.</p>
+
+
+<div class="member_details">
+	<h4 id="fields1">Fields</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstAppSinkCallbacks._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GStreamer Editing Services</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-editing-services-1.0" data-hotdoc-ref="index.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="index.md">
+<h1 id="gstreamer-editing-services">GStreamer Editing Services</h1>
+<p>The "GStreamer Editing Services" is a library to simplify the creation
+of multimedia editing applications. Based on the GStreamer multimedia framework
+and the GNonLin set of plugins, its goals are to suit all types of editing-related
+applications.</p>
+<p>The GStreamer Editing Services are cross-platform and work on most UNIX-like
+platform as well as Windows. It is released under the GNU Library General Public License
+(GNU LGPL).</p>
+<h2 id="goals-of-gstreamer-editing-services">Goals of GStreamer Editing Services</h2>
+<p>The GStreamer multimedia framework and the accompanying GNonLin set of
+plugins for non-linear editing offer all the building blocks for:</p>
+<ul>
+<li>
+<p>Decoding and encoding to a wide variety of formats, through all the
+available GStreamer plugins.</p>
+</li>
+<li>
+<p>Easily choosing segments of streams and arranging them through time
+through the GNonLin set of plugins.</p>
+</li>
+</ul>
+<p>But all those building blocks only offer stream-level access, which
+results in developers who want to write non-linear editors to write a
+consequent amount of code to get to the level of <em>non-linear editing</em>
+notions which are closer and more meaningful for the end-user (and
+therefore the application).</p>
+<p>The GStreamer Editing Services (hereafter GES) aims to fill the gap
+between GStreamer/GNonLin and the application developer by offering a
+series of classes to simplify the creation of many kind of
+editing-related applications.</p>
+<h2 id="architecture">Architecture</h2>
+<h3 id="timeline-and-timelinepipeline">Timeline and TimelinePipeline</h3>
+<p>The most top-level object encapsulating every other object is the
+<a href="ges-timeline.html#GESTimeline">GESTimeline</a>. It is the central object for any editing project.</p>
+<p>The <code>GESTimeline</code> is a <code>GstElement</code>. It can therefore be used in any
+GStreamer pipeline like any other object.</p>
+<h3 id="tracks-and-layers">Tracks and Layers</h3>
+<p>The GESTimeline can contain two types of objects (seen in
+"Layers and Tracks"):</p>
+<ul>
+<li>
+<p>Layers - Corresponds to the user-visible arrangement of clips, and
+what you primarily interact with as an application developer. A
+minimalistic timeline would only have one layer, but a more complex
+editing application could use as many as needed.</p>
+</li>
+<li>
+<p>Tracks - Corresponds to the output streams in GStreamer. A typical
+GESTimeline, aimed at a video editing application, would have an
+audio track and a video track. A GESTimeline for an audio editing
+application would only require an audio track. Multiple layers can
+be related to each track.</p>
+</li>
+</ul>
+<p><img src="images/layer_track_overview.png" alt="Layers and Tracks" id="layers-and-tracks"></p>
+<p>In order to reduce even more the amount of GStreamer interaction the
+application developer has to deal with, a convenience GstPipeline has
+been made available specifically for Timelines : <a href="ges-pipeline.html#GESPipeline">GESPipeline</a>.</p>
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Scenarios</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="core" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-devtools-1.0" data-hotdoc-ref="gst-validate-scenarios.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gst-validate-scenarios.md">
+<h1 id="gstvalidate-scenario-file-format">GstValidate Scenario File Format</h1>
+<p>To be able to define a list of actions to execute on a <a href="../libgstreamer-1.0/c/gstpipeline.html#GstPipeline"><code>GstPipeline</code></a>,
+a dedicated file format is used. The name of the scenario is the name of
+the file without its <code>.scenario</code> extension. The scenario file format is
+based on the <a href="../libgstreamer-1.0/c/gststructure.html#GstStructure"><code>GstStructure</code></a> serialized format which is a basic, type
+aware, key value format. It takes the type of the action in the first
+comma separated field, and then some key value pairs in the form
+<code>parameter=value</code> separated by commas. The values type will be guessed
+if not casted as in <code>parameter=(string)value</code>. You can force the type
+guessing system to actually know what type you want by giving it the
+right hints. For example to make sure the value is a double, you should
+add a decimal (ie. <code>1</code> will be considered as a <code>int</code>, but <code>1.0</code> will be
+considered as a <code>double</code> and <code>"1.0"</code> will be considered as a <code>string</code>).</p>
+<p>For example to represent a seek action, you should add the following
+line in the <code>.scenario</code> file.</p>
+<pre><code>seek, playback-time=10.0, start=0.0, flags=accurate+flush
+</code></pre>
+<p>The files to be used as scenario should have a <code>.scenario</code> extension and
+should be placed either in
+<code>$USER_DATA_DIR/gstreamer-1.0/validate/scenarios</code> ,
+<code>$GST_DATADIR/gstreamer-1.0/validate/scenarios</code> or in a path defined in
+the $GST_VALIDATE_SCENARIOS_PATH environment variable.</p>
+<p>Each line in the <code>.scenario</code> file represent an action (you can also use
+<code>\</code> at the end of a line write a single action on multiple lines).
+Usually you should start you scenario with a <code>description</code> "config"
+action in order for the user to have more information about the
+scenario. It can contain a <code>summary</code> field which is a string explaining
+what the scenario does and then several info fields about the scenario.
+You can find more info about it running:</p>
+<pre><code>gst-validate-1.0 --inspect-action-type action_type_name
+</code></pre>
+<p>So a basic scenario file that will seek three times and stop would look
+like:</p>
+<pre><code>description, summary="Seeks at 1.0 to 2.0 then at \
+3.0 to 0.0 and then seeks at \
+1.0 to 2.0 for 1.0 second (between 2.0 and 3.0).", \
+seek=true, duration=5.0, min-media-duration=4.0
+seek, playback-time=1.0, rate=1.0, start=2.0, flags=accurate+flush
+seek, playback-time=3.0, rate=1.0, start=0.0, flags=accurate+flush
+seek, playback-time=1.0, rate=1.0, start=2.0, stop=3.0, flags=accurate+flush
+</code></pre>
+<p>Many action types have been implemented to help users define their own
+scenarios. For example there are:</p>
+<ul>
+<li><code>seek</code>: Seeks into the stream.</li>
+<li><code>play</code>: Set the pipeline state to <code>GST_STATE_PLAYING</code>.</li>
+<li><code>pause</code>: Set the pipeline state to <code>GST_STATE_PAUSED</code>.</li>
+<li><code>stop</code>: Stop the execution of the pipeline.</li>
+</ul>
+<blockquote>
+<p><strong>NOTE</strong>: This action actually posts a <a href="../libgstreamer-1.0/c/gstmessage.html#GST_MESSAGE_REQUEST_STATE"><code>GST_MESSAGE_REQUEST_STATE</code></a>
+message requesting <a href="../libgstreamer-1.0/c/gstelement.html#GST_STATE_NULL"><code>GST_STATE_NULL</code></a> on the bus and the application
+should quit.</p>
+</blockquote>
+<p>To get all the details about the registered action types, you can list
+them all with:</p>
+<pre><code>gst-validate-1.0 --inspect-action-type
+</code></pre>
+<p>and to include transcoding specific action types:</p>
+<pre><code>gst-validate-transcoding-1.0 --inspect-action-type
+</code></pre>
+<p>Many scenarios are distributed with <code>gst-validate</code>, you can list them
+all using:</p>
+<pre><code>gst-validate-1.0 --list-scenarios
+</code></pre>
+<p>You can find more information about the scenario implementation and
+action types in the <a href="c/gst-validate-scenario.html#GstValidateScenario"><code>GstValidateScenario</code> section</a>.</p>
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,0 +1,3701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstBaseTransform</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="libgstbase-1.0" data-hotdoc-ref="gstbasetransform.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstbasetransform.h">
+<h1 id="gstbasetransform">GstBaseTransform</h1><p>This base class is for filter elements that process data. Elements
+that are suitable for implementation using <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> are ones
+where the size and caps of the output is known entirely from the input
+caps and buffer sizes. These include elements that directly transform
+one buffer into another, modify the contents of a buffer in-place, as
+well as elements that collate multiple input buffers into one output buffer,
+or that expand one input buffer into multiple output buffers. See below
+for more concrete use cases.</p>
+<p>It provides for:</p>
+<ul>
+<li>
+<p>one sinkpad and one srcpad</p>
+</li>
+<li>
+<p>Possible formats on sink and source pad implemented
+with custom transform_caps function. By default uses
+same format on sink and source.</p>
+</li>
+<li>
+<p>Handles state changes</p>
+</li>
+<li>
+<p>Does flushing</p>
+</li>
+<li>
+<p>Push mode</p>
+</li>
+<li>
+<p>Pull mode if the sub-class transform can operate on arbitrary data</p>
+</li>
+</ul>
+<h1 id="use-cases">Use Cases</h1>
+<h2 id="passthrough-mode">Passthrough mode</h2>
+<ul>
+<li>
+<p>Element has no interest in modifying the buffer. It may want to inspect it,
+in which case the element should have a transform_ip function. If there
+is no transform_ip function in passthrough mode, the buffer is pushed
+intact.</p>
+</li>
+<li>
+<p>The <a href="gstbasetransform.html#GstBaseTransformClass.passthrough_on_same_caps">GstBaseTransformClass.passthrough_on_same_caps</a> variable
+will automatically set/unset passthrough based on whether the
+element negotiates the same caps on both pads.</p>
+</li>
+<li>
+<p><a href="gstbasetransform.html#GstBaseTransformClass.passthrough_on_same_caps">GstBaseTransformClass.passthrough_on_same_caps</a> on an element that
+doesn't implement a transform_caps function is useful for elements that
+only inspect data (such as level)</p>
+</li>
+<li>
+<p>Example elements</p>
+<ul>
+<li>Level</li>
+<li>Videoscale, audioconvert, videoconvert, audioresample in certain modes.</li>
+</ul>
+</li>
+</ul>
+<h2 id="modifications-inplace-input-buffer-and-output-buffer-are-the-same-thing">Modifications in-place - input buffer and output buffer are the same thing.</h2>
+<ul>
+<li>
+<p>The element must implement a transform_ip function.</p>
+</li>
+<li>
+<p>Output buffer size must &lt;= input buffer size</p>
+</li>
+<li>
+<p>If the always_in_place flag is set, non-writable buffers will be copied
+and passed to the transform_ip function, otherwise a new buffer will be
+created and the transform function called.</p>
+</li>
+<li>
+<p>Incoming writable buffers will be passed to the transform_ip function
+immediately.</p>
+</li>
+<li>
+<p>only implementing transform_ip and not transform implies always_in_place = <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a></p>
+<ul>
+<li>Example elements:
+<ul>
+<li>Volume</li>
+<li>Audioconvert in certain modes (signed/unsigned conversion)</li>
+<li>videoconvert in certain modes (endianness swapping)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="modifications-only-to-the-capsmetadata-of-a-buffer">Modifications only to the caps/metadata of a buffer</h2>
+<ul>
+<li>
+<p>The element does not require writable data, but non-writable buffers
+should be subbuffered so that the meta-information can be replaced.</p>
+</li>
+<li>
+<p>Elements wishing to operate in this mode should replace the
+prepare_output_buffer method to create subbuffers of the input buffer
+and set always_in_place to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a></p>
+</li>
+<li>
+<p>Example elements</p>
+<ul>
+<li>Capsfilter when setting caps on outgoing buffers that have
+none.</li>
+<li>identity when it is going to re-timestamp buffers by
+datarate.</li>
+</ul>
+</li>
+</ul>
+<h2 id="normal-mode">Normal mode</h2>
+<ul>
+<li>always_in_place flag is not set, or there is no transform_ip function</li>
+<li>Element will receive an input buffer and output buffer to operate on.</li>
+<li>Output buffer is allocated by calling the prepare_output_buffer function.</li>
+<li>Example elements:
+<ul>
+<li>Videoscale, videoconvert, audioconvert when doing
+scaling/conversions</li>
+</ul>
+</li>
+</ul>
+<h2 id="special-output-buffer-allocations">Special output buffer allocations</h2>
+<ul>
+<li>
+<p>Elements which need to do special allocation of their output buffers
+beyond allocating output buffers via the negotiated allocator or
+buffer pool should implement the prepare_output_buffer method.</p>
+</li>
+<li>
+<p>Example elements:</p>
+<ul>
+<li>efence</li>
+</ul>
+</li>
+</ul>
+<h1 id="subclass-settable-flags-on-gstbasetransform">Sub-class settable flags on GstBaseTransform</h1>
+<ul>
+<li>
+<p>passthrough</p>
+<ul>
+<li>Implies that in the current configuration, the sub-class is not interested in modifying the buffers.</li>
+<li>Elements which are always in passthrough mode whenever the same caps has been negotiated on both pads can set the class variable passthrough_on_same_caps to have this behaviour automatically.</li>
+</ul>
+</li>
+<li>
+<p>always_in_place</p>
+<ul>
+<li>
+<p>Determines whether a non-writable buffer will be copied before passing
+to the transform_ip function.</p>
+</li>
+<li>
+<p>Implied <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if no transform function is implemented.</p>
+</li>
+<li>
+<p>Implied <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> if ONLY transform function is implemented.</p>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform">
+		<h3 id="gstbasetransform1">
+	GstBaseTransform
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="../../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../../libgstreamer-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span>GstBaseTransform
+</pre>
+
+</div>
+
+</div>
+
+<div class="class_details">
+	<p>The opaque <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> data structure.</p>
+
+</div>
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstBaseTransform.element">
+		<td>
+		<p>
+		<i><em><code><a title="GstElement" href="../../libgstreamer-1.0/c/gstelement.html#GstElement">GstElement</a> <em><code>element</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstBaseTransform.sinkpad">
+		<td>
+		<p>
+		<i><em><code><a title="GstPad" href="../../libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * <em><code>sinkpad</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstBaseTransform.srcpad">
+		<td>
+		<p>
+		<i><em><code><a title="GstPad" href="../../libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * <em><code>srcpad</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstBaseTransform.have_segment">
+		<td>
+		<p>
+		<i><em><code><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> <em><code>have_segment</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstBaseTransform.segment">
+		<td>
+		<p>
+		<i><em><code><a title="GstSegment" href="../../libgstreamer-1.0/c/gstsegment.html#GstSegment">GstSegment</a> <em><code>segment</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstBaseTransform.queued_buf">
+		<td>
+		<p>
+		<i><em><code><a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * <em><code>queued_buf</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstBaseTransform.priv">
+		<td>
+		<p>
+		<i><em><code>GstBaseTransformPrivate* <em><code>priv</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstBaseTransform._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_get_allocator">
+		<h3 id="gst_base_transform_get_allocator1">
+	<span><code>gst_base_transform_get_allocator</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_base_transform_get_allocator (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                                  <a title="GstAllocator" href="../../libgstreamer-1.0/c/gstallocator.html#GstAllocator">GstAllocator</a> ** allocator,
+                                  <a title="GstAllocationParams" href="../../libgstreamer-1.0/c/gstallocator.html#GstAllocationParams">GstAllocationParams</a> * params)</pre>
+
+<p>Lets <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> sub-classes to know the memory <em>allocator</em>
+used by the base class and its <em>params</em>.</p>
+<p>Unref the <em>allocator</em> after use it.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>allocator:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="../../libgstreamer-1.0/c/gstallocator.html#GstAllocator">GstAllocator</a>
+used</p>
+</td>
+<td>
+
+<span class="annotation">[<abbr title="Parameter for returning results"><span class="acronym">out</span></abbr>]</span>
+<span class="annotation">[<abbr title="NULL is OK, both for passing and returning"><span class="acronym">allow-none</span></abbr>]</span>
+<span class="annotation">[<abbr title="Free data after the code is done"><span class="acronym">transfer: full</span></abbr>]</span>
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>params:</code></em></i>
+		</p>
+	</td>
+		<td><p>the
+<a href="../../libgstreamer-1.0/c/gstallocator.html#GstAllocationParams">GstAllocationParams</a> of <em>allocator</em></p>
+</td>
+<td>
+
+<span class="annotation">[<abbr title="Parameter for returning results"><span class="acronym">out</span></abbr>]</span>
+<span class="annotation">[<abbr title="NULL is OK, both for passing and returning"><span class="acronym">allow-none</span></abbr>]</span>
+<span class="annotation">[<abbr title="Free data after the code is done"><span class="acronym">transfer: full</span></abbr>]</span>
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_get_buffer_pool">
+		<h3 id="gst_base_transform_get_buffer_pool1">
+	<span><code>gst_base_transform_get_buffer_pool</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstBufferPool" href="../../libgstreamer-1.0/c/gstbufferpool.html#GstBufferPool">GstBufferPool</a> *
+gst_base_transform_get_buffer_pool (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the instance of the <a href="../../libgstreamer-1.0/c/gstbufferpool.html#GstBufferPool">GstBufferPool</a> used
+by <em>trans</em>; free it after use it</p>
+
+	</td>
+	<td>
+		<a title="GstBufferPool" href="../../libgstreamer-1.0/c/gstbufferpool.html#GstBufferPool">GstBufferPool</a> *
+	</td>
+				<td>
+	
+<span class="annotation">[<abbr title="Free data after the code is done"><span class="acronym">transfer: full</span></abbr>]</span>
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_is_in_place">
+		<h3 id="gst_base_transform_is_in_place1">
+	<span><code>gst_base_transform_is_in_place</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_base_transform_is_in_place (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans)</pre>
+
+<p>See if <em>trans</em> is configured as a in_place transform.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> to query</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> is the transform is configured in in_place mode.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_is_passthrough">
+		<h3 id="gst_base_transform_is_passthrough1">
+	<span><code>gst_base_transform_is_passthrough</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_base_transform_is_passthrough (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans)</pre>
+
+<p>See if <em>trans</em> is configured as a passthrough transform.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> to query</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> is the transform is configured in passthrough mode.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_is_qos_enabled">
+		<h3 id="gst_base_transform_is_qos_enabled1">
+	<span><code>gst_base_transform_is_qos_enabled</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_base_transform_is_qos_enabled (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans)</pre>
+
+<p>Queries if the transform will handle QoS.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if QoS is enabled.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_reconfigure_sink">
+		<h3 id="gst_base_transform_reconfigure_sink1">
+	<span><code>gst_base_transform_reconfigure_sink</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_base_transform_reconfigure_sink (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans)</pre>
+
+<p>Instructs <em>trans</em> to request renegotiation upstream. This function is
+typically called after properties on the transform were set that
+influence the input format.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_reconfigure_src">
+		<h3 id="gst_base_transform_reconfigure_src1">
+	<span><code>gst_base_transform_reconfigure_src</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_base_transform_reconfigure_src (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans)</pre>
+
+<p>Instructs <em>trans</em> to renegotiate a new downstream transform on the next
+buffer. This function is typically called after properties on the transform
+were set that influence the output format.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_set_gap_aware">
+		<h3 id="gst_base_transform_set_gap_aware1">
+	<span><code>gst_base_transform_set_gap_aware</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_base_transform_set_gap_aware (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                                  <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> gap_aware)</pre>
+
+<p>If <em>gap_aware</em> is <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> (the default), output buffers will have the
+<a href="../../libgstreamer-1.0/c/gstbuffer.html#GST_BUFFER_FLAG_GAP">GST_BUFFER_FLAG_GAP</a> flag unset.</p>
+<p>If set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>, the element must handle output buffers with this flag set
+correctly, i.e. it can assume that the buffer contains neutral data but must
+unset the flag if the output is no neutral data.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>gap_aware:</code></em></i>
+		</p>
+	</td>
+		<td><p>New state</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_set_in_place">
+		<h3 id="gst_base_transform_set_in_place1">
+	<span><code>gst_base_transform_set_in_place</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_base_transform_set_in_place (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                                 <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> in_place)</pre>
+
+<p>Determines whether a non-writable buffer will be copied before passing
+to the transform_ip function.</p>
+<ul>
+<li>Always <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if no transform function is implemented.</li>
+<li>Always <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> if ONLY transform function is implemented.</li>
+</ul>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> to modify</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>in_place:</code></em></i>
+		</p>
+	</td>
+		<td><p>Boolean value indicating that we would like to operate
+on in_place buffers.</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_set_passthrough">
+		<h3 id="gst_base_transform_set_passthrough1">
+	<span><code>gst_base_transform_set_passthrough</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_base_transform_set_passthrough (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                                    <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> passthrough)</pre>
+
+<p>Set passthrough mode for this filter by default. This is mostly
+useful for filters that do not care about negotiation.</p>
+<p>Always <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> for filters which don't implement either a transform
+or transform_ip method.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> to set</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>passthrough:</code></em></i>
+		</p>
+	</td>
+		<td><p>boolean indicating passthrough mode.</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.0.1;" id="gst_base_transform_set_prefer_passthrough">
+		<h3 id="gst_base_transform_set_prefer_passthrough1">
+	<span><code>gst_base_transform_set_prefer_passthrough</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_base_transform_set_prefer_passthrough (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                                           <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> prefer_passthrough)</pre>
+
+<p>If <em>prefer_passthrough</em> is <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> (the default), <em>trans</em> will check and
+prefer passthrough caps from the list of caps returned by the
+transform_caps vmethod.</p>
+<p>If set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>, the element must order the caps returned from the
+transform_caps function in such a way that the preferred format is
+first in the list. This can be interesting for transforms that can do
+passthrough transforms but prefer to do something else, like a
+capsfilter.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>prefer_passthrough:</code></em></i>
+		</p>
+	</td>
+		<td><p>New state</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.0.1
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_set_qos_enabled">
+		<h3 id="gst_base_transform_set_qos_enabled1">
+	<span><code>gst_base_transform_set_qos_enabled</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_base_transform_set_qos_enabled (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                                    <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> enabled)</pre>
+
+<p>Enable or disable QoS handling in the transform.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>enabled:</code></em></i>
+		</p>
+	</td>
+		<td><p>new state</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_transform_update_qos">
+		<h3 id="gst_base_transform_update_qos1">
+	<span><code>gst_base_transform_update_qos</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+gst_base_transform_update_qos (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                               <a title="gdouble" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a> proportion,
+                               <a title="GstClockTimeDiff" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> diff,
+                               <a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> timestamp)</pre>
+
+<p>Set the QoS parameters in the transform. This function is called internally
+when a QOS event is received but subclasses can provide custom information
+when needed.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>proportion:</code></em></i>
+		</p>
+	</td>
+		<td><p>the proportion</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>diff:</code></em></i>
+		</p>
+	</td>
+		<td><p>the diff against the clock</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timestamp:</code></em></i>
+		</p>
+	</td>
+		<td><p>the timestamp of the buffer generating the QoS expressed in
+running_time.</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_base_transform_update_src_caps">
+		<h3 id="gst_base_transform_update_src_caps1">
+	<span><code>gst_base_transform_update_src_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+gst_base_transform_update_src_caps (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                                    <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * updated_caps)</pre>
+
+<p>Updates the srcpad caps and send the caps downstream. This function
+can be used by subclasses when they have already negotiated their caps
+but found a change in them (or computed new informations). This way,
+they can notify downstream about that change without loosing any
+buffer.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a></p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>updated_caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>An updated version of the srcpad caps to be pushed
+downstream</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the caps could be send downstream <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwise</p>
+
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:qos">
+		<h3 class="method" id="gstbasetransformqos">
+	<span><code>GstBaseTransform:qos</code></span>
+</h3>
+
+		<pre class="property_signature">
+“GstBaseTransform:qos” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransformClass">
+		<h3 id="struct-gstbasetransformclass">
+		struct GstBaseTransformClass
+	</h3>
+
+		<p>Subclasses can override any of the available virtual methods or not, as
+needed. At minimum either <em>transform</em> or <em>transform_ip</em> need to be overridden.
+If the element can overwrite the input data with the results (data is of the
+same type and quantity) it should provide <em>transform_ip</em>.</p>
+
+
+<div class="member_details">
+	<h4 id="fields">Fields</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstBaseTransformClass.parent_class">
+		<td>
+		<p>
+		<i><em><code><a title="GstElementClass" href="../../libgstreamer-1.0/c/gstelement.html#GstElementClass">GstElementClass</a> <em><code>parent_class</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>Element parent class</p>
+</td>
+</tr>
+
+						<tr id="GstBaseTransformClass.passthrough_on_same_caps">
+		<td>
+		<p>
+		<i><em><code><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> <em><code>passthrough_on_same_caps</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>If set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>, passthrough mode will be
+automatically enabled if the caps are the same.
+Set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> by default.</p>
+</td>
+</tr>
+
+						<tr id="GstBaseTransformClass.transform_ip_on_passthrough">
+		<td>
+		<p>
+		<i><em><code><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> <em><code>transform_ip_on_passthrough</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>If set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>, <em>transform_ip</em> will be called in
+passthrough mode. The passed buffer might not be
+writable. When <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a>, neither <em>transform</em> nor
+<em>transform_ip</em> will be called in passthrough mode.
+Set to <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> by default.</p>
+</td>
+</tr>
+
+						<tr id="GstBaseTransformClass._gst_reserved">
+		<td>
+		<p>
+		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Virtual_Methods">Virtual Methods</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::accept_caps">
+		<h3 id="accept_caps">
+	<span><code>accept_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+accept_caps (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+             <a title="GstPadDirection" href="../../libgstreamer-1.0/c/gstpad.html#GstPadDirection">GstPadDirection</a> direction,
+             <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>direction:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::before_transform">
+		<h3 id="before_transform">
+	<span><code>before_transform</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+before_transform (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                  <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::copy_metadata">
+		<h3 id="copy_metadata">
+	<span><code>copy_metadata</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+copy_metadata (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+               <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * input,
+               <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * outbuf)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>input:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>outbuf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::decide_allocation">
+		<h3 id="decide_allocation">
+	<span><code>decide_allocation</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+decide_allocation (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                   <a title="GstQuery" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::filter_meta">
+		<h3 id="filter_meta">
+	<span><code>filter_meta</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+filter_meta (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+             <a title="GstQuery" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query,
+             <a title="GType" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GType</a> api,
+             const <a title="GstStructure" href="../../libgstreamer-1.0/c/gststructure.html#GstStructure">GstStructure</a> * params)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>api:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>params:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::fixate_caps">
+		<h3 id="fixate_caps">
+	<span><code>fixate_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+fixate_caps (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+             <a title="GstPadDirection" href="../../libgstreamer-1.0/c/gstpad.html#GstPadDirection">GstPadDirection</a> direction,
+             <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps,
+             <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * othercaps)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>direction:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>othercaps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::generate_output">
+		<h3 id="generate_output">
+	<span><code>generate_output</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+generate_output (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                 <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> ** outbuf)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>outbuf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::get_unit_size">
+		<h3 id="get_unit_size">
+	<span><code>get_unit_size</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+get_unit_size (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+               <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps,
+               <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> * size)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::prepare_output_buffer">
+		<h3 id="prepare_output_buffer">
+	<span><code>prepare_output_buffer</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+prepare_output_buffer (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                       <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * input,
+                       <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> ** outbuf)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>input:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>outbuf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::propose_allocation">
+		<h3 id="propose_allocation">
+	<span><code>propose_allocation</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+propose_allocation (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                    <a title="GstQuery" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * decide_query,
+                    <a title="GstQuery" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters23">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>decide_query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::query">
+		<h3 id="query">
+	<span><code>query</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+query (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+       <a title="GstPadDirection" href="../../libgstreamer-1.0/c/gstpad.html#GstPadDirection">GstPadDirection</a> direction,
+       <a title="GstQuery" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>direction:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::set_caps">
+		<h3 id="set_caps">
+	<span><code>set_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+set_caps (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+          <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * incaps,
+          <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * outcaps)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>incaps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>outcaps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::sink_event">
+		<h3 id="sink_event">
+	<span><code>sink_event</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+sink_event (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+            <a title="GstEvent" href="../../libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::src_event">
+		<h3 id="src_event">
+	<span><code>src_event</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+src_event (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+           <a title="GstEvent" href="../../libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters27">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns17">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::start">
+		<h3 id="start">
+	<span><code>start</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+start (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters28">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns18">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::stop">
+		<h3 id="stop">
+	<span><code>stop</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+stop (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters29">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns19">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::submit_input_buffer">
+		<h3 id="submit_input_buffer">
+	<span><code>submit_input_buffer</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+submit_input_buffer (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                     <a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a> is_discont,
+                     <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * input)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters30">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>is_discont:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>input:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns20">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::transform">
+		<h3 id="transform">
+	<span><code>transform</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+transform (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+           <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * inbuf,
+           <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * outbuf)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters31">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>inbuf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>outbuf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns21">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::transform_caps">
+		<h3 id="transform_caps">
+	<span><code>transform_caps</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+transform_caps (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                <a title="GstPadDirection" href="../../libgstreamer-1.0/c/gstpad.html#GstPadDirection">GstPadDirection</a> direction,
+                <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps,
+                <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * filter)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters32">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>direction:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>filter:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns22">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::transform_ip">
+		<h3 id="transform_ip">
+	<span><code>transform_ip</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+transform_ip (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+              <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buf)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters33">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>buf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns23">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::transform_meta">
+		<h3 id="transform_meta">
+	<span><code>transform_meta</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+transform_meta (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * outbuf,
+                <a title="GstMeta" href="../../libgstreamer-1.0/c/gstmeta.html#GstMeta">GstMeta</a> * meta,
+                <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * inbuf)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters34">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>outbuf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>meta:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>inbuf:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns24">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseTransform:::transform_size">
+		<h3 id="transform_size">
+	<span><code>transform_size</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+transform_size (<a title="GstBaseTransform" href="gstbasetransform.html#GstBaseTransform">GstBaseTransform</a> * trans,
+                <a title="GstPadDirection" href="../../libgstreamer-1.0/c/gstpad.html#GstPadDirection">GstPadDirection</a> direction,
+                <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps,
+                <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> size,
+                <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * othercaps,
+                <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> * othersize)</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters35">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>trans:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>direction:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>othercaps:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>othersize:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns25">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a>
+	</td>
+				<td>
+	
+
+	</td>
+		</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Function_Macros">Function Macros</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_BASE_TRANSFORM_CAST">
+		<h3 id="gst_base_transform_cast">
+	<span><code>GST_BASE_TRANSFORM_CAST</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_BASE_TRANSFORM_CAST(obj)	((GstBaseTransform *)(obj))
+</pre>
+
+
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_BASE_TRANSFORM_SRC_PAD">
+		<h3 id="gst_base_transform_src_pad">
+	<span><code>GST_BASE_TRANSFORM_SRC_PAD</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_BASE_TRANSFORM_SRC_PAD(obj)		(GST_BASE_TRANSFORM_CAST (obj)-&gt;srcpad)
+</pre>
+
+<p>Gives the pointer to the source <a href="../../libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> object of the element.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters36">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>obj:</code></em></i>
+		</p>
+	</td>
+		<td><p>base transform instance</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_BASE_TRANSFORM_SINK_PAD">
+		<h3 id="gst_base_transform_sink_pad">
+	<span><code>GST_BASE_TRANSFORM_SINK_PAD</code></span>
+</h3>
+
+		<pre class="raw_code">
+#define GST_BASE_TRANSFORM_SINK_PAD(obj)	(GST_BASE_TRANSFORM_CAST (obj)-&gt;sinkpad)
+</pre>
+
+<p>Gives the pointer to the sink <a href="../../libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> object of the element.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters37">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>obj:</code></em></i>
+		</p>
+	</td>
+		<td><p>base transform instance</p>
+</td>
+<td>
+
+
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_BASE_TRANSFORM_SINK_NAME">
+		<h3 class="constant" id="gst_base_transform_sink_name">
+	GST_BASE_TRANSFORM_SINK_NAME
+</h3>
+
+		<pre class="raw_code">
+#define GST_BASE_TRANSFORM_SINK_NAME	"sink"
+</pre>
+
+<p>The name of the templates for the sink pad.</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_BASE_TRANSFORM_SRC_NAME">
+		<h3 class="constant" id="gst_base_transform_src_name">
+	GST_BASE_TRANSFORM_SRC_NAME
+</h3>
+
+		<pre class="raw_code">
+#define GST_BASE_TRANSFORM_SRC_NAME	"src"
+</pre>
+
+<p>The name of the templates for the source pad.</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_BASE_TRANSFORM_FLOW_DROPPED">
+		<h3 class="constant" id="gst_base_transform_flow_dropped">
+	GST_BASE_TRANSFORM_FLOW_DROPPED
+</h3>
+
+		<pre class="raw_code">
+#define GST_BASE_TRANSFORM_FLOW_DROPPED   GST_FLOW_CUSTOM_SUCCESS
+</pre>
+
+<p>A <a href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a> that can be returned from transform and transform_ip to
+indicate that no output buffer was generated.</p>
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

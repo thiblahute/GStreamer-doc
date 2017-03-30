@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstTestClock</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="libgstcheck-1.0" data-hotdoc-ref="gsttestclock.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="python">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gsttestclock.h">
+<h1 id="gsttestclock">GstTestClock</h1><p>GstTestClock is an implementation of <a href="../../libgstreamer-1.0/c/gstclock.html#GstClock">Gst.Clock</a> which has different
+behaviour compared to <a href="../../libgstreamer-1.0/c/gstsystemclock.html#GstSystemClock">Gst.SystemClock</a>. Time for <a href="../../libgstreamer-1.0/c/gstsystemclock.html#GstSystemClock">Gst.SystemClock</a> advances
+according to the system time, while time for <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> changes only
+when <a href="gsttestclock.html#gst_test_clock_set_time">GstCheck.TestClock.set_time</a> or <a href="gsttestclock.html#gst_test_clock_advance_time">GstCheck.TestClock.advance_time</a> are
+called. <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> provides unit tests with the possibility to
+precisely advance the time in a deterministic manner, independent of the
+system time or any other external factors.</p>
+<h2 id="advancing-the-time-of-a-gstchecktestclock">Advancing the time of a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a></h2>
+<pre><code class="language-[&lt;!--">   #include &lt;gst/gst.h&gt;
+   #include &lt;gst/check/gsttestclock.h&gt;
+
+   GstClock *clock;
+   GstTestClock *test_clock;
+
+   clock = gst_test_clock_new ();
+   test_clock = GST_TEST_CLOCK (clock);
+   GST_INFO ("Time: %" GST_TIME_FORMAT, GST_TIME_ARGS (gst_clock_get_time (clock)));
+   gst_test_clock_advance_time ( test_clock, 1 * GST_SECOND);
+   GST_INFO ("Time: %" GST_TIME_FORMAT, GST_TIME_ARGS (gst_clock_get_time (clock)));
+   g_usleep (10 * G_USEC_PER_SEC);
+   GST_INFO ("Time: %" GST_TIME_FORMAT, GST_TIME_ARGS (gst_clock_get_time (clock)));
+   gst_test_clock_set_time (test_clock, 42 * GST_SECOND);
+   GST_INFO ("Time: %" GST_TIME_FORMAT, GST_TIME_ARGS (gst_clock_get_time (clock)));
+   ...
+</code></pre>
+<p><a href="../../libgstreamer-1.0/c/gstclock.html#GstClock">Gst.Clock</a> allows for setting up single shot or periodic clock notifications
+as well as waiting for these notifications synchronously (using
+<a href="../../libgstreamer-1.0/c/gstclock.html#gst_clock_id_wait">Gst.Clock.id_wait</a>) or asynchronously (using <a href="../../libgstreamer-1.0/c/gstclock.html#gst_clock_id_wait_async">Gst.Clock.id_wait_async</a> or
+<a href="../../libgstreamer-1.0/c/gstclock.html#gst_clock_id_wait_async">Gst.Clock.id_wait_async</a>). This is used by many GStreamer elements,
+among them <a href="../../libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc (not introspectable)</a> and <a href="../../libgstbase-1.0/c/gstbasesink.html#GstBaseSink">GstBaseSink (not introspectable)</a>.</p>
+<p><a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> keeps track of these clock notifications. By calling
+<a href="gsttestclock.html#gst_test_clock_wait_for_next_pending_id">GstCheck.TestClock.wait_for_next_pending_id</a> or
+<a href="gsttestclock.html#gst_test_clock_wait_for_multiple_pending_ids">GstCheck.TestClock.wait_for_multiple_pending_ids</a> a unit tests may wait for the
+next one or several clock notifications to be requested. Additionally unit
+tests may release blocked waits in a controlled fashion by calling
+<a href="gsttestclock.html#gst_test_clock_process_next_clock_id">GstCheck.TestClock.process_next_clock_id</a>. This way a unit test can control the
+inaccuracy (jitter) of clock notifications, since the test can decide to
+release blocked waits when the clock time has advanced exactly to, or past,
+the requested clock notification time.</p>
+<p>There are also interfaces for determining if a notification belongs to a
+<a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> or not, as well as getting the number of requested clock
+notifications so far.</p>
+<p>N.B.: When a unit test waits for a certain amount of clock notifications to
+be requested in <a href="gsttestclock.html#gst_test_clock_wait_for_next_pending_id">GstCheck.TestClock.wait_for_next_pending_id</a> or
+<a href="gsttestclock.html#gst_test_clock_wait_for_multiple_pending_ids">GstCheck.TestClock.wait_for_multiple_pending_ids</a> then these functions may block
+for a long time. If they block forever then the expected clock notifications
+were never requested from <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>, and so the assumptions in the code
+of the unit test are wrong. The unit test case runner in gstcheck is
+expected to catch these cases either by the default test case timeout or the
+one set for the unit test by calling tcase_set_timeout().</p>
+<p>The sample code below assumes that the element under test will delay a
+buffer pushed on the source pad by some latency until it arrives on the sink
+pad. Moreover it is assumed that the element will at some point call
+<a href="../../libgstreamer-1.0/c/gstclock.html#gst_clock_id_wait">Gst.Clock.id_wait</a> to synchronously wait for a specific time. The first
+buffer sent will arrive exactly on time only delayed by the latency. The
+second buffer will arrive a little late (7ms) due to simulated jitter in the
+clock notification.</p>
+<h2 id="demonstration-of-how-to-work-with-clock-notifications-and-gstchecktestclock">Demonstration of how to work with clock notifications and <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a></h2>
+<pre><code class="language-[&lt;!--">   #include &lt;gst/gst.h&gt;
+   #include &lt;gst/check/gstcheck.h&gt;
+   #include &lt;gst/check/gsttestclock.h&gt;
+
+   GstClockTime latency;
+   GstElement *element;
+   GstPad *srcpad;
+   GstClock *clock;
+   GstTestClock *test_clock;
+   GstBuffer buf;
+   GstClockID pending_id;
+   GstClockID processed_id;
+
+   latency = 42 * GST_MSECOND;
+   element = create_element (latency, ...);
+   srcpad = get_source_pad (element);
+
+   clock = gst_test_clock_new ();
+   test_clock = GST_TEST_CLOCK (clock);
+   gst_element_set_clock (element, clock);
+
+   GST_INFO ("Set time, create and push the first buffer\n");
+   gst_test_clock_set_time (test_clock, 0);
+   buf = create_test_buffer (gst_clock_get_time (clock), ...);
+   gst_assert_cmpint (gst_pad_push (srcpad, buf), ==, GST_FLOW_OK);
+
+   GST_INFO ("Block until element is waiting for a clock notification\n");
+   gst_test_clock_wait_for_next_pending_id (test_clock, &amp;pending_id);
+   GST_INFO ("Advance to the requested time of the clock notification\n");
+   gst_test_clock_advance_time (test_clock, latency);
+   GST_INFO ("Release the next blocking wait and make sure it is the one from element\n");
+   processed_id = gst_test_clock_process_next_clock_id (test_clock);
+   g_assert (processed_id == pending_id);
+   g_assert_cmpint (GST_CLOCK_ENTRY_STATUS (processed_id), ==, GST_CLOCK_OK);
+   gst_clock_id_unref (pending_id);
+   gst_clock_id_unref (processed_id);
+
+   GST_INFO ("Validate that element produced an output buffer and check its timestamp\n");
+   g_assert_cmpint (get_number_of_output_buffer (...), ==, 1);
+   buf = get_buffer_pushed_by_element (element, ...);
+   g_assert_cmpint (GST_BUFFER_TIMESTAMP (buf), ==, latency);
+   gst_buffer_unref (buf);
+   GST_INFO ("Check that element does not wait for any clock notification\n");
+   g_assert (!gst_test_clock_peek_next_pending_id (test_clock, NULL));
+
+   GST_INFO ("Set time, create and push the second buffer\n");
+   gst_test_clock_advance_time (test_clock, 10 * GST_SECOND);
+   buf = create_test_buffer (gst_clock_get_time (clock), ...);
+   gst_assert_cmpint (gst_pad_push (srcpad, buf), ==, GST_FLOW_OK);
+
+   GST_INFO ("Block until element is waiting for a new clock notification\n");
+   (gst_test_clock_wait_for_next_pending_id (test_clock, &amp;pending_id);
+   GST_INFO ("Advance past 7ms beyond the requested time of the clock notification\n");
+   gst_test_clock_advance_time (test_clock, latency + 7 * GST_MSECOND);
+   GST_INFO ("Release the next blocking wait and make sure it is the one from element\n");
+   processed_id = gst_test_clock_process_next_clock_id (test_clock);
+   g_assert (processed_id == pending_id);
+   g_assert_cmpint (GST_CLOCK_ENTRY_STATUS (processed_id), ==, GST_CLOCK_OK);
+   gst_clock_id_unref (pending_id);
+   gst_clock_id_unref (processed_id);
+
+   GST_INFO ("Validate that element produced an output buffer and check its timestamp\n");
+   g_assert_cmpint (get_number_of_output_buffer (...), ==, 1);
+   buf = get_buffer_pushed_by_element (element, ...);
+   g_assert_cmpint (GST_BUFFER_TIMESTAMP (buf), ==,
+       10 * GST_SECOND + latency + 7 * GST_MSECOND);
+   gst_buffer_unref (buf);
+   GST_INFO ("Check that element does not wait for any clock notification\n");
+   g_assert (!gst_test_clock_peek_next_pending_id (test_clock, NULL));
+   ...
+</code></pre>
+<p>Since <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> is only supposed to be used in unit tests it calls
+<a href="https://developer.gnome.org/glib/unstable/glib-Testing.html#g-assert">g_assert (not introspectable)</a>, <a href="https://developer.gnome.org/glib/unstable/glib-Testing.html#g-assert-cmpint">g_assert_cmpint (not introspectable)</a> or <a href="https://developer.gnome.org/glib/unstable/glib-Testing.html#g-assert-cmpuint">g_assert_cmpuint (not introspectable)</a> to validate all function
+arguments. This will highlight any issues with the unit test code itself.</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="GstTestClock">
+		<h3 id="gstchecktestclock">
+	GstCheck.TestClock
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject.Object" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject.Object</a>
+    <span class="lineart">╰──</span><a title="GObject.InitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GObject.InitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="Gst.Object" href="../../libgstreamer-1.0/c/gstobject.html#GstObject">Gst.Object</a>
+            <span class="lineart">╰──</span><a title="Gst.Clock" href="../../libgstreamer-1.0/c/gstclock.html#GstClock">Gst.Clock</a>
+                <span class="lineart">╰──</span>GstCheck.TestClock
+</pre>
+
+</div>
+
+</div>
+
+<div class="class_details">
+	<p>A <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> structure which is based on a <a href="../../libgstreamer-1.0/c/gstclock.html#GstClock">Gst.Clock</a> along with some
+private data.</p>
+
+</div>
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstTestClock.parent">
+		<td>
+		<p>
+		<i><em><code><a title="GstClock" href="../../libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> <em><code>parent</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstTestClock.priv">
+		<td>
+		<p>
+		<i><em><code>GstTestClockPrivate* <em><code>priv</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_test_clock_new">
+		<h3 id="gstchecktestclocknew">
+	<span><code>GstCheck.TestClock.new</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.new ():
+    #python wrapper for 'gst_test_clock_new'</pre>
+
+<p>Creates a new test clock with its time set to zero.</p>
+<p>MT safe.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> cast to <a href="../../libgstreamer-1.0/c/gstclock.html#GstClock">Gst.Clock</a>.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Clock" href="../../libgstreamer-1.0/c/gstclock.html#GstClock">Gst.Clock</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_test_clock_new_with_start_time">
+		<h3 id="gstchecktestclocknew_with_start_time">
+	<span><code>GstCheck.TestClock.new_with_start_time</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.new_with_start_time (start_time):
+    #python wrapper for 'gst_test_clock_new_with_start_time'</pre>
+
+<p>Creates a new test clock with its time set to the specified time.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>start_time:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a> set to the desired start time of the clock.</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> cast to <a href="../../libgstreamer-1.0/c/gstclock.html#GstClock">Gst.Clock</a>.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Clock" href="../../libgstreamer-1.0/c/gstclock.html#GstClock">Gst.Clock</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_test_clock_id_list_get_latest_time">
+		<h3 id="gstchecktestclockid_list_get_latest_time">
+	<span><code>GstCheck.TestClock.id_list_get_latest_time</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.id_list_get_latest_time (pending_list):
+    #python wrapper for 'gst_test_clock_id_list_get_latest_time'</pre>
+
+<p>Finds the latest time inside the list.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pending_list:</code></em></i>
+		</p>
+	</td>
+		<td><p>List
+of of pending <a href="../../libgstreamer-1.0/c/gstclock.html#GstClockID">Gst.ClockID</a></p>
+</td>
+<td>
+<a title="GLib.List" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GLib.List</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_test_clock_advance_time">
+		<h3 id="gstchecktestclockadvance_time">
+	<span><code>GstCheck.TestClock.advance_time</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.advance_time (self, delta):
+    #python wrapper for 'gst_test_clock_advance_time'</pre>
+
+<p>Advances the time of the <em>test_clock</em> by the amount given by <em>delta</em>. The
+time of <em>test_clock</em> is monotonically increasing, therefore providing a
+<em>delta</em> which is negative or zero is a programming error.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> for which to increase the time</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>delta:</code></em></i>
+		</p>
+	</td>
+		<td><p>a positive <a href="../../libgstreamer-1.0/c/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a> to be added to the time of the clock</p>
+</td>
+<td>
+<a title="Gst.ClockTimeDiff" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.8;" id="gst_test_clock_crank">
+		<h3 id="gstchecktestclockcrank">
+	<span><code>GstCheck.TestClock.crank</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.crank (self):
+    #python wrapper for 'gst_test_clock_crank'</pre>
+
+<p>A "crank" consists of three steps:
+1: Wait for a <a href="../../libgstreamer-1.0/c/gstclock.html#GstClockID">Gst.ClockID</a> to be registered with the <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>.
+2: Advance the <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> to the time the <a href="../../libgstreamer-1.0/c/gstclock.html#GstClockID">Gst.ClockID</a> is waiting for.
+3: Release the <a href="../../libgstreamer-1.0/c/gstclock.html#GstClockID">Gst.ClockID</a> wait.
+A "crank" can be though of as the notion of
+manually driving the clock forward to its next logical step.</p>
+<p>Return: <a href="https://docs.python.org/2/library/constants.html#True">True</a> if the crank was successful, <a href="https://docs.python.org/2/library/constants.html#False">False</a> otherwise.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> to crank</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.8
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_test_clock_get_next_entry_time">
+		<h3 id="gstchecktestclockget_next_entry_time">
+	<span><code>GstCheck.TestClock.get_next_entry_time</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.get_next_entry_time (self):
+    #python wrapper for 'gst_test_clock_get_next_entry_time'</pre>
+
+<p>Retrieve the requested time for the next pending clock notification.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> to fetch the next clock notification time for</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a> set to the time of the next pending clock
+notification. If no clock notifications have been requested
+<a href="../../libgstreamer-1.0/c/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> will be returned.</p>
+
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_test_clock_has_id">
+		<h3 id="gstchecktestclockhas_id">
+	<span><code>GstCheck.TestClock.has_id</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.has_id (self, id):
+    #python wrapper for 'gst_test_clock_has_id'</pre>
+
+<p>Checks whether <em>test_clock</em> was requested to provide the clock notification
+given by <em>id</em>.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> to ask if it provided the notification</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>id:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-1.0/c/gstclock.html#GstClockID">Gst.ClockID</a> clock notification</p>
+</td>
+<td>
+<a title="Gst.ClockID" href="../../libgstreamer-1.0/c/gstclock.html#GstClockID">Gst.ClockID</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the clock has been asked to provide the given clock
+notification, <a href="https://docs.python.org/2/library/constants.html#False">False</a> otherwise.</p>
+
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_test_clock_peek_id_count">
+		<h3 id="gstchecktestclockpeek_id_count">
+	<span><code>GstCheck.TestClock.peek_id_count</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.peek_id_count (self):
+    #python wrapper for 'gst_test_clock_peek_id_count'</pre>
+
+<p>Determine the number of pending clock notifications that have been
+requested from the <em>test_clock</em>.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> for which to count notifications</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the number of pending clock notifications.</p>
+
+	</td>
+	<td>
+		<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_test_clock_peek_next_pending_id">
+		<h3 id="gstchecktestclockpeek_next_pending_id">
+	<span><code>GstCheck.TestClock.peek_next_pending_id</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.peek_next_pending_id (self):
+    #python wrapper for 'gst_test_clock_peek_next_pending_id'</pre>
+
+<p>Determines if the <em>pending_id</em> is the next clock notification scheduled to
+be triggered given the current time of the <em>test_clock</em>.</p>
+<p>MT safe.</p>
+<p>Return: <a href="https://docs.python.org/2/library/constants.html#True">True</a> if <em>pending_id</em> is the next clock notification to be
+triggered, <a href="https://docs.python.org/2/library/constants.html#False">False</a> otherwise.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> to check the clock notifications for</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>pending_id:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.ClockID" href="../../libgstreamer-1.0/c/gstclock.html#GstClockID">Gst.ClockID</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_test_clock_process_id_list">
+		<h3 id="gstchecktestclockprocess_id_list">
+	<span><code>GstCheck.TestClock.process_id_list</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.process_id_list (self, pending_list):
+    #python wrapper for 'gst_test_clock_process_id_list'</pre>
+
+<p>Processes and releases the pending IDs in the list.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> for which to process the pending IDs</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>pending_list:</code></em></i>
+		</p>
+	</td>
+		<td><p>List
+of pending <a href="../../libgstreamer-1.0/c/gstclock.html#GstClockID">Gst.ClockID</a></p>
+</td>
+<td>
+<a title="GLib.List" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GLib.List</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_test_clock_process_next_clock_id">
+		<h3 id="gstchecktestclockprocess_next_clock_id">
+	<span><code>GstCheck.TestClock.process_next_clock_id</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.process_next_clock_id (self):
+    #python wrapper for 'gst_test_clock_process_next_clock_id'</pre>
+
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> for which to retrieve the next pending clock
+notification</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="../../libgstreamer-1.0/c/gstclock.html#GstClockID">Gst.ClockID</a> containing the next pending clock
+notification.</p>
+
+	</td>
+	<td>
+		<a title="Gst.ClockID" href="../../libgstreamer-1.0/c/gstclock.html#GstClockID">Gst.ClockID</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_test_clock_set_time">
+		<h3 id="gstchecktestclockset_time">
+	<span><code>GstCheck.TestClock.set_time</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.set_time (self, new_time):
+    #python wrapper for 'gst_test_clock_set_time'</pre>
+
+<p>Sets the time of <em>test_clock</em> to the time given by <em>new_time</em>. The time of
+<em>test_clock</em> is monotonically increasing, therefore providing a <em>new_time</em>
+which is earlier or equal to the time of the clock as given by
+<a href="../../libgstreamer-1.0/c/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a> is a programming error.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> of which to set the time</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>new_time:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a> later than that returned by <a href="../../libgstreamer-1.0/c/gstclock.html#gst_clock_get_time">Gst.Clock.get_time</a></p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_test_clock_wait_for_multiple_pending_ids">
+		<h3 id="gstchecktestclockwait_for_multiple_pending_ids">
+	<span><code>GstCheck.TestClock.wait_for_multiple_pending_ids</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.wait_for_multiple_pending_ids (self, count):
+    #python wrapper for 'gst_test_clock_wait_for_multiple_pending_ids'</pre>
+
+<p>Blocks until at least <em>count</em> clock notifications have been requested from
+<em>test_clock</em>. There is no timeout for this wait, see the main description of
+<a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> for which to await having enough pending clock</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>count:</code></em></i>
+		</p>
+	</td>
+		<td><p>the number of pending clock notifications to wait for</p>
+</td>
+<td>
+<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>pending_list:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GLib.List" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GLib.List</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_test_clock_wait_for_next_pending_id">
+		<h3 id="gstchecktestclockwait_for_next_pending_id">
+	<span><code>GstCheck.TestClock.wait_for_next_pending_id</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.wait_for_next_pending_id (self):
+    #python wrapper for 'gst_test_clock_wait_for_next_pending_id'</pre>
+
+<p>Waits until a clock notification is requested from <em>test_clock</em>. There is no
+timeout for this wait, see the main description of <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>. A reference
+to the pending clock notification is stored in <em>pending_id</em>.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> for which to get the pending clock notification</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>pending_id:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.ClockID" href="../../libgstreamer-1.0/c/gstclock.html#GstClockID">Gst.ClockID</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;deprecated:;" id="gst_test_clock_wait_for_pending_id_count">
+		<h3 id="gstchecktestclockwait_for_pending_id_count">
+	<span><code>GstCheck.TestClock.wait_for_pending_id_count</code></span>
+</h3>
+
+		<pre class="programlisting">
+def GstCheck.TestClock.wait_for_pending_id_count (self, count):
+    #python wrapper for 'gst_test_clock_wait_for_pending_id_count'</pre>
+
+<p>Blocks until at least <em>count</em> clock notifications have been requested from
+<em>test_clock</em>. There is no timeout for this wait, see the main description of
+<a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>test_clock:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> for which to await having enough pending clock</p>
+</td>
+<td>
+<a title="GstCheck.TestClock" href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>count:</code></em></i>
+		</p>
+	</td>
+		<td><p>the number of pending clock notifications to wait for</p>
+</td>
+<td>
+<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+	<p>
+	deprecated			: use gst_test_clock_wait_for_multiple_pending_ids() instead.
+		</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstTestClock:start-time">
+		<h3 class="method" id="starttime">
+	<span><code>start-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“start-time” <span class="type"><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a></span>
+</pre>
+
+<p>When a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a> is constructed it will have a certain start time set.
+If the clock was created using <a href="gsttestclock.html#gst_test_clock_new_with_start_time">GstCheck.TestClock.new_with_start_time</a> then
+this property contains the value of the <em>start_time</em> argument. If
+<a href="gsttestclock.html#gst_test_clock_new">GstCheck.TestClock.new</a> was called the clock started at time zero, and thus
+this property contains the value 0.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct Only
+			
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="GstTestClockClass">
+		<h3 id="gstchecktestclockclass">
+	GstCheck.TestClockClass
+</h3>
+
+		<p>The class of a <a href="gsttestclock.html#GstTestClock">GstCheck.TestClock</a>, which has no virtual methods to override.</p>
+
+
+<div class="member_details">
+	<h4 id="attributes">Attributes</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstTestClockClass.parent_class">
+		<td>
+		<p>
+		<i><em><code><a title="GstClockClass" href="../../libgstreamer-1.0/c/gstclock.html#GstClockClass">GstClockClass</a> <em><code>parent_class</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>the parent class structure</p>
+</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

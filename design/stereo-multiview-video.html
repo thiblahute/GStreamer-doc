@@ -70,7 +70,7 @@
 </nav>
 
 <main class="page-row page-row-expanded">
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/stereo-multiview-video.html" class="page_container" id="page-wrapper">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/stereo-multiview-video.html" class="page_container" id="page-wrapper">
 	<div class="row">
 		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
@@ -243,28 +243,24 @@ transport, mark the "first" of a left/right/other group of frames</p>
 and through Meta negotiation to inform decoders about which views to decode if
 not all are wanted.</p>
 <ul>
-<li>
-<p>Logical labels/names and mapping to GstVideoMeta numbers</p>
-</li>
-<li>
-<p>Standard view labels LEFT/RIGHT, and non-standard ones (strings)</p>
-<pre><code>  GST_VIDEO_MULTIVIEW_VIEW_LEFT = 1
-  GST_VIDEO_MULTIVIEW_VIEW_RIGHT = 2
-
-  struct GstVideoMultiviewViewInfo {
-      guint view_label;
-      guint meta_id; // id of the GstVideoMeta for this view
-
-      padding;
-  }
-
-  struct GstVideoMultiviewMeta {
-      guint n_views;
-      GstVideoMultiviewViewInfo *view_info;
-  }
-</code></pre>
-</li>
+<li>Logical labels/names and mapping to <code>GstVideoMeta</code> numbers</li>
+<li>Standard view labels LEFT/RIGHT, and non-standard ones (strings)</li>
 </ul>
+<pre><code class="language-c">        GST_VIDEO_MULTIVIEW_VIEW_LEFT = 1
+        GST_VIDEO_MULTIVIEW_VIEW_RIGHT = 2
+
+        struct GstVideoMultiviewViewInfo {
+            guint view_label;
+            guint meta_id; // id of the GstVideoMeta for this view
+
+            padding;
+        }
+
+        struct GstVideoMultiviewMeta {
+            guint n_views;
+            GstVideoMultiviewViewInfo *view_info;
+        }
+</code></pre>
 <p>The meta is optional, and probably only useful later for MVC</p>
 <h2 id="outputting-stereo-content">Outputting stereo content</h2>
 <p>The initial implementation for output will be stereo content in glimagesink</p>
@@ -355,14 +351,14 @@ bugzilla for parsing, see below)</li>
 <h3 id="representation-for-gstgl">Representation for GstGL</h3>
 <p>When uploading raw video frames to GL textures, the goal is to implement:</p>
 <p>Split packed frames into separate GL textures when uploading, and
-attach multiple GstGLMemory's to the GstBuffer. The multiview-mode and
+attach multiple <code>GstGLMemory</code> to the <code>GstBuffer</code>. The multiview-mode and
 multiview-flags fields in the caps should change to reflect the conversion
-from one incoming GstMemory to multiple GstGLMemory, and change the
+from one incoming <code>GstMemory</code> to multiple <code>GstGLMemory</code>, and change the
 width/height in the output info as needed.</p>
 <p>This is (currently) targetted as 2 render passes - upload as normal
 to a single stereo-packed RGBA texture, and then unpack into 2
-smaller textures, output with GST_VIDEO_MULTIVIEW_MODE_SEPARATED, as
-2 GstGLMemory attached to one buffer. We can optimise the upload later
+smaller textures, output with <code>GST_VIDEO_MULTIVIEW_MODE_SEPARATED</code>, as
+2 <code>GstGLMemory</code> attached to one buffer. We can optimise the upload later
 to go directly to 2 textures for common input formats.</p>
 <p>Separat output textures have a few advantages:</p>
 <ul>
@@ -382,15 +378,15 @@ to any output packing.</p>
 </li>
 <li>
 <p>In implementations that support quad buffers, having separate textures
-makes it trivial to do GL_LEFT/GL_RIGHT output</p>
+makes it trivial to do <code>GL_LEFT</code>/<code>GL_RIGHT</code> output</p>
 </li>
 </ul>
 <p>For either option, we'll need new glsink output API to pass more
 information to applications about multiple views for the draw signal/callback.</p>
 <p>I don't know if it's desirable to support <em>both</em> methods of representing
 views. If so, that should be signalled in the caps too. That could be a
-new multiview-mode for passing views in separate GstMemory objects
-attached to a GstBuffer, which would not be GL specific.</p>
+new multiview-mode for passing views in separate <code>GstMemory</code> objects
+attached to a <code>GstBuffer</code>, which would not be GL specific.</p>
 <h3 id="overriding-frame-packing-interpretation">Overriding frame packing interpretation</h3>
 <p>Most sample videos available are frame packed, with no metadata
 to say so. How should we override that interpretation?</p>
@@ -400,9 +396,9 @@ override the multiview fields. <em>Basically implemented in playbin, using</em>
 <em>a pad probe. Needs more work for completeness</em></li>
 </ul>
 <h3 id="adding-extra-gstvideometa-to-buffers">Adding extra GstVideoMeta to buffers</h3>
-<p>There should be one GstVideoMeta for the entire video frame in packed
-layouts, and one GstVideoMeta per GstGLMemory when views are attached
-to a GstBuffer separately. This should be done by the buffer pool,
+<p>There should be one <code>GstVideoMeta</code> for the entire video frame in packed
+layouts, and one <code>GstVideoMeta</code> per <code>GstGLMemory</code> when views are attached
+to a <code>GstBuffer</code> separately. This should be done by the buffer pool,
 which knows from the caps.</p>
 <h3 id="videooverlay-interface-extensions">videooverlay interface extensions</h3>
 <p>GstVideoOverlay needs:</p>

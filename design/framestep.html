@@ -70,7 +70,7 @@
 </nav>
 
 <main class="page-row page-row-expanded">
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/framestep.html" class="page_container" id="page-wrapper">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/framestep.html" class="page_container" id="page-wrapper">
 	<div class="row">
 		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
@@ -121,8 +121,8 @@ than simple playback.</p>
 <p>Ability to play a certain amount of data at an arbitrary speed.</p>
 </li>
 </ul>
-<p>We want a system where we can step frames in PAUSED as well as play
-short segments of data in PLAYING.</p>
+<p>We want a system where we can step frames in <code>PAUSED</code> as well as play
+short segments of data in <code>PLAYING</code>.</p>
 <h2 id="use-cases">Use Cases</h2>
 <h3 id="video-only-pipeline-in-paused">video only pipeline in PAUSED</h3>
 <pre><code>.-----.    .-------.              .------.    .-------.
@@ -132,7 +132,7 @@ short segments of data in PLAYING.</p>
 </code></pre>
 <ul>
 <li>
-<p>app sets the pipeline to PAUSED to block on the preroll picture</p>
+<p>app sets the pipeline to <code>PAUSED</code> to block on the preroll picture</p>
 </li>
 <li>
 <p>app seeks to required position in the stream. This can be done
@@ -141,7 +141,7 @@ stepping direction.</p>
 </li>
 <li>
 <p>app steps frames (in <code>GST_FORMAT_DEFAULT</code> or <code>GST_FORMAT_BUFFER)</code>. The
-pipeline loses its PAUSED state until the required number of frames have been
+pipeline loses its <code>PAUSED</code> state until the required number of frames have been
 skipped, it then prerolls again. This skipping is purely done in the sink.</p>
 </li>
 <li>
@@ -161,7 +161,7 @@ corresponding time interval.</p>
 </code></pre>
 <ul>
 <li>
-<p>app sets the pipeline to PAUSED to block on the preroll picture</p>
+<p>app sets the pipeline to <code>PAUSED</code> to block on the preroll picture</p>
 </li>
 <li>
 <p>app seeks to required position in the stream. This can be done
@@ -170,7 +170,7 @@ stepping direction.</p>
 </li>
 <li>
 <p>app steps frames (in <code>GST_FORMAT_DEFAULT</code> or <code>GST_FORMAT_BUFFER</code>) or an
-amount of time on the video sink. The pipeline loses its PAUSED state until
+amount of time on the video sink. The pipeline loses its <code>PAUSED</code> state until
 the required number of frames have been skipped, it then prerolls again. This
 skipping is purely done in the sink.</p>
 </li>
@@ -188,7 +188,7 @@ for the accumulated audio.</p>
 <h3 id="audiovideo-pipeline-in-playing">audio/video pipeline in PLAYING</h3>
 <ul>
 <li>
-<p>app sets the pipeline to PAUSED to block on the preroll picture</p>
+<p>app sets the pipeline to <code>PAUSED</code> to block on the preroll picture</p>
 </li>
 <li>
 <p>app seeks to required position in the stream. This can be done
@@ -239,7 +239,7 @@ use a seek with a negative rate first to reverse the playback direction.</p>
 immediately:</p>
 <ul>
 <li>
-<p>In the PAUSED state the pipeline loses the PAUSED state, the
+<p>In the <code>PAUSED</code> state the pipeline loses the <code>PAUSED</code> state, the
 requested amount of data is skipped and the pipeline prerolls again
 when a non-intermediate step completes. When the pipeline was
 stepping while the event is sent, the current step operation is
@@ -247,31 +247,31 @@ updated with the new amount and format. The sink will do a best
 effort to comply with the new amount.</p>
 </li>
 <li>
-<p>In the PLAYING state, the pipeline loses the PLAYING state, the
+<p>In the PLAYING state, the pipeline loses the <code>PLAYING</code> state, the
 requested amount of data is skipped (not rendered) from the previous
-STEP request or from the position of the last PAUSED if no previous
-STEP operation was performed. The pipeline goes back to the PLAYING
+STEP request or from the position of the last <code>PAUSED</code> if no previous
+STEP operation was performed. The pipeline goes back to the <code>PLAYING</code>
 state when a non-intermediate step completes.</p>
 </li>
 <li>
 <p>When flushing is FALSE, the step will be performed later.</p>
 </li>
 <li>
-<p>In the PAUSED state the step will be done when going to PLAYING. Any
-previous step operation will be overridden with the new STEP event.</p>
+<p>In the <code>PAUSED</code> state the step will be done when going to <code>PLAYING</code>. Any
+previous step operation will be overridden with the new <code>STEP</code> event.</p>
 </li>
 <li>
-<p>In the PLAYING state the step operation will be performed after the
+<p>In the <code>PLAYING</code> state the step operation will be performed after the
 current step operation completes. If there was no previous step
 operation, the step operation will be performed from the position of
-the last PAUSED state.</p>
+the last <code>PAUSED</code> state.</p>
 </li>
 </ul>
 </li>
 <li>
 <p><strong><code>intermediate</code></strong> <code>G_TYPE_BOOLEAN</code>: Signal that this step operation is an
 intermediate step, part of a series of step operations. It is mostly
-interesting for stepping in the PAUSED state because the sink will only perform
+interesting for stepping in the <code>PAUSED</code> state because the sink will only perform
 a preroll after a non-intermediate step operation completes. Intermediate steps
 are useful to flush out data from other sinks in order to not cause excessive
 queueing. In the PLAYING state the intermediate flag has no visual effect. In
@@ -280,7 +280,7 @@ all states, the intermediate flag is passed to the corresponding
 </li>
 </ul>
 <p>The application will create a STEP event to start or stop the stepping
-operation. Both stepping in PAUSED and PLAYING can be performed by means
+operation. Both stepping in <code>PAUSED</code> and <code>PLAYING</code> can be performed by means
 of the flush flag.</p>
 <p>The event is usually sent to the pipeline, which will typically
 distribute the event to all of its sinks. For some use cases, like frame

@@ -1,0 +1,5797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>GstEvent</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="libgstreamer-1.0" data-hotdoc-ref="gstevent.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="gstevent.h">
+<h1 id="gstevent">GstEvent</h1><p>The event class provides factory methods to construct events for sending
+and functions to query (parse) received events.</p>
+<p>Events are usually created with gst_event_new_*() which takes event-type
+specific parameters as arguments.
+To send an event application will usually use <a href="gstelement.html#gst_element_send_event">Gst.Element.prototype.send_event</a> and
+elements will use <a href="gstpad.html#gst_pad_send_event">Gst.Pad.prototype.send_event</a> or <a href="gstpad.html#gst_pad_push_event">Gst.Pad.prototype.push_event</a>.
+The event should be unreffed with <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstEvent.html#gst-event-unref">gst_event_unref (not introspectable)</a> if it has not been sent.</p>
+<p>Events that have been received can be parsed with their respective
+gst_event_parse_*() functions. It is valid to pass <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a> for unwanted details.</p>
+<p>Events are passed between elements in parallel to the data stream. Some events
+are serialized with buffers, others are not. Some events only travel downstream,
+others only upstream. Some events can travel both upstream and downstream.</p>
+<p>The events are used to signal special conditions in the datastream such as
+EOS (end of stream) or the start of a new stream-segment.
+Events are also used to flush the pipeline of any pending data.</p>
+<p>Most of the event API is used inside plugins. Applications usually only
+construct and use seek events.
+To do that <a href="gstevent.html#gst_event_new_seek">Gst.Event.prototype.new_seek</a> is used to create a seek event. It takes
+the needed parameters to specify seeking time and mode.</p>
+<pre><code class="language-[&lt;!--">   GstEvent *event;
+   gboolean result;
+   ...
+   // construct a seek event to play the media from second 2 to 5, flush
+   // the pipeline to decrease latency.
+   event = gst_event_new_seek (1.0,
+      GST_FORMAT_TIME,
+      GST_SEEK_FLAG_FLUSH,
+      GST_SEEK_TYPE_SET, 2 * GST_SECOND,
+      GST_SEEK_TYPE_SET, 5 * GST_SECOND);
+   ...
+   result = gst_element_send_event (pipeline, event);
+   if (!result)
+     g_warning ("seek failed");
+   ...
+</code></pre>
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_buffer_size">
+		<h3 id="gsteventprototypenew_buffer_size">
+	<span><code>Gst.Event.prototype.new_buffer_size</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_buffer_size(format: <a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>, minsize: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, maxsize: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, async: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_event_new_buffer_size'
+}</pre>
+
+<p>Create a new buffersize event. The event is sent downstream and notifies
+elements that they should provide a buffer of the specified dimensions.</p>
+<p>When the <em>async</em> flag is set, a thread boundary is preferred.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>buffer format</p>
+</td>
+<td>
+<a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>minsize:</code></em></i>
+		</p>
+	</td>
+		<td><p>minimum buffer size</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>maxsize:</code></em></i>
+		</p>
+	</td>
+		<td><p>maximum buffer size</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>async:</code></em></i>
+		</p>
+	</td>
+		<td><p>thread behavior</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new <a href="gstevent.html#GstEvent">Gst.Event</a></p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_caps">
+		<h3 id="gsteventprototypenew_caps">
+	<span><code>Gst.Event.prototype.new_caps</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_caps(caps: <a title="Gst.Caps" href="gstcaps.html#GstCaps">Gst.Caps</a>): {
+    // javascript wrapper for 'gst_event_new_caps'
+}</pre>
+
+<p>Create a new CAPS event for <em>caps</em>. The caps event can only travel downstream
+synchronized with the buffer flow and contains the format of the buffers
+that will follow after the event.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters1">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstcaps.html#GstCaps">Gst.Caps</a></p>
+</td>
+<td>
+<a title="Gst.Caps" href="gstcaps.html#GstCaps">Gst.Caps</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns1">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the new CAPS event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_custom">
+		<h3 id="gsteventprototypenew_custom">
+	<span><code>Gst.Event.prototype.new_custom</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_custom(type: <a title="Gst.EventType" href="gstevent.html#GstEventType">Gst.EventType</a>, structure: <a title="Gst.Structure" href="gststructure.html#GstStructure">Gst.Structure</a>): {
+    // javascript wrapper for 'gst_event_new_custom'
+}</pre>
+
+<p>Create a new custom-typed event. This can be used for anything not
+handled by other event-specific functions to pass an event to another
+element.</p>
+<p>Make sure to allocate an event type with the <a href="../c/gstevent.html#GST_EVENT_MAKE_TYPE">GST_EVENT_MAKE_TYPE (not introspectable)</a> macro,
+assigning a free number and filling in the correct direction and
+serialization flags.</p>
+<p>New custom events can also be created by subclassing the event type if
+needed.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>type:</code></em></i>
+		</p>
+	</td>
+		<td><p>The type of the new event</p>
+</td>
+<td>
+<a title="Gst.EventType" href="gstevent.html#GstEventType">Gst.EventType</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>the structure for the event. The event will
+take ownership of the structure.</p>
+</td>
+<td>
+<a title="Gst.Structure" href="gststructure.html#GstStructure">Gst.Structure</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the new custom event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_eos">
+		<h3 id="gsteventprototypenew_eos">
+	<span><code>Gst.Event.prototype.new_eos</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_eos(): {
+    // javascript wrapper for 'gst_event_new_eos'
+}</pre>
+
+<p>Create a new EOS event. The eos event can only travel downstream
+synchronized with the buffer flow. Elements that receive the EOS
+event on a pad can return <a href="gstpad.html#GST_FLOW_EOS">Gst.FlowReturn.prototype.eos</a> as a <a href="../../javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+when data after the EOS event arrives.</p>
+<p>The EOS event will travel down to the sink elements in the pipeline
+which will then post the <a href="gstmessage.html#GST_MESSAGE_EOS">Gst.MessageType.prototype.eos</a> on the bus after they have
+finished playing any buffered data.</p>
+<p>When all sinks have posted an EOS message, an EOS message is
+forwarded to the application.</p>
+<p>The EOS event itself will not cause any state transitions of the pipeline.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the new EOS event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_flush_start">
+		<h3 id="gsteventprototypenew_flush_start">
+	<span><code>Gst.Event.prototype.new_flush_start</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_flush_start(): {
+    // javascript wrapper for 'gst_event_new_flush_start'
+}</pre>
+
+<p>Allocate a new flush start event. The flush start event can be sent
+upstream and downstream and travels out-of-bounds with the dataflow.</p>
+<p>It marks pads as being flushing and will make them return
+<a href="gstpad.html#GST_FLOW_FLUSHING">Gst.FlowReturn.prototype.flushing</a> when used for data flow with <a href="gstpad.html#gst_pad_push">Gst.Pad.prototype.push</a>,
+<a href="gstpad.html#gst_pad_chain">Gst.Pad.prototype.chain</a>, <a href="gstpad.html#gst_pad_get_range">Gst.Pad.prototype.get_range</a> and <a href="gstpad.html#gst_pad_pull_range">Gst.Pad.prototype.pull_range</a>.
+Any event (except a <a href="gstevent.html#GST_EVENT_FLUSH_STOP">Gst.EventType.prototype.flush_stop</a>) received
+on a flushing pad will return <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> immediately.</p>
+<p>Elements should unlock any blocking functions and exit their streaming
+functions as fast as possible when this event is received.</p>
+<p>This event is typically generated after a seek to flush out all queued data
+in the pipeline so that the new media is played as soon as possible.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns4">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new flush start event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_flush_stop">
+		<h3 id="gsteventprototypenew_flush_stop">
+	<span><code>Gst.Event.prototype.new_flush_stop</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_flush_stop(reset_time: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_event_new_flush_stop'
+}</pre>
+
+<p>Allocate a new flush stop event. The flush stop event can be sent
+upstream and downstream and travels serialized with the dataflow.
+It is typically sent after sending a FLUSH_START event to make the
+pads accept data again.</p>
+<p>Elements can process this event synchronized with the dataflow since
+the preceding FLUSH_START event stopped the dataflow.</p>
+<p>This event is typically generated to complete a seek and to resume
+dataflow.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>reset_time:</code></em></i>
+		</p>
+	</td>
+		<td><p>if time should be reset</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns5">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new flush stop event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_gap">
+		<h3 id="gsteventprototypenew_gap">
+	<span><code>Gst.Event.prototype.new_gap</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_gap(timestamp: <a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>, duration: <a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>): {
+    // javascript wrapper for 'gst_event_new_gap'
+}</pre>
+
+<p>Create a new GAP event. A gap event can be thought of as conceptually
+equivalent to a buffer to signal that there is no data for a certain
+amount of time. This is useful to signal a gap to downstream elements
+which may wait for data, such as muxers or mixers or overlays, especially
+for sparse streams such as subtitle streams.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters4">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timestamp:</code></em></i>
+		</p>
+	</td>
+		<td><p>the start time (pts) of the gap</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>duration:</code></em></i>
+		</p>
+	</td>
+		<td><p>the duration of the gap</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns6">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the new GAP event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_latency">
+		<h3 id="gsteventprototypenew_latency">
+	<span><code>Gst.Event.prototype.new_latency</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_latency(latency: <a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>): {
+    // javascript wrapper for 'gst_event_new_latency'
+}</pre>
+
+<p>Create a new latency event. The event is sent upstream from the sinks and
+notifies elements that they should add an additional <em>latency</em> to the
+running time before synchronising against the clock.</p>
+<p>The latency is mostly used in live sinks and is always expressed in
+the time format.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters5">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>latency:</code></em></i>
+		</p>
+	</td>
+		<td><p>the new latency value</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns7">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new <a href="gstevent.html#GstEvent">Gst.Event</a></p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_navigation">
+		<h3 id="gsteventprototypenew_navigation">
+	<span><code>Gst.Event.prototype.new_navigation</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_navigation(structure: <a title="Gst.Structure" href="gststructure.html#GstStructure">Gst.Structure</a>): {
+    // javascript wrapper for 'gst_event_new_navigation'
+}</pre>
+
+<p>Create a new navigation event from the given description.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters6">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>structure:</code></em></i>
+		</p>
+	</td>
+		<td><p>description of the event. The event will take
+ownership of the structure.</p>
+</td>
+<td>
+<a title="Gst.Structure" href="gststructure.html#GstStructure">Gst.Structure</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns8">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new <a href="gstevent.html#GstEvent">Gst.Event</a></p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_event_new_protection">
+		<h3 id="gsteventprototypenew_protection">
+	<span><code>Gst.Event.prototype.new_protection</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_protection(system_id: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>, data: <a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>, origin: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): {
+    // javascript wrapper for 'gst_event_new_protection'
+}</pre>
+
+<p>Creates a new event containing information specific to a particular
+protection system (uniquely identified by <em>system_id</em>), by which that
+protection system can acquire key(s) to decrypt a protected stream.</p>
+<p>In order for a decryption element to decrypt media
+protected using a specific system, it first needs all the
+protection system specific information necessary to acquire the decryption
+key(s) for that stream. The functions defined here enable this information
+to be passed in events from elements that extract it
+(e.g., ISOBMFF demuxers, MPEG DASH demuxers) to protection decrypter
+elements that use it.</p>
+<p>Events containing protection system specific information are created using
+<a href="gstevent.html#gst_event_new_protection">Gst.Event.prototype.new_protection</a>, and they can be parsed by downstream elements
+using <a href="gstevent.html#gst_event_parse_protection">Gst.Event.prototype.parse_protection</a>.</p>
+<p>In Common Encryption, protection system specific information may be located
+within ISOBMFF files, both in movie (moov) boxes and movie fragment (moof)
+boxes; it may also be contained in ContentProtection elements within MPEG
+DASH MPDs. The events created by <a href="gstevent.html#gst_event_new_protection">Gst.Event.prototype.new_protection</a> contain data
+identifying from which of these locations the encapsulated protection system
+specific information originated. This origin information is required as
+some protection systems use different encodings depending upon where the
+information originates.</p>
+<p>The events returned by <a href="gstevent.html#gst_event_new_protection">Gst.Event.prototype.new_protection</a> are implemented
+in such a way as to ensure that the most recently-pushed protection info
+event of a particular <em>origin</em> and <em>system_id</em> will
+be stuck to the output pad of the sending element.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters7">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>system_id:</code></em></i>
+		</p>
+	</td>
+		<td><p>a string holding a UUID that uniquely
+identifies a protection system.</p>
+</td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>data:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> holding protection system specific
+information. The reference count of the buffer will be incremented by one.</p>
+</td>
+<td>
+<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>origin:</code></em></i>
+		</p>
+	</td>
+		<td><p>a string indicating where the protection
+information carried in the event was extracted from. The allowed values
+of this string will depend upon the protection scheme.</p>
+</td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns9">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="gstevent.html#GST_EVENT_PROTECTION">Gst.EventType.prototype.protection</a> event, if successful; <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a>
+if unsuccessful.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_qos">
+		<h3 id="gsteventprototypenew_qos">
+	<span><code>Gst.Event.prototype.new_qos</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_qos(type: <a title="Gst.QOSType" href="gstevent.html#GstQOSType">Gst.QOSType</a>, proportion: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, diff: <a title="Gst.ClockTimeDiff" href="gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a>, timestamp: <a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>): {
+    // javascript wrapper for 'gst_event_new_qos'
+}</pre>
+
+<p>Allocate a new qos event with the given values.
+The QOS event is generated in an element that wants an upstream
+element to either reduce or increase its rate because of
+high/low CPU load or other resource usage such as network performance or
+throttling. Typically sinks generate these events for each buffer
+they receive.</p>
+<p><em>type</em> indicates the reason for the QoS event. <a href="gstevent.html#GST_QOS_TYPE_OVERFLOW">Gst.QOSType.prototype.overflow</a> is
+used when a buffer arrived in time or when the sink cannot keep up with
+the upstream datarate. <a href="gstevent.html#GST_QOS_TYPE_UNDERFLOW">Gst.QOSType.prototype.underflow</a> is when the sink is not
+receiving buffers fast enough and thus has to drop late buffers.
+<a href="gstevent.html#GST_QOS_TYPE_THROTTLE">Gst.QOSType.prototype.throttle</a> is used when the datarate is artificially limited
+by the application, for example to reduce power consumption.</p>
+<p><em>proportion</em> indicates the real-time performance of the streaming in the
+element that generated the QoS event (usually the sink). The value is
+generally computed based on more long term statistics about the streams
+timestamps compared to the clock.
+A value &lt; 1.0 indicates that the upstream element is producing data faster
+than real-time. A value &gt; 1.0 indicates that the upstream element is not
+producing data fast enough. 1.0 is the ideal <em>proportion</em> value. The
+proportion value can safely be used to lower or increase the quality of
+the element.</p>
+<p><em>diff</em> is the difference against the clock in running time of the last
+buffer that caused the element to generate the QOS event. A negative value
+means that the buffer with <em>timestamp</em> arrived in time. A positive value
+indicates how late the buffer with <em>timestamp</em> was. When throttling is
+enabled, <em>diff</em> will be set to the requested throttling interval.</p>
+<p><em>timestamp</em> is the timestamp of the last buffer that cause the element
+to generate the QOS event. It is expressed in running time and thus an ever
+increasing value.</p>
+<p>The upstream element can use the <em>diff</em> and <em>timestamp</em> values to decide
+whether to process more buffers. For positive <em>diff</em>, all buffers with
+timestamp &lt;= <em>timestamp</em> + <em>diff</em> will certainly arrive late in the sink
+as well. A (negative) <em>diff</em> value so that <em>timestamp</em> + <em>diff</em> would yield a
+result smaller than 0 is not allowed.</p>
+<p>The application can use general event probes to intercept the QoS
+event and implement custom application specific QoS handling.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters8">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>type:</code></em></i>
+		</p>
+	</td>
+		<td><p>the QoS type</p>
+</td>
+<td>
+<a title="Gst.QOSType" href="gstevent.html#GstQOSType">Gst.QOSType</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>proportion:</code></em></i>
+		</p>
+	</td>
+		<td><p>the proportion of the qos message</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>diff:</code></em></i>
+		</p>
+	</td>
+		<td><p>The time difference of the last Clock sync</p>
+</td>
+<td>
+<a title="Gst.ClockTimeDiff" href="gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>timestamp:</code></em></i>
+		</p>
+	</td>
+		<td><p>The timestamp of the buffer</p>
+</td>
+<td>
+<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns10">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new QOS event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_reconfigure">
+		<h3 id="gsteventprototypenew_reconfigure">
+	<span><code>Gst.Event.prototype.new_reconfigure</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_reconfigure(): {
+    // javascript wrapper for 'gst_event_new_reconfigure'
+}</pre>
+
+<p>Create a new reconfigure event. The purpose of the reconfigure event is
+to travel upstream and make elements renegotiate their caps or reconfigure
+their buffer pools. This is useful when changing properties on elements
+or changing the topology of the pipeline.</p>
+
+
+	<div class="multi_return_value_container">
+			<h4 id="returns11">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new <a href="gstevent.html#GstEvent">Gst.Event</a></p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_seek">
+		<h3 id="gsteventprototypenew_seek">
+	<span><code>Gst.Event.prototype.new_seek</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_seek(rate: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, format: <a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>, flags: <a title="Gst.SeekFlags" href="gstsegment.html#GstSeekFlags">Gst.SeekFlags</a>, start_type: <a title="Gst.SeekType" href="gstsegment.html#GstSeekType">Gst.SeekType</a>, start: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, stop_type: <a title="Gst.SeekType" href="gstsegment.html#GstSeekType">Gst.SeekType</a>, stop: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_event_new_seek'
+}</pre>
+
+<p>Allocate a new seek event with the given parameters.</p>
+<p>The seek event configures playback of the pipeline between <em>start</em> to <em>stop</em>
+at the speed given in <em>rate</em>, also called a playback segment.
+The <em>start</em> and <em>stop</em> values are expressed in <em>format</em>.</p>
+<p>A <em>rate</em> of 1.0 means normal playback rate, 2.0 means double speed.
+Negatives values means backwards playback. A value of 0.0 for the
+rate is not allowed and should be accomplished instead by PAUSING the
+pipeline.</p>
+<p>A pipeline has a default playback segment configured with a start
+position of 0, a stop position of -1 and a rate of 1.0. The currently
+configured playback segment can be queried with <a href="gstquery.html#GST_QUERY_SEGMENT">Gst.QueryType.prototype.segment</a>.</p>
+<p><em>start_type</em> and <em>stop_type</em> specify how to adjust the currently configured
+start and stop fields in playback segment. Adjustments can be made relative
+or absolute to the last configured values. A type of <a href="gstsegment.html#GST_SEEK_TYPE_NONE">Gst.SeekType.prototype.none</a>
+means that the position should not be updated.</p>
+<p>When the rate is positive and <em>start</em> has been updated, playback will start
+from the newly configured start position.</p>
+<p>For negative rates, playback will start from the newly configured stop
+position (if any). If the stop position is updated, it must be different from
+-1 (#GST_CLOCK_TIME_NONE) for negative rates.</p>
+<p>It is not possible to seek relative to the current playback position, to do
+this, PAUSE the pipeline, query the current playback position with
+<a href="gstquery.html#GST_QUERY_POSITION">Gst.QueryType.prototype.position</a> and update the playback segment current position with a
+<a href="gstsegment.html#GST_SEEK_TYPE_SET">Gst.SeekType.prototype.set</a> to the desired position.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters9">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>rate:</code></em></i>
+		</p>
+	</td>
+		<td><p>The new playback rate</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>The format of the seek values</p>
+</td>
+<td>
+<a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>flags:</code></em></i>
+		</p>
+	</td>
+		<td><p>The optional seek flags</p>
+</td>
+<td>
+<a title="Gst.SeekFlags" href="gstsegment.html#GstSeekFlags">Gst.SeekFlags</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>start_type:</code></em></i>
+		</p>
+	</td>
+		<td><p>The type and flags for the new start position</p>
+</td>
+<td>
+<a title="Gst.SeekType" href="gstsegment.html#GstSeekType">Gst.SeekType</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>start:</code></em></i>
+		</p>
+	</td>
+		<td><p>The value of the new start position</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stop_type:</code></em></i>
+		</p>
+	</td>
+		<td><p>The type and flags for the new stop position</p>
+</td>
+<td>
+<a title="Gst.SeekType" href="gstsegment.html#GstSeekType">Gst.SeekType</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stop:</code></em></i>
+		</p>
+	</td>
+		<td><p>The value of the new stop position</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns12">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new seek event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_segment">
+		<h3 id="gsteventprototypenew_segment">
+	<span><code>Gst.Event.prototype.new_segment</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_segment(segment: <a title="Gst.Segment" href="gstsegment.html#GstSegment">Gst.Segment</a>): {
+    // javascript wrapper for 'gst_event_new_segment'
+}</pre>
+
+<p>Create a new SEGMENT event for <em>segment</em>. The segment event can only travel
+downstream synchronized with the buffer flow and contains timing information
+and playback properties for the buffers that will follow.</p>
+<p>The segment event marks the range of buffers to be processed. All
+data not within the segment range is not to be processed. This can be
+used intelligently by plugins to apply more efficient methods of skipping
+unneeded data. The valid range is expressed with the <em>start</em> and <em>stop</em>
+values.</p>
+<p>The time value of the segment is used in conjunction with the start
+value to convert the buffer timestamps into the stream time. This is
+usually done in sinks to report the current stream_time.
+<em>time</em> represents the stream_time of a buffer carrying a timestamp of
+<em>start</em>. <em>time</em> cannot be -1.</p>
+<p><em>start</em> cannot be -1, <em>stop</em> can be -1. If there
+is a valid <em>stop</em> given, it must be greater or equal the <em>start</em>, including
+when the indicated playback <em>rate</em> is &lt; 0.</p>
+<p>The <em>applied_rate</em> value provides information about any rate adjustment that
+has already been made to the timestamps and content on the buffers of the
+stream. (@rate * <em>applied_rate</em>) should always equal the rate that has been
+requested for playback. For example, if an element has an input segment
+with intended playback <em>rate</em> of 2.0 and applied_rate of 1.0, it can adjust
+incoming timestamps and buffer content by half and output a segment event
+with <em>rate</em> of 1.0 and <em>applied_rate</em> of 2.0</p>
+<p>After a segment event, the buffer stream time is calculated with:</p>
+<p>time + (TIMESTAMP(buf) - start) * ABS (rate * applied_rate)</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters10">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstsegment.html#GstSegment">Gst.Segment</a></p>
+</td>
+<td>
+<a title="Gst.Segment" href="gstsegment.html#GstSegment">Gst.Segment</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns13">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the new SEGMENT event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_segment_done">
+		<h3 id="gsteventprototypenew_segment_done">
+	<span><code>Gst.Event.prototype.new_segment_done</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_segment_done(format: <a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>, position: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_event_new_segment_done'
+}</pre>
+
+<p>Create a new segment-done event. This event is sent by elements that
+finish playback of a segment as a result of a segment seek.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters11">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>The format of the position being done</p>
+</td>
+<td>
+<a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>position:</code></em></i>
+		</p>
+	</td>
+		<td><p>The position of the segment being done</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns14">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new <a href="gstevent.html#GstEvent">Gst.Event</a></p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_event_new_select_streams">
+		<h3 id="gsteventprototypenew_select_streams">
+	<span><code>Gst.Event.prototype.new_select_streams</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_select_streams(streams: <a title="GLib.List" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GLib.List</a>): {
+    // javascript wrapper for 'gst_event_new_select_streams'
+}</pre>
+
+<p>Allocate a new select-streams event.</p>
+<p>The select-streams event requests the specified <em>streams</em> to be activated.</p>
+<p>The list of <em>streams</em> corresponds to the "Stream ID" of each stream to be
+activated. Those ID can be obtained via the <a href="gststreams.html#GstStream">Gst.Stream</a> objects present
+in <a href="gstevent.html#GST_EVENT_STREAM_START">Gst.EventType.prototype.stream_start</a>, <a href="gstevent.html#GST_EVENT_STREAM_COLLECTION">Gst.EventType.prototype.stream_collection</a> or
+GST_MESSSAGE_STREAM_COLLECTION.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters12">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>streams:</code></em></i>
+		</p>
+	</td>
+		<td><p>the list of streams to
+activate</p>
+</td>
+<td>
+<a title="GLib.List" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GLib.List</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns15">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new select-streams event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_sink_message">
+		<h3 id="gsteventprototypenew_sink_message">
+	<span><code>Gst.Event.prototype.new_sink_message</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_sink_message(name: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>, msg: <a title="Gst.Message" href="gstmessage.html#GstMessage">Gst.Message</a>): {
+    // javascript wrapper for 'gst_event_new_sink_message'
+}</pre>
+
+<p>Create a new sink-message event. The purpose of the sink-message event is
+to instruct a sink to post the message contained in the event synchronized
+with the stream.</p>
+<p><em>name</em> is used to store multiple sticky events on one pad.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters13">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>a name for the event</p>
+</td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>msg:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="gstmessage.html#GstMessage">Gst.Message</a> to be posted</p>
+</td>
+<td>
+<a title="Gst.Message" href="gstmessage.html#GstMessage">Gst.Message</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns16">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new <a href="gstevent.html#GstEvent">Gst.Event</a></p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_step">
+		<h3 id="gsteventprototypenew_step">
+	<span><code>Gst.Event.prototype.new_step</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_step(format: <a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>, amount: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, rate: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, flush: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, intermediate: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_event_new_step'
+}</pre>
+
+<p>Create a new step event. The purpose of the step event is to instruct a sink
+to skip <em>amount</em> (expressed in <em>format</em>) of media. It can be used to implement
+stepping through the video frame by frame or for doing fast trick modes.</p>
+<p>A rate of &lt;= 0.0 is not allowed. Pause the pipeline, for the effect of rate
+= 0.0 or first reverse the direction of playback using a seek event to get
+the same effect as rate &lt; 0.0.</p>
+<p>The <em>flush</em> flag will clear any pending data in the pipeline before starting
+the step operation.</p>
+<p>The <em>intermediate</em> flag instructs the pipeline that this step operation is
+part of a larger step operation.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters14">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>format:</code></em></i>
+		</p>
+	</td>
+		<td><p>the format of <em>amount</em></p>
+</td>
+<td>
+<a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>amount:</code></em></i>
+		</p>
+	</td>
+		<td><p>the amount of data to step</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>rate:</code></em></i>
+		</p>
+	</td>
+		<td><p>the step rate</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>flush:</code></em></i>
+		</p>
+	</td>
+		<td><p>flushing steps</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>intermediate:</code></em></i>
+		</p>
+	</td>
+		<td><p>intermediate steps</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns17">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new <a href="gstevent.html#GstEvent">Gst.Event</a></p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_event_new_stream_collection">
+		<h3 id="gsteventprototypenew_stream_collection">
+	<span><code>Gst.Event.prototype.new_stream_collection</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_stream_collection(collection: <a title="Gst.StreamCollection" href="gststreamcollection.html#GstStreamCollection">Gst.StreamCollection</a>): {
+    // javascript wrapper for 'gst_event_new_stream_collection'
+}</pre>
+
+<p>Create a new STREAM_COLLECTION event. The stream collection event can only
+travel downstream synchronized with the buffer flow.</p>
+<p>Source elements, demuxers and other elements that manage collections
+of streams and post <a href="gststreamcollection.html#GstStreamCollection">Gst.StreamCollection</a> messages on the bus also send
+this event downstream on each pad involved in the collection, so that
+activation of a new collection can be tracked through the downstream
+data flow.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters15">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>collection:</code></em></i>
+		</p>
+	</td>
+		<td><p>Active collection for this data flow</p>
+</td>
+<td>
+<a title="Gst.StreamCollection" href="gststreamcollection.html#GstStreamCollection">Gst.StreamCollection</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns18">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the new STREAM_COLLECTION event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_event_new_stream_group_done">
+		<h3 id="gsteventprototypenew_stream_group_done">
+	<span><code>Gst.Event.prototype.new_stream_group_done</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_stream_group_done(group_id: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_event_new_stream_group_done'
+}</pre>
+
+<p>Create a new Stream Group Done event. The stream-group-done event can
+only travel downstream synchronized with the buffer flow. Elements
+that receive the event on a pad should handle it mostly like EOS,
+and emit any data or pending buffers that would depend on more data
+arriving and unblock, since there won't be any more data.</p>
+<p>This event is followed by EOS at some point in the future, and is
+generally used when switching pads - to unblock downstream so that
+new pads can be exposed before sending EOS on the existing pads.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters16">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>group_id:</code></em></i>
+		</p>
+	</td>
+		<td><p>the group id of the stream group which is ending</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns19">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the new stream-group-done event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_stream_start">
+		<h3 id="gsteventprototypenew_stream_start">
+	<span><code>Gst.Event.prototype.new_stream_start</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_stream_start(stream_id: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): {
+    // javascript wrapper for 'gst_event_new_stream_start'
+}</pre>
+
+<p>Create a new STREAM_START event. The stream start event can only
+travel downstream synchronized with the buffer flow. It is expected
+to be the first event that is sent for a new stream.</p>
+<p>Source elements, demuxers and other elements that create new streams
+are supposed to send this event as the first event of a new stream. It
+should not be sent after a flushing seek or in similar situations
+and is used to mark the beginning of a new logical stream. Elements
+combining multiple streams must ensure that this event is only forwarded
+downstream once and not for every single input stream.</p>
+<p>The <em>stream_id</em> should be a unique string that consists of the upstream
+stream-id, / as separator and a unique stream-id for this specific
+stream. A new stream-id should only be created for a stream if the upstream
+stream is split into (potentially) multiple new streams, e.g. in a demuxer,
+but not for every single element in the pipeline.
+<a href="gstpad.html#gst_pad_create_stream_id">Gst.Pad.prototype.create_stream_id</a> or <a href="../c/gstpad.html#gst_pad_create_stream_id_printf">gst_pad_create_stream_id_printf (not introspectable)</a> can be
+used to create a stream-id.  There are no particular semantics for the
+stream-id, though it should be deterministic (to support stream matching)
+and it might be used to order streams (besides any information conveyed by
+stream flags).</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters17">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stream_id:</code></em></i>
+		</p>
+	</td>
+		<td><p>Identifier for this stream</p>
+</td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns20">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the new STREAM_START event.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_tag">
+		<h3 id="gsteventprototypenew_tag">
+	<span><code>Gst.Event.prototype.new_tag</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_tag(taglist: <a title="Gst.TagList" href="gsttaglist.html#GstTagList">Gst.TagList</a>): {
+    // javascript wrapper for 'gst_event_new_tag'
+}</pre>
+
+<p>Generates a metadata tag event from the given <em>taglist</em>.</p>
+<p>The scope of the taglist specifies if the taglist applies to the
+complete medium or only to this specific stream. As the tag event
+is a sticky event, elements should merge tags received from
+upstream with a given scope with their own tags with the same
+scope and create a new tag event from it.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters18">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>taglist:</code></em></i>
+		</p>
+	</td>
+		<td><p>metadata list. The event will take ownership
+of the taglist.</p>
+</td>
+<td>
+<a title="Gst.TagList" href="gsttaglist.html#GstTagList">Gst.TagList</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns21">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new <a href="gstevent.html#GstEvent">Gst.Event</a></p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_toc">
+		<h3 id="gsteventprototypenew_toc">
+	<span><code>Gst.Event.prototype.new_toc</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_toc(toc: <a title="Gst.Toc" href="gsttoc.html#GstToc">Gst.Toc</a>, updated: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_event_new_toc'
+}</pre>
+
+<p>Generate a TOC event from the given <em>toc</em>. The purpose of the TOC event is to
+inform elements that some kind of the TOC was found.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters19">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>toc:</code></em></i>
+		</p>
+	</td>
+		<td><p><a href="gsttoc.html#GstToc">Gst.Toc</a> structure.</p>
+</td>
+<td>
+<a title="Gst.Toc" href="gsttoc.html#GstToc">Gst.Toc</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>updated:</code></em></i>
+		</p>
+	</td>
+		<td><p>whether <em>toc</em> was updated or not.</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns22">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new <a href="gstevent.html#GstEvent">Gst.Event</a>.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_new_toc_select">
+		<h3 id="gsteventprototypenew_toc_select">
+	<span><code>Gst.Event.prototype.new_toc_select</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.new_toc_select(uid: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): {
+    // javascript wrapper for 'gst_event_new_toc_select'
+}</pre>
+
+<p>Generate a TOC select event with the given <em>uid</em>. The purpose of the
+TOC select event is to start playback based on the TOC's entry with the
+given <em>uid</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters20">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>uid:</code></em></i>
+		</p>
+	</td>
+		<td><p>UID in the TOC to start playback from.</p>
+</td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns23">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a new <a href="gstevent.html#GstEvent">Gst.Event</a>.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_copy_segment">
+		<h3 id="gsteventprototypecopy_segment">
+	<span><code>Gst.Event.prototype.copy_segment</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.copy_segment(segment: <a title="Gst.Segment" href="gstsegment.html#GstSegment">Gst.Segment</a>): {
+    // javascript wrapper for 'gst_event_copy_segment'
+}</pre>
+
+<p>Parses a segment <em>event</em> and copies the <a href="gstsegment.html#GstSegment">Gst.Segment</a> into the location
+given by <em>segment</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters21">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The event to parse</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+	</td>
+		<td><p>a pointer to a <a href="gstsegment.html#GstSegment">Gst.Segment</a></p>
+</td>
+<td>
+<a title="Gst.Segment" href="gstsegment.html#GstSegment">Gst.Segment</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_event_get_running_time_offset">
+		<h3 id="gsteventprototypeget_running_time_offset">
+	<span><code>Gst.Event.prototype.get_running_time_offset</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.get_running_time_offset(): {
+    // javascript wrapper for 'gst_event_get_running_time_offset'
+}</pre>
+
+<p>Retrieve the accumulated running time offset of the event.</p>
+<p>Events passing through <a href="gstpad.html#GstPad">Gst.Pad</a> that have a running time
+offset set via <a href="gstpad.html#gst_pad_set_offset">Gst.Pad.prototype.set_offset</a> will get their offset
+adjusted according to the pad's offset.</p>
+<p>If the event contains any information that related to the
+running time, this information will need to be updated
+before usage with this offset.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters22">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>A <a href="gstevent.html#GstEvent">Gst.Event</a>.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns24">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The event's running time offset</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_get_seqnum">
+		<h3 id="gsteventprototypeget_seqnum">
+	<span><code>Gst.Event.prototype.get_seqnum</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.get_seqnum(): {
+    // javascript wrapper for 'gst_event_get_seqnum'
+}</pre>
+
+<p>Retrieve the sequence number of a event.</p>
+<p>Events have ever-incrementing sequence numbers, which may also be set
+explicitly via <a href="gstevent.html#gst_event_set_seqnum">Gst.Event.prototype.set_seqnum</a>. Sequence numbers are typically used to
+indicate that a event corresponds to some other set of events or messages,
+for example an EOS event corresponding to a SEEK event. It is considered good
+practice to make this correspondence when possible, though it is not
+required.</p>
+<p>Note that events and messages share the same sequence number incrementor;
+two events or messages will never have the same sequence number unless
+that correspondence was made explicitly.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters23">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>A <a href="gstevent.html#GstEvent">Gst.Event</a>.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns25">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The event's sequence number.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_get_structure">
+		<h3 id="gsteventprototypeget_structure">
+	<span><code>Gst.Event.prototype.get_structure</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.get_structure(): {
+    // javascript wrapper for 'gst_event_get_structure'
+}</pre>
+
+<p>Access the structure of the event.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters24">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="gstevent.html#GstEvent">Gst.Event</a>.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns26">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The structure of the event. The structure is still
+owned by the event, which means that you should not free it and
+that the pointer becomes invalid when you free the event.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Structure" href="gststructure.html#GstStructure">Gst.Structure</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_has_name">
+		<h3 id="gsteventprototypehas_name">
+	<span><code>Gst.Event.prototype.has_name</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.has_name(name: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): {
+    // javascript wrapper for 'gst_event_has_name'
+}</pre>
+
+<p>Checks if <em>event</em> has the given <em>name</em>. This function is usually used to
+check the name of a custom event.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters25">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="gstevent.html#GstEvent">Gst.Event</a>.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>name:</code></em></i>
+		</p>
+	</td>
+		<td><p>name to check</p>
+</td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns27">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if <em>name</em> matches the name of the event structure.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_buffer_size">
+		<h3 id="gsteventprototypeparse_buffer_size">
+	<span><code>Gst.Event.prototype.parse_buffer_size</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_buffer_size(): {
+    // javascript wrapper for 'gst_event_parse_buffer_size'
+}</pre>
+
+<p>Get the format, minsize, maxsize and async-flag in the buffersize event.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters26">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The event to query</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>format:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>minsize:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>maxsize:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>async:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_caps">
+		<h3 id="gsteventprototypeparse_caps">
+	<span><code>Gst.Event.prototype.parse_caps</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_caps(): {
+    // javascript wrapper for 'gst_event_parse_caps'
+}</pre>
+
+<p>Get the caps from <em>event</em>. The caps remains valid as long as <em>event</em> remains
+valid.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters27">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The event to parse</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns28">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>caps:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Caps" href="gstcaps.html#GstCaps">Gst.Caps</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_flush_stop">
+		<h3 id="gsteventprototypeparse_flush_stop">
+	<span><code>Gst.Event.prototype.parse_flush_stop</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_flush_stop(): {
+    // javascript wrapper for 'gst_event_parse_flush_stop'
+}</pre>
+
+<p>Parse the FLUSH_STOP event and retrieve the <em>reset_time</em> member.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters28">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The event to parse</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns29">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>reset_time:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_gap">
+		<h3 id="gsteventprototypeparse_gap">
+	<span><code>Gst.Event.prototype.parse_gap</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_gap(): {
+    // javascript wrapper for 'gst_event_parse_gap'
+}</pre>
+
+<p>Extract timestamp and duration from a new GAP event.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters29">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstevent.html#GstEvent">Gst.Event</a> of type <a href="gstevent.html#GST_EVENT_GAP">Gst.EventType.prototype.gap</a></p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of1">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>timestamp:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>duration:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_event_parse_group_id">
+		<h3 id="gsteventprototypeparse_group_id">
+	<span><code>Gst.Event.prototype.parse_group_id</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_group_id(): {
+    // javascript wrapper for 'gst_event_parse_group_id'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters30">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a stream-start event</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of2">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if a group id was set on the event and could be parsed,
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> otherwise.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>group_id:</i>
+				</p>
+	</td>
+	<td>
+		<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a> if a group id was set on the event and could be parsed,
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a> otherwise.</p>
+
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_latency">
+		<h3 id="gsteventprototypeparse_latency">
+	<span><code>Gst.Event.prototype.parse_latency</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_latency(): {
+    // javascript wrapper for 'gst_event_parse_latency'
+}</pre>
+
+<p>Get the latency in the latency event.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters31">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The event to query</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns30">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>latency:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_event_parse_protection">
+		<h3 id="gsteventprototypeparse_protection">
+	<span><code>Gst.Event.prototype.parse_protection</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_protection(origin: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): {
+    // javascript wrapper for 'gst_event_parse_protection'
+}</pre>
+
+<p>Parses an event containing protection system specific information and stores
+the results in <em>system_id</em>, <em>data</em> and <em>origin</em>. The data stored in <em>system_id</em>,
+<em>origin</em> and <em>data</em> are valid until <em>event</em> is released.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters32">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstevent.html#GST_EVENT_PROTECTION">Gst.EventType.prototype.protection</a> event.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>origin:</code></em></i>
+		</p>
+	</td>
+		<td><p>pointer to store a value that
+indicates where the protection information carried by <em>event</em> was extracted
+from.</p>
+</td>
+<td>
+<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of3">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>system_id:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>data:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.6
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_qos">
+		<h3 id="gsteventprototypeparse_qos">
+	<span><code>Gst.Event.prototype.parse_qos</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_qos(): {
+    // javascript wrapper for 'gst_event_parse_qos'
+}</pre>
+
+<p>Get the type, proportion, diff and timestamp in the qos event. See
+<a href="gstevent.html#gst_event_new_qos">Gst.Event.prototype.new_qos</a> for more information about the different QoS values.</p>
+<p><em>timestamp</em> will be adjusted for any pad offsets of pads it was passing through.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters33">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The event to query</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of4">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>type:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.QOSType" href="gstevent.html#GstQOSType">Gst.QOSType</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>proportion:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>diff:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.ClockTimeDiff" href="gstclock.html#GstClockTimeDiff">Gst.ClockTimeDiff</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>timestamp:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.ClockTime" href="gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_seek">
+		<h3 id="gsteventprototypeparse_seek">
+	<span><code>Gst.Event.prototype.parse_seek</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_seek(): {
+    // javascript wrapper for 'gst_event_parse_seek'
+}</pre>
+
+<p>Parses a seek <em>event</em> and stores the results in the given result locations.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters34">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a seek event</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of5">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>rate:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>format:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>flags:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.SeekFlags" href="gstsegment.html#GstSeekFlags">Gst.SeekFlags</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>start_type:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.SeekType" href="gstsegment.html#GstSeekType">Gst.SeekType</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>start:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>stop_type:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.SeekType" href="gstsegment.html#GstSeekType">Gst.SeekType</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>stop:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_segment">
+		<h3 id="gsteventprototypeparse_segment">
+	<span><code>Gst.Event.prototype.parse_segment</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_segment(): {
+    // javascript wrapper for 'gst_event_parse_segment'
+}</pre>
+
+<p>Parses a segment <em>event</em> and stores the result in the given <em>segment</em> location.
+<em>segment</em> remains valid only until the <em>event</em> is freed. Don't modify the segment
+and make a copy if you want to modify it or store it for later use.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters35">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The event to parse</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns31">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>segment:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Segment" href="gstsegment.html#GstSegment">Gst.Segment</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_segment_done">
+		<h3 id="gsteventprototypeparse_segment_done">
+	<span><code>Gst.Event.prototype.parse_segment_done</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_segment_done(): {
+    // javascript wrapper for 'gst_event_parse_segment_done'
+}</pre>
+
+<p>Extracts the position and format from the segment done message.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters36">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>A valid <a href="gstevent.html#GstEvent">Gst.Event</a> of type GST_EVENT_SEGMENT_DONE.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of6">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>format:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>position:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_event_parse_select_streams">
+		<h3 id="gsteventprototypeparse_select_streams">
+	<span><code>Gst.Event.prototype.parse_select_streams</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_select_streams(): {
+    // javascript wrapper for 'gst_event_parse_select_streams'
+}</pre>
+
+<p>Parse the SELECT_STREAMS event and retrieve the contained streams.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters37">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The event to parse</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns32">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>streams:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="GLib.List" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GLib.List</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_sink_message">
+		<h3 id="gsteventprototypeparse_sink_message">
+	<span><code>Gst.Event.prototype.parse_sink_message</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_sink_message(): {
+    // javascript wrapper for 'gst_event_parse_sink_message'
+}</pre>
+
+<p>Parse the sink-message event. Unref <em>msg</em> after usage.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters38">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The event to query</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns33">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>msg:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Message" href="gstmessage.html#GstMessage">Gst.Message</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_step">
+		<h3 id="gsteventprototypeparse_step">
+	<span><code>Gst.Event.prototype.parse_step</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_step(): {
+    // javascript wrapper for 'gst_event_parse_step'
+}</pre>
+
+<p>Parse the step event.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters39">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The event to query</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of7">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>format:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Format" href="../../javascript/GstFormat">Gst.Format</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>amount:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>rate:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>flush:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>intermediate:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_event_parse_stream">
+		<h3 id="gsteventprototypeparse_stream">
+	<span><code>Gst.Event.prototype.parse_stream</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_stream(): {
+    // javascript wrapper for 'gst_event_parse_stream'
+}</pre>
+
+<p>Parse a stream-start <em>event</em> and extract the <a href="gststreams.html#GstStream">Gst.Stream</a> from it.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters40">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a stream-start event</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns34">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>stream:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Stream" href="gststreams.html#GstStream">Gst.Stream</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_event_parse_stream_collection">
+		<h3 id="gsteventprototypeparse_stream_collection">
+	<span><code>Gst.Event.prototype.parse_stream_collection</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_stream_collection(): {
+    // javascript wrapper for 'gst_event_parse_stream_collection'
+}</pre>
+
+<p>Retrieve new <a href="gststreamcollection.html#GstStreamCollection">Gst.StreamCollection</a> from STREAM_COLLECTION event <em>event</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters41">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a stream-collection event</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns35">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>collection:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.StreamCollection" href="gststreamcollection.html#GstStreamCollection">Gst.StreamCollection</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_event_parse_stream_flags">
+		<h3 id="gsteventprototypeparse_stream_flags">
+	<span><code>Gst.Event.prototype.parse_stream_flags</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_stream_flags(): {
+    // javascript wrapper for 'gst_event_parse_stream_flags'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters42">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a stream-start event</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns36">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>flags:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.StreamFlags" href="gstevent.html#GstStreamFlags">Gst.StreamFlags</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_event_parse_stream_group_done">
+		<h3 id="gsteventprototypeparse_stream_group_done">
+	<span><code>Gst.Event.prototype.parse_stream_group_done</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_stream_group_done(): {
+    // javascript wrapper for 'gst_event_parse_stream_group_done'
+}</pre>
+
+<p>Parse a stream-group-done <em>event</em> and store the result in the given
+<em>group_id</em> location.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters43">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a stream-group-done event.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns37">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>group_id:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_stream_start">
+		<h3 id="gsteventprototypeparse_stream_start">
+	<span><code>Gst.Event.prototype.parse_stream_start</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_stream_start(): {
+    // javascript wrapper for 'gst_event_parse_stream_start'
+}</pre>
+
+<p>Parse a stream-id <em>event</em> and store the result in the given <em>stream_id</em>
+location. The string stored in <em>stream_id</em> must not be modified and will
+remain valid only until <em>event</em> gets freed. Make a copy if you want to
+modify it or store it for later use.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters44">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a stream-start event.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns38">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>stream_id:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_tag">
+		<h3 id="gsteventprototypeparse_tag">
+	<span><code>Gst.Event.prototype.parse_tag</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_tag(): {
+    // javascript wrapper for 'gst_event_parse_tag'
+}</pre>
+
+<p>Parses a tag <em>event</em> and stores the results in the given <em>taglist</em> location.
+No reference to the taglist will be returned, it remains valid only until
+the <em>event</em> is freed. Don't modify or free the taglist, make a copy if you
+want to modify it or store it for later use.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters45">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a tag event</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns39">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>taglist:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.TagList" href="gsttaglist.html#GstTagList">Gst.TagList</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_toc">
+		<h3 id="gsteventprototypeparse_toc">
+	<span><code>Gst.Event.prototype.parse_toc</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_toc(): {
+    // javascript wrapper for 'gst_event_parse_toc'
+}</pre>
+
+<p>Parse a TOC <em>event</em> and store the results in the given <em>toc</em> and <em>updated</em> locations.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters46">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a TOC event.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns-a-tuple-made-of8">Returns a tuple made of</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>toc:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Gst.Toc" href="gsttoc.html#GstToc">Gst.Toc</a>
+	</td>
+	</tr>
+
+						<tr>
+	<td>
+		<p>
+				<i>updated:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_parse_toc_select">
+		<h3 id="gsteventprototypeparse_toc_select">
+	<span><code>Gst.Event.prototype.parse_toc_select</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.parse_toc_select(): {
+    // javascript wrapper for 'gst_event_parse_toc_select'
+}</pre>
+
+<p>Parse a TOC select <em>event</em> and store the results in the given <em>uid</em> location.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters47">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a TOC select event.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns40">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				<i>uid:</i>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_event_set_group_id">
+		<h3 id="gsteventprototypeset_group_id">
+	<span><code>Gst.Event.prototype.set_group_id</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.set_group_id(group_id: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_event_set_group_id'
+}</pre>
+
+<p>All streams that have the same group id are supposed to be played
+together, i.e. all streams inside a container file should have the
+same group id but different stream ids. The group id should change
+each time the stream is started, resulting in different group ids
+each time a file is played for example.</p>
+<p>Use <a href="gstutils.html#gst_util_group_id_next">Gst.prototype.util_group_id_next</a> to get a new group id.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters48">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a stream-start event</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>group_id:</code></em></i>
+		</p>
+	</td>
+		<td><p>the group id to set</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.4;" id="gst_event_set_running_time_offset">
+		<h3 id="gsteventprototypeset_running_time_offset">
+	<span><code>Gst.Event.prototype.set_running_time_offset</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.set_running_time_offset(offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_event_set_running_time_offset'
+}</pre>
+
+<p>Set the running time offset of a event. See
+<a href="gstevent.html#gst_event_get_running_time_offset">Gst.Event.prototype.get_running_time_offset</a> for more information.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters49">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>A <a href="gstevent.html#GstEvent">Gst.Event</a>.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>offset:</code></em></i>
+		</p>
+	</td>
+		<td><p>A the new running time offset</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.4
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_set_seqnum">
+		<h3 id="gsteventprototypeset_seqnum">
+	<span><code>Gst.Event.prototype.set_seqnum</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.set_seqnum(seqnum: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_event_set_seqnum'
+}</pre>
+
+<p>Set the sequence number of a event.</p>
+<p>This function might be called by the creator of a event to indicate that the
+event relates to other events or messages. See <a href="gstevent.html#gst_event_get_seqnum">Gst.Event.prototype.get_seqnum</a> for
+more information.</p>
+<p>MT safe.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters50">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>A <a href="gstevent.html#GstEvent">Gst.Event</a>.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>seqnum:</code></em></i>
+		</p>
+	</td>
+		<td><p>A sequence number.</p>
+</td>
+<td>
+<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="gst_event_set_stream">
+		<h3 id="gsteventprototypeset_stream">
+	<span><code>Gst.Event.prototype.set_stream</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.set_stream(stream: <a title="Gst.Stream" href="gststreams.html#GstStream">Gst.Stream</a>): {
+    // javascript wrapper for 'gst_event_set_stream'
+}</pre>
+
+<p>Set the <em>stream</em> on the stream-start <em>event</em></p>
+
+	<div class="parameter_container">
+		<h4 id="parameters51">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a stream-start event</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>stream:</code></em></i>
+		</p>
+	</td>
+		<td><p>the stream object to set</p>
+</td>
+<td>
+<a title="Gst.Stream" href="gststreams.html#GstStream">Gst.Stream</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.10
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_event_set_stream_flags">
+		<h3 id="gsteventprototypeset_stream_flags">
+	<span><code>Gst.Event.prototype.set_stream_flags</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.set_stream_flags(flags: <a title="Gst.StreamFlags" href="gstevent.html#GstStreamFlags">Gst.StreamFlags</a>): {
+    // javascript wrapper for 'gst_event_set_stream_flags'
+}</pre>
+
+
+	<div class="parameter_container">
+		<h4 id="parameters52">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>a stream-start event</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>flags:</code></em></i>
+		</p>
+	</td>
+		<td><p>the stream flags to set</p>
+</td>
+<td>
+<a title="Gst.StreamFlags" href="gstevent.html#GstStreamFlags">Gst.StreamFlags</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+
+
+	<p>
+	Since			: 1.2
+		</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_writable_structure">
+		<h3 id="gsteventprototypewritable_structure">
+	<span><code>Gst.Event.prototype.writable_structure</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.Event.prototype.writable_structure(): {
+    // javascript wrapper for 'gst_event_writable_structure'
+}</pre>
+
+<p>Get a writable version of the structure.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters53">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+	</td>
+		<td><p>The <a href="gstevent.html#GstEvent">Gst.Event</a>.</p>
+</td>
+<td>
+<a title="Gst.Event" href="gstevent.html#GstEvent">Gst.Event</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns41">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>The structure of the event. The structure
+is still owned by the event, which means that you should not free
+it and that the pointer becomes invalid when you free the event.
+This function checks if <em>event</em> is writable and will never return
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a>.</p>
+<p>MT safe.</p>
+
+	</td>
+	<td>
+		<a title="Gst.Structure" href="gststructure.html#GstStructure">Gst.Structure</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Functions">Functions</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_type_get_flags">
+		<h3 id="gstprototypeevent_type_get_flags">
+	<span><code>Gst.prototype.event_type_get_flags</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.prototype.event_type_get_flags(type: <a title="Gst.EventType" href="gstevent.html#GstEventType">Gst.EventType</a>): {
+    // javascript wrapper for 'gst_event_type_get_flags'
+}</pre>
+
+<p>Gets the <a href="gstevent.html#GstEventTypeFlags">Gst.EventTypeFlags</a> associated with <em>type</em>.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters54">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>type:</code></em></i>
+		</p>
+	</td>
+		<td><p>a <a href="gstevent.html#GstEventType">Gst.EventType</a></p>
+</td>
+<td>
+<a title="Gst.EventType" href="gstevent.html#GstEventType">Gst.EventType</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns42">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a <a href="gstevent.html#GstEventTypeFlags">Gst.EventTypeFlags</a>.</p>
+
+	</td>
+	<td>
+		<a title="Gst.EventTypeFlags" href="gstevent.html#GstEventTypeFlags">Gst.EventTypeFlags</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_type_get_name">
+		<h3 id="gstprototypeevent_type_get_name">
+	<span><code>Gst.prototype.event_type_get_name</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.prototype.event_type_get_name(type: <a title="Gst.EventType" href="gstevent.html#GstEventType">Gst.EventType</a>): {
+    // javascript wrapper for 'gst_event_type_get_name'
+}</pre>
+
+<p>Get a printable name for the given event type. Do not modify or free.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters55">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>type:</code></em></i>
+		</p>
+	</td>
+		<td><p>the event type</p>
+</td>
+<td>
+<a title="Gst.EventType" href="gstevent.html#GstEventType">Gst.EventType</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns43">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>a reference to the static name of the event.</p>
+
+	</td>
+	<td>
+		<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_event_type_to_quark">
+		<h3 id="gstprototypeevent_type_to_quark">
+	<span><code>Gst.prototype.event_type_to_quark</code></span>
+</h3>
+
+		<pre class="programlisting">
+function Gst.prototype.event_type_to_quark(type: <a title="Gst.EventType" href="gstevent.html#GstEventType">Gst.EventType</a>): {
+    // javascript wrapper for 'gst_event_type_to_quark'
+}</pre>
+
+<p>Get the unique quark for the given event type.</p>
+
+	<div class="parameter_container">
+		<h4 id="parameters56">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>type:</code></em></i>
+		</p>
+	</td>
+		<td><p>the event type</p>
+</td>
+<td>
+<a title="Gst.EventType" href="gstevent.html#GstEventType">Gst.EventType</a>
+</td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+			<h4 id="returns44">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		<p>the quark associated with the event type</p>
+
+	</td>
+	<td>
+		<a title="GLib.Quark" href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#GQuark">GLib.Quark</a>
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Structures">Structures</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEvent">
+		<h3 id="gstevent1">
+	Gst.Event
+</h3>
+
+		<p>A <a href="gstevent.html#GstEvent">Gst.Event</a>.</p>
+
+
+<div class="member_details">
+	<h4 id="attributes">Attributes</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr id="GstEvent.mini_object">
+		<td>
+		<p>
+		<i><em><code><a title="GstMiniObject" href="gstminiobject.html#GstMiniObject">GstMiniObject</a> <em><code>mini_object</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>the parent structure</p>
+</td>
+</tr>
+
+						<tr id="GstEvent.type">
+		<td>
+		<p>
+		<i><em><code><a title="GstEventType" href="gstevent.html#GstEventType">GstEventType</a> <em><code>type</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>the <a href="gstevent.html#GstEventType">GstEventType</a> of the event</p>
+</td>
+</tr>
+
+						<tr id="GstEvent.timestamp">
+		<td>
+		<p>
+		<i><em><code><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <em><code>timestamp</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>the timestamp of the event</p>
+</td>
+</tr>
+
+						<tr id="GstEvent.seqnum">
+		<td>
+		<p>
+		<i><em><code><a title="guint32" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint32">guint32</a> <em><code>seqnum</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td><p>the sequence number of the event</p>
+</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEventType">
+		<h3 id="enum-gsteventtype">
+		enum Gst.EventType
+	</h3>
+
+		<p><a href="gstevent.html#GstEventType">Gst.EventType</a> lists the standard event types that can be sent in a pipeline.</p>
+<p>The custom event types can be used for private messages between elements
+that can't be expressed using normal
+GStreamer buffer passing semantics. Custom events carry an arbitrary
+<a href="gststructure.html#GstStructure">Gst.Structure</a>.
+Specific custom events are distinguished by the name of the structure.</p>
+
+
+<div class="member_details">
+	<h4 id="members">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_UNKNOWN"></a>
+		Gst.EventType.prototype.unknown
+		</p>
+	</td>
+	<td><p>unknown event.</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_FLUSH_START"></a>
+		Gst.EventType.prototype.flush_start
+		</p>
+	</td>
+	<td><p>Start a flush operation. This event clears all data
+from the pipeline and unblock all streaming threads.</p>
+</td>
+	<td>
+		<span class="value">Value: 2563</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_FLUSH_STOP"></a>
+		Gst.EventType.prototype.flush_stop
+		</p>
+	</td>
+	<td><p>Stop a flush operation. This event resets the
+running-time of the pipeline.</p>
+</td>
+	<td>
+		<span class="value">Value: 5127</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_STREAM_START"></a>
+		Gst.EventType.prototype.stream_start
+		</p>
+	</td>
+	<td><p>Event to mark the start of a new stream. Sent before any
+other serialized event and only sent at the start of a new stream,
+not after flushing seeks.</p>
+</td>
+	<td>
+		<span class="value">Value: 10254</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_CAPS"></a>
+		Gst.EventType.prototype.caps
+		</p>
+	</td>
+	<td><p><a href="gstcaps.html#GstCaps">Gst.Caps</a> event. Notify the pad of a new media type.</p>
+</td>
+	<td>
+		<span class="value">Value: 12814</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_SEGMENT"></a>
+		Gst.EventType.prototype.segment
+		</p>
+	</td>
+	<td><p>A new media segment follows in the dataflow. The
+segment events contains information for clipping buffers and
+converting buffer timestamps to running-time and
+stream-time.</p>
+</td>
+	<td>
+		<span class="value">Value: 17934</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_STREAM_COLLECTION"></a>
+		Gst.EventType.prototype.stream_collection
+		</p>
+	</td>
+	<td><p>A new <a href="gststreamcollection.html#GstStreamCollection">Gst.StreamCollection</a> is available (Since 1.10)</p>
+</td>
+	<td>
+		<span class="value">Value: 19230</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_TAG"></a>
+		Gst.EventType.prototype.tag
+		</p>
+	</td>
+	<td><p>A new set of metadata tags has been found in the stream.</p>
+</td>
+	<td>
+		<span class="value">Value: 20510</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_BUFFERSIZE"></a>
+		Gst.EventType.prototype.buffersize
+		</p>
+	</td>
+	<td><p>Notification of buffering requirements. Currently not
+used yet.</p>
+</td>
+	<td>
+		<span class="value">Value: 23054</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_SINK_MESSAGE"></a>
+		Gst.EventType.prototype.sink_message
+		</p>
+	</td>
+	<td><p>An event that sinks turn into a message. Used to
+send messages that should be emitted in sync with
+rendering.</p>
+</td>
+	<td>
+		<span class="value">Value: 25630</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_STREAM_GROUP_DONE"></a>
+		Gst.EventType.prototype.stream_group_done
+		</p>
+	</td>
+	<td><p>Indicates that there is no more data for
+the stream group ID in the message. Sent before EOS
+in some instances and should be handled mostly the same. (Since 1.10)</p>
+</td>
+	<td>
+		<span class="value">Value: 26894</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_EOS"></a>
+		Gst.EventType.prototype.eos
+		</p>
+	</td>
+	<td><p>End-Of-Stream. No more data is to be expected to follow
+without either a STREAM_START event, or a FLUSH_STOP and a SEGMENT
+event.</p>
+</td>
+	<td>
+		<span class="value">Value: 28174</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_TOC"></a>
+		Gst.EventType.prototype.toc
+		</p>
+	</td>
+	<td><p>An event which indicates that a new table of contents (TOC)
+was found or updated.</p>
+</td>
+	<td>
+		<span class="value">Value: 30750</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_PROTECTION"></a>
+		Gst.EventType.prototype.protection
+		</p>
+	</td>
+	<td><p>An event which indicates that new or updated
+encryption information has been found in the stream.</p>
+</td>
+	<td>
+		<span class="value">Value: 33310</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_SEGMENT_DONE"></a>
+		Gst.EventType.prototype.segment_done
+		</p>
+	</td>
+	<td><p>Marks the end of a segment playback.</p>
+</td>
+	<td>
+		<span class="value">Value: 38406</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_GAP"></a>
+		Gst.EventType.prototype.gap
+		</p>
+	</td>
+	<td><p>Marks a gap in the datastream.</p>
+</td>
+	<td>
+		<span class="value">Value: 40966</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_QOS"></a>
+		Gst.EventType.prototype.qos
+		</p>
+	</td>
+	<td><p>A quality message. Used to indicate to upstream elements
+that the downstream elements should adjust their processing
+rate.</p>
+</td>
+	<td>
+		<span class="value">Value: 48641</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_SEEK"></a>
+		Gst.EventType.prototype.seek
+		</p>
+	</td>
+	<td><p>A request for a new playback position and rate.</p>
+</td>
+	<td>
+		<span class="value">Value: 51201</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_NAVIGATION"></a>
+		Gst.EventType.prototype.navigation
+		</p>
+	</td>
+	<td><p>Navigation events are usually used for communicating
+user requests, such as mouse or keyboard movements,
+to upstream elements.</p>
+</td>
+	<td>
+		<span class="value">Value: 53761</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_LATENCY"></a>
+		Gst.EventType.prototype.latency
+		</p>
+	</td>
+	<td><p>Notification of new latency adjustment. Sinks will use
+the latency information to adjust their synchronisation.</p>
+</td>
+	<td>
+		<span class="value">Value: 56321</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_STEP"></a>
+		Gst.EventType.prototype.step
+		</p>
+	</td>
+	<td><p>A request for stepping through the media. Sinks will usually
+execute the step operation.</p>
+</td>
+	<td>
+		<span class="value">Value: 58881</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_RECONFIGURE"></a>
+		Gst.EventType.prototype.reconfigure
+		</p>
+	</td>
+	<td><p>A request for upstream renegotiating caps and reconfiguring.</p>
+</td>
+	<td>
+		<span class="value">Value: 61441</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_TOC_SELECT"></a>
+		Gst.EventType.prototype.toc_select
+		</p>
+	</td>
+	<td><p>A request for a new playback position based on TOC
+entry's UID.</p>
+</td>
+	<td>
+		<span class="value">Value: 64001</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_SELECT_STREAMS"></a>
+		Gst.EventType.prototype.select_streams
+		</p>
+	</td>
+	<td><p>A request to select one or more streams (Since 1.10)</p>
+</td>
+	<td>
+		<span class="value">Value: 66561</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_CUSTOM_UPSTREAM"></a>
+		Gst.EventType.prototype.custom_upstream
+		</p>
+	</td>
+	<td><p>Upstream custom event</p>
+</td>
+	<td>
+		<span class="value">Value: 69121</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_CUSTOM_DOWNSTREAM"></a>
+		Gst.EventType.prototype.custom_downstream
+		</p>
+	</td>
+	<td><p>Downstream custom event that travels in the
+data flow.</p>
+</td>
+	<td>
+		<span class="value">Value: 71686</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_CUSTOM_DOWNSTREAM_OOB"></a>
+		Gst.EventType.prototype.custom_downstream_oob
+		</p>
+	</td>
+	<td><p>Custom out-of-band downstream event.</p>
+</td>
+	<td>
+		<span class="value">Value: 74242</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_CUSTOM_DOWNSTREAM_STICKY"></a>
+		Gst.EventType.prototype.custom_downstream_sticky
+		</p>
+	</td>
+	<td><p>Custom sticky downstream event.</p>
+</td>
+	<td>
+		<span class="value">Value: 76830</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_CUSTOM_BOTH"></a>
+		Gst.EventType.prototype.custom_both
+		</p>
+	</td>
+	<td><p>Custom upstream or downstream event.
+In-band when travelling downstream.</p>
+</td>
+	<td>
+		<span class="value">Value: 79367</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_CUSTOM_BOTH_OOB"></a>
+		Gst.EventType.prototype.custom_both_oob
+		</p>
+	</td>
+	<td><p>Custom upstream or downstream out-of-band event.</p>
+</td>
+	<td>
+		<span class="value">Value: 81923</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstEventTypeFlags">
+		<h3 id="enum-gsteventtypeflags">
+		enum Gst.EventTypeFlags
+	</h3>
+
+		<p><a href="gstevent.html#GstEventTypeFlags">Gst.EventTypeFlags</a> indicate the aspects of the different <a href="gstevent.html#GstEventType">Gst.EventType</a>
+values. You can get the type flags of a <a href="gstevent.html#GstEventType">Gst.EventType</a> with the
+<a href="gstevent.html#gst_event_type_get_flags">Gst.prototype.event_type_get_flags</a> function.</p>
+
+
+<div class="member_details">
+	<h4 id="members1">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_TYPE_UPSTREAM"></a>
+		Gst.EventTypeFlags.prototype.upstream
+		</p>
+	</td>
+	<td><p>Set if the event can travel upstream.</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_TYPE_DOWNSTREAM"></a>
+		Gst.EventTypeFlags.prototype.downstream
+		</p>
+	</td>
+	<td><p>Set if the event can travel downstream.</p>
+</td>
+	<td>
+		<span class="value">Value: 2</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_TYPE_SERIALIZED"></a>
+		Gst.EventTypeFlags.prototype.serialized
+		</p>
+	</td>
+	<td><p>Set if the event should be serialized with data
+flow.</p>
+</td>
+	<td>
+		<span class="value">Value: 4</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_TYPE_STICKY"></a>
+		Gst.EventTypeFlags.prototype.sticky
+		</p>
+	</td>
+	<td><p>Set if the event is sticky on the pads.</p>
+</td>
+	<td>
+		<span class="value">Value: 8</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_EVENT_TYPE_STICKY_MULTI"></a>
+		Gst.EventTypeFlags.prototype.sticky_multi
+		</p>
+	</td>
+	<td><p>Multiple sticky events can be on a pad, each
+identified by the event name.</p>
+</td>
+	<td>
+		<span class="value">Value: 16</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQOSType">
+		<h3 id="enum-gstqostype">
+		enum Gst.QOSType
+	</h3>
+
+		<p>The different types of QoS events that can be given to the
+<a href="gstevent.html#gst_event_new_qos">Gst.Event.prototype.new_qos</a> method.</p>
+
+
+<div class="member_details">
+	<h4 id="members2">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_QOS_TYPE_OVERFLOW"></a>
+		Gst.QOSType.prototype.overflow
+		</p>
+	</td>
+	<td><p>The QoS event type that is produced when upstream
+elements are producing data too quickly and the element can't keep up
+processing the data. Upstream should reduce their production rate. This
+type is also used when buffers arrive early or in time.</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_QOS_TYPE_UNDERFLOW"></a>
+		Gst.QOSType.prototype.underflow
+		</p>
+	</td>
+	<td><p>The QoS event type that is produced when upstream
+elements are producing data too slowly and need to speed up their
+production rate.</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_QOS_TYPE_THROTTLE"></a>
+		Gst.QOSType.prototype.throttle
+		</p>
+	</td>
+	<td><p>The QoS event type that is produced when the
+application enabled throttling to limit the data rate.</p>
+</td>
+	<td>
+		<span class="value">Value: 2</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="GstStreamFlags">
+		<h3 id="enum-gststreamflags">
+		enum Gst.StreamFlags
+	</h3>
+
+		
+<div class="member_details">
+	<h4 id="members3">Members</h4>
+	<div class="member_container">
+		<table>
+			<tbody>
+						<tr>
+	<td>
+		<p>
+		<a id="GST_STREAM_FLAG_NONE"></a>
+		Gst.StreamFlags.prototype.none
+		</p>
+	</td>
+	<td><p>This stream has no special attributes</p>
+</td>
+	<td>
+		<span class="value">Value: 0</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_STREAM_FLAG_SPARSE"></a>
+		Gst.StreamFlags.prototype.sparse
+		</p>
+	</td>
+	<td><p>This stream is a sparse stream (e.g. a subtitle
+stream), data may flow only in irregular intervals with large gaps in
+between.</p>
+</td>
+	<td>
+		<span class="value">Value: 1</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_STREAM_FLAG_SELECT"></a>
+		Gst.StreamFlags.prototype.select
+		</p>
+	</td>
+	<td><p>This stream should be selected by default. This
+flag may be used by demuxers to signal that a stream should be selected
+by default in a playback scenario.</p>
+</td>
+	<td>
+		<span class="value">Value: 2</span>
+	</td>
+</tr>
+
+						<tr>
+	<td>
+		<p>
+		<a id="GST_STREAM_FLAG_UNSELECT"></a>
+		Gst.StreamFlags.prototype.unselect
+		</p>
+	</td>
+	<td><p>This stream should not be selected by default.
+This flag may be used by demuxers to signal that a stream should not
+be selected by default in a playback scenario, but only if explicitly
+selected by the user (e.g. an audio track for the hard of hearing or
+a director's commentary track).</p>
+</td>
+	<td>
+		<span class="value">Value: 4</span>
+	</td>
+</tr>
+
+						</tbody>
+		</table>
+	</div>
+</div>
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Constants">Constants</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_EVENT_TYPE_BOTH">
+		<h3 class="constant" id="gstevent_type_both">
+	Gst.EVENT_TYPE_BOTH
+</h3>
+
+		<p>The same thing as <a href="gstevent.html#GST_EVENT_TYPE_UPSTREAM">Gst.EventTypeFlags.prototype.upstream</a> | <a href="gstevent.html#GST_EVENT_TYPE_DOWNSTREAM">Gst.EventTypeFlags.prototype.downstream</a>.</p>
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_EVENT_NUM_SHIFT">
+		<h3 class="constant" id="gstevent_num_shift">
+	Gst.EVENT_NUM_SHIFT
+</h3>
+
+		
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

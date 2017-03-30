@@ -70,7 +70,7 @@
 </nav>
 
 <main class="page-row page-row-expanded">
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-doc-1.0" data-hotdoc-ref="design/trickmodes.html" class="page_container" id="page-wrapper">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/trickmodes.html" class="page_container" id="page-wrapper">
 	<div class="row">
 		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
@@ -111,13 +111,13 @@ media file.</p>
 pipeline.</p>
 <h2 id="general-seeking-overview">General seeking overview</h2>
 <p>Consider a typical playback pipeline:</p>
-<pre><code>                        .---------.  .------.
-            .-------.   | decoder |-&gt;| sink |
-.--------.  |       |--&gt;'---------'  '------'
+<pre><code>                        +---------+  +------+
+            +-------+   | decoder |-&gt;| sink |
++--------+  |       |--&gt;+---------+  +------+
 | source |-&gt;| demux |
-'--------'  |       |--&gt;.---------.  .------.
-            '-------'   | decoder |-&gt;| sink |
-                        '---------'  '------'
++--------+  |       |--&gt;+---------+  +------+
+            +-------+   | decoder |-&gt;| sink |
+                        +---------+  +------+
 </code></pre>
 <p>The pipeline is initially configured to play back at speed 1.0 starting
 from position 0 and stopping at the total duration of the file.</p>
@@ -127,22 +127,22 @@ application:</p>
 <p>The seek event contains:</p>
 <ul>
 <li>
-<p>various flags describing:</p>
+<p>various <code>GstSeekFlags</code> flags describing:</p>
 </li>
 <li>
-<p>where to seek to (KEY_UNIT)</p>
+<p>where to seek to (<code>KEY_UNIT</code>)</p>
 </li>
 <li>
-<p>how accurate the seek should be (ACCURATE)</p>
+<p>how accurate the seek should be (<code>ACCURATE</code>)</p>
 </li>
 <li>
-<p>how to perform the seek (FLUSH)</p>
+<p>how to perform the seek (<code>FLUSH</code>)</p>
 </li>
 <li>
-<p>what to do when the stop position is reached (SEGMENT).</p>
+<p>what to do when the stop position is reached (<code>SEGMENT</code>).</p>
 </li>
 <li>
-<p>extra playback options (SKIP)</p>
+<p>extra playback options (<code>SKIP</code>)</p>
 </li>
 <li>
 <p>a format to seek in, this can be time, bytes, units (frames,
@@ -172,15 +172,15 @@ value.</p>
 <p>By default the pipeline will send the event to all sink elements. By
 default an element will forward the event upstream on all sinkpads.
 Elements can modify the format of the seek event. The most common format
-is GST_FORMAT_TIME.</p>
+is <code>GST_FORMAT_TIME</code>.</p>
 <p>One element will actually perform the seek, this is usually the demuxer
 or source element. For more information on how to perform the different
 seek types see <a href="seeking.html">seeking</a>.</p>
-<p>For client side trickmode a SEGMENT event will be sent downstream with
+<p>For client side trickmode a <code>SEGMENT</code> event will be sent downstream with
 the new rate and start/stop positions. All elements prepare themselves
 to handle the rate (see below). The applied rate of the SEGMENT event
 will be set to 1.0 to indicate that no rate adjustment has been done.</p>
-<p>for server side trick mode a SEGMENT event is sent downstream with a
+<p>for server side trick mode a <code>SEGMENT</code> event is sent downstream with a
 rate of 1.0 and the start/stop positions. The elements will configure
 themselves for normal playback speed since the server will perform the
 rate conversions. The applied rate will be set to the rate that will be
@@ -192,11 +192,12 @@ reporting performed in the sink is aware of the trick mode.</p>
 connection requesting a new byte or time position and a new playback
 speed. The capabilities can be queried from the server when the
 connection is opened.</p>
-<p>We assume the source element is derived from the GstPushSrc base class.
-The base source should be configured with gst_base_src_set_format
-(src, GST_FORMAT_TIME).</p>
-<p>The do_seek method will be called on the push src subclass with the
-seek information passed in the GstSegment argument.</p>
+<p>We assume the source element is derived from the <code>GstPushSrc</code> base class.
+The base source should be configured with:</p>
+<pre><code class="language-c">gst_base_src_set_format (src, GST_FORMAT_TIME);
+</code></pre>
+<p>The <code>do_seek()</code> method will be called on the <code>GstPushSrc</code> subclass with the
+seek information passed in the <code>GstSegment</code> argument.</p>
 <p>The rate value in the segment should be used to reopen the connection to
 the server requesting data at the new speed and possibly a new playback
 position.</p>
@@ -228,19 +229,19 @@ will have a rate of 1.0, no client side trick modes are enabled. The
 segment will have an applied rate different from 1.0 to indicate that
 the media contains data with non-standard playback speed or direction.</p>
 <h2 id="client-side-forward-trickmodes">client side forward trickmodes</h2>
-<p>The seek happens as stated above. a SEGMENT event is sent downstream
-with a rate different from 1.0. Plugins receiving the SEGMENT can decide
+<p>The seek happens as stated above. a <code>SEGMENT</code> event is sent downstream
+with a rate different from 1.0. Plugins receiving the <code>SEGMENT</code> can decide
 to perform the rate conversion of the media data (retimestamp video
 frames, resample audio, …).</p>
 <p>If a plugin decides to resample or retimestamp, it should modify the
-SEGMENT with a rate of 1.0 and update the applied rate so that
+<code>SEGMENT</code> with a rate of 1.0 and update the applied rate so that
 downstream elements don’t resample again but are aware that the media
 has been modified.</p>
 <p>The GStreamer base audio and video sinks will resample automatically if
 they receive a SEGMENT event with a rate different from 1.0. The
 position reporting in the base audio and video sinks will also depend on
 the applied rate of the segment information.</p>
-<p>When the SKIP flag is set, frames can be dropped in the elements. If S
+<p>When the <code>SKIP</code> flag is set, frames can be dropped in the elements. If S
 is the speedup factor, a good algorithm for implementing frame skipping
 is to send audio in chunks of Nms (usually 300ms is good) and then skip
 ((S-1) * Nns) of audio data. For the video we send only the keyframes
@@ -250,14 +251,14 @@ timestamps and would set an applied rate of S.</p>
 <p>For backwards playback the following rules apply:</p>
 <ul>
 <li>
-<p>the rate in the SEGMENT is less than 0.0.</p>
+<p>the rate in the <code>SEGMENT</code> is less than 0.0.</p>
 </li>
 <li>
-<p>the SEGMENT start position is less than the stop position, playback
+<p>the <code>SEGMENT</code> start position is less than the stop position, playback
 will however happen from stop to start in reverse.</p>
 </li>
 <li>
-<p>the time member in the SEGMENT is set to the stream time of the
+<p>the time member in the <code>SEGMENT</code> is set to the stream time of the
 start position.</p>
 </li>
 </ul>
@@ -266,7 +267,7 @@ start position.</p>
 <li>
 <p>A source plugin sends data in chunks starting from the last chunk of
 the file. The actual bytes are not reversed. Each chunk that is not
-forward continuous with the previous chunk is marked with a DISCONT
+forward continuous with the previous chunk is marked with a <code>DISCONT</code>
 flag.</p>
 </li>
 <li>
@@ -274,17 +275,17 @@ flag.</p>
 everything starting from the keyframe up to the accumulated data is
 sent downstream. Timestamps on the buffers are set starting from the
 stop position to start, effectively going backwards. Chunks are
-marked with DISCONT when they are not forward continuous with the
+marked with <code>DISCONT</code> when they are not forward continuous with the
 previous buffer.</p>
 </li>
 <li>
 <p>A video decoder decodes and accumulates all decoded frames. If a
-buffer with a DISCONT, SEGMENT or EOS is received, all accumulated
+buffer with a <code>DISCONT</code>, <code>SEGMENT</code> or <code>EOS</code> is received, all accumulated
 frames are sent downsteam in reverse.</p>
 </li>
 <li>
 <p>An audio decoder decodes and accumulates all decoded audio. If a
-buffer with a DISCONT, SEGMENT or EOS is received, all accumulated
+buffer with a <code>DISCONT</code>, <code>SEGMENT</code> or <code>EOS</code> is received, all accumulated
 audio is sent downstream in reverse order. Some audio codecs need
 the previous data buffer to decode the current one, in that case,
 the previous DISCONT buffer needs to be combined with the last
@@ -300,16 +301,16 @@ perform simple resampling before playing the samples.</p>
 <li>
 <p>for transcoding, audio and video resamplers can be used to reverse,
 resample and retimestamp the buffers. Any rate adjustments performed
-on the media must be added to the applied_rate and subtracted from
-the rate members in the SEGMENT
+on the media must be added to the <code>applied_rate</code> and subtracted from
+the rate members in the <code>SEGMENT</code>
 event.</p>
 </li>
 </ul>
-<p>In SKIP mode, the same algorithm as for forward SKIP mode can be used.</p>
+<p>In <code>SKIP</code> mode, the same algorithm as for forward <code>SKIP</code> mode can be used.</p>
 <h2 id="notes">Notes</h2>
 <ul>
 <li>
-<p>The clock/running_time keeps running forward.</p>
+<p>The clock/<code>running_time</code> keeps running forward.</p>
 </li>
 <li>
 <p>backwards playback potentially uses a lot of memory as frames and

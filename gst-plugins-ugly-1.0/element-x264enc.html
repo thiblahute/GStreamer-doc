@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>x264enc</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
+
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy" data-offset="70">
+
+
+<nav class="navbar navbar-fixed-top navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="https://gstreamer.freedesktop.org/" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+							</ul>
+			<form action="" class="navbar-form navbar-right">
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+					<span class="glyphicon glyphicon-search form-control-feedback"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</nav>
+
+<main class="page-row page-row-expanded">
+<div data-extension="gst-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-ugly-1.0" data-hotdoc-ref="element-x264enc.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2" id="sidenav-column">
+	<div class="panel panel-collapse" id="sidenav" data-hotdoc-role="navigation">
+		<div id="sitenav-wrapper" class="mCustomScrollbar" data-mcs-theme="minimal">
+			<div class="sidenav-main-panel-body">
+				<div id="site-navigation">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12 col-md-9 col-xl-8">
+	<div id="main">
+				
+<div id="page-description" data-hotdoc-source="element-x264enc">
+<h1 id="x264enc1">x264enc</h1><p>This element encodes raw video into H264 compressed data,
+also otherwise known as MPEG-4 AVC (Advanced Video Codec).</p>
+<p>The <a href="element-x264enc.html#GstX264Enc:pass">pass</a> property controls the type of encoding.  In case of Constant
+Bitrate Encoding (actually ABR), the <a href="element-x264enc.html#GstX264Enc:bitrate">bitrate</a> will determine the quality
+of the encoding.  This will similarly be the case if this target bitrate
+is to obtained in multiple (2 or 3) pass encoding.
+Alternatively, one may choose to perform Constant Quantizer or Quality encoding,
+in which case the <a href="element-x264enc.html#GstX264Enc:quantizer">quantizer</a> property controls much of the outcome, in that case <a href="element-x264enc.html#GstX264Enc:bitrate">bitrate</a> is the maximum bitrate.</p>
+<p>The H264 profile that is eventually used depends on a few settings.
+If <a href="element-x264enc.html#GstX264Enc:dct8x8">dct8x8</a> is enabled, then High profile is used.
+Otherwise, if <a href="element-x264enc.html#GstX264Enc:cabac">cabac</a> entropy coding is enabled or <a href="element-x264enc.html#GstX264Enc:bframes">bframes</a>
+are allowed, then Main Profile is in effect, and otherwise Baseline profile
+applies.  The high profile is imposed by default,
+which is fine for most software players and settings,
+but in some cases (e.g. hardware platforms) a more restricted profile/level
+may be necessary. The recommended way to set a profile is to set it in the
+downstream caps.</p>
+<p>If a preset/tuning are specified then these will define the default values and
+the property defaults will be ignored. After this the option-string property is
+applied, followed by the user-set properties, fast first pass restrictions and
+finally the profile restrictions.</p>
+<blockquote>
+<p>Some settings, including the default settings, may lead to quite
+some latency (i.e. frame buffering) in the encoder. This may cause problems
+with pipeline stalling in non-trivial pipelines, because the encoder latency
+is often considerably higher than the default size of a simple queue
+element. Such problems are caused by one of the queues in the other
+non-x264enc streams/branches filling up and blocking upstream. They can
+be fixed by relaxing the default time/size/buffer limits on the queue
+elements in the non-x264 branches, or using a (single) multiqueue element
+for all branches. Also see the last example below. You can also work around
+this problem by setting the tune=zerolatency property, but this will affect
+overall encoding quality so may not be appropriate for your use case.</p>
+</blockquote>
+<h2 id="example-pipeline">Example pipeline</h2>
+<pre><code class="language-["> gst-launch-1.0 -v videotestsrc num-buffers=1000 ! x264enc qp-min=18 ! \
+   avimux ! filesink location=videotestsrc.avi
+ ]| This example pipeline will encode a test video source to H264 muxed in an
+ AVI container, while ensuring a sane minimum quantization factor to avoid
+ some (excessive) waste. You should ideally never put H264 into an AVI
+ container (or really anything else, for that matter) - use Matroska or
+ MP4/QuickTime or MPEG-TS instead.
+ |[
+ gst-launch-1.0 -v videotestsrc num-buffers=1000 ! x264enc pass=quant ! \
+   matroskamux ! filesink location=videotestsrc.mkv
+ ]| This example pipeline will encode a test video source to H264 using fixed
+ quantization, and muxes it in a Matroska container.
+ |[
+ gst-launch-1.0 -v videotestsrc num-buffers=1000 ! x264enc pass=5 quantizer=25 speed-preset=6 ! video/x-h264, profile=baseline ! \
+   qtmux ! filesink location=videotestsrc.mov
+ ]| This example pipeline will encode a test video source to H264 using
+ constant quality at around Q25 using the 'medium' speed/quality preset and
+ restricting the options used so that the output is H.264 Baseline Profile
+ compliant and finally multiplexing the output in Quicktime mov format.
+ |[
+ gst-launch-1.0 -v videotestsrc num-buffers=1000 ! tee name=t ! queue ! videoconvert ! autovideosink \
+   t. ! queue ! x264enc rc-lookahead=5 ! fakesink
+ ]| This example pipeline will encode a test video source to H264 while
+ displaying the input material at the same time.  As mentioned above,
+ specific settings are needed in this case to avoid pipeline stalling.
+ Depending on goals and context, other approaches are possible, e.g.
+ tune=zerolatency might be configured, or queue sizes increased.
+</code></pre>
+
+</div>
+
+
+<h2 class="symbol_section" id="Classes">Classes</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="x264enc">
+		<h3 id="x264enc2">
+	x264enc
+</h3>
+
+		<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="../libgstreamer-1.0/c/gstelement.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span><a title="GstVideoEncoder" href="../gst-plugins-base-video-1.0/c/gstvideoencoder.html#GstVideoEncoder">GstVideoEncoder</a>
+                    <span class="lineart">╰──</span>x264enc
+</pre>
+
+</div>
+
+</div>
+
+
+
+
+</div>
+
+
+<h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc-&gt;sink">
+		<h3 id="sink">
+    sink:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/x-raw, framerate=(fraction)[ 0/1, 2147483647/1 ], width=(int)[ 16, 2147483647 ], height=(int)[ 16, 2147483647 ], format=(string){ Y444, Y42B, I420, YV12, NV12 }</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc-&gt;src">
+		<h3 id="src">
+    src:
+</h3>
+<table>
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>src</td></tr>
+        <tr><td><b>Capabilities:</b></td><td>video/x-h264, framerate=(fraction)[ 0/1, 2147483647/1 ], width=(int)[ 1, 2147483647 ], height=(int)[ 1, 2147483647 ], stream-format=(string){ avc, byte-stream }, alignment=(string)au, profile=(string){ high-4:4:4, high-4:2:2, high-10, high, main, baseline, constrained-baseline, high-4:4:4-intra, high-4:2:2-intra, high-10-intra }</td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+
+<h2 class="symbol_section" id="Properties">Properties</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:analyse">
+		<h3 class="method" id="analyse">
+	<span><code>analyse</code></span>
+</h3>
+
+		<pre class="property_signature">
+“analyse” <span class="type"><a title="GstX264EncAnalyse" href="element-x264enc.html#GstX264EncAnalyse">GstX264EncAnalyse</a></span>
+</pre>
+
+<p>Partitions to consider</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	(none)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:aud">
+		<h3 class="method" id="aud">
+	<span><code>aud</code></span>
+</h3>
+
+		<pre class="property_signature">
+“aud” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Use AU (Access Unit) delimiter</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:b-adapt">
+		<h3 class="method" id="badapt">
+	<span><code>b-adapt</code></span>
+</h3>
+
+		<pre class="property_signature">
+“b-adapt” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Automatically decide how many B-frames to use</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:b-pyramid">
+		<h3 class="method" id="bpyramid">
+	<span><code>b-pyramid</code></span>
+</h3>
+
+		<pre class="property_signature">
+“b-pyramid” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Keep some B-frames as references</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:bframes">
+		<h3 class="method" id="bframes">
+	<span><code>bframes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“bframes” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Number of B-frames between I and P</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:bitrate">
+		<h3 class="method" id="bitrate">
+	<span><code>bitrate</code></span>
+</h3>
+
+		<pre class="property_signature">
+“bitrate” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Bitrate in kbit/sec</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	2048
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:byte-stream">
+		<h3 class="method" id="bytestream">
+	<span><code>byte-stream</code></span>
+</h3>
+
+		<pre class="property_signature">
+“byte-stream” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Generate byte stream format of NALU</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:cabac">
+		<h3 class="method" id="cabac">
+	<span><code>cabac</code></span>
+</h3>
+
+		<pre class="property_signature">
+“cabac” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Enable CABAC entropy coding</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:dct8x8">
+		<h3 class="method" id="dct8x8">
+	<span><code>dct8x8</code></span>
+</h3>
+
+		<pre class="property_signature">
+“dct8x8” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Adaptive spatial transform size</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:frame-packing">
+		<h3 class="method" id="framepacking">
+	<span><code>frame-packing</code></span>
+</h3>
+
+		<pre class="property_signature">
+“frame-packing” <span class="type"><a title="GstX264EncFramePacking" href="element-x264enc.html#GstX264EncFramePacking">GstX264EncFramePacking</a></span>
+</pre>
+
+<p>Set frame packing mode for Stereoscopic content</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	auto (-1)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:interlaced">
+		<h3 class="method" id="interlaced">
+	<span><code>interlaced</code></span>
+</h3>
+
+		<pre class="property_signature">
+“interlaced” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Interlaced material</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:intra-refresh">
+		<h3 class="method" id="intrarefresh">
+	<span><code>intra-refresh</code></span>
+</h3>
+
+		<pre class="property_signature">
+“intra-refresh” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Use Periodic Intra Refresh instead of IDR frames</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:ip-factor">
+		<h3 class="method" id="ipfactor">
+	<span><code>ip-factor</code></span>
+</h3>
+
+		<pre class="property_signature">
+“ip-factor” <span class="type"><a title="gfloat" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gfloat">gfloat</a></span>
+</pre>
+
+<p>Quantizer factor between I- and P-frames</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	1.4
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:key-int-max">
+		<h3 class="method" id="keyintmax">
+	<span><code>key-int-max</code></span>
+</h3>
+
+		<pre class="property_signature">
+“key-int-max” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Maximal distance between two key-frames (0 for automatic)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:mb-tree">
+		<h3 class="method" id="mbtree">
+	<span><code>mb-tree</code></span>
+</h3>
+
+		<pre class="property_signature">
+“mb-tree” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Macroblock-Tree ratecontrol</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:me">
+		<h3 class="method" id="me">
+	<span><code>me</code></span>
+</h3>
+
+		<pre class="property_signature">
+“me” <span class="type"><a title="GstX264EncMe" href="element-x264enc.html#GstX264EncMe">GstX264EncMe</a></span>
+</pre>
+
+<p>Integer pixel motion estimation method</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	hex (1)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:multipass-cache-file">
+		<h3 class="method" id="multipasscachefile">
+	<span><code>multipass-cache-file</code></span>
+</h3>
+
+		<pre class="property_signature">
+“multipass-cache-file” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>Filename for multipass cache file</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	x264.log
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:name">
+		<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>The name of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	x264enc0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:noise-reduction">
+		<h3 class="method" id="noisereduction">
+	<span><code>noise-reduction</code></span>
+</h3>
+
+		<pre class="property_signature">
+“noise-reduction” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Noise reduction strength</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:option-string">
+		<h3 class="method" id="optionstring">
+	<span><code>option-string</code></span>
+</h3>
+
+		<pre class="property_signature">
+“option-string” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>String of x264 options (overridden by element properties)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:parent">
+		<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+<p>The parent of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:pass">
+		<h3 class="method" id="pass">
+	<span><code>pass</code></span>
+</h3>
+
+		<pre class="property_signature">
+“pass” <span class="type"><a title="GstX264EncPass" href="element-x264enc.html#GstX264EncPass">GstX264EncPass</a></span>
+</pre>
+
+<p>Encoding pass/type</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	cbr (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:pb-factor">
+		<h3 class="method" id="pbfactor">
+	<span><code>pb-factor</code></span>
+</h3>
+
+		<pre class="property_signature">
+“pb-factor” <span class="type"><a title="gfloat" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gfloat">gfloat</a></span>
+</pre>
+
+<p>Quantizer factor between P- and B-frames</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	1.3
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:psy-tune">
+		<h3 class="method" id="psytune">
+	<span><code>psy-tune</code></span>
+</h3>
+
+		<pre class="property_signature">
+“psy-tune” <span class="type"><a title="GstX264EncPsyTune" href="element-x264enc.html#GstX264EncPsyTune">GstX264EncPsyTune</a></span>
+</pre>
+
+<p>Preset name for psychovisual tuning options</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	none (0)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:qp-max">
+		<h3 class="method" id="qpmax">
+	<span><code>qp-max</code></span>
+</h3>
+
+		<pre class="property_signature">
+“qp-max” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Maximum quantizer</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	51
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:qp-min">
+		<h3 class="method" id="qpmin">
+	<span><code>qp-min</code></span>
+</h3>
+
+		<pre class="property_signature">
+“qp-min” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Minimum quantizer</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	10
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:qp-step">
+		<h3 class="method" id="qpstep">
+	<span><code>qp-step</code></span>
+</h3>
+
+		<pre class="property_signature">
+“qp-step” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Maximum quantizer difference between frames</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	4
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:quantizer">
+		<h3 class="method" id="quantizer">
+	<span><code>quantizer</code></span>
+</h3>
+
+		<pre class="property_signature">
+“quantizer” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Constant quantizer or quality to apply</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	21
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:rc-lookahead">
+		<h3 class="method" id="rclookahead">
+	<span><code>rc-lookahead</code></span>
+</h3>
+
+		<pre class="property_signature">
+“rc-lookahead” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+<p>Number of frames for frametype lookahead</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	40
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:ref">
+		<h3 class="method" id="ref">
+	<span><code>ref</code></span>
+</h3>
+
+		<pre class="property_signature">
+“ref” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Number of reference frames</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	1
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:sliced-threads">
+		<h3 class="method" id="slicedthreads">
+	<span><code>sliced-threads</code></span>
+</h3>
+
+		<pre class="property_signature">
+“sliced-threads” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Low latency but lower efficiency threading</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:speed-preset">
+		<h3 class="method" id="speedpreset">
+	<span><code>speed-preset</code></span>
+</h3>
+
+		<pre class="property_signature">
+“speed-preset” <span class="type"><a title="GstX264EncPreset" href="element-x264enc.html#GstX264EncPreset">GstX264EncPreset</a></span>
+</pre>
+
+<p>Preset name for speed/quality tradeoff options (can affect decode compatibility - impose restrictions separately for your target decoder)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	medium (6)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:sps-id">
+		<h3 class="method" id="spsid">
+	<span><code>sps-id</code></span>
+</h3>
+
+		<pre class="property_signature">
+“sps-id” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>SPS and PPS ID number</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:subme">
+		<h3 class="method" id="subme">
+	<span><code>subme</code></span>
+</h3>
+
+		<pre class="property_signature">
+“subme” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Subpixel motion estimation and partition decision quality: 1=fast, 10=best</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	1
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:sync-lookahead">
+		<h3 class="method" id="synclookahead">
+	<span><code>sync-lookahead</code></span>
+</h3>
+
+		<pre class="property_signature">
+“sync-lookahead” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+<p>Number of buffer frames for threaded lookahead (-1 for automatic)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	-1
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:threads">
+		<h3 class="method" id="threads">
+	<span><code>threads</code></span>
+</h3>
+
+		<pre class="property_signature">
+“threads” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Number of threads used by the codec (0 for automatic)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:trellis">
+		<h3 class="method" id="trellis">
+	<span><code>trellis</code></span>
+</h3>
+
+		<pre class="property_signature">
+“trellis” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Enable trellis searched quantization</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:tune">
+		<h3 class="method" id="tune">
+	<span><code>tune</code></span>
+</h3>
+
+		<pre class="property_signature">
+“tune” <span class="type"><a title="GstX264EncTune" href="element-x264enc.html#GstX264EncTune">GstX264EncTune</a></span>
+</pre>
+
+<p>Preset name for non-psychovisual tuning options</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	(none)
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:vbv-buf-capacity">
+		<h3 class="method" id="vbvbufcapacity">
+	<span><code>vbv-buf-capacity</code></span>
+</h3>
+
+		<pre class="property_signature">
+“vbv-buf-capacity” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Size of the VBV buffer in milliseconds</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	600
+</p>
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264Enc:weightb">
+		<h3 class="method" id="weightb">
+	<span><code>weightb</code></span>
+</h3>
+
+		<pre class="property_signature">
+“weightb” <span class="type"><a title="gboolean" href="https://developer.gnome.org/camel/unstable/CamelIMAPXServer.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Weighted prediction for B-frames</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+<h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264EncAnalyse">
+		<h3 id="enum-gstx264encanalyse">
+		enum GstX264EncAnalyse
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>i4x4</td>
+            <td>i4x4</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>i8x8</td>
+            <td>i8x8</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>p8x8</td>
+            <td>p8x8</td>
+            <td>0x00000010</td>
+        </tr>
+        <tr>
+            <td>p4x4</td>
+            <td>p4x4</td>
+            <td>0x00000020</td>
+        </tr>
+        <tr>
+            <td>b8x8</td>
+            <td>b8x8</td>
+            <td>0x00000100</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264EncFramePacking">
+		<h3 id="enum-gstx264encframepacking">
+		enum GstX264EncFramePacking
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>auto</td>
+            <td>Automatic (use incoming video information)</td>
+            <td>0xffffffff</td>
+        </tr>
+        <tr>
+            <td>checkerboard</td>
+            <td>checkerboard - Left and Right pixels alternate in a checkerboard pattern</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>column-interleaved</td>
+            <td>column interleaved - Alternating pixel columns represent Left and Right views</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>row-interleaved</td>
+            <td>row interleaved - Alternating pixel rows represent Left and Right views</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>side-by-side</td>
+            <td>side by side - The left half of the frame contains the Left eye view, the right half the Right eye view</td>
+            <td>0x00000003</td>
+        </tr>
+        <tr>
+            <td>top-bottom</td>
+            <td>top bottom - L is on top, R on bottom</td>
+            <td>0x00000004</td>
+        </tr>
+        <tr>
+            <td>frame-interleaved</td>
+            <td>frame interleaved - Each frame contains either Left or Right view alternately</td>
+            <td>0x00000005</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264EncMe">
+		<h3 id="enum-gstx264encme">
+		enum GstX264EncMe
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>dia</td>
+            <td>dia</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>hex</td>
+            <td>hex</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>umh</td>
+            <td>umh</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>esa</td>
+            <td>esa</td>
+            <td>0x00000003</td>
+        </tr>
+        <tr>
+            <td>tesa</td>
+            <td>tesa</td>
+            <td>0x00000004</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264EncPass">
+		<h3 id="enum-gstx264encpass">
+		enum GstX264EncPass
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>cbr</td>
+            <td>Constant Bitrate Encoding</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>quant</td>
+            <td>Constant Quantizer</td>
+            <td>0x00000004</td>
+        </tr>
+        <tr>
+            <td>qual</td>
+            <td>Constant Quality</td>
+            <td>0x00000005</td>
+        </tr>
+        <tr>
+            <td>pass1</td>
+            <td>VBR Encoding - Pass 1</td>
+            <td>0x00000011</td>
+        </tr>
+        <tr>
+            <td>pass2</td>
+            <td>VBR Encoding - Pass 2</td>
+            <td>0x00000012</td>
+        </tr>
+        <tr>
+            <td>pass3</td>
+            <td>VBR Encoding - Pass 3</td>
+            <td>0x00000013</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264EncPsyTune">
+		<h3 id="enum-gstx264encpsytune">
+		enum GstX264EncPsyTune
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>none</td>
+            <td>No tuning</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>film</td>
+            <td>Film</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>animation</td>
+            <td>Animation</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>grain</td>
+            <td>Grain</td>
+            <td>0x00000003</td>
+        </tr>
+        <tr>
+            <td>psnr</td>
+            <td>PSNR</td>
+            <td>0x00000004</td>
+        </tr>
+        <tr>
+            <td>ssim</td>
+            <td>SSIM</td>
+            <td>0x00000005</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264EncPreset">
+		<h3 id="enum-gstx264encpreset">
+		enum GstX264EncPreset
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>None</td>
+            <td>No preset</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>ultrafast</td>
+            <td>ultrafast</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>superfast</td>
+            <td>superfast</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>veryfast</td>
+            <td>veryfast</td>
+            <td>0x00000003</td>
+        </tr>
+        <tr>
+            <td>faster</td>
+            <td>faster</td>
+            <td>0x00000004</td>
+        </tr>
+        <tr>
+            <td>fast</td>
+            <td>fast</td>
+            <td>0x00000005</td>
+        </tr>
+        <tr>
+            <td>medium</td>
+            <td>medium</td>
+            <td>0x00000006</td>
+        </tr>
+        <tr>
+            <td>slow</td>
+            <td>slow</td>
+            <td>0x00000007</td>
+        </tr>
+        <tr>
+            <td>slower</td>
+            <td>slower</td>
+            <td>0x00000008</td>
+        </tr>
+        <tr>
+            <td>veryslow</td>
+            <td>veryslow</td>
+            <td>0x00000009</td>
+        </tr>
+        <tr>
+            <td>placebo</td>
+            <td>placebo</td>
+            <td>0x0000000a</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstX264EncTune">
+		<h3 id="enum-gstx264enctune">
+		enum GstX264EncTune
+	</h3>
+
+		
+<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>stillimage</td>
+            <td>Still image</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>fastdecode</td>
+            <td>Fast decode</td>
+            <td>0x00000002</td>
+        </tr>
+        <tr>
+            <td>zerolatency</td>
+            <td>Zero latency</td>
+            <td>0x00000004</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+        <div id="subpages"></div>
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+</div>
+<div class="hidden-xs col-xl-2">
+</div>
+	</div>
+</div>
+</main>
+
+
+<footer class="page-row">
+	<div class="container-fluid">
+	<div class="row">
+		<div class="hidden-xs hidden-sm col-md-3 col-xl-2"></div>
+		<div class="col-sm-12 col-md-9 col-xl-8">
+						
+		</div>
+		<div class="hidden-xs col-xl-2"></div>
+	</div>
+</div>
+</footer>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>
