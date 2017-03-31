@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "d.ts", "urls": ["gst-plugins-bad-plugins-1.0/element-hlssink.html#GstHlsSink:location"]});
+urls_downloaded_cb({"token": "d.ts", "urls": ["gst-plugins-bad-plugins-1.0/element-hlssink.html#page-description"]});

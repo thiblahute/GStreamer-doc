@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gstvideo.navigationeventtype.prototype.command", "urls": ["gst-plugins-base-video-1.0/javascript/navigation.html#GstNavigationEventType"]});
+urls_downloaded_cb({"token": "gstvideo.navigationeventtype.prototype.command", "urls": ["gst-plugins-base-video-1.0/javascript/navigation.html#page-description"]});

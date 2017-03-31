@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "GstRtp.RTCPType.prototype.app", "urls": ["gst-plugins-base-rtp-1.0/javascript/gstrtcpbuffer.html#GstRTCPType"]});
+urls_downloaded_cb({"token": "GstRtp.RTCPType.prototype.app", "urls": ["gst-plugins-base-rtp-1.0/javascript/gstrtcpbuffer.html#page-description"]});

@@ -6,6 +6,12 @@ function unfold_current_page(base_name) {
 	if (panel.length) {
 		var elem = panel;
 		var sidenav_klass = 'sidenav-panel-even';
+        var section_headings = $('.symbols_section[data-hotdoc-by-parent=true]');
+		var header_levels_selector = 'h1[id],h2[id],h3[id]';
+
+        if (section_headings.length)
+            header_levels_selector += ',h4[id]';
+
 		if (panel.parent().hasClass('sidenav-panel-even')) {
 			sidenav_klass = 'sidenav-panel-odd';
 		}
@@ -24,7 +30,7 @@ function unfold_current_page(base_name) {
 			widget += sidenav_klass + '" id="sidenav-wrapper">';
 		widget += '<ul class="nav" id="table-of-contents">';
 
-		$('h1[id],h2[id],h3[id]').map(function() {
+		$(header_levels_selector).map(function() {
 			var klass = "nav-" + $(this).prop("tagName").toLowerCase();
 			var hotdoc_tags = $(this).closest(".base_symbol_container").attr("data-hotdoc-tags");
 

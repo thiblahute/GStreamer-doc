@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "GstMpegts.MpegtsSectionType.prototype.nit", "urls": ["gst-plugins-bad-mpegts-1.0/javascript/gstmpegtssection.html#gst_mpegts_section_get_nit", "gst-plugins-bad-mpegts-1.0/javascript/gstmpegtssection.html#GstMpegtsSectionType"]});
+urls_downloaded_cb({"token": "GstMpegts.MpegtsSectionType.prototype.nit", "urls": ["gst-plugins-bad-mpegts-1.0/javascript/gstmpegtssection.html#page-description"]});
