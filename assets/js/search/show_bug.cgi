@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "show_bug.cgi", "urls": ["design/stream-selection.html#page-description", "design/tracing.html#page-description", "design/draft-metadata.html#page-description"]});
+urls_downloaded_cb({"token": "show_bug.cgi", "urls": ["design/stream-selection.html#example-use-cases", "design/tracing.html#design", "design/draft-metadata.html#unknownunmapped-metadata"]});

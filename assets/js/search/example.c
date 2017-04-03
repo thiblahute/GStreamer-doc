@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "example.c", "urls": ["gst-plugins-good-1.0/element-level.html#page-description", "gst-plugins-good-1.0/element-spectrum.html#page-description"]});
+urls_downloaded_cb({"token": "example.c", "urls": ["gst-plugins-good-1.0/element-level.html#example-application", "gst-plugins-good-1.0/element-spectrum.html#example-application"]});

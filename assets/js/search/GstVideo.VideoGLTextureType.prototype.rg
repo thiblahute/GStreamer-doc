@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "GstVideo.VideoGLTextureType.prototype.rg", "urls": ["gst-plugins-base-video-1.0/javascript/gstvideometa.html#page-description"]});
+urls_downloaded_cb({"token": "GstVideo.VideoGLTextureType.prototype.rg", "urls": ["gst-plugins-base-video-1.0/javascript/gstvideometa.html#GST_VIDEO_GL_TEXTURE_TYPE_R"]});

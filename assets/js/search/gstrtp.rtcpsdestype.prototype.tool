@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gstrtp.rtcpsdestype.prototype.tool", "urls": ["gst-plugins-base-rtp-1.0/javascript/gstrtcpbuffer.html#page-description"]});
+urls_downloaded_cb({"token": "gstrtp.rtcpsdestype.prototype.tool", "urls": ["gst-plugins-base-rtp-1.0/javascript/gstrtcpbuffer.html#GST_RTCP_SDES_LOC"]});

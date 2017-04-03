@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gccfeat05.c", "urls": ["design/tracing.html#page-description"]});
+urls_downloaded_cb({"token": "gccfeat05.c", "urls": ["design/tracing.html#hook-api"]});

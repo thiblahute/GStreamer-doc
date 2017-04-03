@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "ViewController.m", "urls": ["tutorials/ios/video.html#page-description", "tutorials/ios/link-against-gstreamer.html#page-description", "tutorials/ios/a-running-pipeline.html#page-description"]});
+urls_downloaded_cb({"token": "ViewController.m", "urls": ["tutorials/ios/video.html#the-view-controller", "tutorials/ios/link-against-gstreamer.html#the-view-controller", "tutorials/ios/a-running-pipeline.html#the-view-controller"]});

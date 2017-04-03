@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gstgl.glformat.rg", "urls": ["gst-plugins-bad-gl-1.0/python/Miscellaneous.html#page-description"]});
+urls_downloaded_cb({"token": "gstgl.glformat.rg", "urls": ["gst-plugins-bad-gl-1.0/python/Miscellaneous.html#GST_GL_R8"]});

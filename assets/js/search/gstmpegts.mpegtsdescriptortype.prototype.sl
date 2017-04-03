@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gstmpegts.mpegtsdescriptortype.prototype.sl", "urls": ["gst-plugins-bad-mpegts-1.0/javascript/gstmpegtsdescriptor.html#page-description"]});
+urls_downloaded_cb({"token": "gstmpegts.mpegtsdescriptortype.prototype.sl", "urls": ["gst-plugins-bad-mpegts-1.0/javascript/gstmpegtsdescriptor.html#GST_MTS_DESC_IOD"]});

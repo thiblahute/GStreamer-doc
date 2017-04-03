@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gsttag.c", "urls": ["plugin-development/advanced/tagging.html#page-description"]});
+urls_downloaded_cb({"token": "gsttag.c", "urls": ["plugin-development/advanced/tagging.html#reading-tags-from-streams"]});

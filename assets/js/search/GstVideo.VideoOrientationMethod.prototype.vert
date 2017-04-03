@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "GstVideo.VideoOrientationMethod.prototype.vert", "urls": ["gst-plugins-base-video-1.0/javascript/video.html#page-description"]});
+urls_downloaded_cb({"token": "GstVideo.VideoOrientationMethod.prototype.vert", "urls": ["gst-plugins-base-video-1.0/javascript/video.html#GST_VIDEO_ORIENTATION_HORIZ"]});

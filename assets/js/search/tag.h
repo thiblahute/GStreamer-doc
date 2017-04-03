@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "tag.h", "urls": ["design/draft-metadata.html#page-description"]});
+urls_downloaded_cb({"token": "tag.h", "urls": ["design/draft-metadata.html#current-metadata-handling"]});

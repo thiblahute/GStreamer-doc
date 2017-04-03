@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gstsdp.mikeypayloadtype.prototype.v", "urls": ["gst-plugins-base-sdp-1.0/javascript/gstmikey.html#page-description"]});
+urls_downloaded_cb({"token": "gstsdp.mikeypayloadtype.prototype.v", "urls": ["gst-plugins-base-sdp-1.0/javascript/gstmikey.html#GST_MIKEY_PT_CHASH"]});

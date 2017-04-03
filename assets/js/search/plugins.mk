@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "plugins.mk", "urls": ["installing/for-android-development.html#page-description"]});
+urls_downloaded_cb({"token": "plugins.mk", "urls": ["installing/for-android-development.html#creating-new-projects"]});

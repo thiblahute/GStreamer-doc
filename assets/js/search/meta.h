@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "meta.h", "urls": ["plugin-development/advanced/allocation.html#page-description"]});
+urls_downloaded_cb({"token": "meta.h", "urls": ["plugin-development/advanced/allocation.html#define-the-metadata-api", "plugin-development/advanced/allocation.html#implementing-a-metadata-api"]});

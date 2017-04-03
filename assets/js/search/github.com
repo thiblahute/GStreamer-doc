@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "github.com", "urls": ["gst-plugins-bad-plugins-1.0/element-iqa.html#page-description", "design/tracing.html#page-description"]});
+urls_downloaded_cb({"token": "github.com", "urls": ["gst-plugins-bad-plugins-1.0/element-iqa.html#iqa", "design/tracing.html#livegraphers"]});

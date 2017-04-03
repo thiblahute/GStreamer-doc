@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gstprofile.h", "urls": ["design/encoding.html#page-description"]});
+urls_downloaded_cb({"token": "gstprofile.h", "urls": ["design/encoding.html#api", "design/encoding.html#helper-library-for-profiles"]});
