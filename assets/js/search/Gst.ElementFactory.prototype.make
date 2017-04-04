@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "Gst.ElementFactory.prototype.make", "urls": ["libgstreamer-1.0/javascript/gstelementfactory.html#gstelementfactory"]});
+urls_downloaded_cb({"token": "Gst.ElementFactory.prototype.make", "urls": ["libgstreamer-1.0/javascript/gstelementfactory.html#gst_element_factory_make", "libgstreamer-1.0/javascript/gstelementfactory.html#gstelementfactory"]});
