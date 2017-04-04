@@ -102,10 +102,9 @@ to use for the various encoding and muxing steps, but instead relies on
 specifying the format one wishes to use.</p>
 <p>Encoding profiles can be created at runtime by the application or loaded
 from (and saved to) file using the <a href="encoding-target.html#GstEncodingTarget">GstEncodingTarget</a> API.</p>
-<h2 id="gstencodingprofile">GstEncodingProfile</h2>
-<h3 id="defining-a-gstencodingprofile-as-a-string">Defining a GstEncodingProfile as a string</h3>
-<h4 id="serialized-encoding-profile-formats">Serialized encoding profile formats</h4>
-<h5 id="using-encoders-and-muxer-element-factory-name">Using encoders and muxer element factory name:</h5>
+<h2 id="defining-a-gstencodingprofile-as-a-string">Defining a GstEncodingProfile as a string</h2>
+<h3 id="serialized-encoding-profile-formats">Serialized encoding profile formats</h3>
+<h4 id="using-encoders-and-muxer-element-factory-name">Using encoders and muxer element factory name:</h4>
 <pre><code class="language-[">   muxer_factory_name:video_encoder_factory_name:audio_encoder_factory_name
 </code></pre>
 <p>For example to encode a stream into a WebM container, with an OGG audio
@@ -113,7 +112,7 @@ stream and a VP8 video stream, the serialized <a href="../encoding-profile-h.htm
 like:</p>
 <pre><code class="language-[">   webmmux:vp8enc:vorbisenc
 </code></pre>
-<h5 id="define-the-encoding-profile-in-a-generic-way-using-caps">Define the encoding profile in a generic way using caps:</h5>
+<h4 id="define-the-encoding-profile-in-a-generic-way-using-caps">Define the encoding profile in a generic way using caps:</h4>
 <pre><code class="language-[">   muxer_source_caps:video_encoder_source_caps:audio_encoder_source_caps
 </code></pre>
 <p>For example to encode a stream into a WebM container, with an OGG audio
@@ -123,7 +122,7 @@ like:</p>
 </code></pre>
 <p>It is possible to mix caps and element type names so you can specify a specific
 video encoder while using caps for other encoders/muxer.</p>
-<h4 id="advanced-encoding-format-serialization-features">Advanced encoding format serialization features:</h4>
+<h3 id="advanced-encoding-format-serialization-features">Advanced encoding format serialization features:</h3>
 <p>You can also set the preset name of the encoding profile using the
 caps+preset_name syntax as in:</p>
 <pre><code class="language-[">   video/webm:video/x-vp8+youtube-preset:audio/x-vorbis
@@ -155,7 +154,7 @@ the shell.</p>
 <p>In the case you are using encoder types, the following is also possible:</p>
 <pre><code class="language-[">   "matroskamux:x264enc,width=1920,height=1080:audio/x-vorbis"
 </code></pre>
-<h3 id="some-serialized-encoding-formats-examples">Some serialized encoding formats examples:</h3>
+<h2 id="some-serialized-encoding-formats-examples">Some serialized encoding formats examples:</h2>
 <p>MP3 audio and H264 in MP4:</p>
 <pre><code class="language-[">   video/quicktime,variant=iso:video/x-h264:audio/mpeg,mpegversion=1,layer=3
 </code></pre>
@@ -165,7 +164,7 @@ the shell.</p>
 <p>AC3 and H264 in MPEG-TS:</p>
 <pre><code class="language-[">   video/mpegts:video/x-h264:audio/x-ac3
 </code></pre>
-<h3 id="loading-a-profile-from-encoding-targets">Loading a profile from encoding targets</h3>
+<h2 id="loading-a-profile-from-encoding-targets">Loading a profile from encoding targets</h2>
 <p>Anywhere where you have to use a string to define a <a href="../encoding-profile-h.html#GstEncodingProfile">GstEncodingProfile</a>,
 you can use load it from a <a href="encoding-target.html#GstEncodingTarget">GstEncodingTarget</a> using the following syntaxes:</p>
 <pre><code class="language-[">   target_name[/profilename/category]
@@ -173,8 +172,8 @@ you can use load it from a <a href="encoding-target.html#GstEncodingTarget">GstE
 <p>or</p>
 <pre><code class="language-[">   /path/to/target.gep:profilename
 </code></pre>
-<h3 id="examples">Examples</h3>
-<h4 id="creating-a-profile">Creating a profile</h4>
+<h2 id="examples">Examples</h2>
+<h3 id="creating-a-profile">Creating a profile</h3>
 <pre><code class="language-[&lt;!--"> #include &lt;gst/pbutils/encoding-profile.h&gt;
  ...
  GstEncodingProfile *
@@ -203,7 +202,7 @@ you can use load it from a <a href="encoding-target.html#GstEncodingTarget">GstE
 }
 
 </code></pre>
-<h4 id="example-using-an-encoder-preset-with-a-profile">Example: Using an encoder preset with a profile</h4>
+<h3 id="example-using-an-encoder-preset-with-a-profile">Example: Using an encoder preset with a profile</h3>
 <pre><code class="language-["> #include &lt;gst/pbutils/encoding-profile.h&gt;
  ...
  GstEncodingProfile *
@@ -242,7 +241,7 @@ you can use load it from a <a href="encoding-target.html#GstEncodingTarget">GstE
 }
 
 </code></pre>
-<h4 id="listing-categories-targets-and-profiles">Listing categories, targets and profiles</h4>
+<h3 id="listing-categories-targets-and-profiles">Listing categories, targets and profiles</h3>
 <pre><code class="language-["> #include &lt;gst/pbutils/encoding-profile.h&gt;
  ...
  GstEncodingProfile *prof;
@@ -271,50 +270,6 @@ you can use load it from a <a href="encoding-target.html#GstEncodingTarget">GstE
 
  ...
 </code></pre>
-<h2 id="encoding-target">Encoding Target</h2>
-<p>On top of the notion of profiles, we implement the notion of EncodingTarget.
-Encoding Targets are basically a higher level of abstraction to define formats
-for specific target types. Those can define several GstEncodingProfiles with
-different names, for example one for transcoding in full HD, another one for
-low res, etc.. which are defined in the same encoding target.</p>
-<p>Basically if you wan to encode a stream to send it to, say, youtube you should
-have a Youtube encoding target defined in the "online-service" category.</p>
-<h3 id="encoding-target-serialization-format">Encoding target serialization format</h3>
-<p>Encoding targets are serialized in a KeyFile like files.</p>
-<pre><code class="language-["> [GStreamer Encoding Target]
- name : &lt;name&gt;
- category : &lt;category&gt;
- \description : &lt;description&gt; #translatable
-
- [profile-&lt;profile1name&gt;]
- name : &lt;name&gt;
- \description : &lt;description&gt; #optional
- format : &lt;format&gt;
- preset : &lt;preset&gt;
-
- [streamprofile-&lt;id&gt;]
- parent : &lt;encodingprofile.name&gt;[,&lt;encodingprofile.name&gt;..]
- \type : &lt;type&gt; # "audio", "video", "text"
- format : &lt;format&gt;
- preset : &lt;preset&gt;
- restriction : &lt;restriction&gt;
- presence : &lt;presence&gt;
- pass : &lt;pass&gt;
- variableframerate : &lt;variableframerate&gt;
-</code></pre>
-<h3 id="location-of-encoding-target-files">Location of encoding target files</h3>
-<p>$GST_DATADIR/gstreamer-GST_API_VERSION/encoding-profile
-$HOME/gstreamer-GST_API_VERSION/encoding-profile</p>
-<p>There also is a GST_ENCODING_TARGET_PATH environment variable
-defining a list of folder containing encoding target files.</p>
-<h3 id="naming-convention">Naming convention</h3>
-<pre><code class="language-[">   $(target.category)/$(target.name).gep
-</code></pre>
-<h3 id="naming-restrictions">Naming restrictions:</h3>
-<ul>
-<li>lowercase ASCII letter for the first character</li>
-<li>Same for all other characters + numerics + hyphens</li>
-</ul>
 
     </div>
         
