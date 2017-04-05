@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "f.a.q", "urls": ["index.html#gstreamer-documentation"]});
+urls_downloaded_cb({"token": "f.a.q", "urls": ["doc_index.html#page-description"]});

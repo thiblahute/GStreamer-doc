@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "libtool.m4", "urls": ["frequently-asked-questions/git.html#page-description"]});
+urls_downloaded_cb({"token": "libtool.m4", "urls": ["frequently-asked-questions/git.html#building-gstreamer-from-git"]});

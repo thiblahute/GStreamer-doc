@@ -163,6 +163,12 @@ function sitemap_downloaded_cb(sitemap_json) {
 	unfold_current_page(utils.hd_context.extension + "-" + utils.hd_context.project_name + "-" + utils.hd_context.hd_basename);
 
 	$("#home-link").attr("href", home_url);
+	$("a[data-hotdoc-relative-link=true]").attr('href',
+		function(index, val) {
+			console.log("=> " + home_url + '/../' + val);
+			return home_url + '/../' + val;
+		}
+	);
 
 	list_subpages(subpages);
 

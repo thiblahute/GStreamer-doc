@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "autogen.sh", "urls": ["frequently-asked-questions/git.html#page-description", "plugin-development/basics/boiler.html#using-the-project-stamp"]});
+urls_downloaded_cb({"token": "autogen.sh", "urls": ["frequently-asked-questions/git.html#building-gstreamer-from-git", "plugin-development/basics/boiler.html#using-the-project-stamp"]});
