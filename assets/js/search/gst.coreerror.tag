@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gst.coreerror.tag", "urls": ["libgstreamer-1.0/python/gsterror.html#GST_CORE_ERROR_CAPS"]});
+urls_downloaded_cb({"token": "gst.coreerror.tag", "urls": ["libgstreamer-1.0/python/gsterror-h.html#GST_CORE_ERROR_CAPS"]});
