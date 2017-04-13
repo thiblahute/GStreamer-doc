@@ -262,22 +262,22 @@ up. Both signals are emitted from the context of the streaming thread.</p>
             <h2 class="symbol_section" id="Signals">Signals</h2>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue::overrun">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue::underrun">
 		
-<h3 id="overrun">
-	<span><code>overrun</code></span>
+<h3 id="underrun">
+	<span><code>underrun</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-overrun_callback (GstQueue * queue,
-                  gpointer udata)</pre>
+underrun_callback (GstQueue * queue,
+                   gpointer udata)</pre>
 
-<p>Reports that the buffer became full (overrun).
-A buffer is full if the total amount of data inside it (num-buffers, time,
-size) is higher than the boundary values which can be set through the
+<p>Reports that the buffer became empty (underrun).
+A buffer is empty if the total amount of data inside it (num-buffers, time,
+size) is lower than the boundary values which can be set through the
 GObject properties.</p>
 
 
@@ -342,21 +342,23 @@ GObject properties.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue::pushing">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue::overrun">
 		
-<h3 id="pushing">
-	<span><code>pushing</code></span>
+<h3 id="overrun">
+	<span><code>overrun</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-pushing_callback (GstQueue * queue,
+overrun_callback (GstQueue * queue,
                   gpointer udata)</pre>
 
-<p>Reports when the queue has enough data to start pushing data again on the
-source pad.</p>
+<p>Reports that the buffer became full (overrun).
+A buffer is full if the total amount of data inside it (num-buffers, time,
+size) is higher than the boundary values which can be set through the
+GObject properties.</p>
 
 
 	<div class="parameter_container">
@@ -499,23 +501,21 @@ wait for the queue to fill-up before resume playback.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue::underrun">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue::pushing">
 		
-<h3 id="underrun">
-	<span><code>underrun</code></span>
+<h3 id="pushing">
+	<span><code>pushing</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-underrun_callback (GstQueue * queue,
-                   gpointer udata)</pre>
+pushing_callback (GstQueue * queue,
+                  gpointer udata)</pre>
 
-<p>Reports that the buffer became empty (underrun).
-A buffer is empty if the total amount of data inside it (num-buffers, time,
-size) is lower than the boundary values which can be set through the
-GObject properties.</p>
+<p>Reports when the queue has enough data to start pushing data again on the
+source pad.</p>
 
 
 	<div class="parameter_container">
@@ -582,6 +582,68 @@ GObject properties.</p>
 
             <h2 class="symbol_section" id="Properties">Properties</h2>
                     
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:name">
+		
+<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>The name of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	queue0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:parent">
+		
+<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+<p>The parent of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+            
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:current-level-buffers">
 		
@@ -661,75 +723,6 @@ GObject properties.</p>
 </p>
 <p>
 	Default value :	0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="GstQueue:flush-on-eos">
-		
-<h3 class="method" id="flushoneos">
-	<span><code>flush-on-eos</code></span>
-</h3>
-
-		<pre class="property_signature">
-“flush-on-eos” <span class="type"><a title="gboolean" href="../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a></span>
-</pre>
-
-<p>Discard all data in the queue when an EOS event is received, and pass
-on the EOS event as soon as possible (instead of waiting until all
-buffers in the queue have been processed, which is the default behaviour).</p>
-<p>Flushing the queue on EOS might be useful when capturing and encoding
-from a live source, to finish up the recording quickly in cases when
-the encoder is slow. Note that this might mean some data from the end of
-the recording data might be lost though (never more than the configured
-max. sizes though).</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	false
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:leaky">
-		
-<h3 class="method" id="leaky">
-	<span><code>leaky</code></span>
-</h3>
-
-		<pre class="property_signature">
-“leaky” <span class="type"><a title="GstQueueLeaky" href="element-queue.html#GstQueueLeaky">GstQueueLeaky</a></span>
-</pre>
-
-<p>Where the queue leaks, if at all</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	no (0)
 </p>
 
 </div>
@@ -922,17 +915,17 @@ max. sizes though).</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:name">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:leaky">
 		
-<h3 class="method" id="name">
-	<span><code>name</code></span>
+<h3 class="method" id="leaky">
+	<span><code>leaky</code></span>
 </h3>
 
 		<pre class="property_signature">
-“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+“leaky” <span class="type"><a title="GstQueueLeaky" href="element-queue.html#GstQueueLeaky">GstQueueLeaky</a></span>
 </pre>
 
-<p>The name of the object</p>
+<p>Where the queue leaks, if at all</p>
 
 
 <p>
@@ -944,40 +937,9 @@ max. sizes though).</p>
 				/		
 				Write
 			
-				/		
-				Construct
-			
 </p>
 <p>
-	Default value :	queue0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:parent">
-		
-<h3 class="method" id="parent">
-	<span><code>parent</code></span>
-</h3>
-
-		<pre class="property_signature">
-“parent” <span class="type"><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
-</pre>
-
-<p>The parent of the object</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
+	Default value :	no (0)
 </p>
 
 </div>
@@ -996,6 +958,44 @@ max. sizes though).</p>
 
 <p>Don't emit queue signals. Makes queues more lightweight if no signals are
 needed.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="GstQueue:flush-on-eos">
+		
+<h3 class="method" id="flushoneos">
+	<span><code>flush-on-eos</code></span>
+</h3>
+
+		<pre class="property_signature">
+“flush-on-eos” <span class="type"><a title="gboolean" href="../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Discard all data in the queue when an EOS event is received, and pass
+on the EOS event as soon as possible (instead of waiting until all
+buffers in the queue have been processed, which is the default behaviour).</p>
+<p>Flushing the queue on EOS might be useful when capturing and encoding
+from a live source, to finish up the recording quickly in cases when
+the encoder is slow. Note that this might mean some data from the end of
+the recording data might be lost though (never more than the configured
+max. sizes though).</p>
 
 
 <p>

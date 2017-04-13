@@ -248,33 +248,15 @@ that the receiver will recognize it.</p>
             <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtcp_sink">
-		<h3 id="rtcp_sink">
-    rtcp_sink:
-</h3>
-<table class="table table-striped">
-    <tbody>
-        <tr><td><b>Presence:</b></td><td>always</td></tr>
-        <tr><td><b>Direction:</b></td><td>sink</td></tr>
-        <tr><td><b>Capabilities:</b></td><td><pre><code>application/x-srtcp
-</code></pre></td></tr>
-    </tbody>
-</table>
-
-			
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtcp_src">
-		<h3 id="rtcp_src">
-    rtcp_src:
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtp_src">
+		<h3 id="rtp_src">
+    rtp_src:
 </h3>
 <table class="table table-striped">
     <tbody>
         <tr><td><b>Presence:</b></td><td>always</td></tr>
         <tr><td><b>Direction:</b></td><td>src</td></tr>
-        <tr><td><b>Capabilities:</b></td><td><pre><code>application/x-rtcp
+        <tr><td><b>Capabilities:</b></td><td><pre><code>application/x-rtp
 </code></pre></td></tr>
     </tbody>
 </table>
@@ -302,15 +284,33 @@ that the receiver will recognize it.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtp_src">
-		<h3 id="rtp_src">
-    rtp_src:
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtcp_src">
+		<h3 id="rtcp_src">
+    rtcp_src:
 </h3>
 <table class="table table-striped">
     <tbody>
         <tr><td><b>Presence:</b></td><td>always</td></tr>
         <tr><td><b>Direction:</b></td><td>src</td></tr>
-        <tr><td><b>Capabilities:</b></td><td><pre><code>application/x-rtp
+        <tr><td><b>Capabilities:</b></td><td><pre><code>application/x-rtcp
+</code></pre></td></tr>
+    </tbody>
+</table>
+
+			
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec-&gt;rtcp_sink">
+		<h3 id="rtcp_sink">
+    rtcp_sink:
+</h3>
+<table class="table table-striped">
+    <tbody>
+        <tr><td><b>Presence:</b></td><td>always</td></tr>
+        <tr><td><b>Direction:</b></td><td>sink</td></tr>
+        <tr><td><b>Capabilities:</b></td><td><pre><code>application/x-srtcp
 </code></pre></td></tr>
     </tbody>
 </table>
@@ -324,20 +324,24 @@ that the receiver will recognize it.</p>
             <h2 class="symbol_section" id="Signals">Signals</h2>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec::clear-keys">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec::request-key">
 		
-<h3 id="clearkeys">
-	<span><code>clear-keys</code></span>
+<h3 id="requestkey">
+	<span><code>request-key</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-void
-clear_keys_callback (GstSrtpDec * gstsrtpdec,
-                     gpointer udata)</pre>
+GstCaps
+request_key_callback (GstSrtpDec * gstsrtpdec,
+                      guint ssrc,
+                      gpointer udata)</pre>
 
-<p>Clear the internal list of streams</p>
+<p>Signal emited to get the parameters relevant to stream
+with <em>ssrc</em>. User should provide the key and the RTP and
+RTCP encryption ciphers and authentication, and return
+them wrapped in a GstCaps.</p>
 
 
 	<div class="parameter_container">
@@ -351,6 +355,16 @@ clear_keys_callback (GstSrtpDec * gstsrtpdec,
 		</p>
 	</td>
 		<td><p>the element on which the signal is emitted</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ssrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>The unique SSRC of the stream</p>
 </td>
 </tr>
 
@@ -386,7 +400,7 @@ clear_keys_callback (GstSrtpDec * gstsrtpdec,
 		
 	</td>
 	<td>
-		void
+		GstCaps
 	</td>
 	</tr>
 
@@ -401,26 +415,25 @@ clear_keys_callback (GstSrtpDec * gstsrtpdec,
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec::hard-limit">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec::soft-limit">
 		
-<h3 id="hardlimit">
-	<span><code>hard-limit</code></span>
+<h3 id="softlimit">
+	<span><code>soft-limit</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 GstCaps
-hard_limit_callback (GstSrtpDec * gstsrtpdec,
+soft_limit_callback (GstSrtpDec * gstsrtpdec,
                      guint ssrc,
                      gpointer udata)</pre>
 
 <p>Signal emited when the stream with <em>ssrc</em> has reached the
-hard limit of utilisation of it's master encryption key.
+soft limit of utilisation of it's master encryption key.
 User should provide a new key and new RTP and RTCP encryption
 ciphers and authentication, and return them wrapped in a
-GstCaps. If user could not provide those parameters or signal
-is not answered, the buffers of this stream will be dropped.</p>
+GstCaps.</p>
 
 
 	<div class="parameter_container">
@@ -494,6 +507,176 @@ is not answered, the buffers of this stream will be dropped.</p>
 
             
 
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec::hard-limit">
+		
+<h3 id="hardlimit">
+	<span><code>hard-limit</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+GstCaps
+hard_limit_callback (GstSrtpDec * gstsrtpdec,
+                     guint ssrc,
+                     gpointer udata)</pre>
+
+<p>Signal emited when the stream with <em>ssrc</em> has reached the
+hard limit of utilisation of it's master encryption key.
+User should provide a new key and new RTP and RTCP encryption
+ciphers and authentication, and return them wrapped in a
+GstCaps. If user could not provide those parameters or signal
+is not answered, the buffers of this stream will be dropped.</p>
+
+
+	<div class="parameter_container">
+		<h4 class="always-hide-toc" data-toc-skip="true" id="parameters2">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>gstsrtpdec:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element on which the signal is emitted</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>ssrc:</code></em></i>
+		</p>
+	</td>
+		<td><p>The unique SSRC of the stream</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+	
+			<h4 class="always-hide-toc" data-toc-skip="true" id="returns2">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		GstCaps
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec::clear-keys">
+		
+<h3 id="clearkeys">
+	<span><code>clear-keys</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+clear_keys_callback (GstSrtpDec * gstsrtpdec,
+                     gpointer udata)</pre>
+
+<p>Clear the internal list of streams</p>
+
+
+	<div class="parameter_container">
+		<h4 class="always-hide-toc" data-toc-skip="true" id="parameters3">Parameters</h4>
+		<table>
+			<tbody>
+									<tr>
+		<td>
+		<p>
+		<i><em><code>gstsrtpdec:</code></em></i>
+		</p>
+	</td>
+		<td><p>the element on which the signal is emitted</p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>udata:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+							</tbody>
+		</table>
+	</div>
+
+	<div class="multi_return_value_container">
+	
+			<h4 class="always-hide-toc" data-toc-skip="true" id="returns3">Returns:</h4>
+		<table>
+		<colgroup>
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+						<tr>
+	<td>
+		<p>
+				</p>
+	</td>
+	<td>
+		
+	</td>
+	<td>
+		void
+	</td>
+	</tr>
+
+					</tbody>
+	</table>
+</div>
+
+
+
+
+</div>
+
+            
+
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec::remove-key">
 		
 <h3 id="removekey">
@@ -512,7 +695,7 @@ remove_key_callback (GstSrtpDec * gstsrtpdec,
 
 
 	<div class="parameter_container">
-		<h4 class="always-hide-toc" data-toc-skip="true" id="parameters2">Parameters</h4>
+		<h4 class="always-hide-toc" data-toc-skip="true" id="parameters4">Parameters</h4>
 		<table>
 			<tbody>
 									<tr>
@@ -550,189 +733,6 @@ remove_key_callback (GstSrtpDec * gstsrtpdec,
 
 	<div class="multi_return_value_container">
 	
-			<h4 class="always-hide-toc" data-toc-skip="true" id="returns2">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		
-	</td>
-	<td>
-		void
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec::request-key">
-		
-<h3 id="requestkey">
-	<span><code>request-key</code></span>
-</h3>
-
-		
-
-<pre class="prototype">
-GstCaps
-request_key_callback (GstSrtpDec * gstsrtpdec,
-                      guint ssrc,
-                      gpointer udata)</pre>
-
-<p>Signal emited to get the parameters relevant to stream
-with <em>ssrc</em>. User should provide the key and the RTP and
-RTCP encryption ciphers and authentication, and return
-them wrapped in a GstCaps.</p>
-
-
-	<div class="parameter_container">
-		<h4 class="always-hide-toc" data-toc-skip="true" id="parameters3">Parameters</h4>
-		<table>
-			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>gstsrtpdec:</code></em></i>
-		</p>
-	</td>
-		<td><p>the element on which the signal is emitted</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>ssrc:</code></em></i>
-		</p>
-	</td>
-		<td><p>The unique SSRC of the stream</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>udata:</code></em></i>
-		</p>
-	</td>
-		<td></td>
-</tr>
-
-							</tbody>
-		</table>
-	</div>
-
-	<div class="multi_return_value_container">
-	
-			<h4 class="always-hide-toc" data-toc-skip="true" id="returns3">Returns:</h4>
-		<table>
-		<colgroup>
-			<col>
-			<col>
-			<col>
-		</colgroup>
-		<tbody>
-						<tr>
-	<td>
-		<p>
-				</p>
-	</td>
-	<td>
-		
-	</td>
-	<td>
-		GstCaps
-	</td>
-	</tr>
-
-					</tbody>
-	</table>
-</div>
-
-
-
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstSrtpDec::soft-limit">
-		
-<h3 id="softlimit">
-	<span><code>soft-limit</code></span>
-</h3>
-
-		
-
-<pre class="prototype">
-GstCaps
-soft_limit_callback (GstSrtpDec * gstsrtpdec,
-                     guint ssrc,
-                     gpointer udata)</pre>
-
-<p>Signal emited when the stream with <em>ssrc</em> has reached the
-soft limit of utilisation of it's master encryption key.
-User should provide a new key and new RTP and RTCP encryption
-ciphers and authentication, and return them wrapped in a
-GstCaps.</p>
-
-
-	<div class="parameter_container">
-		<h4 class="always-hide-toc" data-toc-skip="true" id="parameters4">Parameters</h4>
-		<table>
-			<tbody>
-									<tr>
-		<td>
-		<p>
-		<i><em><code>gstsrtpdec:</code></em></i>
-		</p>
-	</td>
-		<td><p>the element on which the signal is emitted</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>ssrc:</code></em></i>
-		</p>
-	</td>
-		<td><p>The unique SSRC of the stream</p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>udata:</code></em></i>
-		</p>
-	</td>
-		<td></td>
-</tr>
-
-							</tbody>
-		</table>
-	</div>
-
-	<div class="multi_return_value_container">
-	
 			<h4 class="always-hide-toc" data-toc-skip="true" id="returns4">Returns:</h4>
 		<table>
 		<colgroup>
@@ -750,7 +750,7 @@ GstCaps.</p>
 		
 	</td>
 	<td>
-		GstCaps
+		void
 	</td>
 	</tr>
 
@@ -796,7 +796,7 @@ GstCaps.</p>
 			
 </p>
 <p>
-	Default value :	srtpdec0
+	Default value :	srtpdec1
 </p>
 
 </div>
