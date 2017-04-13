@@ -91,6 +91,9 @@
 				<a href="../gst-devtools-1.0/index.html">GStreamer Validate</a>
 			</li>
 					<li>
+				<a href="../gst-rtsp-server/index.html">GStreamer RTSP server</a>
+			</li>
+					<li>
 				<a href="../gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
 		</ul></li>
@@ -341,22 +344,27 @@ the drive is detected automatically by the plugin).</p>
             <h2 class="symbol_section" id="Signals">Signals</h2>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::about-to-finish">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::source-setup">
 		
-<h3 id="abouttofinish">
-	<span><code>about-to-finish</code></span>
+<h3 id="sourcesetup">
+	<span><code>source-setup</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-about_to_finish_callback (GstPlayBin * playbin,
-                          gpointer udata)</pre>
+source_setup_callback (GstPlayBin * playbin,
+                       GstElement * source,
+                       gpointer udata)</pre>
 
-<p>This signal is emitted when the current uri is about to finish. You can
-set the uri and suburi to make sure that playback continues.</p>
-<p>This signal is emitted from the context of a GStreamer streaming thread.</p>
+<p>This signal is emitted after the source element has been created, so
+it can be configured by setting additional properties (e.g. set a
+proxy server for an http source, or set the device and read speed for
+an audio cd source). This is functionally equivalent to connecting to
+the notify::source signal, but more convenient.</p>
+<p>This signal is usually emitted from the context of a GStreamer streaming
+thread.</p>
 
 
 	<div class="parameter_container">
@@ -370,6 +378,16 @@ set the uri and suburi to make sure that playback continues.</p>
 		</p>
 	</td>
 		<td><p>a <a href="element-playbin.html#playbin">playbin</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>source:</code></em></i>
+		</p>
+	</td>
+		<td><p>source element</p>
 </td>
 </tr>
 
@@ -420,25 +438,22 @@ set the uri and suburi to make sure that playback continues.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::video-changed">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::about-to-finish">
 		
-<h3 id="videochanged">
-	<span><code>video-changed</code></span>
+<h3 id="abouttofinish">
+	<span><code>about-to-finish</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-video_changed_callback (GstPlayBin * playbin,
-                        gpointer udata)</pre>
+about_to_finish_callback (GstPlayBin * playbin,
+                          gpointer udata)</pre>
 
-<p>This signal is emitted whenever the number or order of the video
-streams has changed. The application will most likely want to select
-a new video stream.</p>
-<p>This signal is usually emitted from the context of a GStreamer streaming
-thread. You can use <a href="../libgstreamer-1.0/c/gstmessage.html#gst_message_new_application">gst_message_new_application</a> and
-<a href="../libgstreamer-1.0/c/gstelement-h.html#gst_element_post_message">gst_element_post_message</a> to notify your application's main thread.</p>
+<p>This signal is emitted when the current uri is about to finish. You can
+set the uri and suburi to make sure that playback continues.</p>
+<p>This signal is emitted from the context of a GStreamer streaming thread.</p>
 
 
 	<div class="parameter_container">
@@ -502,25 +517,27 @@ thread. You can use <a href="../libgstreamer-1.0/c/gstmessage.html#gst_message_n
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::audio-changed">
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="GstPlayBin::element-setup">
 		
-<h3 id="audiochanged">
-	<span><code>audio-changed</code></span>
+<h3 id="elementsetup">
+	<span><code>element-setup</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-audio_changed_callback (GstPlayBin * playbin,
+element_setup_callback (GstPlayBin * playbin,
+                        GstElement * element,
                         gpointer udata)</pre>
 
-<p>This signal is emitted whenever the number or order of the audio
-streams has changed. The application will most likely want to select
-a new audio stream.</p>
-<p>This signal may be emitted from the context of a GStreamer streaming thread.
-You can use <a href="../libgstreamer-1.0/c/gstmessage.html#gst_message_new_application">gst_message_new_application</a> and <a href="../libgstreamer-1.0/c/gstelement-h.html#gst_element_post_message">gst_element_post_message</a>
-to notify your application's main thread.</p>
+<p>This signal is emitted when a new element is added to playbin or any of
+its sub-bins. This signal can be used to configure elements, e.g. to set
+properties on decoders. This is functionally equivalent to connecting to
+the deep-element-added signal, but more convenient.</p>
+<p>This signal is usually emitted from the context of a GStreamer streaming
+thread, so might be called at the same time as code running in the main
+application thread.</p>
 
 
 	<div class="parameter_container">
@@ -534,6 +551,16 @@ to notify your application's main thread.</p>
 		</p>
 	</td>
 		<td><p>a <a href="element-playbin.html#playbin">playbin</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>element:</code></em></i>
+		</p>
+	</td>
+		<td><p>an element that was added to the playbin hierarchy</p>
 </td>
 </tr>
 
@@ -579,30 +606,33 @@ to notify your application's main thread.</p>
 
 
 
+	<p>
+	Since			: 1.10
+		</p>
 
 </div>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::text-changed">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::video-changed">
 		
-<h3 id="textchanged">
-	<span><code>text-changed</code></span>
+<h3 id="videochanged">
+	<span><code>video-changed</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-text_changed_callback (GstPlayBin * playbin,
-                       gpointer udata)</pre>
+video_changed_callback (GstPlayBin * playbin,
+                        gpointer udata)</pre>
 
-<p>This signal is emitted whenever the number or order of the text
+<p>This signal is emitted whenever the number or order of the video
 streams has changed. The application will most likely want to select
-a new text stream.</p>
-<p>This signal may be emitted from the context of a GStreamer streaming thread.
-You can use <a href="../libgstreamer-1.0/c/gstmessage.html#gst_message_new_application">gst_message_new_application</a> and <a href="../libgstreamer-1.0/c/gstelement-h.html#gst_element_post_message">gst_element_post_message</a>
-to notify your application's main thread.</p>
+a new video stream.</p>
+<p>This signal is usually emitted from the context of a GStreamer streaming
+thread. You can use <a href="../libgstreamer-1.0/c/gstmessage.html#gst_message_new_application">gst_message_new_application</a> and
+<a href="../libgstreamer-1.0/c/gstelement-h.html#gst_element_post_message">gst_element_post_message</a> to notify your application's main thread.</p>
 
 
 	<div class="parameter_container">
@@ -666,22 +696,22 @@ to notify your application's main thread.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::video-tags-changed">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::audio-changed">
 		
-<h3 id="videotagschanged">
-	<span><code>video-tags-changed</code></span>
+<h3 id="audiochanged">
+	<span><code>audio-changed</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-video_tags_changed_callback (GstPlayBin * playbin,
-                             gint stream,
-                             gpointer udata)</pre>
+audio_changed_callback (GstPlayBin * playbin,
+                        gpointer udata)</pre>
 
-<p>This signal is emitted whenever the tags of a video stream have changed.
-The application will most likely want to get the new tags.</p>
+<p>This signal is emitted whenever the number or order of the audio
+streams has changed. The application will most likely want to select
+a new audio stream.</p>
 <p>This signal may be emitted from the context of a GStreamer streaming thread.
 You can use <a href="../libgstreamer-1.0/c/gstmessage.html#gst_message_new_application">gst_message_new_application</a> and <a href="../libgstreamer-1.0/c/gstelement-h.html#gst_element_post_message">gst_element_post_message</a>
 to notify your application's main thread.</p>
@@ -698,16 +728,6 @@ to notify your application's main thread.</p>
 		</p>
 	</td>
 		<td><p>a <a href="element-playbin.html#playbin">playbin</a></p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>stream:</code></em></i>
-		</p>
-	</td>
-		<td><p>stream index with changed tags</p>
 </td>
 </tr>
 
@@ -758,22 +778,22 @@ to notify your application's main thread.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::audio-tags-changed">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::text-changed">
 		
-<h3 id="audiotagschanged">
-	<span><code>audio-tags-changed</code></span>
+<h3 id="textchanged">
+	<span><code>text-changed</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-audio_tags_changed_callback (GstPlayBin * playbin,
-                             gint stream,
-                             gpointer udata)</pre>
+text_changed_callback (GstPlayBin * playbin,
+                       gpointer udata)</pre>
 
-<p>This signal is emitted whenever the tags of an audio stream have changed.
-The application will most likely want to get the new tags.</p>
+<p>This signal is emitted whenever the number or order of the text
+streams has changed. The application will most likely want to select
+a new text stream.</p>
 <p>This signal may be emitted from the context of a GStreamer streaming thread.
 You can use <a href="../libgstreamer-1.0/c/gstmessage.html#gst_message_new_application">gst_message_new_application</a> and <a href="../libgstreamer-1.0/c/gstelement-h.html#gst_element_post_message">gst_element_post_message</a>
 to notify your application's main thread.</p>
@@ -790,16 +810,6 @@ to notify your application's main thread.</p>
 		</p>
 	</td>
 		<td><p>a <a href="element-playbin.html#playbin">playbin</a></p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>stream:</code></em></i>
-		</p>
-	</td>
-		<td><p>stream index with changed tags</p>
 </td>
 </tr>
 
@@ -850,21 +860,21 @@ to notify your application's main thread.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::text-tags-changed">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::video-tags-changed">
 		
-<h3 id="texttagschanged">
-	<span><code>text-tags-changed</code></span>
+<h3 id="videotagschanged">
+	<span><code>video-tags-changed</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-text_tags_changed_callback (GstPlayBin * playbin,
-                            gint stream,
-                            gpointer udata)</pre>
+video_tags_changed_callback (GstPlayBin * playbin,
+                             gint stream,
+                             gpointer udata)</pre>
 
-<p>This signal is emitted whenever the tags of a text stream have changed.
+<p>This signal is emitted whenever the tags of a video stream have changed.
 The application will most likely want to get the new tags.</p>
 <p>This signal may be emitted from the context of a GStreamer streaming thread.
 You can use <a href="../libgstreamer-1.0/c/gstmessage.html#gst_message_new_application">gst_message_new_application</a> and <a href="../libgstreamer-1.0/c/gstelement-h.html#gst_element_post_message">gst_element_post_message</a>
@@ -942,27 +952,25 @@ to notify your application's main thread.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::source-setup">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::audio-tags-changed">
 		
-<h3 id="sourcesetup">
-	<span><code>source-setup</code></span>
+<h3 id="audiotagschanged">
+	<span><code>audio-tags-changed</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-source_setup_callback (GstPlayBin * playbin,
-                       GstElement * source,
-                       gpointer udata)</pre>
+audio_tags_changed_callback (GstPlayBin * playbin,
+                             gint stream,
+                             gpointer udata)</pre>
 
-<p>This signal is emitted after the source element has been created, so
-it can be configured by setting additional properties (e.g. set a
-proxy server for an http source, or set the device and read speed for
-an audio cd source). This is functionally equivalent to connecting to
-the notify::source signal, but more convenient.</p>
-<p>This signal is usually emitted from the context of a GStreamer streaming
-thread.</p>
+<p>This signal is emitted whenever the tags of an audio stream have changed.
+The application will most likely want to get the new tags.</p>
+<p>This signal may be emitted from the context of a GStreamer streaming thread.
+You can use <a href="../libgstreamer-1.0/c/gstmessage.html#gst_message_new_application">gst_message_new_application</a> and <a href="../libgstreamer-1.0/c/gstelement-h.html#gst_element_post_message">gst_element_post_message</a>
+to notify your application's main thread.</p>
 
 
 	<div class="parameter_container">
@@ -982,10 +990,10 @@ thread.</p>
 									<tr>
 		<td>
 		<p>
-		<i><em><code>source:</code></em></i>
+		<i><em><code>stream:</code></em></i>
 		</p>
 	</td>
-		<td><p>source element</p>
+		<td><p>stream index with changed tags</p>
 </td>
 </tr>
 
@@ -1036,27 +1044,25 @@ thread.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="GstPlayBin::element-setup">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::text-tags-changed">
 		
-<h3 id="elementsetup">
-	<span><code>element-setup</code></span>
+<h3 id="texttagschanged">
+	<span><code>text-tags-changed</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-element_setup_callback (GstPlayBin * playbin,
-                        GstElement * element,
-                        gpointer udata)</pre>
+text_tags_changed_callback (GstPlayBin * playbin,
+                            gint stream,
+                            gpointer udata)</pre>
 
-<p>This signal is emitted when a new element is added to playbin or any of
-its sub-bins. This signal can be used to configure elements, e.g. to set
-properties on decoders. This is functionally equivalent to connecting to
-the deep-element-added signal, but more convenient.</p>
-<p>This signal is usually emitted from the context of a GStreamer streaming
-thread, so might be called at the same time as code running in the main
-application thread.</p>
+<p>This signal is emitted whenever the tags of a text stream have changed.
+The application will most likely want to get the new tags.</p>
+<p>This signal may be emitted from the context of a GStreamer streaming thread.
+You can use <a href="../libgstreamer-1.0/c/gstmessage.html#gst_message_new_application">gst_message_new_application</a> and <a href="../libgstreamer-1.0/c/gstelement-h.html#gst_element_post_message">gst_element_post_message</a>
+to notify your application's main thread.</p>
 
 
 	<div class="parameter_container">
@@ -1076,10 +1082,10 @@ application thread.</p>
 									<tr>
 		<td>
 		<p>
-		<i><em><code>element:</code></em></i>
+		<i><em><code>stream:</code></em></i>
 		</p>
 	</td>
-		<td><p>an element that was added to the playbin hierarchy</p>
+		<td><p>stream index with changed tags</p>
 </td>
 </tr>
 
@@ -1125,30 +1131,29 @@ application thread.</p>
 
 
 
-	<p>
-	Since			: 1.10
-		</p>
 
 </div>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::get-video-tags">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::convert-sample">
 		
-<h3 id="getvideotags">
-	<span><code>get-video-tags</code></span>
+<h3 id="convertsample">
+	<span><code>convert-sample</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-GstTagList
-get_video_tags_callback (GstPlayBin * playbin,
-                         gint stream,
+GstSample
+convert_sample_callback (GstPlayBin * playbin,
+                         GstCaps * caps,
                          gpointer udata)</pre>
 
-<p>Action signal to retrieve the tags of a specific video stream number.
-This information can be used to select a stream.</p>
+<p>Action signal to retrieve the currently playing video frame in the format
+specified by <em>caps</em>.
+If <em>caps</em> is <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>, no conversion will be performed and this function is
+equivalent to the GstPlayBin::frame property.</p>
 
 
 	<div class="parameter_container">
@@ -1168,10 +1173,10 @@ This information can be used to select a stream.</p>
 									<tr>
 		<td>
 		<p>
-		<i><em><code>stream:</code></em></i>
+		<i><em><code>caps:</code></em></i>
 		</p>
 	</td>
-		<td><p>a video stream number</p>
+		<td><p>the target format of the frame</p>
 </td>
 </tr>
 
@@ -1204,12 +1209,14 @@ This information can be used to select a stream.</p>
 				</p>
 	</td>
 	<td>
-		<p>a GstTagList with tags or NULL when the stream number does not
-exist.</p>
+		<p>a <a href="../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> of the current video frame converted to caps.
+The caps on the sample will describe the final layout of the buffer data.
+<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> is returned when no current buffer can be retrieved or when the
+conversion failed.</p>
 
 	</td>
 	<td>
-		GstTagList
+		GstSample
 	</td>
 	</tr>
 
@@ -1224,21 +1231,21 @@ exist.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::get-audio-tags">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::get-video-tags">
 		
-<h3 id="getaudiotags">
-	<span><code>get-audio-tags</code></span>
+<h3 id="getvideotags">
+	<span><code>get-video-tags</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 GstTagList
-get_audio_tags_callback (GstPlayBin * playbin,
+get_video_tags_callback (GstPlayBin * playbin,
                          gint stream,
                          gpointer udata)</pre>
 
-<p>Action signal to retrieve the tags of a specific audio stream number.
+<p>Action signal to retrieve the tags of a specific video stream number.
 This information can be used to select a stream.</p>
 
 
@@ -1262,7 +1269,7 @@ This information can be used to select a stream.</p>
 		<i><em><code>stream:</code></em></i>
 		</p>
 	</td>
-		<td><p>an audio stream number</p>
+		<td><p>a video stream number</p>
 </td>
 </tr>
 
@@ -1315,21 +1322,21 @@ exist.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::get-text-tags">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::get-audio-tags">
 		
-<h3 id="gettexttags">
-	<span><code>get-text-tags</code></span>
+<h3 id="getaudiotags">
+	<span><code>get-audio-tags</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 GstTagList
-get_text_tags_callback (GstPlayBin * playbin,
-                        gint stream,
-                        gpointer udata)</pre>
+get_audio_tags_callback (GstPlayBin * playbin,
+                         gint stream,
+                         gpointer udata)</pre>
 
-<p>Action signal to retrieve the tags of a specific text stream number.
+<p>Action signal to retrieve the tags of a specific audio stream number.
 This information can be used to select a stream.</p>
 
 
@@ -1353,7 +1360,7 @@ This information can be used to select a stream.</p>
 		<i><em><code>stream:</code></em></i>
 		</p>
 	</td>
-		<td><p>a text stream number</p>
+		<td><p>an audio stream number</p>
 </td>
 </tr>
 
@@ -1406,24 +1413,22 @@ exist.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::convert-sample">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin::get-text-tags">
 		
-<h3 id="convertsample">
-	<span><code>convert-sample</code></span>
+<h3 id="gettexttags">
+	<span><code>get-text-tags</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-GstSample
-convert_sample_callback (GstPlayBin * playbin,
-                         GstCaps * caps,
-                         gpointer udata)</pre>
+GstTagList
+get_text_tags_callback (GstPlayBin * playbin,
+                        gint stream,
+                        gpointer udata)</pre>
 
-<p>Action signal to retrieve the currently playing video frame in the format
-specified by <em>caps</em>.
-If <em>caps</em> is <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>, no conversion will be performed and this function is
-equivalent to the GstPlayBin::frame property.</p>
+<p>Action signal to retrieve the tags of a specific text stream number.
+This information can be used to select a stream.</p>
 
 
 	<div class="parameter_container">
@@ -1443,10 +1448,10 @@ equivalent to the GstPlayBin::frame property.</p>
 									<tr>
 		<td>
 		<p>
-		<i><em><code>caps:</code></em></i>
+		<i><em><code>stream:</code></em></i>
 		</p>
 	</td>
-		<td><p>the target format of the frame</p>
+		<td><p>a text stream number</p>
 </td>
 </tr>
 
@@ -1479,14 +1484,12 @@ equivalent to the GstPlayBin::frame property.</p>
 				</p>
 	</td>
 	<td>
-		<p>a <a href="../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> of the current video frame converted to caps.
-The caps on the sample will describe the final layout of the buffer data.
-<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> is returned when no current buffer can be retrieved or when the
-conversion failed.</p>
+		<p>a GstTagList with tags or NULL when the stream number does not
+exist.</p>
 
 	</td>
 	<td>
-		GstSample
+		GstTagList
 	</td>
 	</tr>
 
@@ -2150,7 +2153,7 @@ set from the about-to-finish signal to queue the next subtitle media file.</p>
 </h3>
 
 		<pre class="property_signature">
-“flags” <span class="type"><a title="GstPlayFlags" href="element-playsink.html#GstPlayFlags">GstPlayFlags</a></span>
+“flags” <span class="type"><a title="GstPlayFlags" href="element-playbin.html#GstPlayFlags">GstPlayFlags</a></span>
 </pre>
 
 <p>Control the behaviour of playbin.</p>
@@ -2987,7 +2990,7 @@ buffer is disabled. Default 0.</p>
 </h3>
 
 		<pre class="property_signature">
-“video-multiview-flags” <span class="type"><a title="GstVideoMultiviewFlags" href="../c/GstVideoMultiviewFlags">GstVideoMultiviewFlags</a></span>
+“video-multiview-flags” <span class="type"><a title="GstVideoMultiviewFlags" href="../c/gst-plugins-bad-plugins-1.0/element-glimagesink.html#GstVideoMultiviewFlags">GstVideoMultiviewFlags</a></span>
 </pre>
 
 <p>Override details of the multiview frame layout</p>
