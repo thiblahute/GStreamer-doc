@@ -34,7 +34,6 @@
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-<script src="assets/js/trie.js"></script>
 
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -67,44 +66,44 @@
     </a>
 	<ul class="dropdown-menu" id="modules-menu">
 					<li>
-				<a href="../../gstreamer-1.0/index.html">GStreamer core</a>
+				<a href="gstreamer-1.0/index.html">GStreamer core</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
+				<a href="gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
+				<a href="gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
+				<a href="gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
+				<a href="gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
 			</li>
 					<li>
-				<a href="../../gst-libav-1.0/index.html">GStreamer ffmpeg</a>
+				<a href="gst-libav-1.0/index.html">GStreamer ffmpeg</a>
 			</li>
 					<li>
-				<a href="../../gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
+				<a href="gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
 			</li>
 					<li>
-				<a href="../../gst-devtools-1.0/index.html">GStreamer Validate</a>
+				<a href="gst-devtools-1.0/index.html">GStreamer Validate</a>
 			</li>
 					<li>
-				<a href="../../gst-rtsp-server/index.html">GStreamer RTSP server</a>
+				<a href="gst-rtsp-server/index.html">GStreamer RTSP server</a>
 			</li>
 					<li>
-				<a href="../../gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
+				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
 		</ul></li>
 
 <li>
-    <a href="../../application-development/index.html">Application manual</a>
+    <a href="application-development/index.html">Application manual</a>
 </li>
 
 
 <li>
-    <a href="../../tutorials/index.html">Tutorials</a>
+    <a href="tutorials/index.html">Tutorials</a>
 </li>
 
 			</ul>
@@ -156,8 +155,8 @@ single input and producing a single output with a <a href="gstglframebuffer.html
 		<div class="hierarchy_container">
 	<div class="hierarchy_details">
 <pre>
-<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
-    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+GObject
+    <span class="lineart">╰──</span>GInitiallyUnowned
         <span class="lineart">╰──</span><a title="GstObject" href="../../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
             <span class="lineart">╰──</span><a title="GstElement" href="../../libgstreamer-1.0/c/gstelement-h.html#GstElement">GstElement</a>
                 <span class="lineart">╰──</span><a title="GstBaseTransform" href="../../libgstbase-1.0/c/gstbasetransform.html#GstBaseTransform">GstBaseTransform</a>
@@ -319,7 +318,7 @@ single input and producing a single output with a <a href="gstglframebuffer.html
 						<tr id="GstGLFilter._padding">
 		<td>
 		<p>
-		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_padding</code></em>:</code></em></i>
+		<i><em><code>gpointer <em><code>_padding</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -513,7 +512,7 @@ gst_gl_filter_render_to_target (<a title="GstGLFilter" href="gstglfilter.html#Gs
                                 <a title="GstGLMemory" href="gstglmemory.html#GstGLMemory">GstGLMemory</a> * input,
                                 <a title="GstGLMemory" href="gstglmemory.html#GstGLMemory">GstGLMemory</a> * output,
                                 <a title="GstGLFilterRenderFunc" href="gstglfilter.html#GstGLFilterRenderFunc">GstGLFilterRenderFunc</a> func,
-                                <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> data)</pre>
+                                gpointer data)</pre>
 
 <p>Transforms <em>input</em> into <em>output</em> using <em>func</em> on through FBO.</p>
 
@@ -743,7 +742,19 @@ gst_gl_filter_render_to_target_with_shader (<a title="GstGLFilter" href="gstglfi
 		struct GstGLFilterClass
 	</h4>
 
-		
+		<pre class="raw_code">
+struct GstGLFilterClass {
+    GstGLBaseFilterClass parent_class;
+    gboolean set_caps (GstGLFilter* filter, GstCaps* incaps, GstCaps* outcaps);
+    gboolean filter (GstGLFilter* filter, GstBuffer* inbuf, GstBuffer* outbuf);
+    gboolean filter_texture (GstGLFilter* filter, GstGLMemory* in_tex, GstGLMemory* out_tex);
+    gboolean init_fbo (GstGLFilter* filter);
+    GstCaps* transform_internal_caps (GstGLFilter* filter, GstPadDirection direction, GstCaps* caps, GstCaps* filter_caps);
+    gpointer _padding; /* &lt; private &gt; */
+};
+</pre>
+
+
 <div class="member_details">
 	
 	<h5 class="always-hide-toc" data-toc-skip="true" id="fields">Fields</h5>
@@ -760,10 +771,55 @@ gst_gl_filter_render_to_target_with_shader (<a title="GstGLFilter" href="gstglfi
 </td>
 </tr>
 
+						<tr id="GstGLFilterClass.set_caps()">
+		<td>
+		<p>
+		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>set_caps()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLFilterClass.filter()">
+		<td>
+		<p>
+		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>filter()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLFilterClass.filter_texture()">
+		<td>
+		<p>
+		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>filter_texture()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLFilterClass.init_fbo()">
+		<td>
+		<p>
+		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>init_fbo()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLFilterClass.transform_internal_caps()">
+		<td>
+		<p>
+		<i><em><code><a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * <em><code>transform_internal_caps()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
 						<tr id="GstGLFilterClass._padding">
 		<td>
 		<p>
-		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_padding</code></em>:</code></em></i>
+		<i><em><code>gpointer <em><code>_padding</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -1293,7 +1349,7 @@ GstGLFilterClass.transform_internal_caps (<a title="GstGLFilter" href="gstglfilt
 <a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 (*GstGLFilterRenderFunc) (<a title="GstGLFilter" href="gstglfilter.html#GstGLFilter">GstGLFilter</a> * filter,
                           <a title="GstGLMemory" href="gstglmemory.html#GstGLMemory">GstGLMemory</a> * in_tex,
-                          <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> user_data)</pre>
+                          gpointer user_data)</pre>
 
 
 

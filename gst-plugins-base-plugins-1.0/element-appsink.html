@@ -34,7 +34,6 @@
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-<script src="assets/js/trie.js"></script>
 
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -67,44 +66,44 @@
     </a>
 	<ul class="dropdown-menu" id="modules-menu">
 					<li>
-				<a href="../gstreamer-1.0/index.html">GStreamer core</a>
+				<a href="gstreamer-1.0/index.html">GStreamer core</a>
 			</li>
 					<li>
-				<a href="../gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
+				<a href="gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
 			</li>
 					<li>
-				<a href="../gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
+				<a href="gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
 			</li>
 					<li>
-				<a href="../gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
+				<a href="gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
 			</li>
 					<li>
-				<a href="../gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
+				<a href="gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
 			</li>
 					<li>
-				<a href="../gst-libav-1.0/index.html">GStreamer ffmpeg</a>
+				<a href="gst-libav-1.0/index.html">GStreamer ffmpeg</a>
 			</li>
 					<li>
-				<a href="../gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
+				<a href="gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
 			</li>
 					<li>
-				<a href="../gst-devtools-1.0/index.html">GStreamer Validate</a>
+				<a href="gst-devtools-1.0/index.html">GStreamer Validate</a>
 			</li>
 					<li>
-				<a href="../gst-rtsp-server/index.html">GStreamer RTSP server</a>
+				<a href="gst-rtsp-server/index.html">GStreamer RTSP server</a>
 			</li>
 					<li>
-				<a href="../gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
+				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
 		</ul></li>
 
 <li>
-    <a href="../application-development/index.html">Application manual</a>
+    <a href="application-development/index.html">Application manual</a>
 </li>
 
 
 <li>
-    <a href="../tutorials/index.html">Tutorials</a>
+    <a href="tutorials/index.html">Tutorials</a>
 </li>
 
 			</ul>
@@ -160,8 +159,8 @@ most GStreamer elements, Appsink provides external API functions.</p>
 		<div class="hierarchy_container">
 	<div class="hierarchy_details">
 <pre>
-<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
-    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+GObject
+    <span class="lineart">╰──</span>GInitiallyUnowned
         <span class="lineart">╰──</span><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
             <span class="lineart">╰──</span><a title="GstElement" href="../libgstreamer-1.0/c/gstelement-h.html#GstElement">GstElement</a>
                 <span class="lineart">╰──</span><a title="GstBaseSink" href="../libgstbase-1.0/c/gstbasesink.html#GstBaseSink">GstBaseSink</a>
@@ -238,9 +237,11 @@ most GStreamer elements, Appsink provides external API functions.</p>
 
 <pre class="prototype">
 void
-eos_callback (GstAppSink * param_0,
+eos_callback (GstAppSink * appsink,
               gpointer udata)</pre>
 
+<p>Signal that the end-of-stream has been reached. This signal is emitted from
+the streaming thread.</p>
 
 
 	<div class="parameter_container">
@@ -250,10 +251,11 @@ eos_callback (GstAppSink * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsink:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsink element that emitted the signal</p>
+</td>
 </tr>
 
 									<tr>
@@ -313,9 +315,17 @@ eos_callback (GstAppSink * param_0,
 
 <pre class="prototype">
 GstFlowReturn
-new_preroll_callback (GstAppSink * param_0,
+new_preroll_callback (GstAppSink * appsink,
                       gpointer udata)</pre>
 
+<p>Signal that a new preroll sample is available.</p>
+<p>This signal is emitted from the streaming thread and only when the
+"emit-signals" property is TRUE.</p>
+<p>The new preroll sample can be retrieved with the "pull-preroll" action
+signal or <a href="../gst-plugins-base-app-1.0/c/gstappsink.html#gst_app_sink_pull_preroll">gst_app_sink_pull_preroll</a> either from this signal callback
+or from any other thread.</p>
+<p>Note that this signal is only emitted when the "emit-signals" property is
+set to TRUE, which it is not by default for performance reasons.</p>
 
 
 	<div class="parameter_container">
@@ -325,10 +335,11 @@ new_preroll_callback (GstAppSink * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsink:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsink element that emitted the signal</p>
+</td>
 </tr>
 
 									<tr>
@@ -388,9 +399,17 @@ new_preroll_callback (GstAppSink * param_0,
 
 <pre class="prototype">
 GstFlowReturn
-new_sample_callback (GstAppSink * param_0,
+new_sample_callback (GstAppSink * appsink,
                      gpointer udata)</pre>
 
+<p>Signal that a new sample is available.</p>
+<p>This signal is emitted from the streaming thread and only when the
+"emit-signals" property is TRUE.</p>
+<p>The new sample can be retrieved with the "pull-sample" action
+signal or <a href="../gst-plugins-base-app-1.0/c/gstappsink.html#gst_app_sink_pull_sample">gst_app_sink_pull_sample</a> either from this signal callback
+or from any other thread.</p>
+<p>Note that this signal is only emitted when the "emit-signals" property is
+set to TRUE, which it is not by default for performance reasons.</p>
 
 
 	<div class="parameter_container">
@@ -400,10 +419,11 @@ new_sample_callback (GstAppSink * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsink:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsink element that emited the signal</p>
+</td>
 </tr>
 
 									<tr>
@@ -463,9 +483,21 @@ new_sample_callback (GstAppSink * param_0,
 
 <pre class="prototype">
 GstSample
-pull_preroll_callback (GstAppSink * param_0,
+pull_preroll_callback (GstAppSink * appsink,
                        gpointer udata)</pre>
 
+<p>Get the last preroll sample in <em>appsink</em>. This was the sample that caused the
+appsink to preroll in the PAUSED state. This sample can be pulled many times
+and remains available to the application even after EOS.</p>
+<p>This function is typically used when dealing with a pipeline in the PAUSED
+state. Calling this function after doing a seek will give the sample right
+after the seek position.</p>
+<p>Note that the preroll sample will also be returned as the first sample
+when calling <a href="../gst-plugins-base-app-1.0/c/gstappsink.html#gst_app_sink_pull_sample">gst_app_sink_pull_sample</a> or the "pull-sample" action signal.</p>
+<p>If an EOS event was received before any buffers, this function returns
+NULL. Use gst_app_sink_is_eos () to check for the EOS condition.</p>
+<p>This function blocks until a preroll sample or EOS is received or the appsink
+element is set to the READY/NULL state.</p>
 
 
 	<div class="parameter_container">
@@ -475,10 +507,11 @@ pull_preroll_callback (GstAppSink * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsink:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsink element to emit this signal on</p>
+</td>
 </tr>
 
 									<tr>
@@ -510,7 +543,8 @@ pull_preroll_callback (GstAppSink * param_0,
 				</p>
 	</td>
 	<td>
-		
+		<p>a <a href="../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS.</p>
+
 	</td>
 	<td>
 		GstSample
@@ -538,9 +572,20 @@ pull_preroll_callback (GstAppSink * param_0,
 
 <pre class="prototype">
 GstSample
-pull_sample_callback (GstAppSink * param_0,
+pull_sample_callback (GstAppSink * appsink,
                       gpointer udata)</pre>
 
+<p>This function blocks until a sample or EOS becomes available or the appsink
+element is set to the READY/NULL state.</p>
+<p>This function will only return samples when the appsink is in the PLAYING
+state. All rendered samples will be put in a queue so that the application
+can pull samples at its own rate.</p>
+<p>Note that when the application does not pull samples fast enough, the
+queued samples could consume a lot of memory, especially when dealing with
+raw video frames. It's possible to control the behaviour of the queue with
+the "drop" and "max-buffers" properties.</p>
+<p>If an EOS event was received before any buffers, this function returns
+NULL. Use gst_app_sink_is_eos () to check for the EOS condition.</p>
 
 
 	<div class="parameter_container">
@@ -550,10 +595,11 @@ pull_sample_callback (GstAppSink * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsink:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsink element to emit this signal on</p>
+</td>
 </tr>
 
 									<tr>
@@ -585,7 +631,8 @@ pull_sample_callback (GstAppSink * param_0,
 				</p>
 	</td>
 	<td>
-		
+		<p>a <a href="../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS.</p>
+
 	</td>
 	<td>
 		GstSample
@@ -603,7 +650,7 @@ pull_sample_callback (GstAppSink * param_0,
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink::try-pull-preroll">
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="GstAppSink::try-pull-preroll">
 		
 <h3 id="trypullpreroll">
 	<span><code>try-pull-preroll</code></span>
@@ -613,10 +660,23 @@ pull_sample_callback (GstAppSink * param_0,
 
 <pre class="prototype">
 GstSample
-try_pull_preroll_callback (GstAppSink * param_0,
-                           guint64 param_1,
+try_pull_preroll_callback (GstAppSink * appsink,
+                           guint64 timeout,
                            gpointer udata)</pre>
 
+<p>Get the last preroll sample in <em>appsink</em>. This was the sample that caused the
+appsink to preroll in the PAUSED state. This sample can be pulled many times
+and remains available to the application even after EOS.</p>
+<p>This function is typically used when dealing with a pipeline in the PAUSED
+state. Calling this function after doing a seek will give the sample right
+after the seek position.</p>
+<p>Note that the preroll sample will also be returned as the first sample
+when calling <a href="../gst-plugins-base-app-1.0/c/gstappsink.html#gst_app_sink_pull_sample">gst_app_sink_pull_sample</a> or the "pull-sample" action signal.</p>
+<p>If an EOS event was received before any buffers or the timeout expires,
+this function returns NULL. Use gst_app_sink_is_eos () to check for the EOS
+condition.</p>
+<p>This function blocks until a preroll sample or EOS is received, the appsink
+element is set to the READY/NULL state, or the timeout expires.</p>
 
 
 	<div class="parameter_container">
@@ -626,19 +686,21 @@ try_pull_preroll_callback (GstAppSink * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsink:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsink element to emit this signal on</p>
+</td>
 </tr>
 
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_1:</code></em></i>
+		<i><em><code>timeout:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the maximum amount of time to wait for the preroll sample</p>
+</td>
 </tr>
 
 									<tr>
@@ -670,7 +732,8 @@ try_pull_preroll_callback (GstAppSink * param_0,
 				</p>
 	</td>
 	<td>
-		
+		<p>a <a href="../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS or the timeout expires.</p>
+
 	</td>
 	<td>
 		GstSample
@@ -683,12 +746,15 @@ try_pull_preroll_callback (GstAppSink * param_0,
 
 
 
+	<p>
+	Since			: 1.10
+		</p>
 
 </div>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSink::try-pull-sample">
+<div class="base_symbol_container" data-hotdoc-tags="since:1.10;" id="GstAppSink::try-pull-sample">
 		
 <h3 id="trypullsample">
 	<span><code>try-pull-sample</code></span>
@@ -698,10 +764,22 @@ try_pull_preroll_callback (GstAppSink * param_0,
 
 <pre class="prototype">
 GstSample
-try_pull_sample_callback (GstAppSink * param_0,
-                          guint64 param_1,
+try_pull_sample_callback (GstAppSink * appsink,
+                          guint64 timeout,
                           gpointer udata)</pre>
 
+<p>This function blocks until a sample or EOS becomes available or the appsink
+element is set to the READY/NULL state or the timeout expires.</p>
+<p>This function will only return samples when the appsink is in the PLAYING
+state. All rendered samples will be put in a queue so that the application
+can pull samples at its own rate.</p>
+<p>Note that when the application does not pull samples fast enough, the
+queued samples could consume a lot of memory, especially when dealing with
+raw video frames. It's possible to control the behaviour of the queue with
+the "drop" and "max-buffers" properties.</p>
+<p>If an EOS event was received before any buffers or the timeout expires,
+this function returns NULL. Use gst_app_sink_is_eos () to check
+for the EOS condition.</p>
 
 
 	<div class="parameter_container">
@@ -711,19 +789,21 @@ try_pull_sample_callback (GstAppSink * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsink:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsink element to emit this signal on</p>
+</td>
 </tr>
 
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_1:</code></em></i>
+		<i><em><code>timeout:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the maximum amount of time to wait for a sample</p>
+</td>
 </tr>
 
 									<tr>
@@ -755,7 +835,8 @@ try_pull_sample_callback (GstAppSink * param_0,
 				</p>
 	</td>
 	<td>
-		
+		<p>a <a href="../libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> or NULL when the appsink is stopped or EOS or the timeout expires.</p>
+
 	</td>
 	<td>
 		GstSample
@@ -768,6 +849,9 @@ try_pull_sample_callback (GstAppSink * param_0,
 
 
 
+	<p>
+	Since			: 1.10
+		</p>
 
 </div>
 
@@ -784,7 +868,7 @@ try_pull_sample_callback (GstAppSink * param_0,
 </h3>
 
 		<pre class="property_signature">
-“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+“name” <span class="type">gchar*</span>
 </pre>
 
 <p>The name of the object</p>
@@ -877,7 +961,7 @@ try_pull_sample_callback (GstAppSink * param_0,
 </h3>
 
 		<pre class="property_signature">
-“max-lateness” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+“max-lateness” <span class="type">gint64</span>
 </pre>
 
 <p>Maximum number of nanoseconds that a buffer can be late before it is dropped (-1 unlimited)</p>
@@ -970,7 +1054,7 @@ try_pull_sample_callback (GstAppSink * param_0,
 </h3>
 
 		<pre class="property_signature">
-“ts-offset” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+“ts-offset” <span class="type">gint64</span>
 </pre>
 
 <p>Timestamp offset in nanoseconds</p>
@@ -1088,7 +1172,7 @@ try_pull_sample_callback (GstAppSink * param_0,
 </h3>
 
 		<pre class="property_signature">
-“render-delay” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+“render-delay” <span class="type">guint64</span>
 </pre>
 
 <p>Additional render delay of the sink in nanoseconds</p>
@@ -1119,7 +1203,7 @@ try_pull_sample_callback (GstAppSink * param_0,
 </h3>
 
 		<pre class="property_signature">
-“throttle-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+“throttle-time” <span class="type">guint64</span>
 </pre>
 
 <p>The time to keep between rendered buffers (0 = disabled)</p>
@@ -1150,7 +1234,7 @@ try_pull_sample_callback (GstAppSink * param_0,
 </h3>
 
 		<pre class="property_signature">
-“max-bitrate” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+“max-bitrate” <span class="type">guint64</span>
 </pre>
 
 <p>The maximum bits per second to render (0 = disabled)</p>

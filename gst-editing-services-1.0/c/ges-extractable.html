@@ -34,7 +34,6 @@
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-<script src="assets/js/trie.js"></script>
 
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -67,44 +66,44 @@
     </a>
 	<ul class="dropdown-menu" id="modules-menu">
 					<li>
-				<a href="../../gstreamer-1.0/index.html">GStreamer core</a>
+				<a href="gstreamer-1.0/index.html">GStreamer core</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
+				<a href="gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
+				<a href="gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
+				<a href="gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
+				<a href="gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
 			</li>
 					<li>
-				<a href="../../gst-libav-1.0/index.html">GStreamer ffmpeg</a>
+				<a href="gst-libav-1.0/index.html">GStreamer ffmpeg</a>
 			</li>
 					<li>
-				<a href="../../gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
+				<a href="gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
 			</li>
 					<li>
-				<a href="../../gst-devtools-1.0/index.html">GStreamer Validate</a>
+				<a href="gst-devtools-1.0/index.html">GStreamer Validate</a>
 			</li>
 					<li>
-				<a href="../../gst-rtsp-server/index.html">GStreamer RTSP server</a>
+				<a href="gst-rtsp-server/index.html">GStreamer RTSP server</a>
 			</li>
 					<li>
-				<a href="index.html">GStreamer Editing Services</a>
+				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
 		</ul></li>
 
 <li>
-    <a href="../../application-development/index.html">Application manual</a>
+    <a href="application-development/index.html">Application manual</a>
 </li>
 
 
 <li>
-    <a href="../../tutorials/index.html">Tutorials</a>
+    <a href="tutorials/index.html">Tutorials</a>
 </li>
 
 			</ul>
@@ -206,7 +205,7 @@ ges_extractable_get_asset (<a title="GESExtractable" href="ges-extractable.html#
 				</p>
 	</td>
 	<td>
-		<p>The <a href="ges-asset.html#GESAsset">GESAsset</a> or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if none has
+		<p>The <a href="ges-asset.html#GESAsset">GESAsset</a> or NULL if none has
 been set</p>
 
 	</td>
@@ -241,7 +240,7 @@ been set</p>
 		
 
 <pre class="prototype">
-<a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gchar*
 ges_extractable_get_id (<a title="GESExtractable" href="ges-extractable.html#GESExtractable">GESExtractable</a> * self)</pre>
 
 
@@ -284,11 +283,11 @@ ges_extractable_get_id (<a title="GESExtractable" href="ges-extractable.html#GES
 				</p>
 	</td>
 	<td>
-		<p>The id of the associated <a href="ges-asset.html#GESAsset">GESAsset</a>, free with <a href="https://developer.gnome.org/glib/unstable/glib-Memory-Allocation.html#g-free">g_free</a></p>
+		<p>The id of the associated <a href="ges-asset.html#GESAsset">GESAsset</a>, free with g_free</p>
 
 	</td>
 	<td>
-		<a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+		gchar*
 	</td>
 				<td>
 	
@@ -322,7 +321,7 @@ ges_extractable_set_asset (<a title="GESExtractable" href="ges-extractable.html#
                            <a title="GESAsset" href="ges-asset.html#GESAsset">GESAsset</a> * asset)</pre>
 
 <p>Method to set the asset which instantiated the specified object</p>
-<p>Return: <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if <em>asset</em> could be set <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#FALSE:CAPS">FALSE</a> otherwize</p>
+<p>Return: TRUE if <em>asset</em> could be set FALSE otherwize</p>
 
 
 	<div class="parameter_container">
@@ -410,7 +409,23 @@ ges_extractable_set_asset (<a title="GESExtractable" href="ges-extractable.html#
 		struct GESExtractableInterface
 	</h4>
 
-		
+		<pre class="raw_code">
+struct GESExtractableInterface {
+    GTypeInterface parent;
+    GType asset_type;
+    GESExtractableCheckId check_id;
+    gboolean can_update_asset;
+    void set_asset (GESExtractable* self, GESAsset* asset);
+    gboolean set_asset_full (GESExtractable* self, GESAsset* asset);
+    GParameter* get_parameters_from_id (const gchar* id, guint* n_params);
+    gchar* get_id (GESExtractable* self);
+    GType get_real_extractable_type (GType wanted_type, const gchar* id);
+    gboolean register_metas (GESExtractableInterface* self, GObjectClass* klass, GESAsset* asset);
+    gpointer _ges_reserved;
+};
+</pre>
+
+
 <div class="member_details">
 	
 	<h5 class="always-hide-toc" data-toc-skip="true" id="fields">Fields</h5>
@@ -420,7 +435,7 @@ ges_extractable_set_asset (<a title="GESExtractable" href="ges-extractable.html#
 						<tr id="GESExtractableInterface.parent">
 		<td>
 		<p>
-		<i><em><code><a title="GTypeInterface" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GTypeInterface">GTypeInterface</a> <em><code>parent</code></em>:</code></em></i>
+		<i><em><code>GTypeInterface <em><code>parent</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -429,7 +444,7 @@ ges_extractable_set_asset (<a title="GESExtractable" href="ges-extractable.html#
 						<tr id="GESExtractableInterface.asset_type">
 		<td>
 		<p>
-		<i><em><code><a title="GType" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GType</a> <em><code>asset_type</code></em>:</code></em></i>
+		<i><em><code>GType <em><code>asset_type</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -453,10 +468,64 @@ ges_extractable_set_asset (<a title="GESExtractable" href="ges-extractable.html#
 		<td></td>
 </tr>
 
+						<tr id="GESExtractableInterface.set_asset()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>set_asset()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GESExtractableInterface.set_asset_full()">
+		<td>
+		<p>
+		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>set_asset_full()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GESExtractableInterface.get_parameters_from_id()">
+		<td>
+		<p>
+		<i><em><code>GParameter* <em><code>get_parameters_from_id()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GESExtractableInterface.get_id()">
+		<td>
+		<p>
+		<i><em><code>gchar* <em><code>get_id()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GESExtractableInterface.get_real_extractable_type()">
+		<td>
+		<p>
+		<i><em><code>GType <em><code>get_real_extractable_type()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GESExtractableInterface.register_metas()">
+		<td>
+		<p>
+		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>register_metas()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
 						<tr id="GESExtractableInterface._ges_reserved">
 		<td>
 		<p>
-		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_ges_reserved</code></em>:</code></em></i>
+		<i><em><code>gpointer <em><code>_ges_reserved</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -485,7 +554,7 @@ ges_extractable_set_asset (<a title="GESExtractable" href="ges-extractable.html#
 		
 
 <pre class="prototype">
-<a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gchar*
 GESExtractableInterface.get_id (<a title="GESExtractable" href="ges-extractable.html#GESExtractable">GESExtractable</a> * self)</pre>
 
 
@@ -530,7 +599,7 @@ GESExtractableInterface.get_id (<a title="GESExtractable" href="ges-extractable.
 		
 	</td>
 	<td>
-		<a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+		gchar*
 	</td>
 				<td>
 	
@@ -747,9 +816,9 @@ GESExtractableInterface.set_asset_full (<a title="GESExtractable" href="ges-extr
 		
 
 <pre class="prototype">
-<a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-(*GESExtractableCheckId) (<a title="GType" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GType</a> type,
-                          const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * id)</pre>
+gchar*
+(*GESExtractableCheckId) (GType type,
+                          const gchar* id)</pre>
 
 
 
@@ -763,7 +832,7 @@ GESExtractableInterface.set_asset_full (<a title="GESExtractable" href="ges-extr
 		<i><em><code>type:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GType</a> to check <em>id</em> for:</p>
+		<td><p>The GType to check <em>id</em> for:</p>
 </td>
 <td>
 
@@ -805,11 +874,11 @@ GESExtractableInterface.set_asset_full (<a title="GESExtractable" href="ges-extr
 				</p>
 	</td>
 	<td>
-		<p>The ID to use for the asset or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> if <em>id</em> is not valid</p>
+		<p>The ID to use for the asset or NULL if <em>id</em> is not valid</p>
 
 	</td>
 	<td>
-		<a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+		gchar*
 	</td>
 				<td>
 	

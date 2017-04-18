@@ -34,7 +34,6 @@
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-<script src="assets/js/trie.js"></script>
 
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -67,44 +66,44 @@
     </a>
 	<ul class="dropdown-menu" id="modules-menu">
 					<li>
-				<a href="../gstreamer-1.0/index.html">GStreamer core</a>
+				<a href="gstreamer-1.0/index.html">GStreamer core</a>
 			</li>
 					<li>
-				<a href="../gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
+				<a href="gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
 			</li>
 					<li>
-				<a href="../gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
+				<a href="gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
 			</li>
 					<li>
-				<a href="../gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
+				<a href="gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
 			</li>
 					<li>
-				<a href="../gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
+				<a href="gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
 			</li>
 					<li>
-				<a href="../gst-libav-1.0/index.html">GStreamer ffmpeg</a>
+				<a href="gst-libav-1.0/index.html">GStreamer ffmpeg</a>
 			</li>
 					<li>
-				<a href="../gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
+				<a href="gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
 			</li>
 					<li>
-				<a href="../gst-devtools-1.0/index.html">GStreamer Validate</a>
+				<a href="gst-devtools-1.0/index.html">GStreamer Validate</a>
 			</li>
 					<li>
-				<a href="../gst-rtsp-server/index.html">GStreamer RTSP server</a>
+				<a href="gst-rtsp-server/index.html">GStreamer RTSP server</a>
 			</li>
 					<li>
-				<a href="../gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
+				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
 		</ul></li>
 
 <li>
-    <a href="../application-development/index.html">Application manual</a>
+    <a href="application-development/index.html">Application manual</a>
 </li>
 
 
 <li>
-    <a href="../tutorials/index.html">Tutorials</a>
+    <a href="tutorials/index.html">Tutorials</a>
 </li>
 
 			</ul>
@@ -160,8 +159,8 @@ external API functions.</p>
 		<div class="hierarchy_container">
 	<div class="hierarchy_details">
 <pre>
-<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
-    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+GObject
+    <span class="lineart">╰──</span>GInitiallyUnowned
         <span class="lineart">╰──</span><a title="GstObject" href="../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
             <span class="lineart">╰──</span><a title="GstElement" href="../libgstreamer-1.0/c/gstelement-h.html#GstElement">GstElement</a>
                 <span class="lineart">╰──</span><a title="GstBaseSrc" href="../libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a>
@@ -238,10 +237,16 @@ external API functions.</p>
 
 <pre class="prototype">
 void
-need_data_callback (GstAppSrc * param_0,
-                    guint param_1,
+need_data_callback (GstAppSrc * appsrc,
+                    guint length,
                     gpointer udata)</pre>
 
+<p>Signal that the source needs more data. In the callback or from another
+thread you should call push-buffer or end-of-stream.</p>
+<p><em>length</em> is just a hint and when it is set to -1, any number of bytes can be
+pushed into <em>appsrc</em>.</p>
+<p>You can call push-buffer multiple times until the enough-data signal is
+fired.</p>
 
 
 	<div class="parameter_container">
@@ -251,19 +256,21 @@ need_data_callback (GstAppSrc * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsrc:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsrc element that emitted the signal</p>
+</td>
 </tr>
 
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_1:</code></em></i>
+		<i><em><code>length:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the amount of bytes needed.</p>
+</td>
 </tr>
 
 									<tr>
@@ -323,9 +330,12 @@ need_data_callback (GstAppSrc * param_0,
 
 <pre class="prototype">
 void
-enough_data_callback (GstAppSrc * param_0,
+enough_data_callback (GstAppSrc * appsrc,
                       gpointer udata)</pre>
 
+<p>Signal that the source has enough data. It is recommended that the
+application stops calling push-buffer until the need-data signal is
+emitted again to avoid excessive buffer queueing.</p>
 
 
 	<div class="parameter_container">
@@ -335,10 +345,11 @@ enough_data_callback (GstAppSrc * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsrc:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsrc element that emitted the signal</p>
+</td>
 </tr>
 
 									<tr>
@@ -398,10 +409,13 @@ enough_data_callback (GstAppSrc * param_0,
 
 <pre class="prototype">
 gboolean
-seek_data_callback (GstAppSrc * param_0,
-                    guint64 param_1,
+seek_data_callback (GstAppSrc * appsrc,
+                    guint64 offset,
                     gpointer udata)</pre>
 
+<p>Seek to the given offset. The next push-buffer should produce buffers from
+the new <em>offset</em>.
+This callback is only called for seekable stream types.</p>
 
 
 	<div class="parameter_container">
@@ -411,19 +425,21 @@ seek_data_callback (GstAppSrc * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsrc:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsrc element that emitted the signal</p>
+</td>
 </tr>
 
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_1:</code></em></i>
+		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the offset to seek to</p>
+</td>
 </tr>
 
 									<tr>
@@ -455,7 +471,8 @@ seek_data_callback (GstAppSrc * param_0,
 				</p>
 	</td>
 	<td>
-		
+		<p>TRUE if the seek succeeded.</p>
+
 	</td>
 	<td>
 		gboolean
@@ -483,10 +500,15 @@ seek_data_callback (GstAppSrc * param_0,
 
 <pre class="prototype">
 GstFlowReturn
-push_buffer_callback (GstAppSrc * param_0,
-                      GstBuffer * param_1,
+push_buffer_callback (GstAppSrc * appsrc,
+                      GstBuffer * buffer,
                       gpointer udata)</pre>
 
+<p>Adds a buffer to the queue of buffers that the appsrc element will
+push to its source pad. This function does not take ownership of the
+buffer so the buffer needs to be unreffed after calling this function.</p>
+<p>When the block property is TRUE, this function can block until free space
+becomes available in the queue.</p>
 
 
 	<div class="parameter_container">
@@ -496,19 +518,21 @@ push_buffer_callback (GstAppSrc * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsrc:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsrc</p>
+</td>
 </tr>
 
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_1:</code></em></i>
+		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>a buffer to push</p>
+</td>
 </tr>
 
 									<tr>
@@ -558,7 +582,7 @@ push_buffer_callback (GstAppSrc * param_0,
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::push-sample">
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="GstAppSrc::push-sample">
 		
 <h3 id="pushsample">
 	<span><code>push-sample</code></span>
@@ -568,10 +592,20 @@ push_buffer_callback (GstAppSrc * param_0,
 
 <pre class="prototype">
 GstFlowReturn
-push_sample_callback (GstAppSrc * param_0,
-                      GstSample * param_1,
+push_sample_callback (GstAppSrc * appsrc,
+                      GstSample * sample,
                       gpointer udata)</pre>
 
+<p>Extract a buffer from the provided sample and adds the extracted buffer
+to the queue of buffers that the appsrc element will
+push to its source pad. This function set the appsrc caps based on the caps
+in the sample and reset the caps if they change.
+Only the caps and the buffer of the provided sample are used and not
+for example the segment in the sample.
+This function does not take ownership of the
+sample so the sample needs to be unreffed after calling this function.</p>
+<p>When the block property is TRUE, this function can block until free space
+becomes available in the queue.</p>
 
 
 	<div class="parameter_container">
@@ -581,19 +615,21 @@ push_sample_callback (GstAppSrc * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsrc:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsrc</p>
+</td>
 </tr>
 
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_1:</code></em></i>
+		<i><em><code>sample:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>a sample from which extract buffer to push</p>
+</td>
 </tr>
 
 									<tr>
@@ -638,6 +674,9 @@ push_sample_callback (GstAppSrc * param_0,
 
 
 
+	<p>
+	Since			: 1.6
+		</p>
 
 </div>
 
@@ -653,9 +692,10 @@ push_sample_callback (GstAppSrc * param_0,
 
 <pre class="prototype">
 GstFlowReturn
-end_of_stream_callback (GstAppSrc * param_0,
+end_of_stream_callback (GstAppSrc * appsrc,
                         gpointer udata)</pre>
 
+<p>Notify <em>appsrc</em> that no more buffer are available.</p>
 
 
 	<div class="parameter_container">
@@ -665,10 +705,11 @@ end_of_stream_callback (GstAppSrc * param_0,
 									<tr>
 		<td>
 		<p>
-		<i><em><code>param_0:</code></em></i>
+		<i><em><code>appsrc:</code></em></i>
 		</p>
 	</td>
-		<td></td>
+		<td><p>the appsrc</p>
+</td>
 </tr>
 
 									<tr>
@@ -729,7 +770,7 @@ end_of_stream_callback (GstAppSrc * param_0,
 </h3>
 
 		<pre class="property_signature">
-“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+“name” <span class="type">gchar*</span>
 </pre>
 
 <p>The name of the object</p>
@@ -943,7 +984,7 @@ end_of_stream_callback (GstAppSrc * param_0,
 </h3>
 
 		<pre class="property_signature">
-“size” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+“size” <span class="type">gint64</span>
 </pre>
 
 <p>The size of the data stream in bytes (-1 if unknown)</p>
@@ -974,7 +1015,7 @@ end_of_stream_callback (GstAppSrc * param_0,
 </h3>
 
 		<pre class="property_signature">
-“stream-type” <span class="type"><a title="GstAppStreamType" href="../gst-plugins-base-app-1.0/c/gstappsrc.html#GstAppStreamType">GstAppStreamType</a></span>
+“stream-type” <span class="type"><a title="GstAppStreamType" href="../c/gst-plugins-base-plugins-1.0/element-appsrc.html#GstAppStreamType">GstAppStreamType</a></span>
 </pre>
 
 <p>the type of the stream</p>
@@ -1005,7 +1046,7 @@ end_of_stream_callback (GstAppSrc * param_0,
 </h3>
 
 		<pre class="property_signature">
-“max-bytes” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+“max-bytes” <span class="type">guint64</span>
 </pre>
 
 <p>The maximum number of bytes to queue internally (0 = unlimited)</p>
@@ -1129,7 +1170,7 @@ end_of_stream_callback (GstAppSrc * param_0,
 </h3>
 
 		<pre class="property_signature">
-“min-latency” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+“min-latency” <span class="type">gint64</span>
 </pre>
 
 <p>The minimum latency (-1 = default)</p>
@@ -1160,7 +1201,7 @@ end_of_stream_callback (GstAppSrc * param_0,
 </h3>
 
 		<pre class="property_signature">
-“max-latency” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+“max-latency” <span class="type">gint64</span>
 </pre>
 
 <p>The maximum latency (-1 = unlimited)</p>
@@ -1253,7 +1294,7 @@ end_of_stream_callback (GstAppSrc * param_0,
 </h3>
 
 		<pre class="property_signature">
-“current-level-bytes” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+“current-level-bytes” <span class="type">guint64</span>
 </pre>
 
 <p>The number of currently queued bytes</p>
@@ -1281,7 +1322,7 @@ end_of_stream_callback (GstAppSrc * param_0,
 </h3>
 
 		<pre class="property_signature">
-“duration” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+“duration” <span class="type">guint64</span>
 </pre>
 
 <p>The duration of the data stream in nanoseconds (GST_CLOCK_TIME_NONE if unknown)</p>

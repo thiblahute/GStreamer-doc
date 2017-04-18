@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "ViewController.h", "urls": ["tutorials/ios/video.html#the-user-interface", "tutorials/ios/link-against-gstreamer.html#the-user-interface"]});
+urls_downloaded_cb({"token": "ViewController.h", "urls": ["tutorials/ios/link-against-gstreamer.html#the-user-interface", "tutorials/ios/video.html#the-user-interface"]});

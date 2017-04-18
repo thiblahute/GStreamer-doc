@@ -34,7 +34,6 @@
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-<script src="assets/js/trie.js"></script>
 
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -67,44 +66,44 @@
     </a>
 	<ul class="dropdown-menu" id="modules-menu">
 					<li>
-				<a href="../../gstreamer-1.0/index.html">GStreamer core</a>
+				<a href="gstreamer-1.0/index.html">GStreamer core</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
+				<a href="gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
+				<a href="gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
+				<a href="gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
+				<a href="gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
 			</li>
 					<li>
-				<a href="../../gst-libav-1.0/index.html">GStreamer ffmpeg</a>
+				<a href="gst-libav-1.0/index.html">GStreamer ffmpeg</a>
 			</li>
 					<li>
-				<a href="../../gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
+				<a href="gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
 			</li>
 					<li>
-				<a href="../index.html">GStreamer Validate</a>
+				<a href="gst-devtools-1.0/index.html">GStreamer Validate</a>
 			</li>
 					<li>
-				<a href="../../gst-rtsp-server/index.html">GStreamer RTSP server</a>
+				<a href="gst-rtsp-server/index.html">GStreamer RTSP server</a>
 			</li>
 					<li>
-				<a href="../../gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
+				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
 		</ul></li>
 
 <li>
-    <a href="../../application-development/index.html">Application manual</a>
+    <a href="application-development/index.html">Application manual</a>
 </li>
 
 
 <li>
-    <a href="../../tutorials/index.html">Tutorials</a>
+    <a href="tutorials/index.html">Tutorials</a>
 </li>
 
 			</ul>
@@ -155,8 +154,8 @@
 		<div class="hierarchy_container">
 	<div class="hierarchy_details">
 <pre>
-<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
-    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+GObject
+    <span class="lineart">╰──</span>GInitiallyUnowned
         <span class="lineart">╰──</span><a title="GstObject" href="../../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
             <span class="lineart">╰──</span>GstValidateOverride
 </pre>
@@ -1384,7 +1383,7 @@ gst_validate_override_setcaps_handler (<a title="GstValidateOverride" href="gst-
 
 <pre class="prototype">
 void
-gst_validate_override_register_by_klass (const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * klass,
+gst_validate_override_register_by_klass (const gchar* klass,
                                          <a title="GstValidateOverride" href="gst-validate-override.html#GstValidateOverride">GstValidateOverride</a> * override)</pre>
 
 
@@ -1440,7 +1439,7 @@ gst_validate_override_register_by_klass (const <a title="gchar" href="https://de
 
 <pre class="prototype">
 void
-gst_validate_override_register_by_name (const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * name,
+gst_validate_override_register_by_name (const gchar* name,
                                         <a title="GstValidateOverride" href="gst-validate-override.html#GstValidateOverride">GstValidateOverride</a> * override)</pre>
 
 
@@ -1496,7 +1495,7 @@ gst_validate_override_register_by_name (const <a title="gchar" href="https://dev
 
 <pre class="prototype">
 void
-gst_validate_override_register_by_type (<a title="GType" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GType">GType</a> gtype,
+gst_validate_override_register_by_type (GType gtype,
                                         <a title="GstValidateOverride" href="gst-validate-override.html#GstValidateOverride">GstValidateOverride</a> * override)</pre>
 
 
@@ -1586,7 +1585,14 @@ gst_validate_override_register_by_type (<a title="GType" href="https://developer
 		struct GstValidateOverrideClass
 	</h4>
 
-		
+		<pre class="raw_code">
+struct GstValidateOverrideClass {
+    GstObjectClass parent_class; /* &lt; private &gt; */
+    gboolean can_attach (GstValidateOverride* override, GstValidateMonitor* monitor);
+};
+</pre>
+
+
 <div class="member_details">
 	
 	<h5 class="always-hide-toc" data-toc-skip="true" id="fields">Fields</h5>
@@ -1597,6 +1603,15 @@ gst_validate_override_register_by_type (<a title="GType" href="https://developer
 		<td>
 		<p>
 		<i><em><code><a title="GstObjectClass" href="../../libgstreamer-1.0/c/gstobject.html#GstObjectClass">GstObjectClass</a> <em><code>parent_class</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstValidateOverrideClass.can_attach()">
+		<td>
+		<p>
+		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>can_attach()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>

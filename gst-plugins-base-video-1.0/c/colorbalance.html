@@ -34,7 +34,6 @@
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-<script src="assets/js/trie.js"></script>
 
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -67,44 +66,44 @@
     </a>
 	<ul class="dropdown-menu" id="modules-menu">
 					<li>
-				<a href="../../gstreamer-1.0/index.html">GStreamer core</a>
+				<a href="gstreamer-1.0/index.html">GStreamer core</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
+				<a href="gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
+				<a href="gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
+				<a href="gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
+				<a href="gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
 			</li>
 					<li>
-				<a href="../../gst-libav-1.0/index.html">GStreamer ffmpeg</a>
+				<a href="gst-libav-1.0/index.html">GStreamer ffmpeg</a>
 			</li>
 					<li>
-				<a href="../../gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
+				<a href="gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
 			</li>
 					<li>
-				<a href="../../gst-devtools-1.0/index.html">GStreamer Validate</a>
+				<a href="gst-devtools-1.0/index.html">GStreamer Validate</a>
 			</li>
 					<li>
-				<a href="../../gst-rtsp-server/index.html">GStreamer RTSP server</a>
+				<a href="gst-rtsp-server/index.html">GStreamer RTSP server</a>
 			</li>
 					<li>
-				<a href="../../gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
+				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
 		</ul></li>
 
 <li>
-    <a href="../../application-development/index.html">Application manual</a>
+    <a href="application-development/index.html">Application manual</a>
 </li>
 
 
 <li>
-    <a href="../../tutorials/index.html">Tutorials</a>
+    <a href="tutorials/index.html">Tutorials</a>
 </li>
 
 			</ul>
@@ -336,7 +335,7 @@ and max_value.</p>
 		
 
 <pre class="prototype">
-const <a title="GList" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GList</a> *
+const GList*
 gst_color_balance_list_channels (<a title="GstColorBalance" href="colorbalance.html#GstColorBalance">GstColorBalance</a> * balance)</pre>
 
 <p>Retrieve a list of the available channels.</p>
@@ -387,7 +386,7 @@ instance and must not be freed.</p>
 
 	</td>
 	<td>
-		const <a title="GList" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GList</a> *
+		const GList*
 	</td>
 				<td>
 	
@@ -501,8 +500,8 @@ gst_color_balance_value_changed (<a title="GstColorBalance" href="colorbalance.h
                                  <a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> value)</pre>
 
 <p>A helper function called by implementations of the GstColorBalance
-interface. It fires the <a href="colorbalance.html#GstColorBalance::value-changed">GstColorBalance::value-changed</a> signal on the
-instance, and the <a href="colorbalancechannel.html#GstColorBalanceChannel::value-changed">GstColorBalanceChannel::value-changed</a> signal on the
+interface. It fires the <a href="colorbalance.html#GstColorBalance::value-changed">value-changed</a> signal on the
+instance, and the <a href="colorbalancechannel.html#GstColorBalanceChannel::value-changed">value-changed</a> signal on the
 channel object.</p>
 
 
@@ -569,16 +568,16 @@ channel object.</p>
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstColorBalance::value-changed">
 		
-<h4 id="gstcolorbalancevaluechanged">
-	<span><code>GstColorBalance::value-changed</code></span>
+<h4 id="valuechanged">
+	<span><code>value-changed</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 void
-GstColorBalance::value_changed_callback (<a title="GstColorBalanceChannel" href="colorbalancechannel.html#GstColorBalanceChannel">GstColorBalanceChannel</a> * channel,
-                                         <a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> value)</pre>
+value_changed_callback (<a title="GstColorBalanceChannel" href="colorbalancechannel.html#GstColorBalanceChannel">GstColorBalanceChannel</a> * channel,
+                        <a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> value)</pre>
 
 <p>Fired when the value of the indicated channel has changed.</p>
 
@@ -643,7 +642,19 @@ GstColorBalance::value_changed_callback (<a title="GstColorBalanceChannel" href=
 		struct GstColorBalanceInterface
 	</h4>
 
-		<p>Color-balance interface.</p>
+		<pre class="raw_code">
+struct GstColorBalanceInterface {
+    GTypeInterface iface;
+    const GList* list_channels (GstColorBalance* balance);
+    void set_value (GstColorBalance* balance, GstColorBalanceChannel* channel, gint value);
+    gint get_value (GstColorBalance* balance, GstColorBalanceChannel* channel);
+    GstColorBalanceType get_balance_type (GstColorBalance* balance);
+    void value_changed (GstColorBalance* balance, GstColorBalanceChannel* channel, gint value);
+    gpointer _gst_reserved; /* &lt; private &gt; */
+};
+</pre>
+
+<p>Color-balance interface.</p>
 
 
 <div class="member_details">
@@ -655,17 +666,62 @@ GstColorBalance::value_changed_callback (<a title="GstColorBalanceChannel" href=
 						<tr id="GstColorBalanceInterface.iface">
 		<td>
 		<p>
-		<i><em><code><a title="GTypeInterface" href="https://developer.gnome.org/gobject/unstable/gobject-Type-Information.html#GTypeInterface">GTypeInterface</a> <em><code>iface</code></em>:</code></em></i>
+		<i><em><code>GTypeInterface <em><code>iface</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>the parent interface</p>
 </td>
 </tr>
 
+						<tr id="GstColorBalanceInterface.list_channels()">
+		<td>
+		<p>
+		<i><em><code>const GList* <em><code>list_channels()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstColorBalanceInterface.set_value()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>set_value()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstColorBalanceInterface.get_value()">
+		<td>
+		<p>
+		<i><em><code><a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> <em><code>get_value()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstColorBalanceInterface.get_balance_type()">
+		<td>
+		<p>
+		<i><em><code><a title="GstColorBalanceType" href="colorbalance.html#GstColorBalanceType">GstColorBalanceType</a> <em><code>get_balance_type()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstColorBalanceInterface.value_changed()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>value_changed()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
 						<tr id="GstColorBalanceInterface._gst_reserved">
 		<td>
 		<p>
-		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		<i><em><code>gpointer <em><code>_gst_reserved</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -854,7 +910,7 @@ GstColorBalanceInterface.get_value (<a title="GstColorBalance" href="colorbalanc
 		
 
 <pre class="prototype">
-const <a title="GList" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GList</a> *
+const GList*
 GstColorBalanceInterface.list_channels (<a title="GstColorBalance" href="colorbalance.html#GstColorBalance">GstColorBalance</a> * balance)</pre>
 
 
@@ -899,7 +955,7 @@ GstColorBalanceInterface.list_channels (<a title="GstColorBalance" href="colorba
 		
 	</td>
 	<td>
-		const <a title="GList" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GList</a> *
+		const GList*
 	</td>
 				<td>
 	

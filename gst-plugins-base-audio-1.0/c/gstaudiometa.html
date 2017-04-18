@@ -34,7 +34,6 @@
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-<script src="assets/js/trie.js"></script>
 
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -67,44 +66,44 @@
     </a>
 	<ul class="dropdown-menu" id="modules-menu">
 					<li>
-				<a href="../../gstreamer-1.0/index.html">GStreamer core</a>
+				<a href="gstreamer-1.0/index.html">GStreamer core</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
+				<a href="gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
+				<a href="gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
+				<a href="gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
+				<a href="gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
 			</li>
 					<li>
-				<a href="../../gst-libav-1.0/index.html">GStreamer ffmpeg</a>
+				<a href="gst-libav-1.0/index.html">GStreamer ffmpeg</a>
 			</li>
 					<li>
-				<a href="../../gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
+				<a href="gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
 			</li>
 					<li>
-				<a href="../../gst-devtools-1.0/index.html">GStreamer Validate</a>
+				<a href="gst-devtools-1.0/index.html">GStreamer Validate</a>
 			</li>
 					<li>
-				<a href="../../gst-rtsp-server/index.html">GStreamer RTSP server</a>
+				<a href="gst-rtsp-server/index.html">GStreamer RTSP server</a>
 			</li>
 					<li>
-				<a href="../../gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
+				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
 		</ul></li>
 
 <li>
-    <a href="../../application-development/index.html">Application manual</a>
+    <a href="application-development/index.html">Application manual</a>
 </li>
 
 
 <li>
-    <a href="../../tutorials/index.html">Tutorials</a>
+    <a href="tutorials/index.html">Tutorials</a>
 </li>
 
 			</ul>
@@ -270,8 +269,8 @@ gst_audio_downmix_meta_get_info ()</pre>
 <a title="GstAudioClippingMeta" href="gstaudiometa.html#GstAudioClippingMeta">GstAudioClippingMeta</a> *
 gst_buffer_add_audio_clipping_meta (<a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer,
                                     <a title="GstFormat" href="../../c/GstFormat">GstFormat</a> format,
-                                    <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> start,
-                                    <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> end)</pre>
+                                    guint64 start,
+                                    guint64 end)</pre>
 
 <p>Attaches <a href="gstaudiometa.html#GstAudioClippingMeta">GstAudioClippingMeta</a> metadata to <em>buffer</em> with the given parameters.</p>
 
@@ -398,7 +397,7 @@ gst_buffer_add_audio_downmix_meta (<a title="GstBuffer" href="../../libgstreamer
                                    <a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> from_channels,
                                    <a title="GstAudioChannelPosition" href="audio-channels.html#GstAudioChannelPosition">GstAudioChannelPosition</a> to_position,
                                    <a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> to_channels,
-                                   const <a title="gfloat" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gfloat">gfloat</a> ** matrix)</pre>
+                                   const gfloat** matrix)</pre>
 
 <p>Attaches <a href="gstaudiometa.html#GstAudioDownmixMeta">GstAudioDownmixMeta</a> metadata to <em>buffer</em> with the given parameters.</p>
 <p><em>matrix</em> is an two-dimensional array of <em>to_channels</em> times <em>from_channels</em>
@@ -705,7 +704,16 @@ the destination</p>
 		struct GstAudioClippingMeta
 	</h3>
 
-		<p>Extra buffer metadata describing how much audio has to be clipped from
+		<pre class="raw_code">
+struct GstAudioClippingMeta {
+    GstMeta meta;
+    GstFormat format;
+    guint64 start;
+    guint64 end;
+};
+</pre>
+
+<p>Extra buffer metadata describing how much audio has to be clipped from
 the start or end of a buffer. This is used for compressed formats, where
 the first frame usually has some additional samples due to encoder and
 decoder delays, and the last frame usually has some additional samples to
@@ -745,7 +753,7 @@ has to be dropped from buffers as otherwise clipping could happen twice.</p>
 						<tr id="GstAudioClippingMeta.start">
 		<td>
 		<p>
-		<i><em><code><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <em><code>start</code></em>:</code></em></i>
+		<i><em><code>guint64 <em><code>start</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>Amount of audio to clip from start of buffer</p>
@@ -755,7 +763,7 @@ has to be dropped from buffers as otherwise clipping could happen twice.</p>
 						<tr id="GstAudioClippingMeta.end">
 		<td>
 		<p>
-		<i><em><code><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <em><code>end</code></em>:</code></em></i>
+		<i><em><code>guint64 <em><code>end</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>Amount of  to clip from end of buffer</p>
@@ -778,7 +786,18 @@ has to be dropped from buffers as otherwise clipping could happen twice.</p>
 		struct GstAudioDownmixMeta
 	</h3>
 
-		<p>Extra buffer metadata describing audio downmixing matrix. This metadata is
+		<pre class="raw_code">
+struct GstAudioDownmixMeta {
+    GstMeta meta;
+    GstAudioChannelPosition* from_position;
+    GstAudioChannelPosition* to_position;
+    gint from_channels;
+    gint to_channels;
+    gfloat** matrix;
+};
+</pre>
+
+<p>Extra buffer metadata describing audio downmixing matrix. This metadata is
 attached to audio buffers and contains a matrix to downmix the buffer number
 of channels to <em>channels</em>.</p>
 <p><em>matrix</em> is an two-dimensional array of <em>to_channels</em> times <em>from_channels</em>
@@ -846,7 +865,7 @@ of the results.</p>
 						<tr id="GstAudioDownmixMeta.matrix">
 		<td>
 		<p>
-		<i><em><code><a title="gfloat" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gfloat">gfloat</a> ** <em><code>matrix</code></em>:</code></em></i>
+		<i><em><code>gfloat** <em><code>matrix</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>the matrix coefficients.</p>

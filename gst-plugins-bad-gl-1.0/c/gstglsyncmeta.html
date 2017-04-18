@@ -34,7 +34,6 @@
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-<script src="assets/js/trie.js"></script>
 
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -67,44 +66,44 @@
     </a>
 	<ul class="dropdown-menu" id="modules-menu">
 					<li>
-				<a href="../../gstreamer-1.0/index.html">GStreamer core</a>
+				<a href="gstreamer-1.0/index.html">GStreamer core</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
+				<a href="gst-plugins-base-1.0/index.html">GStreamer Plugins Base</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
+				<a href="gst-plugins-good-1.0/index.html">GStreamer Plugins Good</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
+				<a href="gst-plugins-bad-1.0/index.html">GStreamer Plugins Bad</a>
 			</li>
 					<li>
-				<a href="../../gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
+				<a href="gst-plugins-ugly-1.0/index.html">GStreamer Plugins Ugly</a>
 			</li>
 					<li>
-				<a href="../../gst-libav-1.0/index.html">GStreamer ffmpeg</a>
+				<a href="gst-libav-1.0/index.html">GStreamer ffmpeg</a>
 			</li>
 					<li>
-				<a href="../../gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
+				<a href="gstreamer-vaapi-1.0/index.html">GStreamer VAAPI</a>
 			</li>
 					<li>
-				<a href="../../gst-devtools-1.0/index.html">GStreamer Validate</a>
+				<a href="gst-devtools-1.0/index.html">GStreamer Validate</a>
 			</li>
 					<li>
-				<a href="../../gst-rtsp-server/index.html">GStreamer RTSP server</a>
+				<a href="gst-rtsp-server/index.html">GStreamer RTSP server</a>
 			</li>
 					<li>
-				<a href="../../gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
+				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
 		</ul></li>
 
 <li>
-    <a href="../../application-development/index.html">Application manual</a>
+    <a href="application-development/index.html">Application manual</a>
 </li>
 
 
 <li>
-    <a href="../../tutorials/index.html">Tutorials</a>
+    <a href="tutorials/index.html">Tutorials</a>
 </li>
 
 			</ul>
@@ -508,7 +507,7 @@ gst_buffer_add_gl_sync_meta (<a title="GstGLContext" href="gstglcontext.html#Gst
 <a title="GstGLSyncMeta" href="gstglsyncmeta.html#GstGLSyncMeta">GstGLSyncMeta</a> *
 gst_buffer_add_gl_sync_meta_full (<a title="GstGLContext" href="gstglcontext.html#GstGLContext">GstGLContext</a> * context,
                                   <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer,
-                                  <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> data)</pre>
+                                  gpointer data)</pre>
 
 
 
@@ -638,7 +637,24 @@ gst_buffer_add_gl_sync_meta_full (<a title="GstGLContext" href="gstglcontext.htm
 		struct GstGLSyncMeta
 	</h3>
 
-		
+		<pre class="raw_code">
+struct GstGLSyncMeta {
+    GstMeta parent;
+    GstGLContext* context;
+    gpointer data;
+    void set_sync (GstGLSyncMeta* sync, GstGLContext* context);
+    void set_sync_gl (GstGLSyncMeta* sync, GstGLContext* context);
+    void wait (GstGLSyncMeta* sync, GstGLContext* context);
+    void wait_gl (GstGLSyncMeta* sync, GstGLContext* context);
+    void wait_cpu (GstGLSyncMeta* sync, GstGLContext* context);
+    void wait_cpu_gl (GstGLSyncMeta* sync, GstGLContext* context);
+    void copy (GstGLSyncMeta* src, GstBuffer* sbuffer, GstGLSyncMeta* dest, GstBuffer* dbuffer);
+    void free (GstGLSyncMeta* sync, GstGLContext* context);
+    void free_gl (GstGLSyncMeta* sync, GstGLContext* context);
+};
+</pre>
+
+
 <div class="member_details">
 	
 	<h4 class="always-hide-toc" data-toc-skip="true" id="fields">Fields</h4>
@@ -668,11 +684,92 @@ gst_buffer_add_gl_sync_meta_full (<a title="GstGLContext" href="gstglcontext.htm
 						<tr id="GstGLSyncMeta.data">
 		<td>
 		<p>
-		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>data</code></em>:</code></em></i>
+		<i><em><code>gpointer <em><code>data</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td><p>a custom data pointer for the implementation</p>
 </td>
+</tr>
+
+						<tr id="GstGLSyncMeta.set_sync()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>set_sync()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLSyncMeta.set_sync_gl()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>set_sync_gl()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLSyncMeta.wait()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>wait()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLSyncMeta.wait_gl()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>wait_gl()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLSyncMeta.wait_cpu()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>wait_cpu()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLSyncMeta.wait_cpu_gl()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>wait_cpu_gl()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLSyncMeta.copy()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>copy()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLSyncMeta.free()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>free()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
+</tr>
+
+						<tr id="GstGLSyncMeta.free_gl()">
+		<td>
+		<p>
+		<i><em><code>void <em><code>free_gl()</code></em>:</code></em></i>
+		</p>
+	</td>
+		<td></td>
 </tr>
 
 						</tbody>
