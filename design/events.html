@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>Events</title>
 
@@ -12,7 +15,6 @@
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
 <link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -24,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -53,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -96,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -120,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/events.html" class="page_container" id="page-wrapper">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -139,7 +139,7 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="events.md">
+				    <div id="page-description" data-hotdoc-source="events.md" data-hotdoc-role="main">
         <h1 id="events">Events</h1>
 <p>Events are objects passed around in parallel to the buffer dataflow to
 notify elements of various events.</p>
@@ -148,23 +148,38 @@ be interleaved with the data stream so they require taking the
 <code>STREAM_LOCK</code>, others don’t.</p>
 <p>Different types of events exist to implement various functionalities.</p>
 <ul>
-<li><code>GST_EVENT_FLUSH_START</code>: data is to be discarded</li>
-<li><code>GST_EVENT_FLUSH_STOP</code>: data is allowed again</li>
-<li><code>GST_EVENT_CAPS</code>: Format information about the following buffers</li>
-<li><code>GST_EVENT_SEGMENT</code>: Timing information for the following buffers</li>
-<li><code>GST_EVENT_TAG</code>: Stream metadata.</li>
-<li><code>GST_EVENT_BUFFERSIZE</code>: Buffer size requirements</li>
-<li><code>GST_EVENT_SINK_MESSAGE</code>: An event turned into a message by sinks</li>
-<li><code>GST_EVENT_EOS</code>: no more data is to be expected on a pad.</li>
-<li><code>GST_EVENT_QOS</code>: A notification of the quality of service of the stream</li>
-<li><code>GST_EVENT_SEEK</code>: A seek should be performed to a new position in the stream</li>
-<li><code>GST_EVENT_NAVIGATION</code>: A navigation event.</li>
-<li><code>GST_EVENT_LATENCY</code>: Configure the latency in a pipeline</li>
-<li><code>GST_EVENT_STEP</code>: Stepping event</li>
-<li><code>GST_EVENT_RECONFIGURE</code>: stream reconfigure event</li>
+<li>
+<code>GST_EVENT_FLUSH_START</code>: data is to be discarded</li>
+<li>
+<code>GST_EVENT_FLUSH_STOP</code>: data is allowed again</li>
+<li>
+<code>GST_EVENT_CAPS</code>: Format information about the following buffers</li>
+<li>
+<code>GST_EVENT_SEGMENT</code>: Timing information for the following buffers</li>
+<li>
+<code>GST_EVENT_TAG</code>: Stream metadata.</li>
+<li>
+<code>GST_EVENT_BUFFERSIZE</code>: Buffer size requirements</li>
+<li>
+<code>GST_EVENT_SINK_MESSAGE</code>: An event turned into a message by sinks</li>
+<li>
+<code>GST_EVENT_EOS</code>: no more data is to be expected on a pad.</li>
+<li>
+<code>GST_EVENT_QOS</code>: A notification of the quality of service of the stream</li>
+<li>
+<code>GST_EVENT_SEEK</code>: A seek should be performed to a new position in the stream</li>
+<li>
+<code>GST_EVENT_NAVIGATION</code>: A navigation event.</li>
+<li>
+<code>GST_EVENT_LATENCY</code>: Configure the latency in a pipeline</li>
+<li>
+<code>GST_EVENT_STEP</code>: Stepping event</li>
+<li>
+<code>GST_EVENT_RECONFIGURE</code>: stream reconfigure event</li>
 </ul>
 <ul>
-<li><code>GST_EVENT_DRAIN</code>: Play all data downstream before returning.
+<li>
+<code>GST_EVENT_DRAIN</code>: Play all data downstream before returning.
 <blockquote>
 <p>not yet implemented, under investigation, might be needed to do
 still frames in DVD.</p>
@@ -225,7 +240,7 @@ pullrange function unlocks and any pending buffers are cleared in the
 upstream elements.</p>
 <p>A <code>FLUSH_START</code> may instruct the pipeline to distribute a new <code>base_time</code>
 to elements so that the <code>running_time</code> is reset to 0. (see
-<a href="clocks.html">clocks</a> and <a href="synchronisation.html">synchronisation</a>).</p>
+<a href="design/clocks.html">clocks</a> and <a href="design/synchronisation.html">synchronisation</a>).</p>
 <h2 id="eos">EOS</h2>
 <p>The EOS event can only be sent on a sinkpad. It is typically emitted by
 the source element when it has finished sending data. This event is
@@ -267,7 +282,7 @@ pipeline using the SEGMENT event.</p>
 is free to refuse buffers if they were not preceded by a SEGMENT event.</p>
 <p>Elements that sync to the clock should store the SEGMENT start and end
 values and subtract the start value from the buffer timestamp before
-comparing it against the stream time (see <a href="clocks.html">clocks</a>).</p>
+comparing it against the stream time (see <a href="design/clocks.html">clocks</a>).</p>
 <p>An element is allowed to send out buffers with the SEGMENT start time
 already subtracted from the timestamp. If it does so, it needs to send a
 corrected SEGMENT downstream, ie, one with start time 0.</p>
@@ -296,7 +311,7 @@ such as demuxers.</p>
 <p>A QOS, or quality of service message, is generated in an element to
 report to the upstream elements about the current quality of real-time
 performance of the stream. This is typically done by the sinks that
-measure the amount of framedrops they have. (see <a href="qos.html">qos</a>)</p>
+measure the amount of framedrops they have. (see <a href="design/qos.html">qos</a>)</p>
 <h2 id="seek">SEEK</h2>
 <p>A seek event is issued by the application to configure the playback
 range of a stream. It is called form the application thread and travels
@@ -353,7 +368,7 @@ now from the new position.</p>
 </li>
 </ol>
 <p>More information about the different seek types can be found in
-<a href="seeking.html">seeking</a>.</p>
+<a href="design/seeking.html">seeking</a>.</p>
 <h2 id="navigation">NAVIGATION</h2>
 <p>A navigation event is generated by a sink element to signal the elements
 of a navigation event such as a mouse movement or button click.
@@ -364,7 +379,7 @@ It contains a single GstClockTime with the required latency. The latency
 value is calculated by the pipeline and distributed to all sink elements
 before they are set to PLAYING. The sinks will add the configured
 latency value to the timestamps of the buffer in order to delay their
-presentation. (See also <a href="latency.html">latency</a>).</p>
+presentation. (See also <a href="design/latency.html">latency</a>).</p>
 <h2 id="drain">DRAIN</h2>
 <blockquote>
 <p><strong>Note</strong></p>
@@ -385,11 +400,10 @@ sinks for arriving late (only applies during playback scenarios).</p>
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -407,7 +421,7 @@ sinks for arriving late (only applies during playback scenarios).</p>
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

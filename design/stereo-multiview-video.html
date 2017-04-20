@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>Stereoscopic &amp; Multiview Video Handling</title>
 
@@ -12,7 +15,6 @@
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
 <link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -24,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -53,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -96,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -120,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/stereo-multiview-video.html" class="page_container" id="page-wrapper">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -139,7 +139,7 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="stereo-multiview-video.md">
+				    <div id="page-description" data-hotdoc-source="stereo-multiview-video.md" data-hotdoc-role="main">
         <h1 id="stereoscopic-multiview-video-handling">Stereoscopic &amp; Multiview Video Handling</h1>
 <p>There are two cases to handle:</p>
 <ul>
@@ -184,10 +184,12 @@ same system below for raw video or some variation should work</em></p>
 (single|stereo|multiview) for mixed scenarios. The alternative (not
 proposed) is for the demuxer to switch caps for each mono to not-mono
 change, and not used a 'mixed' caps variant at all.</li>
-<li><em>single</em> refers to a stream of buffers that only contain 1 view.
+<li>
+<em>single</em> refers to a stream of buffers that only contain 1 view.
 It is different from mono in that the stream is a marked left or right
 eye stream for later combining in a mixer or when displaying.</li>
-<li><em>multiple</em> marks a stream with multiple independent views encoded.
+<li>
+<em>multiple</em> marks a stream with multiple independent views encoded.
 It is included in this list for completeness. As noted above, there's
 currently no scenario that requires marking encoded buffers as MVC.</li>
 </ul>
@@ -200,19 +202,27 @@ column-interleaved, row-interleaved, top-bottom, checker-board</li>
 <li>bug 611157 - sreerenj added side-by-side-full and top-bottom-full but
 I think that's covered by suitably adjusting pixel-aspect-ratio. If
 not, they can be added later.</li>
-<li><em>top-bottom</em>, <em>side-by-side</em>, <em>column-interleaved</em>, <em>row-interleaved</em> are as the names suggest.</li>
-<li><em>checker-board</em>, samples are left/right pixels in a chess grid +-+-+-/-+-+-+</li>
-<li><em>side-by-side-quincunx</em>. Side By Side packing, but quincunx sampling -
+<li>
+<em>top-bottom</em>, <em>side-by-side</em>, <em>column-interleaved</em>, <em>row-interleaved</em> are as the names suggest.</li>
+<li>
+<em>checker-board</em>, samples are left/right pixels in a chess grid +-+-+-/-+-+-+</li>
+<li>
+<em>side-by-side-quincunx</em>. Side By Side packing, but quincunx sampling -
 1 pixel offset of each eye needs to be accounted when upscaling or displaying</li>
 <li>there may be other packings (future expansion)</li>
 <li>Possible view sequence orderings: frame-by-frame, frame-primary-secondary-tracks, sequential-row-interleaved</li>
-<li><em>frame-by-frame</em>, each buffer is left, then right view etc</li>
-<li><em>frame-primary-secondary-tracks</em> - the file has 2 video tracks (primary and secondary), one is left eye, one is right.
+<li>
+<em>frame-by-frame</em>, each buffer is left, then right view etc</li>
+<li>
+<em>frame-primary-secondary-tracks</em> - the file has 2 video tracks (primary and secondary), one is left eye, one is right.
 Demuxer info indicates which one is which.
 Handling this means marking each stream as all-left and all-right views, decoding separately, and combining automatically (inserting a mixer/combiner in playbin)
--&gt; <em>Leave this for future expansion</em></li>
-<li><em>sequential-row-interleaved</em> Mentioned by sreerenj in bug patches, I can't find a mention of such a thing. Maybe it's in MPEG-2
--&gt; <em>Leave this for future expansion / deletion</em></li>
+-&gt; <em>Leave this for future expansion</em>
+</li>
+<li>
+<em>sequential-row-interleaved</em> Mentioned by sreerenj in bug patches, I can't find a mention of such a thing. Maybe it's in MPEG-2
+-&gt; <em>Leave this for future expansion / deletion</em>
+</li>
 </ul>
 </li>
 <li>
@@ -246,12 +256,14 @@ extract the individual views for packed formats</li>
 <li>video sinks that don't know about multiview extensions yet will show the
 packed view as-is. For frame-sequence outputs, things might look weird, but
 just adding multiview-mode to the sink caps can disallow those transports.</li>
-<li><em>row-interleaved</em> packing is actually just side-by-side memory layout with
+<li>
+<em>row-interleaved</em> packing is actually just side-by-side memory layout with
 half frame width, twice the height, so can be handled by adjusting the
 overall caps and strides</li>
 <li>Other exotic layouts need new pixel formats defined (checker-board,
 column-interleaved, side-by-side-quincunx)</li>
-<li><em>Frame-by-frame</em> - one view per buffer, but with alternating metas marking
+<li>
+<em>Frame-by-frame</em> - one view per buffer, but with alternating metas marking
 which buffer is which left/right/other view and using a new buffer flag as
 described above to mark the start of a group of corresponding frames.</li>
 <li>New video caps addition as for encoded buffers</li>
@@ -346,7 +358,8 @@ initial implementation won't include that</p>
 <li>
 <p>videooverlay interface extensions</p>
 <ul>
-<li><strong>Q</strong>: Should this be a new interface?</li>
+<li>
+<strong>Q</strong>: Should this be a new interface?</li>
 <li>Element message to communicate the presence of stereoscopic information to the app</li>
 <li>App needs to be able to override the input interpretation - ie, set multiview-mode and multiview-flags
 <ul>
@@ -387,15 +400,19 @@ to mono for output, or in the sink and have those down as far upstream/downstrea
 <li>Parsing SEI in h264parse and setting caps (patches available in
 bugzilla for parsing, see below)</li>
 <li>Integrate gstreamer-vaapi MVC support with this proposal</li>
-<li>Help with <a href="https://wiki.libav.org/Blueprint/MVC">libav MVC implementation</a></li>
+<li>Help with <a href="https://wiki.libav.org/Blueprint/MVC">libav MVC implementation</a>
+</li>
 <li>generating SEI in H.264 encoder</li>
 <li>Support for MPEG2 MVC extensions</li>
 </ol>
 <h2 id="relevant-bugs">Relevant bugs</h2>
 <ul>
-<li><a href="https://bugzilla.gnome.org/show_bug.cgi?id=685215">bug 685215</a> - codecparser h264: Add initial MVC parser</li>
-<li><a href="https://bugzilla.gnome.org/show_bug.cgi?id=696135">bug 696135</a> - h264parse: Add mvc stream parsing support</li>
-<li><a href="https://bugzilla.gnome.org/show_bug.cgi?id=732267">bug 732267</a> - h264parse: extract base stream from MVC or SVC encoded streams</li>
+<li>
+<a href="https://bugzilla.gnome.org/show_bug.cgi?id=685215">bug 685215</a> - codecparser h264: Add initial MVC parser</li>
+<li>
+<a href="https://bugzilla.gnome.org/show_bug.cgi?id=696135">bug 696135</a> - h264parse: Add mvc stream parsing support</li>
+<li>
+<a href="https://bugzilla.gnome.org/show_bug.cgi?id=732267">bug 732267</a> - h264parse: extract base stream from MVC or SVC encoded streams</li>
 </ul>
 <h2 id="other-information">Other Information</h2>
 <p><a href="http://www.matroska.org/technical/specs/notes.html#3D">Matroska 3D support notes</a></p>
@@ -446,7 +463,8 @@ to say so. How should we override that interpretation?</p>
 <ul>
 <li>Simple answer: Use capssetter + new properties on playbin to
 override the multiview fields. <em>Basically implemented in playbin, using</em>
-<em>a pad probe. Needs more work for completeness</em></li>
+<em>a pad probe. Needs more work for completeness</em>
+</li>
 </ul>
 <h3 id="adding-extra-gstvideometa-to-buffers">Adding extra GstVideoMeta to buffers</h3>
 <p>There should be one <code>GstVideoMeta</code> for the entire video frame in packed
@@ -494,11 +512,10 @@ or can the app just render to stereo/quad buffers if they're available?</li>
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -516,7 +533,7 @@ or can the app just render to stereo/quad buffers if they're available?</li>
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

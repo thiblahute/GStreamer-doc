@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="../..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>Basic tutorial 8: Short-cutting the pipeline</title>
 
@@ -12,7 +15,6 @@
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
 <link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -24,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -53,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -96,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -120,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/short-cutting-the-pipeline.html" class="page_container" id="page-wrapper">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -139,7 +139,7 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="short-cutting-the-pipeline.md">
+				    <div id="page-description" data-hotdoc-source="short-cutting-the-pipeline.md" data-hotdoc-role="main">
         <h1 id="basic-tutorial-8-shortcutting-the-pipeline">Basic tutorial 8: Short-cutting the pipeline</h1>
 <h2 id="goal">Goal</h2>
 <p>Pipelines constructed with GStreamer do not need to be completely
@@ -156,7 +156,7 @@ any time, in a variety of ways. This tutorial shows:</p>
 <p>How to access and manipulate this data.</p>
 </li>
 </ul>
-<p><a href="../playback/short-cutting-the-pipeline.html">Playback tutorial 3: Short-cutting the pipeline</a> explains
+<p><a href="tutorials/playback/short-cutting-the-pipeline.html">Playback tutorial 3: Short-cutting the pipeline</a> explains
 how to achieve the same goals in a playbin-based pipeline.</p>
 <h2 id="introduction">Introduction</h2>
 <p>Applications can interact with the data flowing through a GStreamer
@@ -201,20 +201,20 @@ displayed. Time stamping is a very complex and delicate subject, but
 this simplified vision should suffice for now.</p>
 <p>As an example, a <code>filesrc</code> (a GStreamer element that reads files)
 produces buffers with the “ANY” caps and no time-stamping information.
-After demuxing (see <a href="dynamic-pipelines.html">Basic tutorial 3: Dynamic pipelines</a>)
+After demuxing (see <a href="tutorials/basic/dynamic-pipelines.html">Basic tutorial 3: Dynamic pipelines</a>)
 buffers can have some specific caps, for example “video/x-h264”. After
 decoding, each buffer will contain a single video frame with raw caps
 (for example, “video/x-raw-yuv”) and very precise time stamps indicating
 when should that frame be displayed.</p>
 <h3 id="this-tutorial">This tutorial</h3>
-<p>This tutorial expands <a href="multithreading-and-pad-availability.html">Basic tutorial 7: Multithreading and Pad Availability</a> in
+<p>This tutorial expands <a href="tutorials/basic/multithreading-and-pad-availability.html">Basic tutorial 7: Multithreading and Pad Availability</a> in
 two ways: firstly, the <code>audiotestsrc</code> is replaced by an <code>appsrc</code> that
 will generate the audio data. Secondly, a new branch is added to the
 <code>tee</code> so data going into the audio sink and the wave display is also
 replicated into an <code>appsink</code>. The <code>appsink</code> uploads the information back
 into the application, which then just notifies the user that data has
 been received, but it could obviously perform more complex tasks.</p>
-<p><img src="images/tutorials/basic-tutorial-8.png" alt=""></p>
+<p><img src="tutorials/basic/images/tutorials/basic-tutorial-8.png" alt=""></p>
 <h2 id="a-crude-waveform-generator">A crude waveform generator</h2>
 <p>Copy this code into a text file named <code>basic-tutorial-8.c</code> (or find it
 in the SDK installation).</p>
@@ -455,17 +455,17 @@ int main(int argc, char *argv[]) {
 }
 </code></pre>
 <blockquote>
-<p><img src="images/icons/emoticons/information.svg" alt="Information" id="information">
+<p><img src="tutorials/basic/images/icons/emoticons/information.svg" alt="Information" id="information">
 Need help?</p>
-<p>If you need help to compile this code, refer to the <strong>Building the tutorials</strong>  section for your platform: <a href="../../installing/on-linux.html#InstallingonLinux-Build">Linux</a>, <a href="../../installing/on-mac-osx.html#InstallingonMacOSX-Build">Mac OS X</a> or <a href="../../installing/on-windows.html#InstallingonWindows-Build">Windows</a>, or use this specific command on Linux:</p>
+<p>If you need help to compile this code, refer to the <strong>Building the tutorials</strong>  section for your platform: <a href="installing/on-linux.html#InstallingonLinux-Build">Linux</a>, <a href="installing/on-mac-osx.html#InstallingonMacOSX-Build">Mac OS X</a> or <a href="installing/on-windows.html#InstallingonWindows-Build">Windows</a>, or use this specific command on Linux:</p>
 <p><code>gcc basic-tutorial-8.c -o basic-tutorial-8 `pkg-config --cflags --libs gstreamer-1.0 gst-audio-1.0`</code></p>
-<p>If you need help to run this code, refer to the <strong>Running the tutorials</strong> section for your platform: <a href="../../installing/on-linux.html#InstallingonLinux-Run">Linux</a>, <a href="../../installing/on-mac-osx.html#InstallingonMacOSX-Run">Mac OS X</a> or <a href="../../installing/on-windows.html#InstallingonWindows-Run">Windows</a>.</p>
+<p>If you need help to run this code, refer to the <strong>Running the tutorials</strong> section for your platform: <a href="installing/on-linux.html#InstallingonLinux-Run">Linux</a>, <a href="installing/on-mac-osx.html#InstallingonMacOSX-Run">Mac OS X</a> or <a href="installing/on-windows.html#InstallingonWindows-Run">Windows</a>.</p>
 <p>This tutorial plays an audible tone for varying frequency through the audio card and opens a window with a waveform representation of the tone. The waveform should be a sinusoid, but due to the refreshing of the window might not appear so.</p>
 <p>Required libraries: <code>gstreamer-1.0</code></p>
 </blockquote>
 <h2 id="walkthrough">Walkthrough</h2>
 <p>The code to create the pipeline (Lines 131 to 205) is an enlarged
-version of <a href="multithreading-and-pad-availability.html">Basic tutorial 7: Multithreading and Pad
+version of <a href="tutorials/basic/multithreading-and-pad-availability.html">Basic tutorial 7: Multithreading and Pad
 Availability</a>.
 It involves instantiating all the elements, link the elements with
 Always Pads, and manually link the Request Pads of the <code>tee</code> element.</p>
@@ -586,7 +586,7 @@ g_signal_emit_by_name (data-&gt;app_source, "push-buffer", buffer, &amp;ret);
 gst_buffer_unref (buffer);
 </code></pre>
 <p>Once we have the buffer ready, we pass it to <code>appsrc</code> with the
-<code>push-buffer</code> action signal (see information box at the end of <a href="../playback/playbin-usage.html">Playback tutorial 1: Playbin usage</a>), and then
+<code>push-buffer</code> action signal (see information box at the end of <a href="tutorials/playback/playbin-usage.html">Playback tutorial 1: Playbin usage</a>), and then
 <code>gst_buffer_unref()</code> it since we no longer need it.</p>
 <pre><code class="language-c">/* The appsink has received a buffer */
 static void new_sample (GstElement *sink, CustomData *data) {
@@ -619,7 +619,7 @@ of the buffers).</p>
 <li>Manipulate this data by accessing the <code>GstBuffer</code>.</li>
 </ul>
 <p>In a playbin-based pipeline, the same goals are achieved in a slightly
-different way. <a href="../playback/short-cutting-the-pipeline.html">Playback tutorial 3: Short-cutting the pipeline</a> shows
+different way. <a href="tutorials/playback/short-cutting-the-pipeline.html">Playback tutorial 3: Short-cutting the pipeline</a> shows
 how to do it.</p>
 <p>It has been a pleasure having you here, and see you soon!</p>
 
@@ -629,11 +629,10 @@ how to do it.</p>
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -651,7 +650,7 @@ how to do it.</p>
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

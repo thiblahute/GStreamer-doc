@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="../..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>GstAudioEncoder</title>
 
@@ -23,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -52,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -95,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -119,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-base-audio-1.0" data-hotdoc-ref="gstaudioencoder.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -138,8 +139,9 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="gstaudioencoder.h">
-        <h1 id="gstaudioencoder">GstAudioEncoder</h1><p>This base class is for audio encoders turning raw audio samples into
+				    <div id="page-description" data-hotdoc-source="gstaudioencoder.h" data-hotdoc-role="main">
+        <h1 id="gstaudioencoder">GstAudioEncoder</h1>
+<p>This base class is for audio encoders turning raw audio samples into
 encoded audio data.</p>
 <p>GstAudioEncoder and subclass should cooperate as follows.</p>
 <h2 id="configuration">Configuration</h2>
@@ -195,18 +197,18 @@ such as most notably timestamp handling.  While it may exert more control
 in this area (see e.g. <em>pre_push</em>), it is very much not recommended.</p>
 <p>In particular, base class will either favor tracking upstream timestamps
 (at the possible expense of jitter) or aim to arrange for a perfect stream of
-output timestamps, depending on <a href="gstaudioencoder.html#GstAudioEncoder:perfect-timestamp">perfect-timestamp</a>.
+output timestamps, depending on <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder:perfect-timestamp">perfect-timestamp</a>.
 However, in the latter case, the input may not be so perfect or ideal, which
 is handled as follows.  An input timestamp is compared with the expected
 timestamp as dictated by input sample stream and if the deviation is less
-than <a href="gstaudioencoder.html#GstAudioEncoder:tolerance">tolerance</a>, the deviation is discarded.
+than <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder:tolerance">tolerance</a>, the deviation is discarded.
 Otherwise, it is considered a discontuinity and subsequent output timestamp
 is resynced to the new position after performing configured discontinuity
 processing.  In the non-perfect-timestamp case, an upstream variation
 exceeding tolerance only leads to marking DISCONT on subsequent outgoing
 (while timestamps are adjusted to upstream regardless of variation).
 While DISCONT is also marked in the perfect-timestamp case, this one
-optionally (see <a href="gstaudioencoder.html#GstAudioEncoder:hard-resync">hard-resync</a>)
+optionally (see <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder:hard-resync">hard-resync</a>)
 performs some additional steps, such as clipping of (early) input samples
 or draining all currently remaining input data, depending on the direction
 of the discontuinity.</p>
@@ -226,7 +228,7 @@ frame_samples and frame_bytes.</li>
 implementing codec at hand, e.g. those controlling timestamp behaviour
 and discontinuity processing.</li>
 <li>Accept data in <em>handle_frame</em> and provide encoded results to
-<a href="gstaudioencoder.html#gst_audio_encoder_finish_frame">gst_audio_encoder_finish_frame</a>.</li>
+<a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#gst_audio_encoder_finish_frame">gst_audio_encoder_finish_frame</a>.</li>
 </ul>
 
     </div>
@@ -244,8 +246,8 @@ and discontinuity processing.</li>
 <pre>
 GObject
     <span class="lineart">╰──</span>GInitiallyUnowned
-        <span class="lineart">╰──</span><a title="GstObject" href="../../libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
-            <span class="lineart">╰──</span><a title="GstElement" href="../../libgstreamer-1.0/c/gstelement-h.html#GstElement">GstElement</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="libgstreamer-1.0/c/gstelement-h.html#GstElement">GstElement</a>
                 <span class="lineart">╰──</span>GstAudioEncoder
 </pre>
 
@@ -254,7 +256,7 @@ GObject
 </div>
 
 <div class="class_details">
-	<p>The opaque <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> data structure.</p>
+	<p>The opaque <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> data structure.</p>
 
 </div>
 
@@ -267,7 +269,7 @@ GObject
 						<tr id="GstAudioEncoder.element">
 		<td>
 		<p>
-		<i><em><code><a title="GstElement" href="../../libgstreamer-1.0/c/gstelement-h.html#GstElement">GstElement</a> <em><code>element</code></em>:</code></em></i>
+		<i><em><code><a title="GstElement" href="libgstreamer-1.0/c/gstelement-h.html#GstElement">GstElement</a> <em><code>element</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -276,7 +278,7 @@ GObject
 						<tr id="GstAudioEncoder.sinkpad">
 		<td>
 		<p>
-		<i><em><code><a title="GstPad" href="../../libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * <em><code>sinkpad</code></em>:</code></em></i>
+		<i><em><code><a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * <em><code>sinkpad</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -285,7 +287,7 @@ GObject
 						<tr id="GstAudioEncoder.srcpad">
 		<td>
 		<p>
-		<i><em><code><a title="GstPad" href="../../libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * <em><code>srcpad</code></em>:</code></em></i>
+		<i><em><code><a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * <em><code>srcpad</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -303,7 +305,7 @@ GObject
 						<tr id="GstAudioEncoder.input_segment">
 		<td>
 		<p>
-		<i><em><code><a title="GstSegment" href="../../libgstreamer-1.0/c/gstsegment.html#GstSegment">GstSegment</a> <em><code>input_segment</code></em>:</code></em></i>
+		<i><em><code><a title="GstSegment" href="libgstreamer-1.0/c/gstsegment.html#GstSegment">GstSegment</a> <em><code>input_segment</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -312,7 +314,7 @@ GObject
 						<tr id="GstAudioEncoder.output_segment">
 		<td>
 		<p>
-		<i><em><code><a title="GstSegment" href="../../libgstreamer-1.0/c/gstsegment.html#GstSegment">GstSegment</a> <em><code>output_segment</code></em>:</code></em></i>
+		<i><em><code><a title="GstSegment" href="libgstreamer-1.0/c/gstsegment.html#GstSegment">GstSegment</a> <em><code>output_segment</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -359,8 +361,8 @@ GObject
 		
 
 <pre class="prototype">
-<a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> *
-gst_audio_encoder_allocate_output_buffer (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+<a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> *
+gst_audio_encoder_allocate_output_buffer (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
                                           gsize size)</pre>
 
 <p>Helper function that allocates a buffer to hold an encoded audio frame
@@ -377,7 +379,8 @@ for <em>enc</em>'s current output format.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -391,7 +394,8 @@ for <em>enc</em>'s current output format.</p>
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>size of the buffer</p>
+		<td>
+<p>size of the buffer</p>
 </td>
 <td>
 
@@ -423,7 +427,7 @@ for <em>enc</em>'s current output format.</p>
 
 	</td>
 	<td>
-		<a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> *
+		<a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> *
 	</td>
 				<td>
 	
@@ -452,10 +456,10 @@ for <em>enc</em>'s current output format.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
-gst_audio_encoder_finish_frame (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer,
-                                <a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> samples)</pre>
+<a title="GstFlowReturn" href="c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+gst_audio_encoder_finish_frame (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer,
+                                <a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> samples)</pre>
 
 <p>Collects encoded data and pushes encoded data downstream.
 Source pad caps must be set when this is called.</p>
@@ -477,7 +481,8 @@ may be invalidated by a call to this function.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -491,7 +496,8 @@ may be invalidated by a call to this function.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>encoded data</p>
+		<td>
+<p>encoded data</p>
 </td>
 <td>
 
@@ -505,7 +511,8 @@ may be invalidated by a call to this function.</p>
 		<i><em><code>samples:</code></em></i>
 		</p>
 	</td>
-		<td><p>number of samples (per channel) represented by encoded data</p>
+		<td>
+<p>number of samples (per channel) represented by encoded data</p>
 </td>
 <td>
 
@@ -533,11 +540,11 @@ may be invalidated by a call to this function.</p>
 				</p>
 	</td>
 	<td>
-		<p>a <a href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a> that should be escalated to caller (of caller)</p>
+		<p>a <a href="c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a> that should be escalated to caller (of caller)</p>
 
 	</td>
 	<td>
-		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+		<a title="GstFlowReturn" href="c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 	</td>
 				<td>
 	
@@ -566,11 +573,11 @@ may be invalidated by a call to this function.</p>
 
 <pre class="prototype">
 void
-gst_audio_encoder_get_allocator (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                 <a title="GstAllocator" href="../../libgstreamer-1.0/c/gstallocator.html#GstAllocator">GstAllocator</a> ** allocator,
-                                 <a title="GstAllocationParams" href="../../libgstreamer-1.0/c/gstallocator.html#GstAllocationParams">GstAllocationParams</a> * params)</pre>
+gst_audio_encoder_get_allocator (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                 <a title="GstAllocator" href="libgstreamer-1.0/c/gstallocator.html#GstAllocator">GstAllocator</a> ** allocator,
+                                 <a title="GstAllocationParams" href="libgstreamer-1.0/c/gstallocator.html#GstAllocationParams">GstAllocationParams</a> * params)</pre>
 
-<p>Lets <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> sub-classes to know the memory <em>allocator</em>
+<p>Lets <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> sub-classes to know the memory <em>allocator</em>
 used by the base class and its <em>params</em>.</p>
 <p>Unref the <em>allocator</em> after use it.</p>
 
@@ -585,7 +592,8 @@ used by the base class and its <em>params</em>.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -599,7 +607,8 @@ used by the base class and its <em>params</em>.</p>
 		<i><em><code>allocator:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../libgstreamer-1.0/c/gstallocator.html#GstAllocator">GstAllocator</a>
+		<td>
+<p>the <a href="libgstreamer-1.0/c/gstallocator.html#GstAllocator">GstAllocator</a>
 used</p>
 </td>
 <td>
@@ -617,7 +626,8 @@ used</p>
 		<i><em><code>params:</code></em></i>
 		</p>
 	</td>
-		<td><p>the
+		<td>
+<p>the
 GstAllocatorParams of <em>allocator</em></p>
 </td>
 <td>
@@ -653,7 +663,7 @@ GstAllocatorParams of <em>allocator</em></p>
 		
 	</td>
 	<td>
-		<a title="GstAllocator" href="../../libgstreamer-1.0/c/gstallocator.html#GstAllocator">GstAllocator</a> **
+		<a title="GstAllocator" href="libgstreamer-1.0/c/gstallocator.html#GstAllocator">GstAllocator</a> **
 	</td>
 				<td>
 	
@@ -671,7 +681,7 @@ GstAllocatorParams of <em>allocator</em></p>
 		
 	</td>
 	<td>
-		<a title="GstAllocationParams" href="../../libgstreamer-1.0/c/gstallocator.html#GstAllocationParams">GstAllocationParams</a> *
+		<a title="GstAllocationParams" href="libgstreamer-1.0/c/gstallocator.html#GstAllocationParams">GstAllocationParams</a> *
 	</td>
 				<td>
 	
@@ -699,8 +709,8 @@ GstAllocatorParams of <em>allocator</em></p>
 		
 
 <pre class="prototype">
-<a title="GstAudioInfo" href="audio-info.html#GstAudioInfo">GstAudioInfo</a> *
-gst_audio_encoder_get_audio_info (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="GstAudioInfo" href="gst-plugins-base-audio-1.0/c/audio-info.html#GstAudioInfo">GstAudioInfo</a> *
+gst_audio_encoder_get_audio_info (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -714,7 +724,8 @@ gst_audio_encoder_get_audio_info (<a title="GstAudioEncoder" href="gstaudioencod
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -742,11 +753,11 @@ gst_audio_encoder_get_audio_info (<a title="GstAudioEncoder" href="gstaudioencod
 				</p>
 	</td>
 	<td>
-		<p>a <a href="audio-info.html#GstAudioInfo">GstAudioInfo</a> describing the input audio format</p>
+		<p>a <a href="gst-plugins-base-audio-1.0/c/audio-info.html#GstAudioInfo">GstAudioInfo</a> describing the input audio format</p>
 
 	</td>
 	<td>
-		<a title="GstAudioInfo" href="audio-info.html#GstAudioInfo">GstAudioInfo</a> *
+		<a title="GstAudioInfo" href="gst-plugins-base-audio-1.0/c/audio-info.html#GstAudioInfo">GstAudioInfo</a> *
 	</td>
 				<td>
 	
@@ -774,8 +785,8 @@ gst_audio_encoder_get_audio_info (<a title="GstAudioEncoder" href="gstaudioencod
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_audio_encoder_get_drainable (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_audio_encoder_get_drainable (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 <p>Queries encoder drain handling.</p>
 
@@ -790,7 +801,8 @@ gst_audio_encoder_get_drainable (<a title="GstAudioEncoder" href="gstaudioencode
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -823,7 +835,7 @@ gst_audio_encoder_get_drainable (<a title="GstAudioEncoder" href="gstaudioencode
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -851,8 +863,8 @@ gst_audio_encoder_get_drainable (<a title="GstAudioEncoder" href="gstaudioencode
 		
 
 <pre class="prototype">
-<a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
-gst_audio_encoder_get_frame_max (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
+gst_audio_encoder_get_frame_max (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -866,7 +878,8 @@ gst_audio_encoder_get_frame_max (<a title="GstAudioEncoder" href="gstaudioencode
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -898,7 +911,7 @@ gst_audio_encoder_get_frame_max (<a title="GstAudioEncoder" href="gstaudioencode
 
 	</td>
 	<td>
-		<a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
+		<a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
 	</td>
 				<td>
 	
@@ -926,8 +939,8 @@ gst_audio_encoder_get_frame_max (<a title="GstAudioEncoder" href="gstaudioencode
 		
 
 <pre class="prototype">
-<a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
-gst_audio_encoder_get_frame_samples_max (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
+gst_audio_encoder_get_frame_samples_max (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -941,7 +954,8 @@ gst_audio_encoder_get_frame_samples_max (<a title="GstAudioEncoder" href="gstaud
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -973,7 +987,7 @@ gst_audio_encoder_get_frame_samples_max (<a title="GstAudioEncoder" href="gstaud
 
 	</td>
 	<td>
-		<a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
+		<a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
 	</td>
 				<td>
 	
@@ -1001,8 +1015,8 @@ gst_audio_encoder_get_frame_samples_max (<a title="GstAudioEncoder" href="gstaud
 		
 
 <pre class="prototype">
-<a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
-gst_audio_encoder_get_frame_samples_min (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
+gst_audio_encoder_get_frame_samples_min (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -1016,7 +1030,8 @@ gst_audio_encoder_get_frame_samples_min (<a title="GstAudioEncoder" href="gstaud
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -1048,7 +1063,7 @@ gst_audio_encoder_get_frame_samples_min (<a title="GstAudioEncoder" href="gstaud
 
 	</td>
 	<td>
-		<a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
+		<a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
 	</td>
 				<td>
 	
@@ -1076,8 +1091,8 @@ gst_audio_encoder_get_frame_samples_min (<a title="GstAudioEncoder" href="gstaud
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_audio_encoder_get_hard_min (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_audio_encoder_get_hard_min (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 <p>Queries encoder hard minimum handling.</p>
 
@@ -1092,7 +1107,8 @@ gst_audio_encoder_get_hard_min (<a title="GstAudioEncoder" href="gstaudioencoder
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -1125,7 +1141,7 @@ gst_audio_encoder_get_hard_min (<a title="GstAudioEncoder" href="gstaudioencoder
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -1153,8 +1169,8 @@ gst_audio_encoder_get_hard_min (<a title="GstAudioEncoder" href="gstaudioencoder
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_audio_encoder_get_hard_resync (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_audio_encoder_get_hard_resync (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -1198,7 +1214,7 @@ gst_audio_encoder_get_hard_resync (<a title="GstAudioEncoder" href="gstaudioenco
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -1227,9 +1243,9 @@ gst_audio_encoder_get_hard_resync (<a title="GstAudioEncoder" href="gstaudioenco
 
 <pre class="prototype">
 void
-gst_audio_encoder_get_latency (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                               <a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * min,
-                               <a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * max)</pre>
+gst_audio_encoder_get_latency (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                               <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * min,
+                               <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * max)</pre>
 
 <p>Sets the variables pointed to by <em>min</em> and <em>max</em> to the currently configured
 latency.</p>
@@ -1245,7 +1261,8 @@ latency.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -1259,7 +1276,8 @@ latency.</p>
 		<i><em><code>min:</code></em></i>
 		</p>
 	</td>
-		<td><p>a pointer to storage to hold minimum latency</p>
+		<td>
+<p>a pointer to storage to hold minimum latency</p>
 </td>
 <td>
 
@@ -1275,7 +1293,8 @@ latency.</p>
 		<i><em><code>max:</code></em></i>
 		</p>
 	</td>
-		<td><p>a pointer to storage to hold maximum latency</p>
+		<td>
+<p>a pointer to storage to hold maximum latency</p>
 </td>
 <td>
 
@@ -1309,7 +1328,7 @@ latency.</p>
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
 	</td>
 				<td>
 	
@@ -1327,7 +1346,7 @@ latency.</p>
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
 	</td>
 				<td>
 	
@@ -1355,8 +1374,8 @@ latency.</p>
 		
 
 <pre class="prototype">
-<a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
-gst_audio_encoder_get_lookahead (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
+gst_audio_encoder_get_lookahead (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -1370,7 +1389,8 @@ gst_audio_encoder_get_lookahead (<a title="GstAudioEncoder" href="gstaudioencode
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -1402,7 +1422,7 @@ gst_audio_encoder_get_lookahead (<a title="GstAudioEncoder" href="gstaudioencode
 
 	</td>
 	<td>
-		<a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
+		<a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
 	</td>
 				<td>
 	
@@ -1430,8 +1450,8 @@ gst_audio_encoder_get_lookahead (<a title="GstAudioEncoder" href="gstaudioencode
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_audio_encoder_get_mark_granule (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_audio_encoder_get_mark_granule (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 <p>Queries if the encoder will handle granule marking.</p>
 
@@ -1446,7 +1466,8 @@ gst_audio_encoder_get_mark_granule (<a title="GstAudioEncoder" href="gstaudioenc
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -1479,7 +1500,7 @@ gst_audio_encoder_get_mark_granule (<a title="GstAudioEncoder" href="gstaudioenc
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -1507,8 +1528,8 @@ gst_audio_encoder_get_mark_granule (<a title="GstAudioEncoder" href="gstaudioenc
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_audio_encoder_get_perfect_timestamp (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_audio_encoder_get_perfect_timestamp (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 <p>Queries encoder perfect timestamp behaviour.</p>
 
@@ -1523,7 +1544,8 @@ gst_audio_encoder_get_perfect_timestamp (<a title="GstAudioEncoder" href="gstaud
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -1556,7 +1578,7 @@ gst_audio_encoder_get_perfect_timestamp (<a title="GstAudioEncoder" href="gstaud
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -1584,8 +1606,8 @@ gst_audio_encoder_get_perfect_timestamp (<a title="GstAudioEncoder" href="gstaud
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
-gst_audio_encoder_get_tolerance (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_audio_encoder_get_tolerance (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 <p>Queries current audio jitter tolerance threshold.</p>
 
@@ -1600,7 +1622,8 @@ gst_audio_encoder_get_tolerance (<a title="GstAudioEncoder" href="gstaudioencode
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -1633,7 +1656,7 @@ gst_audio_encoder_get_tolerance (<a title="GstAudioEncoder" href="gstaudioencode
 
 	</td>
 	<td>
-		<a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -1662,13 +1685,13 @@ gst_audio_encoder_get_tolerance (<a title="GstAudioEncoder" href="gstaudioencode
 
 <pre class="prototype">
 void
-gst_audio_encoder_merge_tags (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                              const <a title="GstTagList" href="../../libgstreamer-1.0/c/gsttaglist.html#GstTagList">GstTagList</a> * tags,
-                              <a title="GstTagMergeMode" href="../../libgstreamer-1.0/c/gsttaglist.html#GstTagMergeMode">GstTagMergeMode</a> mode)</pre>
+gst_audio_encoder_merge_tags (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                              const <a title="GstTagList" href="libgstreamer-1.0/c/gsttaglist.html#GstTagList">GstTagList</a> * tags,
+                              <a title="GstTagMergeMode" href="libgstreamer-1.0/c/gsttaglist.html#GstTagMergeMode">GstTagMergeMode</a> mode)</pre>
 
 <p>Sets the audio encoder tags and how they should be merged with any
 upstream stream tags. This will override any tags previously-set
-with <a href="gstaudioencoder.html#gst_audio_encoder_merge_tags">gst_audio_encoder_merge_tags</a>.</p>
+with <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#gst_audio_encoder_merge_tags">gst_audio_encoder_merge_tags</a>.</p>
 <p>Note that this is provided for convenience, and the subclass is
 not required to use this and can still do tag handling on its own.</p>
 <p>MT safe.</p>
@@ -1684,7 +1707,8 @@ not required to use this and can still do tag handling on its own.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -1698,7 +1722,8 @@ not required to use this and can still do tag handling on its own.</p>
 		<i><em><code>tags:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-1.0/c/gsttaglist.html#GstTagList">GstTagList</a> to merge, or NULL to unset
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gsttaglist.html#GstTagList">GstTagList</a> to merge, or NULL to unset
 previously-set tags</p>
 </td>
 <td>
@@ -1714,7 +1739,8 @@ previously-set tags</p>
 		<i><em><code>mode:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../libgstreamer-1.0/c/gsttaglist.html#GstTagMergeMode">GstTagMergeMode</a> to use, usually <a href="../../libgstreamer-1.0/c/gsttaglist.html#GST_TAG_MERGE_REPLACE">GST_TAG_MERGE_REPLACE</a></p>
+		<td>
+<p>the <a href="libgstreamer-1.0/c/gsttaglist.html#GstTagMergeMode">GstTagMergeMode</a> to use, usually <a href="libgstreamer-1.0/c/gsttaglist.html#GST_TAG_MERGE_REPLACE">GST_TAG_MERGE_REPLACE</a></p>
 </td>
 <td>
 
@@ -1742,10 +1768,10 @@ previously-set tags</p>
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_audio_encoder_negotiate (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_audio_encoder_negotiate (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
-<p>Negotiate with downstream elements to currently configured <a href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a>.
+<p>Negotiate with downstream elements to currently configured <a href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a>.
 Unmark GST_PAD_FLAG_NEED_RECONFIGURE in any case. But mark it again if
 negotiate fails.</p>
 
@@ -1760,7 +1786,8 @@ negotiate fails.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -1792,7 +1819,7 @@ negotiate fails.</p>
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -1820,10 +1847,10 @@ negotiate fails.</p>
 		
 
 <pre class="prototype">
-<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
-gst_audio_encoder_proxy_getcaps (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                 <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps,
-                                 <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * filter)</pre>
+<a title="GstCaps" href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+gst_audio_encoder_proxy_getcaps (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                 <a title="GstCaps" href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps,
+                                 <a title="GstCaps" href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * filter)</pre>
 
 <p>Returns caps that express <em>caps</em> (or sink template caps if <em>caps</em> == NULL)
 restricted to channel/rate combinations supported by downstream elements
@@ -1840,7 +1867,8 @@ restricted to channel/rate combinations supported by downstream elements
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -1854,7 +1882,8 @@ restricted to channel/rate combinations supported by downstream elements
 		<i><em><code>caps:</code></em></i>
 		</p>
 	</td>
-		<td><p>initial caps</p>
+		<td>
+<p>initial caps</p>
 </td>
 <td>
 
@@ -1869,7 +1898,8 @@ restricted to channel/rate combinations supported by downstream elements
 		<i><em><code>filter:</code></em></i>
 		</p>
 	</td>
-		<td><p>filter caps</p>
+		<td>
+<p>filter caps</p>
 </td>
 <td>
 
@@ -1898,11 +1928,11 @@ restricted to channel/rate combinations supported by downstream elements
 				</p>
 	</td>
 	<td>
-		<p>a <a href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> owned by caller</p>
+		<p>a <a href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> owned by caller</p>
 
 	</td>
 	<td>
-		<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+		<a title="GstCaps" href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
 	</td>
 				<td>
 	
@@ -1932,12 +1962,12 @@ restricted to channel/rate combinations supported by downstream elements
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_allocation_caps (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                       <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * allocation_caps)</pre>
+gst_audio_encoder_set_allocation_caps (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                       <a title="GstCaps" href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * allocation_caps)</pre>
 
 <p>Sets a caps in allocation query which are different from the set
 pad's caps. Use this function before calling
-<a href="gstaudioencoder.html#gst_audio_encoder_negotiate">gst_audio_encoder_negotiate</a>. Setting to NULL the allocation
+<a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#gst_audio_encoder_negotiate">gst_audio_encoder_negotiate</a>. Setting to NULL the allocation
 query will use the caps from the pad.</p>
 
 
@@ -1951,7 +1981,8 @@ query will use the caps from the pad.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -1965,7 +1996,8 @@ query will use the caps from the pad.</p>
 		<i><em><code>allocation_caps:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> or NULL</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> or NULL</p>
 </td>
 <td>
 
@@ -1998,8 +2030,8 @@ query will use the caps from the pad.</p>
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_drainable (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                 <a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> enabled)</pre>
+gst_audio_encoder_set_drainable (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                 <a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> enabled)</pre>
 
 <p>Configures encoder drain handling.  If drainable, subclass might
 be handed a NULL buffer to have it return any leftover encoded data.
@@ -2018,7 +2050,8 @@ real data.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2032,7 +2065,8 @@ real data.</p>
 		<i><em><code>enabled:</code></em></i>
 		</p>
 	</td>
-		<td><p>new state</p>
+		<td>
+<p>new state</p>
 </td>
 <td>
 
@@ -2061,8 +2095,8 @@ real data.</p>
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_frame_max (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                 <a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> num)</pre>
+gst_audio_encoder_set_frame_max (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                 <a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> num)</pre>
 
 <p>Sets max number of frames accepted at once (assumed minimally 1).
 Requires <em>frame_samples_min</em> and <em>frame_samples_max</em> to be the equal.</p>
@@ -2080,7 +2114,8 @@ GstAudioEncoder::set_format is called.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2094,7 +2129,8 @@ GstAudioEncoder::set_format is called.</p>
 		<i><em><code>num:</code></em></i>
 		</p>
 	</td>
-		<td><p>number of frames</p>
+		<td>
+<p>number of frames</p>
 </td>
 <td>
 
@@ -2123,12 +2159,12 @@ GstAudioEncoder::set_format is called.</p>
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_frame_samples_max (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                         <a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> num)</pre>
+gst_audio_encoder_set_frame_samples_max (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                         <a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> num)</pre>
 
 <p>Sets number of samples (per channel) subclass needs to be handed,
 at most or will be handed all available if 0.</p>
-<p>If an exact number of samples is required, <a href="gstaudioencoder.html#gst_audio_encoder_set_frame_samples_min">gst_audio_encoder_set_frame_samples_min</a>
+<p>If an exact number of samples is required, <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#gst_audio_encoder_set_frame_samples_min">gst_audio_encoder_set_frame_samples_min</a>
 must be called with the same number.</p>
 <p>Note: This value will be reset to 0 every time before
 GstAudioEncoder::set_format is called.</p>
@@ -2144,7 +2180,8 @@ GstAudioEncoder::set_format is called.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2158,7 +2195,8 @@ GstAudioEncoder::set_format is called.</p>
 		<i><em><code>num:</code></em></i>
 		</p>
 	</td>
-		<td><p>number of samples per frame</p>
+		<td>
+<p>number of samples per frame</p>
 </td>
 <td>
 
@@ -2187,12 +2225,12 @@ GstAudioEncoder::set_format is called.</p>
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_frame_samples_min (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                         <a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> num)</pre>
+gst_audio_encoder_set_frame_samples_min (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                         <a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> num)</pre>
 
 <p>Sets number of samples (per channel) subclass needs to be handed,
 at least or will be handed all available if 0.</p>
-<p>If an exact number of samples is required, <a href="gstaudioencoder.html#gst_audio_encoder_set_frame_samples_max">gst_audio_encoder_set_frame_samples_max</a>
+<p>If an exact number of samples is required, <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#gst_audio_encoder_set_frame_samples_max">gst_audio_encoder_set_frame_samples_max</a>
 must be called with the same number.</p>
 <p>Note: This value will be reset to 0 every time before
 GstAudioEncoder::set_format is called.</p>
@@ -2208,7 +2246,8 @@ GstAudioEncoder::set_format is called.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2222,7 +2261,8 @@ GstAudioEncoder::set_format is called.</p>
 		<i><em><code>num:</code></em></i>
 		</p>
 	</td>
-		<td><p>number of samples per frame</p>
+		<td>
+<p>number of samples per frame</p>
 </td>
 <td>
 
@@ -2251,8 +2291,8 @@ GstAudioEncoder::set_format is called.</p>
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_hard_min (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                <a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> enabled)</pre>
+gst_audio_encoder_set_hard_min (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                <a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> enabled)</pre>
 
 <p>Configures encoder hard minimum handling.  If enabled, subclass
 will never be handed less samples than it configured, which otherwise
@@ -2271,7 +2311,8 @@ will simply be discarded.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2285,7 +2326,8 @@ will simply be discarded.</p>
 		<i><em><code>enabled:</code></em></i>
 		</p>
 	</td>
-		<td><p>new state</p>
+		<td>
+<p>new state</p>
 </td>
 <td>
 
@@ -2314,8 +2356,8 @@ will simply be discarded.</p>
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_hard_resync (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                   <a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> enabled)</pre>
+gst_audio_encoder_set_hard_resync (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                   <a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> enabled)</pre>
 
 
 
@@ -2370,7 +2412,7 @@ gst_audio_encoder_set_hard_resync (<a title="GstAudioEncoder" href="gstaudioenco
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_headers (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+gst_audio_encoder_set_headers (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
                                GList* headers)</pre>
 
 <p>Set the codec headers to be sent downstream whenever requested.</p>
@@ -2386,7 +2428,8 @@ gst_audio_encoder_set_headers (<a title="GstAudioEncoder" href="gstaudioencoder.
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2400,8 +2443,9 @@ gst_audio_encoder_set_headers (<a title="GstAudioEncoder" href="gstaudioencoder.
 		<i><em><code>headers:</code></em></i>
 		</p>
 	</td>
-		<td><p>a list of
-<a href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> containing the codec header</p>
+		<td>
+<p>a list of
+<a href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> containing the codec header</p>
 </td>
 <td>
 
@@ -2432,9 +2476,9 @@ gst_audio_encoder_set_headers (<a title="GstAudioEncoder" href="gstaudioencoder.
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_latency (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                               <a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> min,
-                               <a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> max)</pre>
+gst_audio_encoder_set_latency (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                               <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> min,
+                               <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> max)</pre>
 
 <p>Sets encoder latency.</p>
 
@@ -2449,7 +2493,8 @@ gst_audio_encoder_set_latency (<a title="GstAudioEncoder" href="gstaudioencoder.
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2463,7 +2508,8 @@ gst_audio_encoder_set_latency (<a title="GstAudioEncoder" href="gstaudioencoder.
 		<i><em><code>min:</code></em></i>
 		</p>
 	</td>
-		<td><p>minimum latency</p>
+		<td>
+<p>minimum latency</p>
 </td>
 <td>
 
@@ -2477,7 +2523,8 @@ gst_audio_encoder_set_latency (<a title="GstAudioEncoder" href="gstaudioencoder.
 		<i><em><code>max:</code></em></i>
 		</p>
 	</td>
-		<td><p>maximum latency</p>
+		<td>
+<p>maximum latency</p>
 </td>
 <td>
 
@@ -2506,8 +2553,8 @@ gst_audio_encoder_set_latency (<a title="GstAudioEncoder" href="gstaudioencoder.
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_lookahead (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                 <a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> num)</pre>
+gst_audio_encoder_set_lookahead (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                 <a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> num)</pre>
 
 <p>Sets encoder lookahead (in units of input rate samples)</p>
 <p>Note: This value will be reset to 0 every time before
@@ -2524,7 +2571,8 @@ GstAudioEncoder::set_format is called.</p>
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2538,7 +2586,8 @@ GstAudioEncoder::set_format is called.</p>
 		<i><em><code>num:</code></em></i>
 		</p>
 	</td>
-		<td><p>lookahead</p>
+		<td>
+<p>lookahead</p>
 </td>
 <td>
 
@@ -2567,8 +2616,8 @@ GstAudioEncoder::set_format is called.</p>
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_mark_granule (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                    <a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> enabled)</pre>
+gst_audio_encoder_set_mark_granule (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                    <a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> enabled)</pre>
 
 <p>Enable or disable encoder granule handling.</p>
 <p>MT safe.</p>
@@ -2584,7 +2633,8 @@ gst_audio_encoder_set_mark_granule (<a title="GstAudioEncoder" href="gstaudioenc
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2598,7 +2648,8 @@ gst_audio_encoder_set_mark_granule (<a title="GstAudioEncoder" href="gstaudioenc
 		<i><em><code>enabled:</code></em></i>
 		</p>
 	</td>
-		<td><p>new state</p>
+		<td>
+<p>new state</p>
 </td>
 <td>
 
@@ -2626,9 +2677,9 @@ gst_audio_encoder_set_mark_granule (<a title="GstAudioEncoder" href="gstaudioenc
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_audio_encoder_set_output_format (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                     <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_audio_encoder_set_output_format (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                     <a title="GstCaps" href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * caps)</pre>
 
 <p>Configure output caps on the srcpad of <em>enc</em>.</p>
 
@@ -2643,7 +2694,8 @@ gst_audio_encoder_set_output_format (<a title="GstAudioEncoder" href="gstaudioen
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2657,7 +2709,8 @@ gst_audio_encoder_set_output_format (<a title="GstAudioEncoder" href="gstaudioen
 		<i><em><code>caps:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a></p>
+		<td>
+<p><a href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a></p>
 </td>
 <td>
 
@@ -2690,7 +2743,7 @@ gst_audio_encoder_set_output_format (<a title="GstAudioEncoder" href="gstaudioen
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -2719,8 +2772,8 @@ gst_audio_encoder_set_output_format (<a title="GstAudioEncoder" href="gstaudioen
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_perfect_timestamp (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                         <a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> enabled)</pre>
+gst_audio_encoder_set_perfect_timestamp (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                         <a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> enabled)</pre>
 
 <p>Enable or disable encoder perfect output timestamp preference.</p>
 <p>MT safe.</p>
@@ -2736,7 +2789,8 @@ gst_audio_encoder_set_perfect_timestamp (<a title="GstAudioEncoder" href="gstaud
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2750,7 +2804,8 @@ gst_audio_encoder_set_perfect_timestamp (<a title="GstAudioEncoder" href="gstaud
 		<i><em><code>enabled:</code></em></i>
 		</p>
 	</td>
-		<td><p>new state</p>
+		<td>
+<p>new state</p>
 </td>
 <td>
 
@@ -2779,8 +2834,8 @@ gst_audio_encoder_set_perfect_timestamp (<a title="GstAudioEncoder" href="gstaud
 
 <pre class="prototype">
 void
-gst_audio_encoder_set_tolerance (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                 <a title="GstClockTime" href="../../libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> tolerance)</pre>
+gst_audio_encoder_set_tolerance (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                 <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> tolerance)</pre>
 
 <p>Configures encoder audio jitter tolerance threshold.</p>
 <p>MT safe.</p>
@@ -2796,7 +2851,8 @@ gst_audio_encoder_set_tolerance (<a title="GstAudioEncoder" href="gstaudioencode
 		<i><em><code>enc:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
+		<td>
+<p>a <a href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a></p>
 </td>
 <td>
 
@@ -2810,7 +2866,8 @@ gst_audio_encoder_set_tolerance (<a title="GstAudioEncoder" href="gstaudioencode
 		<i><em><code>tolerance:</code></em></i>
 		</p>
 	</td>
-		<td><p>new tolerance</p>
+		<td>
+<p>new tolerance</p>
 </td>
 <td>
 
@@ -2840,7 +2897,7 @@ gst_audio_encoder_set_tolerance (<a title="GstAudioEncoder" href="gstaudioencode
 </h4>
 
 		<pre class="property_signature">
-“hard-resync” <span class="type"><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a></span>
+“hard-resync” <span class="type"><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a></span>
 </pre>
 
 
@@ -2867,7 +2924,7 @@ gst_audio_encoder_set_tolerance (<a title="GstAudioEncoder" href="gstaudioencode
 </h4>
 
 		<pre class="property_signature">
-“mark-granule” <span class="type"><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a></span>
+“mark-granule” <span class="type"><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a></span>
 </pre>
 
 
@@ -2891,7 +2948,7 @@ gst_audio_encoder_set_tolerance (<a title="GstAudioEncoder" href="gstaudioencode
 </h4>
 
 		<pre class="property_signature">
-“perfect-timestamp” <span class="type"><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a></span>
+“perfect-timestamp” <span class="type"><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a></span>
 </pre>
 
 
@@ -2985,17 +3042,18 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.element_class">
 		<td>
 		<p>
-		<i><em><code><a title="GstElementClass" href="../../libgstreamer-1.0/c/gstelement-h.html#GstElementClass">GstElementClass</a> <em><code>element_class</code></em>:</code></em></i>
+		<i><em><code><a title="GstElementClass" href="libgstreamer-1.0/c/gstelement-h.html#GstElementClass">GstElementClass</a> <em><code>element_class</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>The parent class structure</p>
+		<td>
+<p>The parent class structure</p>
 </td>
 </tr>
 
 						<tr id="GstAudioEncoderClass.start()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>start()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>start()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3004,7 +3062,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.stop()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>stop()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>stop()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3013,7 +3071,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.set_format()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>set_format()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>set_format()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3022,7 +3080,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.handle_frame()">
 		<td>
 		<p>
-		<i><em><code><a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a> <em><code>handle_frame()</code></em>:</code></em></i>
+		<i><em><code><a title="GstFlowReturn" href="c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a> <em><code>handle_frame()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3040,7 +3098,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.pre_push()">
 		<td>
 		<p>
-		<i><em><code><a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a> <em><code>pre_push()</code></em>:</code></em></i>
+		<i><em><code><a title="GstFlowReturn" href="c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a> <em><code>pre_push()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3049,7 +3107,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.sink_event()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>sink_event()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>sink_event()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3058,7 +3116,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.src_event()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>src_event()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>src_event()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3067,7 +3125,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.getcaps()">
 		<td>
 		<p>
-		<i><em><code><a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * <em><code>getcaps()</code></em>:</code></em></i>
+		<i><em><code><a title="GstCaps" href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * <em><code>getcaps()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3076,7 +3134,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.open()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>open()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>open()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3085,7 +3143,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.close()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>close()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>close()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3094,7 +3152,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.negotiate()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>negotiate()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>negotiate()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3103,7 +3161,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.decide_allocation()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>decide_allocation()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>decide_allocation()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3112,7 +3170,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.propose_allocation()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>propose_allocation()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>propose_allocation()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3121,7 +3179,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.transform_meta()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>transform_meta()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>transform_meta()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3130,7 +3188,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.sink_query()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>sink_query()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>sink_query()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3139,7 +3197,7 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 						<tr id="GstAudioEncoderClass.src_query()">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>src_query()</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>src_query()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3177,8 +3235,8 @@ needed. At minimum <em>set_format</em> and <em>handle_frame</em> needs to be ove
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.close (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.close (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -3222,7 +3280,7 @@ GstAudioEncoderClass.close (<a title="GstAudioEncoder" href="gstaudioencoder.htm
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -3250,9 +3308,9 @@ GstAudioEncoderClass.close (<a title="GstAudioEncoder" href="gstaudioencoder.htm
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.decide_allocation (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                        <a title="GstQuery" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.decide_allocation (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                        <a title="GstQuery" href="libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
 
 
 
@@ -3309,7 +3367,7 @@ GstAudioEncoderClass.decide_allocation (<a title="GstAudioEncoder" href="gstaudi
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -3338,7 +3396,7 @@ GstAudioEncoderClass.decide_allocation (<a title="GstAudioEncoder" href="gstaudi
 
 <pre class="prototype">
 void
-GstAudioEncoderClass.flush (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+GstAudioEncoderClass.flush (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -3379,9 +3437,9 @@ GstAudioEncoderClass.flush (<a title="GstAudioEncoder" href="gstaudioencoder.htm
 		
 
 <pre class="prototype">
-<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
-GstAudioEncoderClass.getcaps (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                              <a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * filter)</pre>
+<a title="GstCaps" href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+GstAudioEncoderClass.getcaps (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                              <a title="GstCaps" href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> * filter)</pre>
 
 
 
@@ -3438,7 +3496,7 @@ GstAudioEncoderClass.getcaps (<a title="GstAudioEncoder" href="gstaudioencoder.h
 		
 	</td>
 	<td>
-		<a title="GstCaps" href="../../libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
+		<a title="GstCaps" href="libgstreamer-1.0/c/gstcaps.html#GstCaps">GstCaps</a> *
 	</td>
 				<td>
 	
@@ -3466,9 +3524,9 @@ GstAudioEncoderClass.getcaps (<a title="GstAudioEncoder" href="gstaudioencoder.h
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
-GstAudioEncoderClass.handle_frame (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                   <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer)</pre>
+<a title="GstFlowReturn" href="c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+GstAudioEncoderClass.handle_frame (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                   <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer)</pre>
 
 
 
@@ -3525,7 +3583,7 @@ GstAudioEncoderClass.handle_frame (<a title="GstAudioEncoder" href="gstaudioenco
 		
 	</td>
 	<td>
-		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+		<a title="GstFlowReturn" href="c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 	</td>
 				<td>
 	
@@ -3553,8 +3611,8 @@ GstAudioEncoderClass.handle_frame (<a title="GstAudioEncoder" href="gstaudioenco
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.negotiate (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.negotiate (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -3598,7 +3656,7 @@ GstAudioEncoderClass.negotiate (<a title="GstAudioEncoder" href="gstaudioencoder
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -3626,8 +3684,8 @@ GstAudioEncoderClass.negotiate (<a title="GstAudioEncoder" href="gstaudioencoder
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.open (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.open (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -3671,7 +3729,7 @@ GstAudioEncoderClass.open (<a title="GstAudioEncoder" href="gstaudioencoder.html
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -3699,9 +3757,9 @@ GstAudioEncoderClass.open (<a title="GstAudioEncoder" href="gstaudioencoder.html
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
-GstAudioEncoderClass.pre_push (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                               <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> ** buffer)</pre>
+<a title="GstFlowReturn" href="c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+GstAudioEncoderClass.pre_push (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                               <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> ** buffer)</pre>
 
 
 
@@ -3758,7 +3816,7 @@ GstAudioEncoderClass.pre_push (<a title="GstAudioEncoder" href="gstaudioencoder.
 		
 	</td>
 	<td>
-		<a title="GstFlowReturn" href="../../c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
+		<a title="GstFlowReturn" href="c/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">GstFlowReturn</a>
 	</td>
 				<td>
 	
@@ -3786,9 +3844,9 @@ GstAudioEncoderClass.pre_push (<a title="GstAudioEncoder" href="gstaudioencoder.
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.propose_allocation (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                         <a title="GstQuery" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.propose_allocation (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                         <a title="GstQuery" href="libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
 
 
 
@@ -3845,7 +3903,7 @@ GstAudioEncoderClass.propose_allocation (<a title="GstAudioEncoder" href="gstaud
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -3873,9 +3931,9 @@ GstAudioEncoderClass.propose_allocation (<a title="GstAudioEncoder" href="gstaud
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.set_format (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                 <a title="GstAudioInfo" href="audio-info.html#GstAudioInfo">GstAudioInfo</a> * info)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.set_format (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                 <a title="GstAudioInfo" href="gst-plugins-base-audio-1.0/c/audio-info.html#GstAudioInfo">GstAudioInfo</a> * info)</pre>
 
 
 
@@ -3932,7 +3990,7 @@ GstAudioEncoderClass.set_format (<a title="GstAudioEncoder" href="gstaudioencode
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -3960,9 +4018,9 @@ GstAudioEncoderClass.set_format (<a title="GstAudioEncoder" href="gstaudioencode
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.sink_event (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                 <a title="GstEvent" href="../../libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.sink_event (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                 <a title="GstEvent" href="libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
 
 
 
@@ -4019,7 +4077,7 @@ GstAudioEncoderClass.sink_event (<a title="GstAudioEncoder" href="gstaudioencode
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -4047,9 +4105,9 @@ GstAudioEncoderClass.sink_event (<a title="GstAudioEncoder" href="gstaudioencode
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.sink_query (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * encoder,
-                                 <a title="GstQuery" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.sink_query (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * encoder,
+                                 <a title="GstQuery" href="libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
 
 
 
@@ -4106,7 +4164,7 @@ GstAudioEncoderClass.sink_query (<a title="GstAudioEncoder" href="gstaudioencode
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -4134,9 +4192,9 @@ GstAudioEncoderClass.sink_query (<a title="GstAudioEncoder" href="gstaudioencode
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.src_event (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                <a title="GstEvent" href="../../libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.src_event (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                <a title="GstEvent" href="libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
 
 
 
@@ -4193,7 +4251,7 @@ GstAudioEncoderClass.src_event (<a title="GstAudioEncoder" href="gstaudioencoder
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -4221,9 +4279,9 @@ GstAudioEncoderClass.src_event (<a title="GstAudioEncoder" href="gstaudioencoder
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.src_query (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * encoder,
-                                <a title="GstQuery" href="../../libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.src_query (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * encoder,
+                                <a title="GstQuery" href="libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
 
 
 
@@ -4280,7 +4338,7 @@ GstAudioEncoderClass.src_query (<a title="GstAudioEncoder" href="gstaudioencoder
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -4308,8 +4366,8 @@ GstAudioEncoderClass.src_query (<a title="GstAudioEncoder" href="gstaudioencoder
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.start (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.start (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -4353,7 +4411,7 @@ GstAudioEncoderClass.start (<a title="GstAudioEncoder" href="gstaudioencoder.htm
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -4381,8 +4439,8 @@ GstAudioEncoderClass.start (<a title="GstAudioEncoder" href="gstaudioencoder.htm
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.stop (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.stop (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc)</pre>
 
 
 
@@ -4426,7 +4484,7 @@ GstAudioEncoderClass.stop (<a title="GstAudioEncoder" href="gstaudioencoder.html
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -4454,11 +4512,11 @@ GstAudioEncoderClass.stop (<a title="GstAudioEncoder" href="gstaudioencoder.html
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-GstAudioEncoderClass.transform_meta (<a title="GstAudioEncoder" href="gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
-                                     <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * outbuf,
-                                     <a title="GstMeta" href="../../libgstreamer-1.0/c/gstmeta.html#GstMeta">GstMeta</a> * meta,
-                                     <a title="GstBuffer" href="../../libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * inbuf)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+GstAudioEncoderClass.transform_meta (<a title="GstAudioEncoder" href="gst-plugins-base-audio-1.0/c/gstaudioencoder.html#GstAudioEncoder">GstAudioEncoder</a> * enc,
+                                     <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * outbuf,
+                                     <a title="GstMeta" href="libgstreamer-1.0/c/gstmeta.html#GstMeta">GstMeta</a> * meta,
+                                     <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * inbuf)</pre>
 
 
 
@@ -4541,7 +4599,7 @@ GstAudioEncoderClass.transform_meta (<a title="GstAudioEncoder" href="gstaudioen
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -4596,7 +4654,7 @@ GstAudioEncoderClass.transform_meta (<a title="GstAudioEncoder" href="gstaudioen
 #define GST_AUDIO_ENCODER_SRC_PAD(obj)	(GST_AUDIO_ENCODER_CAST (obj)-&gt;srcpad)
 </pre>
 
-<p>Gives the pointer to the source <a href="../../libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> object of the element.</p>
+<p>Gives the pointer to the source <a href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> object of the element.</p>
 
 
 	<div class="parameter_container">
@@ -4609,7 +4667,8 @@ GstAudioEncoderClass.transform_meta (<a title="GstAudioEncoder" href="gstaudioen
 		<i><em><code>obj:</code></em></i>
 		</p>
 	</td>
-		<td><p>audio encoder instance</p>
+		<td>
+<p>audio encoder instance</p>
 </td>
 <td>
 
@@ -4638,7 +4697,7 @@ GstAudioEncoderClass.transform_meta (<a title="GstAudioEncoder" href="gstaudioen
 #define GST_AUDIO_ENCODER_SINK_PAD(obj)	(GST_AUDIO_ENCODER_CAST (obj)-&gt;sinkpad)
 </pre>
 
-<p>Gives the pointer to the sink <a href="../../libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> object of the element.</p>
+<p>Gives the pointer to the sink <a href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> object of the element.</p>
 
 
 	<div class="parameter_container">
@@ -4651,7 +4710,8 @@ GstAudioEncoderClass.transform_meta (<a title="GstAudioEncoder" href="gstaudioen
 		<i><em><code>obj:</code></em></i>
 		</p>
 	</td>
-		<td><p>audio encoder instance</p>
+		<td>
+<p>audio encoder instance</p>
 </td>
 <td>
 
@@ -4693,7 +4753,8 @@ GstAudioEncoderClass.transform_meta (<a title="GstAudioEncoder" href="gstaudioen
 		<i><em><code>obj:</code></em></i>
 		</p>
 	</td>
-		<td><p>base parse instance</p>
+		<td>
+<p>base parse instance</p>
 </td>
 <td>
 
@@ -4735,7 +4796,8 @@ GstAudioEncoderClass.transform_meta (<a title="GstAudioEncoder" href="gstaudioen
 		<i><em><code>obj:</code></em></i>
 		</p>
 	</td>
-		<td><p>base parse instance</p>
+		<td>
+<p>base parse instance</p>
 </td>
 <td>
 
@@ -4833,11 +4895,10 @@ GstAudioEncoderClass.transform_meta (<a title="GstAudioEncoder" href="gstaudioen
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -4855,7 +4916,7 @@ GstAudioEncoderClass.transform_meta (<a title="GstAudioEncoder" href="gstaudioen
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="../..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>Pipeline manipulation</title>
 
@@ -12,7 +15,6 @@
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
 <link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -24,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -53,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -96,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -120,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="application-development/advanced/pipeline-manipulation.html" class="page_container" id="page-wrapper">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -139,7 +139,7 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="pipeline-manipulation.md">
+				    <div id="page-description" data-hotdoc-source="pipeline-manipulation.md" data-hotdoc-role="main">
         <h1 id="pipeline-manipulation">Pipeline manipulation</h1>
 <p>This chapter will discuss how you can manipulate your pipeline in
 several ways from your application on. Parts of this chapter are very
@@ -166,7 +166,7 @@ the pad can be scheduled in different ways, it is possible to also
 specify in what scheduling mode you are interested with the optional
 GST_PAD_PROBE_TYPE_PUSH and GST_PAD_PROBE_TYPE_PULL flags.</p>
 <p>You can use this probe to inspect, modify or drop the buffer. See
-<a href="../../#data-probes">Data probes</a>.</p>
+<a href="#data-probes">Data probes</a>.</p>
 </li>
 <li>
 <p>A bufferlist is pushed. Use the GST_PAD_PROBE_TYPE_BUFFER_LIST
@@ -215,7 +215,7 @@ the callback, it will block again on the next item.</p>
 unlinked or because you are going to unlink them. If the dataflow is
 not blocked, the pipeline would go into an error state if data is
 pushed on an unlinked pad. We will se how to use blocking probes to
-partially preroll a pipeline. See also <a href="../../#play-a-region-of-a-media-file">Play a region of a media
+partially preroll a pipeline. See also <a href="#play-a-region-of-a-media-file">Play a region of a media
 file</a>.</p>
 </li>
 <li>
@@ -227,7 +227,7 @@ probe is also a blocking probe in that it will not let any data pass
 on the pad for as long as the IDLE probe is installed.</p>
 <p>You can use idle probes to dynamically relink a pad. We will see how
 to use idle probes to replace an element in the pipeline. See also
-<a href="../../#dynamically-changing-the-pipeline">Dynamically changing the
+<a href="#dynamically-changing-the-pipeline">Dynamically changing the
 pipeline</a>.</p>
 </li>
 </ul>
@@ -1011,7 +1011,7 @@ using <em>filtered caps</em>. You can set a filtered caps on a link by using
 the “capsfilter” element in between the two elements, and specifying a
 <code>GstCaps</code> as “caps” property on this element. It will then only allow
 types matching that specified capability set for negotiation. See also
-<a href="../basics/pads.html#creating-capabilities-for-filtering">Creating capabilities for filtering</a>.</p>
+<a href="application-development/basics/pads.html#creating-capabilities-for-filtering">Creating capabilities for filtering</a>.</p>
 <h3 id="changing-format-in-a-playing-pipeline">Changing format in a PLAYING pipeline</h3>
 <p>It is also possible to dynamically change the format in a pipeline while
 PLAYING. This can simply be done by changing the caps property on a
@@ -1118,7 +1118,7 @@ pipelines:</p>
 <p>When removing elements from the pipeline, make sure that there is no
 dataflow on unlinked pads because that will cause a fatal pipeline
 error. Always block source pads (in push mode) or sink pads (in pull
-mode) before unlinking pads. See also <a href="../../#changing-elements-in-a-pipeline">Changing elements in a
+mode) before unlinking pads. See also <a href="#changing-elements-in-a-pipeline">Changing elements in a
 pipeline</a>.</p>
 </li>
 <li>
@@ -1126,7 +1126,7 @@ pipeline</a>.</p>
 into the right state, usually the same state as the parent, before
 allowing dataflow the element. When an element is newly created, it
 is in the NULL state and will return an error when it receives data.
-See also <a href="../../#changing-elements-in-a-pipeline">Changing elements in a
+See also <a href="#changing-elements-in-a-pipeline">Changing elements in a
 pipeline</a>.</p>
 </li>
 <li>
@@ -1150,7 +1150,7 @@ remove a muxer (and in some cases an encoder or similar elements)
 from the pipeline, you risk getting a corrupted file which could not
 be played properly, as some relevant metadata (header, seek/index
 tables, internal sync tags) will not be stored or updated properly.</p>
-<p>See also <a href="../../#changing-elements-in-a-pipeline">Changing elements in a
+<p>See also <a href="#changing-elements-in-a-pipeline">Changing elements in a
 pipeline</a>.</p>
 </li>
 <li>
@@ -1186,7 +1186,7 @@ formats and allocation strategy.</p>
 <p>What is important is that when you add, remove or change elements in
 the pipeline, it is possible that the pipeline needs to negotiate a
 new format and this can fail. Usually you can fix this by inserting
-the right converter elements where needed. See also <a href="../../#changing-elements-in-a-pipeline">Changing
+the right converter elements where needed. See also <a href="#changing-elements-in-a-pipeline">Changing
 elements in a pipeline</a>.</p>
 </li>
 </ul>
@@ -1491,11 +1491,10 @@ you ensure that the right format can be negotiated at any time.</p>
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -1513,7 +1512,7 @@ you ensure that the right format can be negotiated at any time.</p>
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

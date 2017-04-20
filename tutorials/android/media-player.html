@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="../..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>Android tutorial 4: A basic media player</title>
 
@@ -12,7 +15,6 @@
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
 <link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -24,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -53,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -96,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -120,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/android/media-player.html" class="page_container" id="page-wrapper">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -139,10 +139,10 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="media-player.md">
+				    <div id="page-description" data-hotdoc-source="media-player.md" data-hotdoc-role="main">
         <h1 id="android-tutorial-4-a-basic-media-player">Android tutorial 4: A basic media player</h1>
 <h2 id="goal">Goal</h2>
-<p><img src="images/tutorials/android-media-player-screenshot.png" alt="screenshot" id="screenshot"></p>
+<p><img src="tutorials/android/images/tutorials/android-media-player-screenshot.png" alt="screenshot" id="screenshot"></p>
 <p>Enough testing with synthetic images and audio tones! This tutorial
 finally plays actual media, streamed directly from the Internet, in your
 Android device. It shows:</p>
@@ -150,10 +150,11 @@ Android device. It shows:</p>
 <li>How to keep the User Interface regularly updated with the current
 playback position and duration</li>
 <li>How to implement a <a href="http://developer.android.com/reference/android/widget/SeekBar.html">Seek
-Bar</a></li>
+Bar</a>
+</li>
 <li>How to report the media size to adapt the display surface</li>
 </ul>
-<p>It also uses the knowledge gathered in the <a href="../basic/index.html">Basic tutorials</a> regarding:</p>
+<p>It also uses the knowledge gathered in the <a href="tutorials/basic/index.html">Basic tutorials</a> regarding:</p>
 <ul>
 <li>How to use <code>playbin</code> to play any kind of media</li>
 <li>How to handle network resilience problems</li>
@@ -164,7 +165,7 @@ to build a media player. The most complex part is assembling a pipeline
 which retrieves, decodes and displays the media, but we already know
 that the <code>playbin</code> element can take care of all that for us. We only
 need to replace the manual pipeline we used in
-<a href="video.html">Android tutorial 3: Video</a> with a single-element
+<a href="tutorials/android/video.html">Android tutorial 3: Video</a> with a single-element
 <code>playbin</code> pipeline and we are good to go!</p>
 <p>However, we can do better than. We will add a <a href="http://developer.android.com/reference/android/widget/SeekBar.html">Seek
 Bar</a>,
@@ -466,12 +467,12 @@ charge of displaying the media, and ask the Android layout to be
 recalculated. Eventually, the <code>onMeasure()</code> method in
 GStreamerSurfaceView will be called and the new size will be taken
 into account. As we have already seen in
-<a href="a-running-pipeline.html">Android tutorial 2: A running pipeline</a>, methods which change
+<a href="tutorials/android/a-running-pipeline.html">Android tutorial 2: A running pipeline</a>, methods which change
 the UI must be called from the main thread, and we are now in a
 callback from some GStreamer internal thread. Hence, the usage of
 <a href="http://developer.android.com/reference/android/app/Activity.html#runOnUiThread(java.lang.Runnable)">runOnUiThread()</a>.</p>
 <h3 id="refreshing-the-seek-bar">Refreshing the Seek Bar</h3>
-<p><a href="../basic/toolkit-integration.html">Basic tutorial 5: GUI toolkit integration</a>
+<p><a href="tutorials/basic/toolkit-integration.html">Basic tutorial 5: GUI toolkit integration</a>
 has already shown how to implement a <a href="http://developer.android.com/reference/android/widget/SeekBar.html">Seek
 Bar</a> using
 the GTK+ toolkit. The implementation on Android is very similar.</p>
@@ -1261,7 +1262,7 @@ g_source_unref (timeout_source);
 }
 </code></pre>
 <p>If it is unknown, the clip duration is retrieved, as explained in
-<a href="../basic/time-management.html">Basic tutorial 4: Time management</a>. The current position is
+<a href="tutorials/basic/time-management.html">Basic tutorial 4: Time management</a>. The current position is
 retrieved next, and the UI is informed of both through its
 <code>setCurrentPosition()</code> callback.</p>
 <p>Bear in mind that all time-related measures returned by GStreamer are in
@@ -1373,12 +1374,12 @@ updated with the new one.</p>
 <p>The one-shot timer calls <code>delayed_seek_cb()</code>, which simply calls
 <code>execute_seek()</code> again.</p>
 <blockquote>
-<p><img src="images/icons/emoticons/information.svg" alt="information" id="information">
+<p><img src="tutorials/android/images/icons/emoticons/information.svg" alt="information" id="information">
 Ideally, <code>execute_seek()</code> will now find that enough time has indeed passed since the last seek and the scheduled one will proceed. It might happen, though, that after 500ms of the previous seek, and before the timer wakes up, yet another seek comes through and is executed. <code>delayed_seek_cb()</code> needs to check for this condition to avoid performing two very close seeks, and therefore calls <code>execute_seek()</code> instead of performing it itself.</p>
 <p>This is not a complete solution: the scheduled seek will still be executed, even though a more-recent seek has already been executed that should have cancelled it. However, it is a good tradeoff between functionality and simplicity.</p>
 </blockquote>
 <h3 id="network-resilience">Network resilience</h3>
-<p><a href="../basic/streaming.html">Basic tutorial 12: Streaming</a> has already
+<p><a href="tutorials/basic/streaming.html">Basic tutorial 12: Streaming</a> has already
 shown how to adapt to the variable nature of the network bandwidth by
 using buffering. The same procedure is used here, by listening to the
 buffering
@@ -1444,11 +1445,10 @@ here into an acceptable Android media player.</p>
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -1466,7 +1466,7 @@ here into an acceptable Android media player.</p>
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="../..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>Caps negotiation</title>
 
@@ -12,7 +15,6 @@
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
 <link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -24,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -53,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -96,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -120,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="plugin-development/advanced/negotiation.html" class="page_container" id="page-wrapper">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -139,7 +139,7 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="negotiation.md">
+				    <div id="page-description" data-hotdoc-source="negotiation.md" data-hotdoc-role="main">
         <h1 id="caps-negotiation">Caps negotiation</h1>
 <p>Caps negotiation is the act of finding a media format (GstCaps) between
 elements that they can handle. This process in GStreamer can in most
@@ -152,7 +152,7 @@ following simple rules:</p>
 <li>
 <p>A downstream element suggest a format on its sinkpad and places the
 suggestion in the result of the CAPS query performed on the sinkpad.
-See also <a href="../../#implementing-a-caps-query-function">Implementing a CAPS query
+See also <a href="#implementing-a-caps-query-function">Implementing a CAPS query
 function</a>.</p>
 </li>
 <li>
@@ -177,7 +177,7 @@ accepted by an element.</p>
 typical uses cases and how negotiation happens.</p>
 <h2 id="caps-negotiation-use-cases">Caps negotiation use cases</h2>
 <p>In what follows we will look at some use cases for push-mode scheduling.
-The pull-mode scheduling negotiation phase is discussed in <a href="../../#pull-mode-caps-negotiation">Pull-mode
+The pull-mode scheduling negotiation phase is discussed in <a href="#pull-mode-caps-negotiation">Pull-mode
 Caps negotiation</a> and is actually similar
 as we will see.</p>
 <p>Since the sink pads only suggest formats and the source pads need to
@@ -185,7 +185,7 @@ decide, the most complicated work is done in the source pads. We can
 identify 3 caps negotiation use cases for the source pads:</p>
 <ul>
 <li>
-<p>Fixed negotiation. An element can output one format only. See <a href="../../#fixed-negotiation">Fixed
+<p>Fixed negotiation. An element can output one format only. See <a href="#fixed-negotiation">Fixed
 negotiation</a>.</p>
 </li>
 <li>
@@ -193,12 +193,12 @@ negotiation</a>.</p>
 input and output format of the element, usually based on some
 element property. The caps that the element will produce depend on
 the upstream caps and the caps that the element can accept depend on
-the downstream caps. See <a href="../../#transform-negotiation">Transform
+the downstream caps. See <a href="#transform-negotiation">Transform
 negotiation</a>.</p>
 </li>
 <li>
 <p>Dynamic negotiation. An element can output many formats. See
-<a href="../../#dynamic-negotiation">Dynamic negotiation</a>.</p>
+<a href="#dynamic-negotiation">Dynamic negotiation</a>.</p>
 </li>
 </ul>
 <h3 id="fixed-negotiation">Fixed negotiation</h3>
@@ -267,7 +267,7 @@ sections.</p>
 <p>In this negotiation technique, there is a fixed transform between the
 element input caps and the output caps. This transformation could be
 parameterized by element properties but not by the content of the stream
-(see <a href="../../#fixed-negotiation">Fixed negotiation</a> for that use-case).</p>
+(see <a href="#fixed-negotiation">Fixed negotiation</a> for that use-case).</p>
 <p>The caps that the element can accept depend on the (fixed
 transformation) downstream caps. The caps that the element can produce
 depend on the (fixed transformation of) the upstream caps.</p>
@@ -354,7 +354,7 @@ gst_my_filter_sink_event (GstPad    *pad,
 <h3 id="dynamic-negotiation">Dynamic negotiation</h3>
 <p>A last negotiation method is the most complex and powerful dynamic
 negotiation.</p>
-<p>Like with the transform negotiation in <a href="../../#transform-negotiation">Transform
+<p>Like with the transform negotiation in <a href="#transform-negotiation">Transform
 negotiation</a>, dynamic negotiation will perform a
 transformation on the downstream/upstream caps. Unlike the transform
 negotiation, this transform will convert fixed caps to unfixed caps.
@@ -363,7 +363,7 @@ This means that the sink pad input caps can be converted into unfixed
 the possibilities. It would usually like to choose a format that
 requires the least amount of effort to produce but it does not have to
 be. The selection of the format should also depend on the caps that can
-be accepted downstream (see a QUERY_CAPS function in <a href="../../#implementing-a-caps-query-function">Implementing a
+be accepted downstream (see a QUERY_CAPS function in <a href="#implementing-a-caps-query-function">Implementing a
 CAPS query function</a>).</p>
 <p>A typical flow goes like this:</p>
 <ul>
@@ -510,20 +510,20 @@ format.</p>
 </li>
 <li>
 <p>Elements that operate in transform negotiation according to
-<a href="../../#transform-negotiation">Transform negotiation</a> pass the RECONFIGURE
+<a href="#transform-negotiation">Transform negotiation</a> pass the RECONFIGURE
 event upstream. Because these elements simply do a fixed transform
 based on the upstream caps, they need to send the event upstream so
 that it can select a new format.</p>
 </li>
 <li>
-<p>Elements that operate in fixed negotiation (<a href="../../#fixed-negotiation">Fixed
+<p>Elements that operate in fixed negotiation (<a href="#fixed-negotiation">Fixed
 negotiation</a>) drop the RECONFIGURE event. These
 elements can't reconfigure and their output caps don't depend on the
 upstream caps so the event can be dropped.</p>
 </li>
 <li>
 <p>Elements that can be reconfigured on the source pad (source pads
-implementing dynamic negotiation in <a href="../../#dynamic-negotiation">Dynamic
+implementing dynamic negotiation in <a href="#dynamic-negotiation">Dynamic
 negotiation</a>) should check its
 NEED_RECONFIGURE flag with <code>gst_pad_check_reconfigure ()</code> and it
 should start renegotiation when the function returns TRUE.</p>
@@ -607,11 +607,10 @@ repository to get an idea of how they do what you want to do.</p>
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -629,7 +628,7 @@ repository to get an idea of how they do what you want to do.</p>
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

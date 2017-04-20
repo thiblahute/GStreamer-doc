@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="../..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>Basic tutorial 10: GStreamer tools</title>
 
@@ -12,7 +15,6 @@
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
 <link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -24,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -53,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -96,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -120,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/gstreamer-tools.html" class="page_container" id="page-wrapper">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -139,7 +139,7 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="gstreamer-tools.md">
+				    <div id="page-description" data-hotdoc-source="gstreamer-tools.md" data-hotdoc-role="main">
         <h1 id="basic-tutorial-10-gstreamer-tools">Basic tutorial 10: GStreamer tools</h1>
 <h2 id="goal">Goal</h2>
 <p>GStreamer comes with a set of tools which range from handy to
@@ -158,11 +158,11 @@ binaries. You need to move to this directory to execute them, because
 it is not added to the system’s <code>PATH</code> environment variable (to avoid
 polluting it too much).</p>
 <p>Just open a terminal (or console window) and go to the <code>bin</code> directory
-of your GStreamer installation (Read again the <a href="../../installing/index.html">Installing
+of your GStreamer installation (Read again the <a href="installing/index.html">Installing
 GStreamer</a> section to find our where this is),
 and you are ready to start typing the commands given in this tutorial.</p>
 <blockquote>
-<p><img src="images/icons/emoticons/information.svg" alt="Information" id="information"></p>
+<p><img src="tutorials/basic/images/icons/emoticons/information.svg" alt="Information" id="information"></p>
 <p>On Linux, you should use the GStreamer version installed with your
 distribution, the tools should be installed with a package named <code>gstreamer1</code>
 on Fedora style distributions, or <code>gstreamer1.0-tools</code> on Debian/Ubuntu style
@@ -193,7 +193,7 @@ descriptions resemble black magic. Fear not, for everyone learns the
 <code>gst-launch-1.0</code> syntax, eventually.</p>
 <p>The command line for gst-launch-1.0 consists of a list of options followed
 by a PIPELINE-DESCRIPTION. Some simplified instructions are given next,
-se the complete documentation at <a href="../../tools/gst-launch.html">the reference page</a>
+se the complete documentation at <a href="tools/gst-launch.html">the reference page</a>
 for <code>gst-launch-1.0</code>.</p>
 <h3 id="elements">Elements</h3>
 <p>In simple form, a PIPELINE-DESCRIPTION is a list of element types
@@ -234,13 +234,13 @@ dot.</p>
 If you see only one, try to move it, since it is probably on top of the
 second window.</p>
 <p>This example instantiates a <code>videotestsrc</code>, linked to a
-<code>videoconvert</code>, linked to a <code>tee</code> (Remember from <a href="multithreading-and-pad-availability.html">Basic tutorial 7: Multithreading and Pad Availability</a> that
+<code>videoconvert</code>, linked to a <code>tee</code> (Remember from <a href="tutorials/basic/multithreading-and-pad-availability.html">Basic tutorial 7: Multithreading and Pad Availability</a> that
 a <code>tee</code> copies to each of its output pads everything coming through its
 input pad). The <code>tee</code> is named simply ‘t’ (using the <code>name</code> property)
 and then linked to a <code>queue</code> and an <code>autovideosink</code>. The same <code>tee</code> is
 referred to using ‘t.’ (mind the dot) and then linked to a second
 <code>queue</code> and a second <code>autovideosink</code>.</p>
-<p>To learn why the queues are necessary read <a href="multithreading-and-pad-availability.html">Basic tutorial 7: Multithreading and Pad Availability</a>.</p>
+<p>To learn why the queues are necessary read <a href="tutorials/basic/multithreading-and-pad-availability.html">Basic tutorial 7: Multithreading and Pad Availability</a>.</p>
 <h3 id="pads">Pads</h3>
 <p>Instead of letting GStreamer choose which Pad to use when linking two
 elements, you may want to specify the Pads directly. You can do this by
@@ -253,7 +253,7 @@ demuxer:</p>
 <pre><code>gst-launch-1.0 souphttpsrc location=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm ! matroskademux name=d d.video_00 ! matroskamux ! filesink location=sintel_video.mkv
 </code></pre>
 <p>This fetches a media file from the internet using <code>souphttpsrc</code>, which
-is in webm format (a special kind of Matroska container, see <a href="concepts.html">Basic tutorial 2: GStreamer concepts</a>). We
+is in webm format (a special kind of Matroska container, see <a href="tutorials/basic/concepts.html">Basic tutorial 2: GStreamer concepts</a>). We
 then open the container using <code>matroskademux</code>. This media contains both
 audio and video, so <code>matroskademux</code> will create two output Pads, named
 <code>video_00</code> and <code>audio_00</code>. We link <code>video_00</code> to a <code>matroskamux</code> element
@@ -306,7 +306,7 @@ use the <code>gst-discoverer-1.0</code> tool. To find out the Caps an element is
 producing for a particular pipeline, run <code>gst-launch-1.0</code> as usual, with the
 <code>–v</code> option to print Caps information.</p>
 <h3 id="examples">Examples</h3>
-<p>Play a media file using <code>playbin</code> (as in <a href="hello-world.html">Basic tutorial 1: Hello world!</a>):</p>
+<p>Play a media file using <code>playbin</code> (as in <a href="tutorials/basic/hello-world.html">Basic tutorial 1: Hello world!</a>):</p>
 <pre><code>gst-launch-1.0 playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm
 </code></pre>
 <p>A fully operation playback pipeline, with audio and video (more or less
@@ -328,7 +328,7 @@ output caps. The output caps are set by the Caps Filter to
 <pre><code>gst-launch-1.0 uridecodebin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm ! queue ! videoscale ! video/x-raw-yuv,width=320,height=200 ! videoconvert ! autovideosink
 </code></pre>
 <p>This short description of <code>gst-launch-1.0</code> should be enough to get you
-started. Remember that you have the <a href="../../tools/gst-launch.html">complete documentation available
+started. Remember that you have the <a href="tools/gst-launch.html">complete documentation available
 here</a>.</p>
 <h2 id="gstinspect10"><code>gst-inspect-1.0</code></h2>
 <p>This tool has three modes of operation:</p>
@@ -438,10 +438,10 @@ pad template, producing <code>video/x-raw</code> (decoded video data).</li>
 <li>Element Properties: This lists the properties of the
 element, along with their type and accepted values.</li>
 </ul>
-<p>For more information, you can check the <a href="../../tools/gst-inspect.html">documentation
+<p>For more information, you can check the <a href="tools/gst-inspect.html">documentation
 page</a> of <code>gst-inspect-1.0</code>.</p>
 <h2 id="gstdiscoverer10"><code>gst-discoverer-1.0</code></h2>
-<p>This tool is a wrapper around the <code>GstDiscoverer</code> object shown in <a href="media-information-gathering.html">Basic tutorial 9: Media information gathering</a>.
+<p>This tool is a wrapper around the <code>GstDiscoverer</code> object shown in <a href="tutorials/basic/media-information-gathering.html">Basic tutorial 9: Media information gathering</a>.
 It accepts a URI from the command line and prints all information
 regarding the media that GStreamer can extract. It is useful to find out
 what container and codecs have been used to produce the media, and
@@ -517,11 +517,10 @@ capabilities, using the <code>gst-inspect-1.0</code> tool.</li>
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -539,7 +538,7 @@ capabilities, using the <code>gst-inspect-1.0</code> tool.</li>
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

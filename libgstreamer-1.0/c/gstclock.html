@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="../..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>GstClock</title>
 
@@ -23,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -52,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -95,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -119,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="libgstreamer-1.0" data-hotdoc-ref="gstclock.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -138,65 +139,66 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="gstclock.h">
-        <h1 id="gstclock">GstClock</h1><p>GStreamer uses a global clock to synchronize the plugins in a pipeline.
+				    <div id="page-description" data-hotdoc-source="gstclock.h" data-hotdoc-role="main">
+        <h1 id="gstclock">GstClock</h1>
+<p>GStreamer uses a global clock to synchronize the plugins in a pipeline.
 Different clock implementations are possible by implementing this abstract
-base class or, more conveniently, by subclassing <a href="gstsystemclock.html#GstSystemClock">GstSystemClock</a>.</p>
-<p>The <a href="gstclock.html#GstClock">GstClock</a> returns a monotonically increasing time with the method
-<a href="gstclock.html#gst_clock_get_time">gst_clock_get_time</a>. Its accuracy and base time depend on the specific
+base class or, more conveniently, by subclassing <a href="libgstreamer-1.0/c/gstsystemclock.html#GstSystemClock">GstSystemClock</a>.</p>
+<p>The <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> returns a monotonically increasing time with the method
+<a href="libgstreamer-1.0/c/gstclock.html#gst_clock_get_time">gst_clock_get_time</a>. Its accuracy and base time depend on the specific
 clock implementation but time is always expressed in nanoseconds. Since the
 baseline of the clock is undefined, the clock time returned is not
 meaningful in itself, what matters are the deltas between two clock times.
 The time returned by a clock is called the absolute time.</p>
 <p>The pipeline uses the clock to calculate the running time. Usually all
 renderers synchronize to the global clock using the buffer timestamps, the
-newsegment events and the element's base time, see <a href="gstpipeline.html#GstPipeline">GstPipeline</a>.</p>
+newsegment events and the element's base time, see <a href="libgstreamer-1.0/c/gstpipeline.html#GstPipeline">GstPipeline</a>.</p>
 <p>A clock implementation can support periodic and single shot clock
 notifications both synchronous and asynchronous.</p>
-<p>One first needs to create a <a href="gstclock.html#GstClockID">GstClockID</a> for the periodic or single shot
-notification using <a href="gstclock.html#gst_clock_new_single_shot_id">gst_clock_new_single_shot_id</a> or
-<a href="gstclock.html#gst_clock_new_periodic_id">gst_clock_new_periodic_id</a>.</p>
-<p>To perform a blocking wait for the specific time of the <a href="gstclock.html#GstClockID">GstClockID</a> use the
-<a href="gstclock.html#gst_clock_id_wait">gst_clock_id_wait</a>. To receive a callback when the specific time is reached
-in the clock use <a href="gstclock.html#gst_clock_id_wait_async">gst_clock_id_wait_async</a>. Both these calls can be
-interrupted with the <a href="gstclock.html#gst_clock_id_unschedule">gst_clock_id_unschedule</a> call. If the blocking wait is
-unscheduled a return value of <a href="gstclock.html#GST_CLOCK_UNSCHEDULED">GST_CLOCK_UNSCHEDULED</a> is returned.</p>
+<p>One first needs to create a <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> for the periodic or single shot
+notification using <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_new_single_shot_id">gst_clock_new_single_shot_id</a> or
+<a href="libgstreamer-1.0/c/gstclock.html#gst_clock_new_periodic_id">gst_clock_new_periodic_id</a>.</p>
+<p>To perform a blocking wait for the specific time of the <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> use the
+<a href="libgstreamer-1.0/c/gstclock.html#gst_clock_id_wait">gst_clock_id_wait</a>. To receive a callback when the specific time is reached
+in the clock use <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_id_wait_async">gst_clock_id_wait_async</a>. Both these calls can be
+interrupted with the <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_id_unschedule">gst_clock_id_unschedule</a> call. If the blocking wait is
+unscheduled a return value of <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_UNSCHEDULED">GST_CLOCK_UNSCHEDULED</a> is returned.</p>
 <p>Periodic callbacks scheduled async will be repeatedly called automatically
 until it is unscheduled. To schedule a sync periodic callback,
-<a href="gstclock.html#gst_clock_id_wait">gst_clock_id_wait</a> should be called repeatedly.</p>
+<a href="libgstreamer-1.0/c/gstclock.html#gst_clock_id_wait">gst_clock_id_wait</a> should be called repeatedly.</p>
 <p>The async callbacks can happen from any thread, either provided by the core
 or from a streaming thread. The application should be prepared for this.</p>
-<p>A <a href="gstclock.html#GstClockID">GstClockID</a> that has been unscheduled cannot be used again for any wait
-operation, a new <a href="gstclock.html#GstClockID">GstClockID</a> should be created and the old unscheduled one
-should be destroyed with <a href="gstclock.html#gst_clock_id_unref">gst_clock_id_unref</a>.</p>
-<p>It is possible to perform a blocking wait on the same <a href="gstclock.html#GstClockID">GstClockID</a> from
-multiple threads. However, registering the same <a href="gstclock.html#GstClockID">GstClockID</a> for multiple
+<p>A <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> that has been unscheduled cannot be used again for any wait
+operation, a new <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> should be created and the old unscheduled one
+should be destroyed with <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_id_unref">gst_clock_id_unref</a>.</p>
+<p>It is possible to perform a blocking wait on the same <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> from
+multiple threads. However, registering the same <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> for multiple
 async notifications is not possible, the callback will only be called for
 the thread registering the entry last.</p>
-<p>None of the wait operations unref the <a href="gstclock.html#GstClockID">GstClockID</a>, the owner is responsible
+<p>None of the wait operations unref the <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a>, the owner is responsible
 for unreffing the ids itself. This holds for both periodic and single shot
-notifications. The reason being that the owner of the <a href="gstclock.html#GstClockID">GstClockID</a> has to
-keep a handle to the <a href="gstclock.html#GstClockID">GstClockID</a> to unblock the wait on FLUSHING events or
+notifications. The reason being that the owner of the <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> has to
+keep a handle to the <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> to unblock the wait on FLUSHING events or
 state changes and if the entry would be unreffed automatically, the handle
 might become invalid without any notification.</p>
 <p>These clock operations do not operate on the running time, so the callbacks
 will also occur when not in PLAYING state as if the clock just keeps on
 running. Some clocks however do not progress when the element that provided
 the clock is not PLAYING.</p>
-<p>When a clock has the <a href="gstclock.html#GST_CLOCK_FLAG_CAN_SET_MASTER">GST_CLOCK_FLAG_CAN_SET_MASTER</a> flag set, it can be
-slaved to another <a href="gstclock.html#GstClock">GstClock</a> with the <a href="gstclock.html#gst_clock_set_master">gst_clock_set_master</a>. The clock will
+<p>When a clock has the <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_FLAG_CAN_SET_MASTER">GST_CLOCK_FLAG_CAN_SET_MASTER</a> flag set, it can be
+slaved to another <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> with the <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_set_master">gst_clock_set_master</a>. The clock will
 then automatically be synchronized to this master clock by repeatedly
 sampling the master clock and the slave clock and recalibrating the slave
-clock with <a href="gstclock.html#gst_clock_set_calibration">gst_clock_set_calibration</a>. This feature is mostly useful for
+clock with <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_set_calibration">gst_clock_set_calibration</a>. This feature is mostly useful for
 plugins that have an internal clock but must operate with another clock
-selected by the <a href="gstpipeline.html#GstPipeline">GstPipeline</a>.  They can track the offset and rate difference
+selected by the <a href="libgstreamer-1.0/c/gstpipeline.html#GstPipeline">GstPipeline</a>.  They can track the offset and rate difference
 of their internal clock relative to the master clock by using the
-<a href="gstclock.html#gst_clock_get_calibration">gst_clock_get_calibration</a> function.</p>
-<p>The master/slave synchronisation can be tuned with the <a href="gstclock.html#GstClock:timeout">timeout</a>,
-<a href="gstclock.html#GstClock:window-size">window-size</a> and <a href="gstclock.html#GstClock:window-threshold">window-threshold</a> properties.
-The <a href="gstclock.html#GstClock:timeout">timeout</a> property defines the interval to sample the master
-clock and run the calibration functions. <a href="gstclock.html#GstClock:window-size">window-size</a> defines the
-number of samples to use when calibrating and <a href="gstclock.html#GstClock:window-threshold">window-threshold</a>
+<a href="libgstreamer-1.0/c/gstclock.html#gst_clock_get_calibration">gst_clock_get_calibration</a> function.</p>
+<p>The master/slave synchronisation can be tuned with the <a href="libgstreamer-1.0/c/gstclock.html#GstClock:timeout">timeout</a>,
+<a href="libgstreamer-1.0/c/gstclock.html#GstClock:window-size">window-size</a> and <a href="libgstreamer-1.0/c/gstclock.html#GstClock:window-threshold">window-threshold</a> properties.
+The <a href="libgstreamer-1.0/c/gstclock.html#GstClock:timeout">timeout</a> property defines the interval to sample the master
+clock and run the calibration functions. <a href="libgstreamer-1.0/c/gstclock.html#GstClock:window-size">window-size</a> defines the
+number of samples to use when calibrating and <a href="libgstreamer-1.0/c/gstclock.html#GstClock:window-threshold">window-threshold</a>
 defines the minimum number of samples before the calibration is performed.</p>
 
     </div>
@@ -214,9 +216,9 @@ defines the minimum number of samples before the calibration is performed.</p>
 <pre>
 GObject
     <span class="lineart">╰──</span>GInitiallyUnowned
-        <span class="lineart">╰──</span><a title="GstObject" href="gstobject.html#GstObject">GstObject</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
             <span class="lineart">╰──</span>GstClock
-                <span class="lineart">╰──</span><a title="GstSystemClock" href="gstsystemclock.html#GstSystemClock">GstSystemClock</a>
+                <span class="lineart">╰──</span><a title="GstSystemClock" href="libgstreamer-1.0/c/gstsystemclock.html#GstSystemClock">GstSystemClock</a>
 </pre>
 
 </div>
@@ -224,8 +226,8 @@ GObject
 </div>
 
 <div class="class_details">
-	<p><a href="gstclock.html#GstClock">GstClock</a> base structure. The values of this structure are
-protected for subclasses, use the methods to use the <a href="gstclock.html#GstClock">GstClock</a>.</p>
+	<p><a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> base structure. The values of this structure are
+protected for subclasses, use the methods to use the <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a>.</p>
 
 </div>
 
@@ -238,7 +240,7 @@ protected for subclasses, use the methods to use the <a href="gstclock.html#GstC
 						<tr id="GstClock.object">
 		<td>
 		<p>
-		<i><em><code><a title="GstObject" href="gstobject.html#GstObject">GstObject</a> <em><code>object</code></em>:</code></em></i>
+		<i><em><code><a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> <em><code>object</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -285,10 +287,10 @@ protected for subclasses, use the methods to use the <a href="gstclock.html#GstC
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_clock_add_observation (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> slave,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> master,
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_clock_add_observation (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> slave,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> master,
                            gdouble* r_squared)</pre>
 
 <p>The time <em>master</em> of the master clock and the time <em>slave</em> of the slave
@@ -312,7 +314,8 @@ clocks.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -326,7 +329,8 @@ clocks.</p>
 		<i><em><code>slave:</code></em></i>
 		</p>
 	</td>
-		<td><p>a time on the slave</p>
+		<td>
+<p>a time on the slave</p>
 </td>
 <td>
 
@@ -340,7 +344,8 @@ clocks.</p>
 		<i><em><code>master:</code></em></i>
 		</p>
 	</td>
-		<td><p>a time on the master</p>
+		<td>
+<p>a time on the master</p>
 </td>
 <td>
 
@@ -354,7 +359,8 @@ clocks.</p>
 		<i><em><code>r_squared:</code></em></i>
 		</p>
 	</td>
-		<td><p>a pointer to hold the result</p>
+		<td>
+<p>a pointer to hold the result</p>
 </td>
 <td>
 
@@ -389,7 +395,7 @@ regression algorithm.</p>
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -438,20 +444,20 @@ regression algorithm.</p>
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_clock_add_observation_unapplied (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> slave,
-                                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> master,
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_clock_add_observation_unapplied (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> slave,
+                                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> master,
                                      gdouble* r_squared,
-                                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> * internal,
-                                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> * external,
-                                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> * rate_num,
-                                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> * rate_denom)</pre>
+                                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * internal,
+                                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * external,
+                                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * rate_num,
+                                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * rate_denom)</pre>
 
 <p>Add a clock observation to the internal slaving algorithm the same as
-<a href="gstclock.html#gst_clock_add_observation">gst_clock_add_observation</a>, and return the result of the master clock
+<a href="libgstreamer-1.0/c/gstclock.html#gst_clock_add_observation">gst_clock_add_observation</a>, and return the result of the master clock
 estimation, without updating the internal calibration.</p>
-<p>The caller can then take the results and call <a href="gstclock.html#gst_clock_set_calibration">gst_clock_set_calibration</a>
+<p>The caller can then take the results and call <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_set_calibration">gst_clock_set_calibration</a>
 with the values, or some modified version of them.</p>
 
 
@@ -465,7 +471,8 @@ with the values, or some modified version of them.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -479,7 +486,8 @@ with the values, or some modified version of them.</p>
 		<i><em><code>slave:</code></em></i>
 		</p>
 	</td>
-		<td><p>a time on the slave</p>
+		<td>
+<p>a time on the slave</p>
 </td>
 <td>
 
@@ -493,7 +501,8 @@ with the values, or some modified version of them.</p>
 		<i><em><code>master:</code></em></i>
 		</p>
 	</td>
-		<td><p>a time on the master</p>
+		<td>
+<p>a time on the master</p>
 </td>
 <td>
 
@@ -507,7 +516,8 @@ with the values, or some modified version of them.</p>
 		<i><em><code>r_squared:</code></em></i>
 		</p>
 	</td>
-		<td><p>a pointer to hold the result</p>
+		<td>
+<p>a pointer to hold the result</p>
 </td>
 <td>
 
@@ -522,7 +532,8 @@ with the values, or some modified version of them.</p>
 		<i><em><code>internal:</code></em></i>
 		</p>
 	</td>
-		<td><p>a location to store the internal time</p>
+		<td>
+<p>a location to store the internal time</p>
 </td>
 <td>
 
@@ -538,7 +549,8 @@ with the values, or some modified version of them.</p>
 		<i><em><code>external:</code></em></i>
 		</p>
 	</td>
-		<td><p>a location to store the external time</p>
+		<td>
+<p>a location to store the external time</p>
 </td>
 <td>
 
@@ -554,7 +566,8 @@ with the values, or some modified version of them.</p>
 		<i><em><code>rate_num:</code></em></i>
 		</p>
 	</td>
-		<td><p>a location to store the rate numerator</p>
+		<td>
+<p>a location to store the rate numerator</p>
 </td>
 <td>
 
@@ -570,7 +583,8 @@ with the values, or some modified version of them.</p>
 		<i><em><code>rate_denom:</code></em></i>
 		</p>
 	</td>
-		<td><p>a location to store the rate denominator</p>
+		<td>
+<p>a location to store the rate denominator</p>
 </td>
 <td>
 
@@ -603,7 +617,7 @@ with the values, or some modified version of them.</p>
 		
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -639,7 +653,7 @@ with the values, or some modified version of them.</p>
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> *
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
 	</td>
 				<td>
 	
@@ -657,7 +671,7 @@ with the values, or some modified version of them.</p>
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> *
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
 	</td>
 				<td>
 	
@@ -675,7 +689,7 @@ with the values, or some modified version of them.</p>
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> *
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
 	</td>
 				<td>
 	
@@ -693,7 +707,7 @@ with the values, or some modified version of them.</p>
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> *
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
 	</td>
 				<td>
 	
@@ -724,15 +738,15 @@ with the values, or some modified version of them.</p>
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-gst_clock_adjust_unlocked (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> internal)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_clock_adjust_unlocked (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> internal)</pre>
 
 <p>Converts the given <em>internal</em> clock time to the external time, adjusting for the
-rate and reference time set with <a href="gstclock.html#gst_clock_set_calibration">gst_clock_set_calibration</a> and making sure
+rate and reference time set with <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_set_calibration">gst_clock_set_calibration</a> and making sure
 that the returned time is increasing. This function should be called with the
 clock's OBJECT_LOCK held and is mainly used by clock subclasses.</p>
-<p>This function is the reverse of <a href="gstclock.html#gst_clock_unadjust_unlocked">gst_clock_unadjust_unlocked</a>.</p>
+<p>This function is the reverse of <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_unadjust_unlocked">gst_clock_unadjust_unlocked</a>.</p>
 
 
 	<div class="parameter_container">
@@ -745,7 +759,8 @@ clock's OBJECT_LOCK held and is mainly used by clock subclasses.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a> to use</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> to use</p>
 </td>
 <td>
 
@@ -759,7 +774,8 @@ clock's OBJECT_LOCK held and is mainly used by clock subclasses.</p>
 		<i><em><code>internal:</code></em></i>
 		</p>
 	</td>
-		<td><p>a clock time</p>
+		<td>
+<p>a clock time</p>
 </td>
 <td>
 
@@ -791,7 +807,7 @@ clock's OBJECT_LOCK held and is mainly used by clock subclasses.</p>
 
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -819,19 +835,19 @@ clock's OBJECT_LOCK held and is mainly used by clock subclasses.</p>
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-gst_clock_adjust_with_calibration (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                                   <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> internal_target,
-                                   <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> cinternal,
-                                   <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> cexternal,
-                                   <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> cnum,
-                                   <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> cdenom)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_clock_adjust_with_calibration (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                                   <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> internal_target,
+                                   <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> cinternal,
+                                   <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> cexternal,
+                                   <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> cnum,
+                                   <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> cdenom)</pre>
 
 <p>Converts the given <em>internal_target</em> clock time to the external time,
 using the passed calibration parameters. This function performs the
-same calculation as <a href="gstclock.html#gst_clock_adjust_unlocked">gst_clock_adjust_unlocked</a> when called using the
+same calculation as <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_adjust_unlocked">gst_clock_adjust_unlocked</a> when called using the
 current calibration parameters, but doesn't ensure a monotonically
-increasing result as <a href="gstclock.html#gst_clock_adjust_unlocked">gst_clock_adjust_unlocked</a> does.</p>
+increasing result as <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_adjust_unlocked">gst_clock_adjust_unlocked</a> does.</p>
 <p>Note: The <em>clock</em> parameter is unused and can be NULL</p>
 
 
@@ -845,7 +861,8 @@ increasing result as <a href="gstclock.html#gst_clock_adjust_unlocked">gst_clock
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a> to use</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> to use</p>
 </td>
 <td>
 
@@ -860,7 +877,8 @@ increasing result as <a href="gstclock.html#gst_clock_adjust_unlocked">gst_clock
 		<i><em><code>internal_target:</code></em></i>
 		</p>
 	</td>
-		<td><p>a clock time</p>
+		<td>
+<p>a clock time</p>
 </td>
 <td>
 
@@ -874,7 +892,8 @@ increasing result as <a href="gstclock.html#gst_clock_adjust_unlocked">gst_clock
 		<i><em><code>cinternal:</code></em></i>
 		</p>
 	</td>
-		<td><p>a reference internal time</p>
+		<td>
+<p>a reference internal time</p>
 </td>
 <td>
 
@@ -888,7 +907,8 @@ increasing result as <a href="gstclock.html#gst_clock_adjust_unlocked">gst_clock
 		<i><em><code>cexternal:</code></em></i>
 		</p>
 	</td>
-		<td><p>a reference external time</p>
+		<td>
+<p>a reference external time</p>
 </td>
 <td>
 
@@ -902,7 +922,8 @@ increasing result as <a href="gstclock.html#gst_clock_adjust_unlocked">gst_clock
 		<i><em><code>cnum:</code></em></i>
 		</p>
 	</td>
-		<td><p>the numerator of the rate of the clock relative to its
+		<td>
+<p>the numerator of the rate of the clock relative to its
 internal time</p>
 </td>
 <td>
@@ -917,7 +938,8 @@ internal time</p>
 		<i><em><code>cdenom:</code></em></i>
 		</p>
 	</td>
-		<td><p>the denominator of the rate of the clock</p>
+		<td>
+<p>the denominator of the rate of the clock</p>
 </td>
 <td>
 
@@ -949,7 +971,7 @@ internal time</p>
 
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -981,14 +1003,14 @@ internal time</p>
 
 <pre class="prototype">
 void
-gst_clock_get_calibration (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> * internal,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> * external,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> * rate_num,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> * rate_denom)</pre>
+gst_clock_get_calibration (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * internal,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * external,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * rate_num,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * rate_denom)</pre>
 
 <p>Gets the internal rate and reference time of <em>clock</em>. See
-<a href="gstclock.html#gst_clock_set_calibration">gst_clock_set_calibration</a> for more information.</p>
+<a href="libgstreamer-1.0/c/gstclock.html#gst_clock_set_calibration">gst_clock_set_calibration</a> for more information.</p>
 <p><em>internal</em>, <em>external</em>, <em>rate_num</em>, and <em>rate_denom</em> can be left NULL if the
 caller is not interested in the values.</p>
 <p>MT safe.</p>
@@ -1004,7 +1026,8 @@ caller is not interested in the values.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -1018,7 +1041,8 @@ caller is not interested in the values.</p>
 		<i><em><code>internal:</code></em></i>
 		</p>
 	</td>
-		<td><p>a location to store the internal time</p>
+		<td>
+<p>a location to store the internal time</p>
 </td>
 <td>
 
@@ -1034,7 +1058,8 @@ caller is not interested in the values.</p>
 		<i><em><code>external:</code></em></i>
 		</p>
 	</td>
-		<td><p>a location to store the external time</p>
+		<td>
+<p>a location to store the external time</p>
 </td>
 <td>
 
@@ -1050,7 +1075,8 @@ caller is not interested in the values.</p>
 		<i><em><code>rate_num:</code></em></i>
 		</p>
 	</td>
-		<td><p>a location to store the rate numerator</p>
+		<td>
+<p>a location to store the rate numerator</p>
 </td>
 <td>
 
@@ -1066,7 +1092,8 @@ caller is not interested in the values.</p>
 		<i><em><code>rate_denom:</code></em></i>
 		</p>
 	</td>
-		<td><p>a location to store the rate denominator</p>
+		<td>
+<p>a location to store the rate denominator</p>
 </td>
 <td>
 
@@ -1100,7 +1127,7 @@ caller is not interested in the values.</p>
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> *
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
 	</td>
 				<td>
 	
@@ -1118,7 +1145,7 @@ caller is not interested in the values.</p>
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> *
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
 	</td>
 				<td>
 	
@@ -1136,7 +1163,7 @@ caller is not interested in the values.</p>
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> *
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
 	</td>
 				<td>
 	
@@ -1154,7 +1181,7 @@ caller is not interested in the values.</p>
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> *
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> *
 	</td>
 				<td>
 	
@@ -1182,8 +1209,8 @@ caller is not interested in the values.</p>
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-gst_clock_get_internal_time (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_clock_get_internal_time (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock)</pre>
 
 <p>Gets the current internal time of the given clock. The time is returned
 unadjusted for the offset and the rate.</p>
@@ -1199,7 +1226,8 @@ unadjusted for the offset and the rate.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a> to query</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> to query</p>
 </td>
 <td>
 
@@ -1233,7 +1261,7 @@ given invalid input.</p>
 
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -1261,8 +1289,8 @@ given invalid input.</p>
 		
 
 <pre class="prototype">
-<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> *
-gst_clock_get_master (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock)</pre>
+<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> *
+gst_clock_get_master (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock)</pre>
 
 <p>Get the master clock that <em>clock</em> is slaved to or NULL when the clock is
 not slaved to any master clock.</p>
@@ -1278,7 +1306,8 @@ not slaved to any master clock.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -1306,14 +1335,14 @@ not slaved to any master clock.</p>
 				</p>
 	</td>
 	<td>
-		<p>a master <a href="gstclock.html#GstClock">GstClock</a> or NULL
+		<p>a master <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> or NULL
 when this clock is not slaved to a master clock. Unref after
 usage.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> *
+		<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> *
 	</td>
 				<td>
 	
@@ -1343,11 +1372,11 @@ usage.</p>
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-gst_clock_get_resolution (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_clock_get_resolution (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock)</pre>
 
 <p>Get the accuracy of the clock. The accuracy of the clock is the granularity
-of the values returned by <a href="gstclock.html#gst_clock_get_time">gst_clock_get_time</a>.</p>
+of the values returned by <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_get_time">gst_clock_get_time</a>.</p>
 
 
 	<div class="parameter_container">
@@ -1360,7 +1389,8 @@ of the values returned by <a href="gstclock.html#gst_clock_get_time">gst_clock_g
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -1388,12 +1418,12 @@ of the values returned by <a href="gstclock.html#gst_clock_get_time">gst_clock_g
 				</p>
 	</td>
 	<td>
-		<p>the resolution of the clock in units of <a href="gstclock.html#GstClockTime">GstClockTime</a>.</p>
+		<p>the resolution of the clock in units of <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -1421,8 +1451,8 @@ of the values returned by <a href="gstclock.html#gst_clock_get_time">gst_clock_g
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-gst_clock_get_time (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_clock_get_time (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock)</pre>
 
 <p>Gets the current time of the given clock. The time is always
 monotonically increasing and adjusted according to the current
@@ -1439,7 +1469,8 @@ offset and rate.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a> to query</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> to query</p>
 </td>
 <td>
 
@@ -1473,7 +1504,7 @@ given invalid input.</p>
 
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -1501,8 +1532,8 @@ given invalid input.</p>
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-gst_clock_get_timeout (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_clock_get_timeout (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock)</pre>
 
 <p>Get the amount of time that master and slave clocks are sampled.</p>
 
@@ -1517,7 +1548,8 @@ gst_clock_get_timeout (<a title="GstClock" href="gstclock.html#GstClock">GstCloc
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -1549,7 +1581,7 @@ gst_clock_get_timeout (<a title="GstClock" href="gstclock.html#GstClock">GstCloc
 
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -1577,8 +1609,8 @@ gst_clock_get_timeout (<a title="GstClock" href="gstclock.html#GstClock">GstCloc
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_clock_is_synced (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_clock_is_synced (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock)</pre>
 
 <p>Checks if the clock is currently synced.</p>
 <p>This returns if GST_CLOCK_FLAG_NEEDS_STARTUP_SYNC is not set on the clock.</p>
@@ -1594,7 +1626,8 @@ gst_clock_is_synced (<a title="GstClock" href="gstclock.html#GstClock">GstClock<
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a GstClock</p>
+		<td>
+<p>a GstClock</p>
 </td>
 <td>
 
@@ -1626,7 +1659,7 @@ gst_clock_is_synced (<a title="GstClock" href="gstclock.html#GstClock">GstClock<
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -1657,10 +1690,10 @@ gst_clock_is_synced (<a title="GstClock" href="gstclock.html#GstClock">GstClock<
 		
 
 <pre class="prototype">
-<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a>
-gst_clock_new_periodic_id (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> start_time,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> interval)</pre>
+<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a>
+gst_clock_new_periodic_id (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> start_time,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> interval)</pre>
 
 <p>Get an ID from <em>clock</em> to trigger a periodic notification.
 The periodic notifications will start at time <em>start_time</em> and
@@ -1679,7 +1712,8 @@ after usage.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="gstclock.html#GstClockID">GstClockID</a> to get a periodic notification id from</p>
+		<td>
+<p>The <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> to get a periodic notification id from</p>
 </td>
 <td>
 
@@ -1693,7 +1727,8 @@ after usage.</p>
 		<i><em><code>start_time:</code></em></i>
 		</p>
 	</td>
-		<td><p>the requested start time</p>
+		<td>
+<p>the requested start time</p>
 </td>
 <td>
 
@@ -1707,7 +1742,8 @@ after usage.</p>
 		<i><em><code>interval:</code></em></i>
 		</p>
 	</td>
-		<td><p>the requested interval</p>
+		<td>
+<p>the requested interval</p>
 </td>
 <td>
 
@@ -1735,13 +1771,13 @@ after usage.</p>
 				</p>
 	</td>
 	<td>
-		<p>a <a href="gstclock.html#GstClockID">GstClockID</a> that can be used to request the
+		<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> that can be used to request the
 time notification.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a>
+		<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a>
 	</td>
 				<td>
 	
@@ -1770,11 +1806,11 @@ time notification.</p>
 		
 
 <pre class="prototype">
-<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a>
-gst_clock_new_single_shot_id (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                              <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> time)</pre>
+<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a>
+gst_clock_new_single_shot_id (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                              <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> time)</pre>
 
-<p>Get a <a href="gstclock.html#GstClockID">GstClockID</a> from <em>clock</em> to trigger a single shot
+<p>Get a <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> from <em>clock</em> to trigger a single shot
 notification at the requested time. The single shot id should be
 unreffed after usage.</p>
 <p>Free-function: gst_clock_id_unref</p>
@@ -1790,7 +1826,8 @@ unreffed after usage.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="gstclock.html#GstClockID">GstClockID</a> to get a single shot notification from</p>
+		<td>
+<p>The <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> to get a single shot notification from</p>
 </td>
 <td>
 
@@ -1804,7 +1841,8 @@ unreffed after usage.</p>
 		<i><em><code>time:</code></em></i>
 		</p>
 	</td>
-		<td><p>the requested time</p>
+		<td>
+<p>the requested time</p>
 </td>
 <td>
 
@@ -1832,13 +1870,13 @@ unreffed after usage.</p>
 				</p>
 	</td>
 	<td>
-		<p>a <a href="gstclock.html#GstClockID">GstClockID</a> that can be used to request the
+		<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> that can be used to request the
 time notification.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a>
+		<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a>
 	</td>
 				<td>
 	
@@ -1867,11 +1905,11 @@ time notification.</p>
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_clock_periodic_id_reinit (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                              <a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a> id,
-                              <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> start_time,
-                              <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> interval)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_clock_periodic_id_reinit (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                              <a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> id,
+                              <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> start_time,
+                              <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> interval)</pre>
 
 <p>Reinitializes the provided periodic <em>id</em> to the provided start time and
 interval. Does not modify the reference count.</p>
@@ -1887,7 +1925,8 @@ interval. Does not modify the reference count.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -1901,7 +1940,8 @@ interval. Does not modify the reference count.</p>
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClockID">GstClockID</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a></p>
 </td>
 <td>
 
@@ -1915,7 +1955,8 @@ interval. Does not modify the reference count.</p>
 		<i><em><code>start_time:</code></em></i>
 		</p>
 	</td>
-		<td><p>the requested start time</p>
+		<td>
+<p>the requested start time</p>
 </td>
 <td>
 
@@ -1929,7 +1970,8 @@ interval. Does not modify the reference count.</p>
 		<i><em><code>interval:</code></em></i>
 		</p>
 	</td>
-		<td><p>the requested interval</p>
+		<td>
+<p>the requested interval</p>
 </td>
 <td>
 
@@ -1962,7 +2004,7 @@ interval. Does not modify the reference count.</p>
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -1991,26 +2033,26 @@ interval. Does not modify the reference count.</p>
 
 <pre class="prototype">
 void
-gst_clock_set_calibration (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> internal,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> external,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> rate_num,
-                           <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> rate_denom)</pre>
+gst_clock_set_calibration (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> internal,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> external,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> rate_num,
+                           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> rate_denom)</pre>
 
 <p>Adjusts the rate and time of <em>clock</em>. A rate of 1/1 is the normal speed of
 the clock. Values bigger than 1/1 make the clock go faster.</p>
 <p><em>internal</em> and <em>external</em> are calibration parameters that arrange that
-<a href="gstclock.html#gst_clock_get_time">gst_clock_get_time</a> should have been <em>external</em> at internal time <em>internal</em>.
+<a href="libgstreamer-1.0/c/gstclock.html#gst_clock_get_time">gst_clock_get_time</a> should have been <em>external</em> at internal time <em>internal</em>.
 This internal time should not be in the future; that is, it should be less
-than the value of <a href="gstclock.html#gst_clock_get_internal_time">gst_clock_get_internal_time</a> when this function is called.</p>
-<p>Subsequent calls to <a href="gstclock.html#gst_clock_get_time">gst_clock_get_time</a> will return clock times computed as
+than the value of <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_get_internal_time">gst_clock_get_internal_time</a> when this function is called.</p>
+<p>Subsequent calls to <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_get_time">gst_clock_get_time</a> will return clock times computed as
 follows:</p>
 <pre><code class="language-[">   time = (internal_time - internal) * rate_num / rate_denom + external
 </code></pre>
-<p>This formula is implemented in <a href="gstclock.html#gst_clock_adjust_unlocked">gst_clock_adjust_unlocked</a>. Of course, it
+<p>This formula is implemented in <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_adjust_unlocked">gst_clock_adjust_unlocked</a>. Of course, it
 tries to do the integer arithmetic as precisely as possible.</p>
-<p>Note that <a href="gstclock.html#gst_clock_get_time">gst_clock_get_time</a> always returns increasing values so when you
-move the clock backwards, <a href="gstclock.html#gst_clock_get_time">gst_clock_get_time</a> will report the previous value
+<p>Note that <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_get_time">gst_clock_get_time</a> always returns increasing values so when you
+move the clock backwards, <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_get_time">gst_clock_get_time</a> will report the previous value
 until the clock catches up.</p>
 <p>MT safe.</p>
 
@@ -2025,7 +2067,8 @@ until the clock catches up.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a> to calibrate</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> to calibrate</p>
 </td>
 <td>
 
@@ -2039,7 +2082,8 @@ until the clock catches up.</p>
 		<i><em><code>internal:</code></em></i>
 		</p>
 	</td>
-		<td><p>a reference internal time</p>
+		<td>
+<p>a reference internal time</p>
 </td>
 <td>
 
@@ -2053,7 +2097,8 @@ until the clock catches up.</p>
 		<i><em><code>external:</code></em></i>
 		</p>
 	</td>
-		<td><p>a reference external time</p>
+		<td>
+<p>a reference external time</p>
 </td>
 <td>
 
@@ -2067,7 +2112,8 @@ until the clock catches up.</p>
 		<i><em><code>rate_num:</code></em></i>
 		</p>
 	</td>
-		<td><p>the numerator of the rate of the clock relative to its
+		<td>
+<p>the numerator of the rate of the clock relative to its
 internal time</p>
 </td>
 <td>
@@ -2082,7 +2128,8 @@ internal time</p>
 		<i><em><code>rate_denom:</code></em></i>
 		</p>
 	</td>
-		<td><p>the denominator of the rate of the clock</p>
+		<td>
+<p>the denominator of the rate of the clock</p>
 </td>
 <td>
 
@@ -2110,15 +2157,15 @@ internal time</p>
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_clock_set_master (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                      <a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * master)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_clock_set_master (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                      <a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * master)</pre>
 
 <p>Set <em>master</em> as the master clock for <em>clock</em>. <em>clock</em> will be automatically
-calibrated so that <a href="gstclock.html#gst_clock_get_time">gst_clock_get_time</a> reports the same time as the
+calibrated so that <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_get_time">gst_clock_get_time</a> reports the same time as the
 master clock.</p>
 <p>A clock provider that slaves its clock to a master can get the current
-calibration values with <a href="gstclock.html#gst_clock_get_calibration">gst_clock_get_calibration</a>.</p>
+calibration values with <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_get_calibration">gst_clock_get_calibration</a>.</p>
 <p><em>master</em> can be NULL in which case <em>clock</em> will not be slaved anymore. It will
 however keep reporting its time adjusted with the last configured rate
 and time offsets.</p>
@@ -2134,7 +2181,8 @@ and time offsets.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -2148,7 +2196,8 @@ and time offsets.</p>
 		<i><em><code>master:</code></em></i>
 		</p>
 	</td>
-		<td><p>a master <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a master <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -2179,12 +2228,12 @@ and time offsets.</p>
 	<td>
 		<p>TRUE if the clock is capable of being slaved to a master clock.
 Trying to set a master on a clock without the
-<a href="gstclock.html#GST_CLOCK_FLAG_CAN_SET_MASTER">GST_CLOCK_FLAG_CAN_SET_MASTER</a> flag will make this function return FALSE.</p>
+<a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_FLAG_CAN_SET_MASTER">GST_CLOCK_FLAG_CAN_SET_MASTER</a> flag will make this function return FALSE.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -2212,15 +2261,15 @@ Trying to set a master on a clock without the
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-gst_clock_set_resolution (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                          <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> resolution)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_clock_set_resolution (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                          <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> resolution)</pre>
 
 <p>Set the accuracy of the clock. Some clocks have the possibility to operate
 with different accuracy at the expense of more resource usage. There is
 normally no need to change the default resolution of a clock. The resolution
 of a clock can only be changed if the clock has the
-<a href="gstclock.html#GST_CLOCK_FLAG_CAN_SET_RESOLUTION">GST_CLOCK_FLAG_CAN_SET_RESOLUTION</a> flag set.</p>
+<a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_FLAG_CAN_SET_RESOLUTION">GST_CLOCK_FLAG_CAN_SET_RESOLUTION</a> flag set.</p>
 
 
 	<div class="parameter_container">
@@ -2233,7 +2282,8 @@ of a clock can only be changed if the clock has the
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -2247,7 +2297,8 @@ of a clock can only be changed if the clock has the
 		<i><em><code>resolution:</code></em></i>
 		</p>
 	</td>
-		<td><p>The resolution to set</p>
+		<td>
+<p>The resolution to set</p>
 </td>
 <td>
 
@@ -2279,7 +2330,7 @@ of a clock can only be changed if the clock has the
 
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -2308,11 +2359,11 @@ of a clock can only be changed if the clock has the
 
 <pre class="prototype">
 void
-gst_clock_set_synced (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                      <a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> synced)</pre>
+gst_clock_set_synced (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                      <a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> synced)</pre>
 
 <p>Sets <em>clock</em> to synced and emits the GstClock::synced signal, and wakes up any
-thread waiting in <a href="gstclock.html#gst_clock_wait_for_sync">gst_clock_wait_for_sync</a>.</p>
+thread waiting in <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_wait_for_sync">gst_clock_wait_for_sync</a>.</p>
 <p>This function must only be called if GST_CLOCK_FLAG_NEEDS_STARTUP_SYNC
 is set on the clock, and is intended to be called by subclasses only.</p>
 
@@ -2327,7 +2378,8 @@ is set on the clock, and is intended to be called by subclasses only.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a GstClock</p>
+		<td>
+<p>a GstClock</p>
 </td>
 <td>
 
@@ -2341,7 +2393,8 @@ is set on the clock, and is intended to be called by subclasses only.</p>
 		<i><em><code>synced:</code></em></i>
 		</p>
 	</td>
-		<td><p>if the clock is synced</p>
+		<td>
+<p>if the clock is synced</p>
 </td>
 <td>
 
@@ -2373,8 +2426,8 @@ is set on the clock, and is intended to be called by subclasses only.</p>
 
 <pre class="prototype">
 void
-gst_clock_set_timeout (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                       <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> timeout)</pre>
+gst_clock_set_timeout (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                       <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> timeout)</pre>
 
 <p>Set the amount of time, in nanoseconds, to sample master and slave
 clocks</p>
@@ -2390,7 +2443,8 @@ clocks</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -2404,7 +2458,8 @@ clocks</p>
 		<i><em><code>timeout:</code></em></i>
 		</p>
 	</td>
-		<td><p>a timeout</p>
+		<td>
+<p>a timeout</p>
 </td>
 <td>
 
@@ -2432,10 +2487,10 @@ clocks</p>
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_clock_single_shot_id_reinit (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                                 <a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a> id,
-                                 <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> time)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_clock_single_shot_id_reinit (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                                 <a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> id,
+                                 <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> time)</pre>
 
 <p>Reinitializes the provided single shot <em>id</em> to the provided time. Does not
 modify the reference count.</p>
@@ -2451,7 +2506,8 @@ modify the reference count.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a></p>
 </td>
 <td>
 
@@ -2465,7 +2521,8 @@ modify the reference count.</p>
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClockID">GstClockID</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a></p>
 </td>
 <td>
 
@@ -2479,7 +2536,8 @@ modify the reference count.</p>
 		<i><em><code>time:</code></em></i>
 		</p>
 	</td>
-		<td><p>The requested time.</p>
+		<td>
+<p>The requested time.</p>
 </td>
 <td>
 
@@ -2512,7 +2570,7 @@ modify the reference count.</p>
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -2540,15 +2598,15 @@ modify the reference count.</p>
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-gst_clock_unadjust_unlocked (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                             <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> external)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_clock_unadjust_unlocked (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                             <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> external)</pre>
 
 <p>Converts the given <em>external</em> clock time to the internal time of <em>clock</em>,
-using the rate and reference time set with <a href="gstclock.html#gst_clock_set_calibration">gst_clock_set_calibration</a>.
+using the rate and reference time set with <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_set_calibration">gst_clock_set_calibration</a>.
 This function should be called with the clock's OBJECT_LOCK held and
 is mainly used by clock subclasses.</p>
-<p>This function is the reverse of <a href="gstclock.html#gst_clock_adjust_unlocked">gst_clock_adjust_unlocked</a>.</p>
+<p>This function is the reverse of <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_adjust_unlocked">gst_clock_adjust_unlocked</a>.</p>
 
 
 	<div class="parameter_container">
@@ -2561,7 +2619,8 @@ is mainly used by clock subclasses.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a> to use</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> to use</p>
 </td>
 <td>
 
@@ -2575,7 +2634,8 @@ is mainly used by clock subclasses.</p>
 		<i><em><code>external:</code></em></i>
 		</p>
 	</td>
-		<td><p>an external clock time</p>
+		<td>
+<p>an external clock time</p>
 </td>
 <td>
 
@@ -2607,7 +2667,7 @@ is mainly used by clock subclasses.</p>
 
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -2635,17 +2695,17 @@ is mainly used by clock subclasses.</p>
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-gst_clock_unadjust_with_calibration (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> external_target,
-                                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> cinternal,
-                                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> cexternal,
-                                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> cnum,
-                                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> cdenom)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_clock_unadjust_with_calibration (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> external_target,
+                                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> cinternal,
+                                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> cexternal,
+                                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> cnum,
+                                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> cdenom)</pre>
 
 <p>Converts the given <em>external_target</em> clock time to the internal time,
 using the passed calibration parameters. This function performs the
-same calculation as <a href="gstclock.html#gst_clock_unadjust_unlocked">gst_clock_unadjust_unlocked</a> when called using the
+same calculation as <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_unadjust_unlocked">gst_clock_unadjust_unlocked</a> when called using the
 current calibration parameters.</p>
 <p>Note: The <em>clock</em> parameter is unused and can be NULL</p>
 
@@ -2660,7 +2720,8 @@ current calibration parameters.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClock">GstClock</a> to use</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> to use</p>
 </td>
 <td>
 
@@ -2675,7 +2736,8 @@ current calibration parameters.</p>
 		<i><em><code>external_target:</code></em></i>
 		</p>
 	</td>
-		<td><p>a clock time</p>
+		<td>
+<p>a clock time</p>
 </td>
 <td>
 
@@ -2689,7 +2751,8 @@ current calibration parameters.</p>
 		<i><em><code>cinternal:</code></em></i>
 		</p>
 	</td>
-		<td><p>a reference internal time</p>
+		<td>
+<p>a reference internal time</p>
 </td>
 <td>
 
@@ -2703,7 +2766,8 @@ current calibration parameters.</p>
 		<i><em><code>cexternal:</code></em></i>
 		</p>
 	</td>
-		<td><p>a reference external time</p>
+		<td>
+<p>a reference external time</p>
 </td>
 <td>
 
@@ -2717,7 +2781,8 @@ current calibration parameters.</p>
 		<i><em><code>cnum:</code></em></i>
 		</p>
 	</td>
-		<td><p>the numerator of the rate of the clock relative to its
+		<td>
+<p>the numerator of the rate of the clock relative to its
 internal time</p>
 </td>
 <td>
@@ -2732,7 +2797,8 @@ internal time</p>
 		<i><em><code>cdenom:</code></em></i>
 		</p>
 	</td>
-		<td><p>the denominator of the rate of the clock</p>
+		<td>
+<p>the denominator of the rate of the clock</p>
 </td>
 <td>
 
@@ -2764,7 +2830,7 @@ internal time</p>
 
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -2795,12 +2861,12 @@ internal time</p>
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-gst_clock_wait_for_sync (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                         <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> timeout)</pre>
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+gst_clock_wait_for_sync (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                         <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> timeout)</pre>
 
 <p>Waits until <em>clock</em> is synced for reporting the current time. If <em>timeout</em>
-is <a href="gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a> it will wait forever, otherwise it will time out
+is <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a> it will wait forever, otherwise it will time out
 after <em>timeout</em> nanoseconds.</p>
 <p>For asynchronous waiting, the GstClock::synced signal can be used.</p>
 <p>This returns immediately with TRUE if GST_CLOCK_FLAG_NEEDS_STARTUP_SYNC
@@ -2817,7 +2883,8 @@ is not set on the clock, or if the clock is already synced.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>a GstClock</p>
+		<td>
+<p>a GstClock</p>
 </td>
 <td>
 
@@ -2831,7 +2898,8 @@ is not set on the clock, or if the clock is already synced.</p>
 		<i><em><code>timeout:</code></em></i>
 		</p>
 	</td>
-		<td><p>timeout for waiting or <a href="gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a></p>
+		<td>
+<p>timeout for waiting or <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a></p>
 </td>
 <td>
 
@@ -2863,7 +2931,7 @@ is not set on the clock, or if the clock is already synced.</p>
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -2898,11 +2966,11 @@ is not set on the clock, or if the clock is already synced.</p>
 		
 
 <pre class="prototype">
-<a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
+<a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
 gst_clock_id_compare_func (gconstpointer id1,
                            gconstpointer id2)</pre>
 
-<p>Compares the two <a href="gstclock.html#GstClockID">GstClockID</a> instances. This function can be used
+<p>Compares the two <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> instances. This function can be used
 as a GCompareFunc when sorting ids.</p>
 
 
@@ -2916,7 +2984,8 @@ as a GCompareFunc when sorting ids.</p>
 		<i><em><code>id1:</code></em></i>
 		</p>
 	</td>
-		<td><p>A <a href="gstclock.html#GstClockID">GstClockID</a></p>
+		<td>
+<p>A <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a></p>
 </td>
 <td>
 
@@ -2930,7 +2999,8 @@ as a GCompareFunc when sorting ids.</p>
 		<i><em><code>id2:</code></em></i>
 		</p>
 	</td>
-		<td><p>A <a href="gstclock.html#GstClockID">GstClockID</a> to compare with</p>
+		<td>
+<p>A <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> to compare with</p>
 </td>
 <td>
 
@@ -2963,7 +3033,7 @@ as a GCompareFunc when sorting ids.</p>
 
 	</td>
 	<td>
-		<a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
+		<a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a>
 	</td>
 				<td>
 	
@@ -2991,8 +3061,8 @@ as a GCompareFunc when sorting ids.</p>
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-gst_clock_id_get_time (<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a> id)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+gst_clock_id_get_time (<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> id)</pre>
 
 <p>Get the time of the clock ID</p>
 
@@ -3007,7 +3077,8 @@ gst_clock_id_get_time (<a title="GstClockID" href="gstclock.html#GstClockID">Gst
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="gstclock.html#GstClockID">GstClockID</a> to query</p>
+		<td>
+<p>The <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> to query</p>
 </td>
 <td>
 
@@ -3040,7 +3111,7 @@ gst_clock_id_get_time (<a title="GstClockID" href="gstclock.html#GstClockID">Gst
 
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -3068,8 +3139,8 @@ gst_clock_id_get_time (<a title="GstClockID" href="gstclock.html#GstClockID">Gst
 		
 
 <pre class="prototype">
-<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a>
-gst_clock_id_ref (<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a> id)</pre>
+<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a>
+gst_clock_id_ref (<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> id)</pre>
 
 <p>Increase the refcount of given <em>id</em>.</p>
 
@@ -3084,7 +3155,8 @@ gst_clock_id_ref (<a title="GstClockID" href="gstclock.html#GstClockID">GstClock
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="gstclock.html#GstClockID">GstClockID</a> to ref</p>
+		<td>
+<p>The <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> to ref</p>
 </td>
 <td>
 
@@ -3112,12 +3184,12 @@ gst_clock_id_ref (<a title="GstClockID" href="gstclock.html#GstClockID">GstClock
 				</p>
 	</td>
 	<td>
-		<p>The same <a href="gstclock.html#GstClockID">GstClockID</a> with increased refcount.</p>
+		<p>The same <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> with increased refcount.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a>
+		<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a>
 	</td>
 				<td>
 	
@@ -3147,10 +3219,10 @@ gst_clock_id_ref (<a title="GstClockID" href="gstclock.html#GstClockID">GstClock
 
 <pre class="prototype">
 void
-gst_clock_id_unref (<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a> id)</pre>
+gst_clock_id_unref (<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> id)</pre>
 
 <p>Unref given <em>id</em>. When the refcount reaches 0 the
-<a href="gstclock.html#GstClockID">GstClockID</a> will be freed.</p>
+<a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> will be freed.</p>
 <p>MT safe.</p>
 
 
@@ -3164,7 +3236,8 @@ gst_clock_id_unref (<a title="GstClockID" href="gstclock.html#GstClockID">GstClo
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="gstclock.html#GstClockID">GstClockID</a> to unref</p>
+		<td>
+<p>The <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> to unref</p>
 </td>
 <td>
 
@@ -3194,12 +3267,12 @@ gst_clock_id_unref (<a title="GstClockID" href="gstclock.html#GstClockID">GstClo
 
 <pre class="prototype">
 void
-gst_clock_id_unschedule (<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a> id)</pre>
+gst_clock_id_unschedule (<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> id)</pre>
 
 <p>Cancel an outstanding request with <em>id</em>. This can either
 be an outstanding async notification or a pending sync notification.
 After this call, <em>id</em> cannot be used anymore to receive sync or
-async notifications, you need to create a new <a href="gstclock.html#GstClockID">GstClockID</a>.</p>
+async notifications, you need to create a new <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a>.</p>
 <p>MT safe.</p>
 
 
@@ -3213,7 +3286,8 @@ async notifications, you need to create a new <a href="gstclock.html#GstClockID"
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>The id to unschedule</p>
+		<td>
+<p>The id to unschedule</p>
 </td>
 <td>
 
@@ -3241,20 +3315,20 @@ async notifications, you need to create a new <a href="gstclock.html#GstClockID"
 		
 
 <pre class="prototype">
-<a title="GstClockReturn" href="gstclock.html#GstClockReturn">GstClockReturn</a>
-gst_clock_id_wait (<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a> id,
-                   <a title="GstClockTimeDiff" href="gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> * jitter)</pre>
+<a title="GstClockReturn" href="libgstreamer-1.0/c/gstclock.html#GstClockReturn">GstClockReturn</a>
+gst_clock_id_wait (<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> id,
+                   <a title="GstClockTimeDiff" href="libgstreamer-1.0/c/gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> * jitter)</pre>
 
 <p>Perform a blocking wait on <em>id</em>.
-<em>id</em> should have been created with <a href="gstclock.html#gst_clock_new_single_shot_id">gst_clock_new_single_shot_id</a>
-or <a href="gstclock.html#gst_clock_new_periodic_id">gst_clock_new_periodic_id</a> and should not have been unscheduled
-with a call to <a href="gstclock.html#gst_clock_id_unschedule">gst_clock_id_unschedule</a>.</p>
-<p>If the <em>jitter</em> argument is not NULL and this function returns <a href="gstclock.html#GST_CLOCK_OK">GST_CLOCK_OK</a>
-or <a href="gstclock.html#GST_CLOCK_EARLY">GST_CLOCK_EARLY</a>, it will contain the difference
+<em>id</em> should have been created with <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_new_single_shot_id">gst_clock_new_single_shot_id</a>
+or <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_new_periodic_id">gst_clock_new_periodic_id</a> and should not have been unscheduled
+with a call to <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_id_unschedule">gst_clock_id_unschedule</a>.</p>
+<p>If the <em>jitter</em> argument is not NULL and this function returns <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_OK">GST_CLOCK_OK</a>
+or <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_EARLY">GST_CLOCK_EARLY</a>, it will contain the difference
 against the clock and the time of <em>id</em> when this method was
 called.
 Positive values indicate how late <em>id</em> was relative to the clock
-(in which case this function will return <a href="gstclock.html#GST_CLOCK_EARLY">GST_CLOCK_EARLY</a>).
+(in which case this function will return <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_EARLY">GST_CLOCK_EARLY</a>).
 Negative values indicate how much time was spent waiting on the clock
 before this function returned.</p>
 
@@ -3269,7 +3343,8 @@ before this function returned.</p>
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="gstclock.html#GstClockID">GstClockID</a> to wait on</p>
+		<td>
+<p>The <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> to wait on</p>
 </td>
 <td>
 
@@ -3283,7 +3358,8 @@ before this function returned.</p>
 		<i><em><code>jitter:</code></em></i>
 		</p>
 	</td>
-		<td><p>a pointer that will contain the jitter,
+		<td>
+<p>a pointer that will contain the jitter,
 can be NULL.</p>
 </td>
 <td>
@@ -3314,15 +3390,15 @@ can be NULL.</p>
 				</p>
 	</td>
 	<td>
-		<p>the result of the blocking wait. <a href="gstclock.html#GST_CLOCK_EARLY">GST_CLOCK_EARLY</a> will be returned
-if the current clock time is past the time of <em>id</em>, <a href="gstclock.html#GST_CLOCK_OK">GST_CLOCK_OK</a> if
-<em>id</em> was scheduled in time. <a href="gstclock.html#GST_CLOCK_UNSCHEDULED">GST_CLOCK_UNSCHEDULED</a> if <em>id</em> was
-unscheduled with <a href="gstclock.html#gst_clock_id_unschedule">gst_clock_id_unschedule</a>.</p>
+		<p>the result of the blocking wait. <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_EARLY">GST_CLOCK_EARLY</a> will be returned
+if the current clock time is past the time of <em>id</em>, <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_OK">GST_CLOCK_OK</a> if
+<em>id</em> was scheduled in time. <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_UNSCHEDULED">GST_CLOCK_UNSCHEDULED</a> if <em>id</em> was
+unscheduled with <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_id_unschedule">gst_clock_id_unschedule</a>.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="GstClockReturn" href="gstclock.html#GstClockReturn">GstClockReturn</a>
+		<a title="GstClockReturn" href="libgstreamer-1.0/c/gstclock.html#GstClockReturn">GstClockReturn</a>
 	</td>
 				<td>
 	
@@ -3337,15 +3413,15 @@ unscheduled with <a href="gstclock.html#gst_clock_id_unschedule">gst_clock_id_un
 				</p>
 	</td>
 	<td>
-		<p>the result of the blocking wait. <a href="gstclock.html#GST_CLOCK_EARLY">GST_CLOCK_EARLY</a> will be returned
-if the current clock time is past the time of <em>id</em>, <a href="gstclock.html#GST_CLOCK_OK">GST_CLOCK_OK</a> if
-<em>id</em> was scheduled in time. <a href="gstclock.html#GST_CLOCK_UNSCHEDULED">GST_CLOCK_UNSCHEDULED</a> if <em>id</em> was
-unscheduled with <a href="gstclock.html#gst_clock_id_unschedule">gst_clock_id_unschedule</a>.</p>
+		<p>the result of the blocking wait. <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_EARLY">GST_CLOCK_EARLY</a> will be returned
+if the current clock time is past the time of <em>id</em>, <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_OK">GST_CLOCK_OK</a> if
+<em>id</em> was scheduled in time. <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_UNSCHEDULED">GST_CLOCK_UNSCHEDULED</a> if <em>id</em> was
+unscheduled with <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_id_unschedule">gst_clock_id_unschedule</a>.</p>
 <p>MT safe.</p>
 
 	</td>
 	<td>
-		<a title="GstClockTimeDiff" href="gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> *
+		<a title="GstClockTimeDiff" href="libgstreamer-1.0/c/gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> *
 	</td>
 				<td>
 	
@@ -3373,14 +3449,14 @@ unscheduled with <a href="gstclock.html#gst_clock_id_unschedule">gst_clock_id_un
 		
 
 <pre class="prototype">
-<a title="GstClockReturn" href="gstclock.html#GstClockReturn">GstClockReturn</a>
-gst_clock_id_wait_async (<a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a> id,
-                         <a title="GstClockCallback" href="gstclock.html#GstClockCallback">GstClockCallback</a> func,
+<a title="GstClockReturn" href="libgstreamer-1.0/c/gstclock.html#GstClockReturn">GstClockReturn</a>
+gst_clock_id_wait_async (<a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> id,
+                         <a title="GstClockCallback" href="libgstreamer-1.0/c/gstclock.html#GstClockCallback">GstClockCallback</a> func,
                          gpointer user_data,
                          GDestroyNotify destroy_data)</pre>
 
-<p>Register a callback on the given <a href="gstclock.html#GstClockID">GstClockID</a> <em>id</em> with the given
-function and user_data. When passing a <a href="gstclock.html#GstClockID">GstClockID</a> with an invalid
+<p>Register a callback on the given <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> <em>id</em> with the given
+function and user_data. When passing a <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> with an invalid
 time to this function, the callback will be called immediately
 with  a time set to GST_CLOCK_TIME_NONE. The callback will
 be called when the time of <em>id</em> has been reached.</p>
@@ -3398,7 +3474,8 @@ core or from a streaming thread. The application should be prepared for this.</p
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClockID">GstClockID</a> to wait on</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> to wait on</p>
 </td>
 <td>
 
@@ -3412,7 +3489,8 @@ core or from a streaming thread. The application should be prepared for this.</p
 		<i><em><code>func:</code></em></i>
 		</p>
 	</td>
-		<td><p>The callback function</p>
+		<td>
+<p>The callback function</p>
 </td>
 <td>
 
@@ -3426,7 +3504,8 @@ core or from a streaming thread. The application should be prepared for this.</p
 		<i><em><code>user_data:</code></em></i>
 		</p>
 	</td>
-		<td><p>User data passed in the callback</p>
+		<td>
+<p>User data passed in the callback</p>
 </td>
 <td>
 
@@ -3440,7 +3519,8 @@ core or from a streaming thread. The application should be prepared for this.</p
 		<i><em><code>destroy_data:</code></em></i>
 		</p>
 	</td>
-		<td><p>GDestroyNotify for user_data</p>
+		<td>
+<p>GDestroyNotify for user_data</p>
 </td>
 <td>
 
@@ -3473,7 +3553,7 @@ core or from a streaming thread. The application should be prepared for this.</p
 
 	</td>
 	<td>
-		<a title="GstClockReturn" href="gstclock.html#GstClockReturn">GstClockReturn</a>
+		<a title="GstClockReturn" href="libgstreamer-1.0/c/gstclock.html#GstClockReturn">GstClockReturn</a>
 	</td>
 				<td>
 	
@@ -3506,7 +3586,7 @@ core or from a streaming thread. The application should be prepared for this.</p
 
 <pre class="prototype">
 void
-synced_callback (<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> synced)</pre>
+synced_callback (<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> synced)</pre>
 
 <p>Signaled on clocks with GST_CLOCK_FLAG_NEEDS_STARTUP_SYNC set once
 the clock is synchronized, or when it completely lost synchronization.
@@ -3525,7 +3605,8 @@ the application's main thread.</p>
 		<i><em><code>synced:</code></em></i>
 		</p>
 	</td>
-		<td><p>if the clock is synced now</p>
+		<td>
+<p>if the clock is synced now</p>
 </td>
 <td>
 
@@ -3592,7 +3673,7 @@ the application's main thread.</p>
 </h4>
 
 		<pre class="property_signature">
-“window-size” <span class="type"><a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a></span>
+“window-size” <span class="type"><a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a></span>
 </pre>
 
 
@@ -3619,7 +3700,7 @@ the application's main thread.</p>
 </h4>
 
 		<pre class="property_signature">
-“window-threshold” <span class="type"><a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a></span>
+“window-threshold” <span class="type"><a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a></span>
 </pre>
 
 
@@ -3675,17 +3756,18 @@ functionality.</p>
 						<tr id="GstClockClass.parent_class">
 		<td>
 		<p>
-		<i><em><code><a title="GstObjectClass" href="gstobject.html#GstObjectClass">GstObjectClass</a> <em><code>parent_class</code></em>:</code></em></i>
+		<i><em><code><a title="GstObjectClass" href="libgstreamer-1.0/c/gstobject.html#GstObjectClass">GstObjectClass</a> <em><code>parent_class</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>the parent class structure</p>
+		<td>
+<p>the parent class structure</p>
 </td>
 </tr>
 
 						<tr id="GstClockClass.change_resolution()">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> <em><code>change_resolution()</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> <em><code>change_resolution()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3694,7 +3776,7 @@ functionality.</p>
 						<tr id="GstClockClass.get_resolution()">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> <em><code>get_resolution()</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> <em><code>get_resolution()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3703,7 +3785,7 @@ functionality.</p>
 						<tr id="GstClockClass.get_internal_time()">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> <em><code>get_internal_time()</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> <em><code>get_internal_time()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3712,7 +3794,7 @@ functionality.</p>
 						<tr id="GstClockClass.wait()">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockReturn" href="gstclock.html#GstClockReturn">GstClockReturn</a> <em><code>wait()</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockReturn" href="libgstreamer-1.0/c/gstclock.html#GstClockReturn">GstClockReturn</a> <em><code>wait()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3721,7 +3803,7 @@ functionality.</p>
 						<tr id="GstClockClass.wait_async()">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockReturn" href="gstclock.html#GstClockReturn">GstClockReturn</a> <em><code>wait_async()</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockReturn" href="libgstreamer-1.0/c/gstclock.html#GstClockReturn">GstClockReturn</a> <em><code>wait_async()</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -3768,10 +3850,10 @@ functionality.</p>
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-GstClockClass.change_resolution (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                                 <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> old_resolution,
-                                 <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> new_resolution)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+GstClockClass.change_resolution (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                                 <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> old_resolution,
+                                 <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> new_resolution)</pre>
 
 
 
@@ -3841,7 +3923,7 @@ GstClockClass.change_resolution (<a title="GstClock" href="gstclock.html#GstCloc
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -3869,8 +3951,8 @@ GstClockClass.change_resolution (<a title="GstClock" href="gstclock.html#GstCloc
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-GstClockClass.get_internal_time (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+GstClockClass.get_internal_time (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock)</pre>
 
 
 
@@ -3914,7 +3996,7 @@ GstClockClass.get_internal_time (<a title="GstClock" href="gstclock.html#GstCloc
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -3942,8 +4024,8 @@ GstClockClass.get_internal_time (<a title="GstClock" href="gstclock.html#GstCloc
 		
 
 <pre class="prototype">
-<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
-GstClockClass.get_resolution (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock)</pre>
+<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
+GstClockClass.get_resolution (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock)</pre>
 
 
 
@@ -3987,7 +4069,7 @@ GstClockClass.get_resolution (<a title="GstClock" href="gstclock.html#GstClock">
 		
 	</td>
 	<td>
-		<a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a>
+		<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>
 	</td>
 				<td>
 	
@@ -4016,8 +4098,8 @@ GstClockClass.get_resolution (<a title="GstClock" href="gstclock.html#GstClock">
 
 <pre class="prototype">
 void
-GstClockClass.unschedule (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                          <a title="GstClockEntry" href="gstclock.html#GstClockEntry">GstClockEntry</a> * entry)</pre>
+GstClockClass.unschedule (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                          <a title="GstClockEntry" href="libgstreamer-1.0/c/gstclock.html#GstClockEntry">GstClockEntry</a> * entry)</pre>
 
 
 
@@ -4071,10 +4153,10 @@ GstClockClass.unschedule (<a title="GstClock" href="gstclock.html#GstClock">GstC
 		
 
 <pre class="prototype">
-<a title="GstClockReturn" href="gstclock.html#GstClockReturn">GstClockReturn</a>
-GstClockClass.wait (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                    <a title="GstClockEntry" href="gstclock.html#GstClockEntry">GstClockEntry</a> * entry,
-                    <a title="GstClockTimeDiff" href="gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> * jitter)</pre>
+<a title="GstClockReturn" href="libgstreamer-1.0/c/gstclock.html#GstClockReturn">GstClockReturn</a>
+GstClockClass.wait (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                    <a title="GstClockEntry" href="libgstreamer-1.0/c/gstclock.html#GstClockEntry">GstClockEntry</a> * entry,
+                    <a title="GstClockTimeDiff" href="libgstreamer-1.0/c/gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> * jitter)</pre>
 
 
 
@@ -4144,7 +4226,7 @@ GstClockClass.wait (<a title="GstClock" href="gstclock.html#GstClock">GstClock</
 		
 	</td>
 	<td>
-		<a title="GstClockReturn" href="gstclock.html#GstClockReturn">GstClockReturn</a>
+		<a title="GstClockReturn" href="libgstreamer-1.0/c/gstclock.html#GstClockReturn">GstClockReturn</a>
 	</td>
 				<td>
 	
@@ -4172,9 +4254,9 @@ GstClockClass.wait (<a title="GstClock" href="gstclock.html#GstClock">GstClock</
 		
 
 <pre class="prototype">
-<a title="GstClockReturn" href="gstclock.html#GstClockReturn">GstClockReturn</a>
-GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                          <a title="GstClockEntry" href="gstclock.html#GstClockEntry">GstClockEntry</a> * entry)</pre>
+<a title="GstClockReturn" href="libgstreamer-1.0/c/gstclock.html#GstClockReturn">GstClockReturn</a>
+GstClockClass.wait_async (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                          <a title="GstClockEntry" href="libgstreamer-1.0/c/gstclock.html#GstClockEntry">GstClockEntry</a> * entry)</pre>
 
 
 
@@ -4231,7 +4313,7 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 		
 	</td>
 	<td>
-		<a title="GstClockReturn" href="gstclock.html#GstClockReturn">GstClockReturn</a>
+		<a title="GstClockReturn" href="libgstreamer-1.0/c/gstclock.html#GstClockReturn">GstClockReturn</a>
 	</td>
 				<td>
 	
@@ -4286,7 +4368,7 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 #define GST_CLOCK_TIME_IS_VALID(time)   (((GstClockTime)(time)) != GST_CLOCK_TIME_NONE)
 </pre>
 
-<p>Tests if a given <a href="gstclock.html#GstClockTime">GstClockTime</a> represents a valid defined time.</p>
+<p>Tests if a given <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> represents a valid defined time.</p>
 
 
 	<div class="parameter_container">
@@ -4299,7 +4381,8 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 		<i><em><code>time:</code></em></i>
 		</p>
 	</td>
-		<td><p>clock time to validate</p>
+		<td>
+<p>clock time to validate</p>
 </td>
 <td>
 
@@ -4328,7 +4411,7 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 #define GST_CLOCK_STIME_IS_VALID(time)   (((GstClockTimeDiff)(time)) != GST_CLOCK_STIME_NONE)
 </pre>
 
-<p>Tests if a given <a href="gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> of gint64 represents a valid defined time.</p>
+<p>Tests if a given <a href="libgstreamer-1.0/c/gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> of gint64 represents a valid defined time.</p>
 
 
 	<div class="parameter_container">
@@ -4341,7 +4424,8 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 		<i><em><code>time:</code></em></i>
 		</p>
 	</td>
-		<td><p>signed clock time to validate</p>
+		<td>
+<p>signed clock time to validate</p>
 </td>
 <td>
 
@@ -4370,7 +4454,7 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 #define GST_TIME_AS_SECONDS(time)  ((time) / GST_SECOND)
 </pre>
 
-<p>Convert a <a href="gstclock.html#GstClockTime">GstClockTime</a> to seconds.</p>
+<p>Convert a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> to seconds.</p>
 
 
 	<div class="parameter_container">
@@ -4383,7 +4467,8 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 		<i><em><code>time:</code></em></i>
 		</p>
 	</td>
-		<td><p>the time</p>
+		<td>
+<p>the time</p>
 </td>
 <td>
 
@@ -4412,7 +4497,7 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 #define GST_TIME_AS_MSECONDS(time) ((time) / G_GINT64_CONSTANT (1000000))
 </pre>
 
-<p>Convert a <a href="gstclock.html#GstClockTime">GstClockTime</a> to milliseconds (1/1000 of a second).</p>
+<p>Convert a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> to milliseconds (1/1000 of a second).</p>
 
 
 	<div class="parameter_container">
@@ -4425,7 +4510,8 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 		<i><em><code>time:</code></em></i>
 		</p>
 	</td>
-		<td><p>the time</p>
+		<td>
+<p>the time</p>
 </td>
 <td>
 
@@ -4454,7 +4540,7 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 #define GST_TIME_AS_USECONDS(time) ((time) / G_GINT64_CONSTANT (1000))
 </pre>
 
-<p>Convert a <a href="gstclock.html#GstClockTime">GstClockTime</a> to microseconds (1/1000000 of a second).</p>
+<p>Convert a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> to microseconds (1/1000000 of a second).</p>
 
 
 	<div class="parameter_container">
@@ -4467,7 +4553,8 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 		<i><em><code>time:</code></em></i>
 		</p>
 	</td>
-		<td><p>the time</p>
+		<td>
+<p>the time</p>
 </td>
 <td>
 
@@ -4496,7 +4583,7 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 #define GST_TIME_AS_NSECONDS(time) (time)
 </pre>
 
-<p>Convert a <a href="gstclock.html#GstClockTime">GstClockTime</a> to nanoseconds (1/1000000000 of a second).</p>
+<p>Convert a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> to nanoseconds (1/1000000000 of a second).</p>
 
 
 	<div class="parameter_container">
@@ -4509,7 +4596,8 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 		<i><em><code>time:</code></em></i>
 		</p>
 	</td>
-		<td><p>the time</p>
+		<td>
+<p>the time</p>
 </td>
 <td>
 
@@ -4538,7 +4626,7 @@ GstClockClass.wait_async (<a title="GstClock" href="gstclock.html#GstClock">GstC
 #define GST_CLOCK_DIFF(s, e)            (GstClockTimeDiff)((e) - (s))
 </pre>
 
-<p>Calculate a difference between two clock times as a <a href="gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a>.
+<p>Calculate a difference between two clock times as a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a>.
 The difference is calculated as <em>e</em> - <em>s</em>.</p>
 
 
@@ -4552,7 +4640,8 @@ The difference is calculated as <em>e</em> - <em>s</em>.</p>
 		<i><em><code>s:</code></em></i>
 		</p>
 	</td>
-		<td><p>the first time</p>
+		<td>
+<p>the first time</p>
 </td>
 <td>
 
@@ -4566,7 +4655,8 @@ The difference is calculated as <em>e</em> - <em>s</em>.</p>
 		<i><em><code>e:</code></em></i>
 		</p>
 	</td>
-		<td><p>the second time</p>
+		<td>
+<p>the second time</p>
 </td>
 <td>
 
@@ -4595,7 +4685,7 @@ The difference is calculated as <em>e</em> - <em>s</em>.</p>
 #define GST_TIMEVAL_TO_TIME(tv)         (GstClockTime)((tv).tv_sec * GST_SECOND + (tv).tv_usec * GST_USECOND)
 </pre>
 
-<p>Convert a GTimeVal to a <a href="gstclock.html#GstClockTime">GstClockTime</a>.</p>
+<p>Convert a GTimeVal to a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>.</p>
 
 
 	<div class="parameter_container">
@@ -4608,7 +4698,8 @@ The difference is calculated as <em>e</em> - <em>s</em>.</p>
 		<i><em><code>tv:</code></em></i>
 		</p>
 	</td>
-		<td><p>the timeval to convert</p>
+		<td>
+<p>the timeval to convert</p>
 </td>
 <td>
 
@@ -4645,7 +4736,7 @@ G_STMT_START {                                                  \
 } G_STMT_END
 </pre>
 
-<p>Convert a <a href="gstclock.html#GstClockTime">GstClockTime</a> to a GTimeVal</p>
+<p>Convert a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> to a GTimeVal</p>
 <blockquote>
 <p>on 32-bit systems, a timeval has a range of only 2^32 - 1 seconds,
 which is about 68 years.  Expect trouble if you want to schedule stuff
@@ -4663,7 +4754,8 @@ in your pipeline for 2038.</p>
 		<i><em><code>t:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="gstclock.html#GstClockTime">GstClockTime</a> to convert</p>
+		<td>
+<p>The <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> to convert</p>
 </td>
 <td>
 
@@ -4677,7 +4769,8 @@ in your pipeline for 2038.</p>
 		<i><em><code>tv:</code></em></i>
 		</p>
 	</td>
-		<td><p>The target timeval</p>
+		<td>
+<p>The target timeval</p>
 </td>
 <td>
 
@@ -4706,7 +4799,7 @@ in your pipeline for 2038.</p>
 #define GST_TIMESPEC_TO_TIME(ts)        (GstClockTime)((ts).tv_sec * GST_SECOND + (ts).tv_nsec * GST_NSECOND)
 </pre>
 
-<p>Convert a struct timespec (see man pselect) to a <a href="gstclock.html#GstClockTime">GstClockTime</a>.</p>
+<p>Convert a struct timespec (see man pselect) to a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>.</p>
 
 
 	<div class="parameter_container">
@@ -4719,7 +4812,8 @@ in your pipeline for 2038.</p>
 		<i><em><code>ts:</code></em></i>
 		</p>
 	</td>
-		<td><p>the timespec to convert</p>
+		<td>
+<p>the timespec to convert</p>
 </td>
 <td>
 
@@ -4754,7 +4848,7 @@ G_STMT_START {                                                    \
 } G_STMT_END
 </pre>
 
-<p>Convert a <a href="gstclock.html#GstClockTime">GstClockTime</a> to a struct timespec (see man pselect)</p>
+<p>Convert a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> to a struct timespec (see man pselect)</p>
 
 
 	<div class="parameter_container">
@@ -4767,7 +4861,8 @@ G_STMT_START {                                                    \
 		<i><em><code>t:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="gstclock.html#GstClockTime">GstClockTime</a> to convert</p>
+		<td>
+<p>The <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> to convert</p>
 </td>
 <td>
 
@@ -4781,7 +4876,8 @@ G_STMT_START {                                                    \
 		<i><em><code>ts:</code></em></i>
 		</p>
 	</td>
-		<td><p>The target timespec</p>
+		<td>
+<p>The target timespec</p>
 </td>
 <td>
 
@@ -4818,7 +4914,7 @@ G_STMT_START {                                                    \
         (guint) (((GstClockTime)(t)) % GST_SECOND) : 999999999
 </pre>
 
-<p>Format <em>t</em> for the <a href="gstclock.html#GST_TIME_FORMAT">GST_TIME_FORMAT</a> format string. Note: <em>t</em> will be
+<p>Format <em>t</em> for the <a href="libgstreamer-1.0/c/gstclock.html#GST_TIME_FORMAT">GST_TIME_FORMAT</a> format string. Note: <em>t</em> will be
 evaluated more than once.</p>
 
 
@@ -4832,7 +4928,8 @@ evaluated more than once.</p>
 		<i><em><code>t:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClockTime">GstClockTime</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a></p>
 </td>
 <td>
 
@@ -4870,7 +4967,7 @@ evaluated more than once.</p>
     (guint) (((GstClockTime)(ABS(t))) % GST_SECOND) : 999999999
 </pre>
 
-<p>Format <em>t</em> for the <a href="gstclock.html#GST_STIME_FORMAT">GST_STIME_FORMAT</a> format string. Note: <em>t</em> will be
+<p>Format <em>t</em> for the <a href="libgstreamer-1.0/c/gstclock.html#GST_STIME_FORMAT">GST_STIME_FORMAT</a> format string. Note: <em>t</em> will be
 evaluated more than once.</p>
 
 
@@ -4884,7 +4981,8 @@ evaluated more than once.</p>
 		<i><em><code>t:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> or gint64</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> or gint64</p>
 </td>
 <td>
 
@@ -4926,7 +5024,8 @@ evaluated more than once.</p>
 		<i><em><code>entry:</code></em></i>
 		</p>
 	</td>
-		<td><p>the entry to cast</p>
+		<td>
+<p>the entry to cast</p>
 </td>
 <td>
 
@@ -4968,7 +5067,8 @@ evaluated more than once.</p>
 		<i><em><code>entry:</code></em></i>
 		</p>
 	</td>
-		<td><p>the entry to query</p>
+		<td>
+<p>the entry to query</p>
 </td>
 <td>
 
@@ -5010,7 +5110,8 @@ evaluated more than once.</p>
 		<i><em><code>entry:</code></em></i>
 		</p>
 	</td>
-		<td><p>the entry to query</p>
+		<td>
+<p>the entry to query</p>
 </td>
 <td>
 
@@ -5052,7 +5153,8 @@ evaluated more than once.</p>
 		<i><em><code>entry:</code></em></i>
 		</p>
 	</td>
-		<td><p>the entry to query</p>
+		<td>
+<p>the entry to query</p>
 </td>
 <td>
 
@@ -5094,7 +5196,8 @@ evaluated more than once.</p>
 		<i><em><code>entry:</code></em></i>
 		</p>
 	</td>
-		<td><p>the entry to query</p>
+		<td>
+<p>the entry to query</p>
 </td>
 <td>
 
@@ -5136,7 +5239,8 @@ evaluated more than once.</p>
 		<i><em><code>entry:</code></em></i>
 		</p>
 	</td>
-		<td><p>the entry to query</p>
+		<td>
+<p>the entry to query</p>
 </td>
 <td>
 
@@ -5165,7 +5269,7 @@ evaluated more than once.</p>
 #define GST_CLOCK_FLAGS(clock)  GST_OBJECT_FLAGS(clock)
 </pre>
 
-<p>Gets the <a href="gstclock.html#GstClockFlags">GstClockFlags</a> clock flags.</p>
+<p>Gets the <a href="libgstreamer-1.0/c/gstclock.html#GstClockFlags">GstClockFlags</a> clock flags.</p>
 
 
 	<div class="parameter_container">
@@ -5178,7 +5282,8 @@ evaluated more than once.</p>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>the clock to query</p>
+		<td>
+<p>the clock to query</p>
 </td>
 <td>
 
@@ -5239,17 +5344,18 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.refcount">
 		<td>
 		<p>
-		<i><em><code><a title="gint" href="../../gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> <em><code>refcount</code></em>:</code></em></i>
+		<i><em><code><a title="gint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#gint">gint</a> <em><code>refcount</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>reference counter (read-only)</p>
+		<td>
+<p>reference counter (read-only)</p>
 </td>
 </tr>
 
 						<tr id="GstClockEntry.clock">
 		<td>
 		<p>
-		<i><em><code><a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * <em><code>clock</code></em>:</code></em></i>
+		<i><em><code><a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * <em><code>clock</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -5258,7 +5364,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.type">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockEntryType" href="gstclock.html#GstClockEntryType">GstClockEntryType</a> <em><code>type</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockEntryType" href="libgstreamer-1.0/c/gstclock.html#GstClockEntryType">GstClockEntryType</a> <em><code>type</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -5267,7 +5373,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.time">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> <em><code>time</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> <em><code>time</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -5276,7 +5382,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.interval">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> <em><code>interval</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> <em><code>interval</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -5285,7 +5391,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.status">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockReturn" href="gstclock.html#GstClockReturn">GstClockReturn</a> <em><code>status</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockReturn" href="libgstreamer-1.0/c/gstclock.html#GstClockReturn">GstClockReturn</a> <em><code>status</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -5294,7 +5400,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.func">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockCallback" href="gstclock.html#GstClockCallback">GstClockCallback</a> <em><code>func</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockCallback" href="libgstreamer-1.0/c/gstclock.html#GstClockCallback">GstClockCallback</a> <em><code>func</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -5321,7 +5427,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.unscheduled">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>unscheduled</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>unscheduled</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -5330,7 +5436,7 @@ not be extended or allocated using a custom allocator.</p>
 						<tr id="GstClockEntry.woken_up">
 		<td>
 		<p>
-		<i><em><code><a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>woken_up</code></em>:</code></em></i>
+		<i><em><code><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a> <em><code>woken_up</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -5381,7 +5487,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_ENTRY_SINGLE
 		</p>
 	</td>
-	<td><p>a single shot timeout</p>
+	<td>
+<p>a single shot timeout</p>
 </td>
 	<td>
 		<span class="value">Value: 0</span>
@@ -5395,7 +5502,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_ENTRY_PERIODIC
 		</p>
 	</td>
-	<td><p>a periodic timeout request</p>
+	<td>
+<p>a periodic timeout request</p>
 </td>
 	<td>
 		<span class="value">Value: 1</span>
@@ -5434,7 +5542,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_FLAG_CAN_DO_SINGLE_SYNC
 		</p>
 	</td>
-	<td><p>clock can do a single sync timeout request</p>
+	<td>
+<p>clock can do a single sync timeout request</p>
 </td>
 	<td>
 		<span class="value">Value: 16</span>
@@ -5448,7 +5557,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_FLAG_CAN_DO_SINGLE_ASYNC
 		</p>
 	</td>
-	<td><p>clock can do a single async timeout request</p>
+	<td>
+<p>clock can do a single async timeout request</p>
 </td>
 	<td>
 		<span class="value">Value: 32</span>
@@ -5462,7 +5572,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_FLAG_CAN_DO_PERIODIC_SYNC
 		</p>
 	</td>
-	<td><p>clock can do sync periodic timeout requests</p>
+	<td>
+<p>clock can do sync periodic timeout requests</p>
 </td>
 	<td>
 		<span class="value">Value: 64</span>
@@ -5476,7 +5587,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_FLAG_CAN_DO_PERIODIC_ASYNC
 		</p>
 	</td>
-	<td><p>clock can do async periodic timeout callbacks</p>
+	<td>
+<p>clock can do async periodic timeout callbacks</p>
 </td>
 	<td>
 		<span class="value">Value: 128</span>
@@ -5490,7 +5602,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_FLAG_CAN_SET_RESOLUTION
 		</p>
 	</td>
-	<td><p>clock's resolution can be changed</p>
+	<td>
+<p>clock's resolution can be changed</p>
 </td>
 	<td>
 		<span class="value">Value: 256</span>
@@ -5504,7 +5617,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_FLAG_CAN_SET_MASTER
 		</p>
 	</td>
-	<td><p>clock can be slaved to a master clock</p>
+	<td>
+<p>clock can be slaved to a master clock</p>
 </td>
 	<td>
 		<span class="value">Value: 512</span>
@@ -5518,7 +5632,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_FLAG_NEEDS_STARTUP_SYNC
 		</p>
 	</td>
-	<td><p>clock needs to be synced before it can be used
+	<td>
+<p>clock needs to be synced before it can be used
 (Since 1.6)</p>
 </td>
 	<td>
@@ -5533,7 +5648,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_FLAG_LAST
 		</p>
 	</td>
-	<td><p>subclasses can add additional flags starting from this flag</p>
+	<td>
+<p>subclasses can add additional flags starting from this flag</p>
 </td>
 	<td>
 		<span class="value">Value: 4096</span>
@@ -5572,7 +5688,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_OK
 		</p>
 	</td>
-	<td><p>The operation succeeded.</p>
+	<td>
+<p>The operation succeeded.</p>
 </td>
 	<td>
 		<span class="value">Value: 0</span>
@@ -5586,7 +5703,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_EARLY
 		</p>
 	</td>
-	<td><p>The operation was scheduled too late.</p>
+	<td>
+<p>The operation was scheduled too late.</p>
 </td>
 	<td>
 		<span class="value">Value: 1</span>
@@ -5600,7 +5718,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_UNSCHEDULED
 		</p>
 	</td>
-	<td><p>The clockID was unscheduled</p>
+	<td>
+<p>The clockID was unscheduled</p>
 </td>
 	<td>
 		<span class="value">Value: 2</span>
@@ -5614,7 +5733,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_BUSY
 		</p>
 	</td>
-	<td><p>The ClockID is busy</p>
+	<td>
+<p>The ClockID is busy</p>
 </td>
 	<td>
 		<span class="value">Value: 3</span>
@@ -5628,7 +5748,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_BADTIME
 		</p>
 	</td>
-	<td><p>A bad time was provided to a function.</p>
+	<td>
+<p>A bad time was provided to a function.</p>
 </td>
 	<td>
 		<span class="value">Value: 4</span>
@@ -5642,7 +5763,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_ERROR
 		</p>
 	</td>
-	<td><p>An error occurred</p>
+	<td>
+<p>An error occurred</p>
 </td>
 	<td>
 		<span class="value">Value: 5</span>
@@ -5656,7 +5778,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_UNSUPPORTED
 		</p>
 	</td>
-	<td><p>Operation is not supported</p>
+	<td>
+<p>Operation is not supported</p>
 </td>
 	<td>
 		<span class="value">Value: 6</span>
@@ -5670,7 +5793,8 @@ not be extended or allocated using a custom allocator.</p>
 		GST_CLOCK_DONE
 		</p>
 	</td>
-	<td><p>The ClockID is done waiting</p>
+	<td>
+<p>The ClockID is done waiting</p>
 </td>
 	<td>
 		<span class="value">Value: 7</span>
@@ -5701,7 +5825,7 @@ not be extended or allocated using a custom allocator.</p>
 #define GST_TYPE_CLOCK_TIME G_TYPE_UINT64
 </pre>
 
-<p>The GType of a <a href="gstclock.html#GstClockTime">GstClockTime</a>.</p>
+<p>The GType of a <a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>.</p>
 
 
 </div>
@@ -5821,7 +5945,7 @@ not be extended or allocated using a custom allocator.</p>
 </pre>
 
 <p>A string that can be used in printf-like format strings to display a
-<a href="gstclock.html#GstClockTime">GstClockTime</a> value in h:m:s format.  Use <a href="gstclock.html#GST_TIME_ARGS">GST_TIME_ARGS</a> to construct
+<a href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> value in h:m:s format.  Use <a href="libgstreamer-1.0/c/gstclock.html#GST_TIME_ARGS">GST_TIME_ARGS</a> to construct
 the matching arguments.</p>
 <p>Example:</p>
 <pre><code class="language-[&lt;!--"> printf("%" GST_TIME_FORMAT "\n", GST_TIME_ARGS(ts));
@@ -5843,7 +5967,7 @@ the matching arguments.</p>
 </pre>
 
 <p>A string that can be used in printf-like format strings to display a signed
-<a href="gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> or gint64 value in h:m:s format.  Use <a href="gstclock.html#GST_TIME_ARGS">GST_TIME_ARGS</a> to
+<a href="libgstreamer-1.0/c/gstclock.html#GstClockTimeDiff">GstClockTimeDiff</a> or gint64 value in h:m:s format.  Use <a href="libgstreamer-1.0/c/gstclock.html#GST_TIME_ARGS">GST_TIME_ARGS</a> to
 construct the matching arguments.</p>
 <p>Example:</p>
 <pre><code class="language-["> printf("%" GST_STIME_FORMAT "\n", GST_STIME_ARGS(ts));
@@ -5916,10 +6040,10 @@ typedef gint64 GstClockTimeDiff</pre>
 		
 
 <pre class="prototype">
-<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
-(*GstClockCallback) (<a title="GstClock" href="gstclock.html#GstClock">GstClock</a> * clock,
-                     <a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> time,
-                     <a title="GstClockID" href="gstclock.html#GstClockID">GstClockID</a> id,
+<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+(*GstClockCallback) (<a title="GstClock" href="libgstreamer-1.0/c/gstclock.html#GstClock">GstClock</a> * clock,
+                     <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> time,
+                     <a title="GstClockID" href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> id,
                      gpointer user_data)</pre>
 
 <p>The function prototype of the callback.</p>
@@ -5935,7 +6059,8 @@ typedef gint64 GstClockTimeDiff</pre>
 		<i><em><code>clock:</code></em></i>
 		</p>
 	</td>
-		<td><p>The clock that triggered the callback</p>
+		<td>
+<p>The clock that triggered the callback</p>
 </td>
 <td>
 
@@ -5949,7 +6074,8 @@ typedef gint64 GstClockTimeDiff</pre>
 		<i><em><code>time:</code></em></i>
 		</p>
 	</td>
-		<td><p>The time it was triggered</p>
+		<td>
+<p>The time it was triggered</p>
 </td>
 <td>
 
@@ -5963,7 +6089,8 @@ typedef gint64 GstClockTimeDiff</pre>
 		<i><em><code>id:</code></em></i>
 		</p>
 	</td>
-		<td><p>The <a href="gstclock.html#GstClockID">GstClockID</a> that expired</p>
+		<td>
+<p>The <a href="libgstreamer-1.0/c/gstclock.html#GstClockID">GstClockID</a> that expired</p>
 </td>
 <td>
 
@@ -5977,7 +6104,8 @@ typedef gint64 GstClockTimeDiff</pre>
 		<i><em><code>user_data:</code></em></i>
 		</p>
 	</td>
-		<td><p>user data passed in the <a href="gstclock.html#gst_clock_id_wait_async">gst_clock_id_wait_async</a> function</p>
+		<td>
+<p>user data passed in the <a href="libgstreamer-1.0/c/gstclock.html#gst_clock_id_wait_async">gst_clock_id_wait_async</a> function</p>
 </td>
 <td>
 
@@ -6009,7 +6137,7 @@ typedef gint64 GstClockTimeDiff</pre>
 
 	</td>
 	<td>
-		<a title="gboolean" href="../../gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
+		<a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 	</td>
 				<td>
 	
@@ -6031,11 +6159,10 @@ typedef gint64 GstClockTimeDiff</pre>
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -6053,7 +6180,7 @@ typedef gint64 GstClockTimeDiff</pre>
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

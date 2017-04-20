@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="../..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>GstBuffer</title>
 
@@ -23,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -52,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -95,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -119,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="libgstreamer-1.0" data-hotdoc-ref="gstbuffer.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -138,11 +139,12 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="gstbuffer.h">
-        <h1 id="gstbuffer">GstBuffer</h1><p>Buffers are the basic unit of data transfer in GStreamer. They contain the
+				    <div id="page-description" data-hotdoc-source="gstbuffer.h" data-hotdoc-role="main">
+        <h1 id="gstbuffer">GstBuffer</h1>
+<p>Buffers are the basic unit of data transfer in GStreamer. They contain the
 timing and offset along with other arbitrary metadata that is associated
-with the <a href="gstmemory.html#GstMemory">Gst.Memory</a> blocks that the buffer contains.</p>
-<p>Buffers are usually created with <a href="gstbuffer.html#gst_buffer_new">Gst.Buffer.prototype.new</a>. After a buffer has been
+with the <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a> blocks that the buffer contains.</p>
+<p>Buffers are usually created with <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_new">Gst.Buffer.prototype.new</a>. After a buffer has been
 created one will typically allocate memory for it and add it to the buffer.
 The following example creates a buffer that can hold a given video frame
 with a given width, height and bits per plane.</p>
@@ -156,15 +158,15 @@ with a given width, height and bits per plane.</p>
    gst_buffer_insert_memory (buffer, -1, memory);
    ...
 </code></pre>
-<p>Alternatively, use <a href="gstbuffer.html#gst_buffer_new_allocate">Gst.Buffer.prototype.new_allocate</a> to create a buffer with
+<p>Alternatively, use <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_new_allocate">Gst.Buffer.prototype.new_allocate</a> to create a buffer with
 preallocated data of a given size.</p>
-<p>Buffers can contain a list of <a href="gstmemory.html#GstMemory">Gst.Memory</a> objects. You can retrieve how many
-memory objects with <a href="gstbuffer.html#gst_buffer_n_memory">Gst.Buffer.prototype.n_memory</a> and you can get a pointer
-to memory with <a href="gstbuffer.html#gst_buffer_peek_memory">Gst.Buffer.prototype.peek_memory</a></p>
+<p>Buffers can contain a list of <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a> objects. You can retrieve how many
+memory objects with <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_n_memory">Gst.Buffer.prototype.n_memory</a> and you can get a pointer
+to memory with <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_peek_memory">Gst.Buffer.prototype.peek_memory</a></p>
 <p>A buffer will usually have timestamps, and a duration, but neither of these
-are guaranteed (they may be set to <a href="gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a>). Whenever a
+are guaranteed (they may be set to <a href="libgstreamer-1.0/javascript/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a>). Whenever a
 meaningful value can be given for these, they should be set. The timestamps
-and duration are measured in nanoseconds (they are <a href="gstclock.html#GstClockTime">Gst.ClockTime</a> values).</p>
+and duration are measured in nanoseconds (they are <a href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a> values).</p>
 <p>The buffer DTS refers to the timestamp when the buffer should be decoded and
 is usually monotonically increasing. The buffer PTS refers to the timestamp when
 the buffer content should be presented to the user and is not always
@@ -176,39 +178,39 @@ produced so far. For compressed data, it could be the byte offset in a
 source or destination file. Likewise, the end offset will be the offset of
 the end of the buffer. These can only be meaningfully interpreted if you
 know the media type of the buffer (the preceding CAPS event). Either or both
-can be set to <a href="gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.</p>
+can be set to <a href="libgstreamer-1.0/javascript/gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.</p>
 <p>gst_buffer_ref is used to increase the refcount of a buffer. This must be
 done when you want to keep a handle to the buffer after pushing it to the
 next element. The buffer refcount determines the writability of the buffer, a
 buffer is only writable when the refcount is exactly 1, i.e. when the caller
 has the only reference to the buffer.</p>
 <p>To efficiently create a smaller buffer out of an existing one, you can
-use <a href="gstbuffer.html#gst_buffer_copy_region">Gst.Buffer.prototype.copy_region</a>. This method tries to share the memory objects
+use <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_copy_region">Gst.Buffer.prototype.copy_region</a>. This method tries to share the memory objects
 between the two buffers.</p>
 <p>If a plug-in wants to modify the buffer data or metadata in-place, it should
 first obtain a buffer that is safe to modify by using
-<a href="../c/gstbuffer.html#gst_buffer_make_writable">gst_buffer_make_writable (not introspectable)</a>.  This function is optimized so that a copy will
+<a href="libgstreamer-1.0/c/gstbuffer.html#gst_buffer_make_writable">gst_buffer_make_writable (not introspectable)</a>.  This function is optimized so that a copy will
 only be made when it is necessary.</p>
 <p>Several flags of the buffer can be set and unset with the
-<a href="../c/gstbuffer.html#GST_BUFFER_FLAG_SET">GST_BUFFER_FLAG_SET (not introspectable)</a> and <a href="../c/gstbuffer.html#GST_BUFFER_FLAG_UNSET">GST_BUFFER_FLAG_UNSET (not introspectable)</a> macros. Use
-<a href="../c/gstbuffer.html#GST_BUFFER_FLAG_IS_SET">GST_BUFFER_FLAG_IS_SET (not introspectable)</a> to test if a certain <a href="../../javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> flag is set.</p>
+<a href="libgstreamer-1.0/c/gstbuffer.html#GST_BUFFER_FLAG_SET">GST_BUFFER_FLAG_SET (not introspectable)</a> and <a href="libgstreamer-1.0/c/gstbuffer.html#GST_BUFFER_FLAG_UNSET">GST_BUFFER_FLAG_UNSET (not introspectable)</a> macros. Use
+<a href="libgstreamer-1.0/c/gstbuffer.html#GST_BUFFER_FLAG_IS_SET">GST_BUFFER_FLAG_IS_SET (not introspectable)</a> to test if a certain <a href="javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> flag is set.</p>
 <p>Buffers can be efficiently merged into a larger buffer with
-<a href="gstbuffer.html#gst_buffer_append">Gst.Buffer.prototype.append</a>. Copying of memory will only be done when absolutely
+<a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_append">Gst.Buffer.prototype.append</a>. Copying of memory will only be done when absolutely
 needed.</p>
-<p>Arbitrary extra metadata can be set on a buffer with <a href="gstbuffer.html#gst_buffer_add_meta">Gst.Buffer.prototype.add_meta</a>.
-Metadata can be retrieved with <a href="gstbuffer.html#gst_buffer_get_meta">Gst.Buffer.prototype.get_meta</a>. See also <a href="gstmeta.html#GstMeta">Gst.Meta</a></p>
+<p>Arbitrary extra metadata can be set on a buffer with <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_add_meta">Gst.Buffer.prototype.add_meta</a>.
+Metadata can be retrieved with <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_get_meta">Gst.Buffer.prototype.get_meta</a>. See also <a href="libgstreamer-1.0/javascript/gstmeta.html#GstMeta">Gst.Meta</a></p>
 <p>An element should either unref the buffer or push it out on a src pad
-using <a href="gstpad.html#gst_pad_push">Gst.Pad.prototype.push</a> (see <a href="gstpad.html#GstPad">Gst.Pad</a>).</p>
+using <a href="libgstreamer-1.0/javascript/gstpad.html#gst_pad_push">Gst.Pad.prototype.push</a> (see <a href="libgstreamer-1.0/javascript/gstpad.html#GstPad">Gst.Pad</a>).</p>
 <p>Buffers are usually freed by unreffing them with gst_buffer_unref. When
 the refcount drops to 0, any memory and metadata pointed to by the buffer is
-unreffed as well. Buffers allocated from a <a href="gstbufferpool.html#GstBufferPool">Gst.BufferPool</a> will be returned to
+unreffed as well. Buffers allocated from a <a href="libgstreamer-1.0/javascript/gstbufferpool.html#GstBufferPool">Gst.BufferPool</a> will be returned to
 the pool when the refcount drops to 0.</p>
-<p>The <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is a meta which can be attached to a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<p>The <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is a meta which can be attached to a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 to hold a reference to another buffer that is only released when the child
-<a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> is released.</p>
-<p>Typically, <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is used when the child buffer is directly
-using the <a href="gstmemory.html#GstMemory">Gst.Memory</a> of the parent buffer, and wants to prevent the parent
-buffer from being returned to a buffer pool until the <a href="gstmemory.html#GstMemory">Gst.Memory</a> is available
+<a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> is released.</p>
+<p>Typically, <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is used when the child buffer is directly
+using the <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a> of the parent buffer, and wants to prevent the parent
+buffer from being returned to a buffer pool until the <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a> is available
 for re-use. (Since 1.6)</p>
 
     </div>
@@ -253,11 +255,11 @@ function Gst.Buffer.prototype.new(): {
 				</p>
 	</td>
 	<td>
-		<p>the new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<p>the new <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -279,7 +281,7 @@ function Gst.Buffer.prototype.new(): {
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.new_allocate(allocator: <a title="Gst.Allocator" href="gstallocator.html#GstAllocator">Gst.Allocator</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, params: <a title="Gst.AllocationParams" href="gstallocator.html#GstAllocationParams">Gst.AllocationParams</a>): {
+function Gst.Buffer.prototype.new_allocate(allocator: <a title="Gst.Allocator" href="libgstreamer-1.0/javascript/gstallocator.html#GstAllocator">Gst.Allocator</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, params: <a title="Gst.AllocationParams" href="libgstreamer-1.0/javascript/gstallocator.html#GstAllocationParams">Gst.AllocationParams</a>): {
     // javascript wrapper for 'gst_buffer_new_allocate'
 }</pre>
 
@@ -301,11 +303,12 @@ allocated, NULL will be returned. The allocated buffer memory is not cleared.</p
 		<i><em><code>allocator:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="gstallocator.html#GstAllocator">Gst.Allocator</a> to use, or NULL to use the
+		<td>
+<p>the <a href="libgstreamer-1.0/javascript/gstallocator.html#GstAllocator">Gst.Allocator</a> to use, or NULL to use the
 default allocator</p>
 </td>
 <td>
-<a title="Gst.Allocator" href="gstallocator.html#GstAllocator">Gst.Allocator</a>
+<a title="Gst.Allocator" href="libgstreamer-1.0/javascript/gstallocator.html#GstAllocator">Gst.Allocator</a>
 </td>
 </tr>
 
@@ -315,7 +318,8 @@ default allocator</p>
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the size in bytes of the new buffer's data.</p>
+		<td>
+<p>the size in bytes of the new buffer's data.</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -328,10 +332,11 @@ default allocator</p>
 		<i><em><code>params:</code></em></i>
 		</p>
 	</td>
-		<td><p>optional parameters</p>
+		<td>
+<p>optional parameters</p>
 </td>
 <td>
-<a title="Gst.AllocationParams" href="gstallocator.html#GstAllocationParams">Gst.AllocationParams</a>
+<a title="Gst.AllocationParams" href="libgstreamer-1.0/javascript/gstallocator.html#GstAllocationParams">Gst.AllocationParams</a>
 </td>
 </tr>
 
@@ -355,12 +360,12 @@ default allocator</p>
 				</p>
 	</td>
 	<td>
-		<p>a new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>, or NULL if
+		<p>a new <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>, or NULL if
 the memory couldn't be allocated.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -401,7 +406,8 @@ with g_free and will be marked writable.</p>
 		<i><em><code>data:</code></em></i>
 		</p>
 	</td>
-		<td><p>data to wrap</p>
+		<td>
+<p>data to wrap</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -414,7 +420,8 @@ with g_free and will be marked writable.</p>
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>allocated size of <em>data</em></p>
+		<td>
+<p>allocated size of <em>data</em></p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -441,11 +448,11 @@ with g_free and will be marked writable.</p>
 				</p>
 	</td>
 	<td>
-		<p>a new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<p>a new <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -467,7 +474,7 @@ with g_free and will be marked writable.</p>
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.new_wrapped_full(flags: <a title="Gst.MemoryFlags" href="gstmemory.html#GstMemoryFlags">Gst.MemoryFlags</a>, data: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, maxsize: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, user_data: <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>, notify: GLib.DestroyNotify): {
+function Gst.Buffer.prototype.new_wrapped_full(flags: <a title="Gst.MemoryFlags" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemoryFlags">Gst.MemoryFlags</a>, data: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, maxsize: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, user_data: <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>, notify: GLib.DestroyNotify): {
     // javascript wrapper for 'gst_buffer_new_wrapped_full'
 }</pre>
 
@@ -476,7 +483,7 @@ function Gst.Buffer.prototype.new_wrapped_full(flags: <a title="Gst.MemoryFlags"
 <em>size</em> visible.</p>
 <p>When the buffer is destroyed, <em>notify</em> will be called with <em>user_data</em>.</p>
 <p>The prefix/padding must be filled with 0 if <em>flags</em> contains
-<a href="gstmemory.html#GST_MEMORY_FLAG_ZERO_PREFIXED">Gst.MemoryFlags.prototype.zero_prefixed</a> and <a href="gstmemory.html#GST_MEMORY_FLAG_ZERO_PADDED">Gst.MemoryFlags.prototype.zero_padded</a> respectively.</p>
+<a href="libgstreamer-1.0/javascript/gstmemory.html#GST_MEMORY_FLAG_ZERO_PREFIXED">Gst.MemoryFlags.prototype.zero_prefixed</a> and <a href="libgstreamer-1.0/javascript/gstmemory.html#GST_MEMORY_FLAG_ZERO_PADDED">Gst.MemoryFlags.prototype.zero_padded</a> respectively.</p>
 
 
 	<div class="parameter_container">
@@ -489,10 +496,11 @@ function Gst.Buffer.prototype.new_wrapped_full(flags: <a title="Gst.MemoryFlags"
 		<i><em><code>flags:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="gstmemory.html#GstMemoryFlags">Gst.MemoryFlags</a></p>
+		<td>
+<p><a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemoryFlags">Gst.MemoryFlags</a></p>
 </td>
 <td>
-<a title="Gst.MemoryFlags" href="gstmemory.html#GstMemoryFlags">Gst.MemoryFlags</a>
+<a title="Gst.MemoryFlags" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemoryFlags">Gst.MemoryFlags</a>
 </td>
 </tr>
 
@@ -502,7 +510,8 @@ function Gst.Buffer.prototype.new_wrapped_full(flags: <a title="Gst.MemoryFlags"
 		<i><em><code>data:</code></em></i>
 		</p>
 	</td>
-		<td><p>data to wrap</p>
+		<td>
+<p>data to wrap</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -515,7 +524,8 @@ function Gst.Buffer.prototype.new_wrapped_full(flags: <a title="Gst.MemoryFlags"
 		<i><em><code>maxsize:</code></em></i>
 		</p>
 	</td>
-		<td><p>allocated size of <em>data</em></p>
+		<td>
+<p>allocated size of <em>data</em></p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -528,7 +538,8 @@ function Gst.Buffer.prototype.new_wrapped_full(flags: <a title="Gst.MemoryFlags"
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>offset in <em>data</em></p>
+		<td>
+<p>offset in <em>data</em></p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -541,7 +552,8 @@ function Gst.Buffer.prototype.new_wrapped_full(flags: <a title="Gst.MemoryFlags"
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>size of valid data</p>
+		<td>
+<p>size of valid data</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -554,7 +566,8 @@ function Gst.Buffer.prototype.new_wrapped_full(flags: <a title="Gst.MemoryFlags"
 		<i><em><code>user_data:</code></em></i>
 		</p>
 	</td>
-		<td><p>user_data</p>
+		<td>
+<p>user_data</p>
 </td>
 <td>
 <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
@@ -567,7 +580,8 @@ function Gst.Buffer.prototype.new_wrapped_full(flags: <a title="Gst.MemoryFlags"
 		<i><em><code>notify:</code></em></i>
 		</p>
 	</td>
-		<td><p>called with <em>user_data</em> when the memory is freed</p>
+		<td>
+<p>called with <em>user_data</em> when the memory is freed</p>
 </td>
 <td>
 GLib.DestroyNotify
@@ -594,11 +608,11 @@ GLib.DestroyNotify
 				</p>
 	</td>
 	<td>
-		<p>a new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<p>a new <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -624,7 +638,7 @@ GLib.DestroyNotify
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.add_meta(info: <a title="Gst.MetaInfo" href="gstmeta.html#GstMetaInfo">Gst.MetaInfo</a>, params: <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): {
+function Gst.Buffer.prototype.add_meta(info: <a title="Gst.MetaInfo" href="libgstreamer-1.0/javascript/gstmeta.html#GstMetaInfo">Gst.MetaInfo</a>, params: <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): {
     // javascript wrapper for 'gst_buffer_add_meta'
 }</pre>
 
@@ -641,10 +655,11 @@ function Gst.Buffer.prototype.add_meta(info: <a title="Gst.MetaInfo" href="gstme
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -654,10 +669,11 @@ function Gst.Buffer.prototype.add_meta(info: <a title="Gst.MetaInfo" href="gstme
 		<i><em><code>info:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstmeta.html#GstMetaInfo">Gst.MetaInfo</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstmeta.html#GstMetaInfo">Gst.MetaInfo</a></p>
 </td>
 <td>
-<a title="Gst.MetaInfo" href="gstmeta.html#GstMetaInfo">Gst.MetaInfo</a>
+<a title="Gst.MetaInfo" href="libgstreamer-1.0/javascript/gstmeta.html#GstMetaInfo">Gst.MetaInfo</a>
 </td>
 </tr>
 
@@ -667,7 +683,8 @@ function Gst.Buffer.prototype.add_meta(info: <a title="Gst.MetaInfo" href="gstme
 		<i><em><code>params:</code></em></i>
 		</p>
 	</td>
-		<td><p>params for <em>info</em></p>
+		<td>
+<p>params for <em>info</em></p>
 </td>
 <td>
 <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
@@ -698,7 +715,7 @@ function Gst.Buffer.prototype.add_meta(info: <a title="Gst.MetaInfo" href="gstme
 
 	</td>
 	<td>
-		<a title="Gst.Meta" href="gstmeta.html#GstMeta">Gst.Meta</a>
+		<a title="Gst.Meta" href="libgstreamer-1.0/javascript/gstmeta.html#GstMeta">Gst.Meta</a>
 	</td>
 	</tr>
 
@@ -720,11 +737,11 @@ function Gst.Buffer.prototype.add_meta(info: <a title="Gst.MetaInfo" href="gstme
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.add_parent_buffer_meta(ref: <a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+function Gst.Buffer.prototype.add_parent_buffer_meta(ref: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
     // javascript wrapper for 'gst_buffer_add_parent_buffer_meta'
 }</pre>
 
-<p>Add a <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> to <em>buffer</em> that holds a reference on
+<p>Add a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> to <em>buffer</em> that holds a reference on
 <em>ref</em> until the buffer is freed.</p>
 
 
@@ -738,10 +755,11 @@ function Gst.Buffer.prototype.add_parent_buffer_meta(ref: <a title="Gst.Buffer" 
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -751,10 +769,11 @@ function Gst.Buffer.prototype.add_parent_buffer_meta(ref: <a title="Gst.Buffer" 
 		<i><em><code>ref:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> to ref</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> to ref</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -778,11 +797,11 @@ function Gst.Buffer.prototype.add_parent_buffer_meta(ref: <a title="Gst.Buffer" 
 				</p>
 	</td>
 	<td>
-		<p>The <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> that was added to the buffer</p>
+		<p>The <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> that was added to the buffer</p>
 
 	</td>
 	<td>
-		<a title="Gst.ParentBufferMeta" href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a>
+		<a title="Gst.ParentBufferMeta" href="libgstreamer-1.0/javascript/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a>
 	</td>
 	</tr>
 
@@ -807,11 +826,11 @@ function Gst.Buffer.prototype.add_parent_buffer_meta(ref: <a title="Gst.Buffer" 
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.add_protection_meta(info: <a title="Gst.Structure" href="gststructure.html#GstStructure">Gst.Structure</a>): {
+function Gst.Buffer.prototype.add_protection_meta(info: <a title="Gst.Structure" href="libgstreamer-1.0/javascript/gststructure.html#GstStructure">Gst.Structure</a>): {
     // javascript wrapper for 'gst_buffer_add_protection_meta'
 }</pre>
 
-<p>Attaches protection metadata to a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+<p>Attaches protection metadata to a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 
 
 	<div class="parameter_container">
@@ -824,11 +843,12 @@ function Gst.Buffer.prototype.add_protection_meta(info: <a title="Gst.Structure"
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p><a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> holding an encrypted sample, to which protection
+		<td>
+<p><a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> holding an encrypted sample, to which protection
 metadata should be added.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -838,12 +858,13 @@ metadata should be added.</p>
 		<i><em><code>info:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gststructure.html#GstStructure">Gst.Structure</a> holding cryptographic
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gststructure.html#GstStructure">Gst.Structure</a> holding cryptographic
 information relating to the sample contained in <em>buffer</em>. This
 function takes ownership of <em>info</em>.</p>
 </td>
 <td>
-<a title="Gst.Structure" href="gststructure.html#GstStructure">Gst.Structure</a>
+<a title="Gst.Structure" href="libgstreamer-1.0/javascript/gststructure.html#GstStructure">Gst.Structure</a>
 </td>
 </tr>
 
@@ -867,12 +888,12 @@ function takes ownership of <em>info</em>.</p>
 				</p>
 	</td>
 	<td>
-		<p>a pointer to the added <a href="gstprotection.html#GstProtectionMeta">Gst.ProtectionMeta</a> if successful; NULL if
+		<p>a pointer to the added <a href="libgstreamer-1.0/javascript/gstprotection.html#GstProtectionMeta">Gst.ProtectionMeta</a> if successful; NULL if
 unsuccessful.</p>
 
 	</td>
 	<td>
-		<a title="Gst.ProtectionMeta" href="gstprotection.html#GstProtectionMeta">Gst.ProtectionMeta</a>
+		<a title="Gst.ProtectionMeta" href="libgstreamer-1.0/javascript/gstprotection.html#GstProtectionMeta">Gst.ProtectionMeta</a>
 	</td>
 	</tr>
 
@@ -897,7 +918,7 @@ unsuccessful.</p>
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.append(buf2: <a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+function Gst.Buffer.prototype.append(buf2: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
     // javascript wrapper for 'gst_buffer_append'
 }</pre>
 
@@ -915,10 +936,11 @@ concatenation of the memory of <em>buf1</em> and <em>buf2</em>.</p>
 		<i><em><code>buf1:</code></em></i>
 		</p>
 	</td>
-		<td><p>the first source <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
+		<td>
+<p>the first source <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -928,10 +950,11 @@ concatenation of the memory of <em>buf1</em> and <em>buf2</em>.</p>
 		<i><em><code>buf2:</code></em></i>
 		</p>
 	</td>
-		<td><p>the second source <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
+		<td>
+<p>the second source <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -955,12 +978,12 @@ concatenation of the memory of <em>buf1</em> and <em>buf2</em>.</p>
 				</p>
 	</td>
 	<td>
-		<p>the new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> that contains the memory
+		<p>the new <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> that contains the memory
 of the two source buffers.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -982,14 +1005,14 @@ of the two source buffers.</p>
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.append_memory(mem: <a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>): {
+function Gst.Buffer.prototype.append_memory(mem: <a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>): {
     // javascript wrapper for 'gst_buffer_append_memory'
 }</pre>
 
 <p>Append the memory block <em>mem</em> to <em>buffer</em>. This function takes
 ownership of <em>mem</em> and thus doesn't increase its refcount.</p>
-<p>This function is identical to <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.insert_memory</a> with an index of -1.
-See <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.insert_memory</a> for more details.</p>
+<p>This function is identical to <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.insert_memory</a> with an index of -1.
+See <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.insert_memory</a> for more details.</p>
 
 
 	<div class="parameter_container">
@@ -1002,10 +1025,11 @@ See <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.inser
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1015,10 +1039,11 @@ See <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.inser
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 </td>
 <td>
-<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -1040,7 +1065,7 @@ See <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.inser
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.append_region(buf2: <a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+function Gst.Buffer.prototype.append_region(buf2: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
     // javascript wrapper for 'gst_buffer_append_region'
 }</pre>
 
@@ -1059,10 +1084,11 @@ contain a concatenation of the memory of <em>buf1</em> and the requested region 
 		<i><em><code>buf1:</code></em></i>
 		</p>
 	</td>
-		<td><p>the first source <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
+		<td>
+<p>the first source <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1072,10 +1098,11 @@ contain a concatenation of the memory of <em>buf1</em> and the requested region 
 		<i><em><code>buf2:</code></em></i>
 		</p>
 	</td>
-		<td><p>the second source <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
+		<td>
+<p>the second source <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> to append.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1085,7 +1112,8 @@ contain a concatenation of the memory of <em>buf1</em> and the requested region 
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>the offset in <em>buf2</em></p>
+		<td>
+<p>the offset in <em>buf2</em></p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1098,7 +1126,8 @@ contain a concatenation of the memory of <em>buf1</em> and the requested region 
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the size or -1 of <em>buf2</em></p>
+		<td>
+<p>the size or -1 of <em>buf2</em></p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1125,12 +1154,12 @@ contain a concatenation of the memory of <em>buf1</em> and the requested region 
 				</p>
 	</td>
 	<td>
-		<p>the new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> that contains the memory
+		<p>the new <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> that contains the memory
 of the two source buffers.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -1170,10 +1199,11 @@ copy of the data the source buffer contains.</p>
 		<i><em><code>buf:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1201,7 +1231,7 @@ copy of the data the source buffer contains.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -1226,7 +1256,7 @@ copy of the data the source buffer contains.</p>
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.copy_into(src: <a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>, flags: <a title="Gst.BufferCopyFlags" href="../../javascript/gst-plugins-bad-plugins-1.0/element-compare.html#GstBufferCopyFlags">Gst.BufferCopyFlags</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+function Gst.Buffer.prototype.copy_into(src: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>, flags: <a title="Gst.BufferCopyFlags" href="javascript/gst-plugins-bad-plugins-1.0/element-compare.html#GstBufferCopyFlags">Gst.BufferCopyFlags</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
     // javascript wrapper for 'gst_buffer_copy_into'
 }</pre>
 
@@ -1246,10 +1276,11 @@ the memory from <em>src</em> will be appended to <em>dest</em>.</p>
 		<i><em><code>dest:</code></em></i>
 		</p>
 	</td>
-		<td><p>a destination <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a destination <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1259,10 +1290,11 @@ the memory from <em>src</em> will be appended to <em>dest</em>.</p>
 		<i><em><code>src:</code></em></i>
 		</p>
 	</td>
-		<td><p>a source <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a source <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1272,10 +1304,11 @@ the memory from <em>src</em> will be appended to <em>dest</em>.</p>
 		<i><em><code>flags:</code></em></i>
 		</p>
 	</td>
-		<td><p>flags indicating what metadata fields should be copied.</p>
+		<td>
+<p>flags indicating what metadata fields should be copied.</p>
 </td>
 <td>
-<a title="Gst.BufferCopyFlags" href="../../javascript/gst-plugins-bad-plugins-1.0/element-compare.html#GstBufferCopyFlags">Gst.BufferCopyFlags</a>
+<a title="Gst.BufferCopyFlags" href="javascript/gst-plugins-bad-plugins-1.0/element-compare.html#GstBufferCopyFlags">Gst.BufferCopyFlags</a>
 </td>
 </tr>
 
@@ -1285,7 +1318,8 @@ the memory from <em>src</em> will be appended to <em>dest</em>.</p>
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>offset to copy from</p>
+		<td>
+<p>offset to copy from</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1298,7 +1332,8 @@ the memory from <em>src</em> will be appended to <em>dest</em>.</p>
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>total size to copy. If -1, all data is copied.</p>
+		<td>
+<p>total size to copy. If -1, all data is copied.</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1351,18 +1386,18 @@ the memory from <em>src</em> will be appended to <em>dest</em>.</p>
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.copy_region(flags: <a title="Gst.BufferCopyFlags" href="../../javascript/gst-plugins-bad-plugins-1.0/element-compare.html#GstBufferCopyFlags">Gst.BufferCopyFlags</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+function Gst.Buffer.prototype.copy_region(flags: <a title="Gst.BufferCopyFlags" href="javascript/gst-plugins-bad-plugins-1.0/element-compare.html#GstBufferCopyFlags">Gst.BufferCopyFlags</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
     // javascript wrapper for 'gst_buffer_copy_region'
 }</pre>
 
 <p>Creates a sub-buffer from <em>parent</em> at <em>offset</em> and <em>size</em>.
 This sub-buffer uses the actual memory space of the parent buffer.
 This function will copy the offset and timestamp fields when the
-offset is 0. If not, they will be set to <a href="gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> and
-<a href="gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.
+offset is 0. If not, they will be set to <a href="libgstreamer-1.0/javascript/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> and
+<a href="libgstreamer-1.0/javascript/gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.
 If <em>offset</em> equals 0 and <em>size</em> equals the total size of <em>buffer</em>, the
 duration and offset end fields are also copied. If not they will be set
-to <a href="gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> and <a href="gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.</p>
+to <a href="libgstreamer-1.0/javascript/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> and <a href="libgstreamer-1.0/javascript/gstbuffer.html#GST_BUFFER_OFFSET_NONE">Gst.BUFFER_OFFSET_NONE</a>.</p>
 <p>MT safe.</p>
 
 
@@ -1376,10 +1411,11 @@ to <a href="gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> and <a hr
 		<i><em><code>parent:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1389,10 +1425,11 @@ to <a href="gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> and <a hr
 		<i><em><code>flags:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../javascript/gst-plugins-bad-plugins-1.0/element-compare.html#GstBufferCopyFlags">Gst.BufferCopyFlags</a></p>
+		<td>
+<p>the <a href="javascript/gst-plugins-bad-plugins-1.0/element-compare.html#GstBufferCopyFlags">Gst.BufferCopyFlags</a></p>
 </td>
 <td>
-<a title="Gst.BufferCopyFlags" href="../../javascript/gst-plugins-bad-plugins-1.0/element-compare.html#GstBufferCopyFlags">Gst.BufferCopyFlags</a>
+<a title="Gst.BufferCopyFlags" href="javascript/gst-plugins-bad-plugins-1.0/element-compare.html#GstBufferCopyFlags">Gst.BufferCopyFlags</a>
 </td>
 </tr>
 
@@ -1402,7 +1439,8 @@ to <a href="gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> and <a hr
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>the offset into parent <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> at which the new sub-buffer
+		<td>
+<p>the offset into parent <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> at which the new sub-buffer
 begins.</p>
 </td>
 <td>
@@ -1416,7 +1454,8 @@ begins.</p>
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the size of the new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> sub-buffer, in bytes. If -1, all
+		<td>
+<p>the size of the new <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> sub-buffer, in bytes. If -1, all
 data is copied.</p>
 </td>
 <td>
@@ -1444,12 +1483,12 @@ data is copied.</p>
 				</p>
 	</td>
 	<td>
-		<p>the new <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> or NULL if the arguments were
+		<p>the new <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> or NULL if the arguments were
 invalid.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 	</td>
 	</tr>
 
@@ -1488,10 +1527,11 @@ function Gst.Buffer.prototype.extract(offset: <a title="Number" href="https://de
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1501,7 +1541,8 @@ function Gst.Buffer.prototype.extract(offset: <a title="Number" href="https://de
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>the offset to extract</p>
+		<td>
+<p>the offset to extract</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1514,7 +1555,8 @@ function Gst.Buffer.prototype.extract(offset: <a title="Number" href="https://de
 		<i><em><code>dest:</code></em></i>
 		</p>
 	</td>
-		<td><p>the destination address</p>
+		<td>
+<p>the destination address</p>
 </td>
 <td>
 <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
@@ -1527,7 +1569,8 @@ function Gst.Buffer.prototype.extract(offset: <a title="Number" href="https://de
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the size to extract</p>
+		<td>
+<p>the size to extract</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1599,10 +1642,11 @@ newly-allocated memory. <em>dest</em> must be freed using g_free when done.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1612,7 +1656,8 @@ newly-allocated memory. <em>dest</em> must be freed using g_free when done.</p>
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>the offset to extract</p>
+		<td>
+<p>the offset to extract</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1625,7 +1670,8 @@ newly-allocated memory. <em>dest</em> must be freed using g_free when done.</p>
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the size to extract</p>
+		<td>
+<p>the size to extract</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1712,10 +1758,11 @@ function Gst.Buffer.prototype.fill(offset: <a title="Number" href="https://devel
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1725,7 +1772,8 @@ function Gst.Buffer.prototype.fill(offset: <a title="Number" href="https://devel
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>the offset to fill</p>
+		<td>
+<p>the offset to fill</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1738,7 +1786,8 @@ function Gst.Buffer.prototype.fill(offset: <a title="Number" href="https://devel
 		<i><em><code>src:</code></em></i>
 		</p>
 	</td>
-		<td><p>the source address</p>
+		<td>
+<p>the source address</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1751,7 +1800,8 @@ function Gst.Buffer.prototype.fill(offset: <a title="Number" href="https://devel
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the size to fill</p>
+		<td>
+<p>the size to fill</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1829,10 +1879,11 @@ for <em>offset</em>.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1842,7 +1893,8 @@ for <em>offset</em>.</p>
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>an offset</p>
+		<td>
+<p>an offset</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1855,7 +1907,8 @@ for <em>offset</em>.</p>
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>a size</p>
+		<td>
+<p>a size</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -1957,7 +2010,7 @@ for <em>offset</em>.</p>
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.foreach_meta(func: <a title="Gst.BufferForeachMetaFunc" href="gstbuffer.html#GstBufferForeachMetaFunc">Gst.BufferForeachMetaFunc</a>, user_data: <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): {
+function Gst.Buffer.prototype.foreach_meta(func: <a title="Gst.BufferForeachMetaFunc" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBufferForeachMetaFunc">Gst.BufferForeachMetaFunc</a>, user_data: <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): {
     // javascript wrapper for 'gst_buffer_foreach_meta'
 }</pre>
 
@@ -1977,10 +2030,11 @@ in the buffer should be skipped.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -1990,10 +2044,11 @@ in the buffer should be skipped.</p>
 		<i><em><code>func:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBufferForeachMetaFunc">Gst.BufferForeachMetaFunc</a> to call</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBufferForeachMetaFunc">Gst.BufferForeachMetaFunc</a> to call</p>
 </td>
 <td>
-<a title="Gst.BufferForeachMetaFunc" href="gstbuffer.html#GstBufferForeachMetaFunc">Gst.BufferForeachMetaFunc</a>
+<a title="Gst.BufferForeachMetaFunc" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBufferForeachMetaFunc">Gst.BufferForeachMetaFunc</a>
 </td>
 </tr>
 
@@ -2003,7 +2058,8 @@ in the buffer should be skipped.</p>
 		<i><em><code>user_data:</code></em></i>
 		</p>
 	</td>
-		<td><p>user data passed to <em>func</em></p>
+		<td>
+<p>user data passed to <em>func</em></p>
 </td>
 <td>
 <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
@@ -2061,7 +2117,7 @@ function Gst.Buffer.prototype.get_all_memory(): {
 }</pre>
 
 <p>Get all the memory block in <em>buffer</em>. The memory blocks will be merged
-into one large <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
+into one large <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 
 
 	<div class="parameter_container">
@@ -2074,10 +2130,11 @@ into one large <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2101,12 +2158,12 @@ into one large <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 				</p>
 	</td>
 	<td>
-		<p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a> that contains the merged memory.
+		<p>a <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a> that contains the merged memory.
 Use gst_memory_unref () after usage.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
+		<a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>
 	</td>
 	</tr>
 
@@ -2132,7 +2189,7 @@ function Gst.Buffer.prototype.get_flags(): {
     // javascript wrapper for 'gst_buffer_get_flags'
 }</pre>
 
-<p>Get the <a href="../../javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> flags set on this buffer.</p>
+<p>Get the <a href="javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> flags set on this buffer.</p>
 
 
 	<div class="parameter_container">
@@ -2145,10 +2202,11 @@ function Gst.Buffer.prototype.get_flags(): {
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2176,7 +2234,7 @@ function Gst.Buffer.prototype.get_flags(): {
 
 	</td>
 	<td>
-		<a title="Gst.BufferFlags" href="../../javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
+		<a title="Gst.BufferFlags" href="javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
 	</td>
 	</tr>
 
@@ -2218,10 +2276,11 @@ function Gst.Buffer.prototype.get_memory(idx: <a title="Number" href="https://de
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2231,7 +2290,8 @@ function Gst.Buffer.prototype.get_memory(idx: <a title="Number" href="https://de
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>an index</p>
+		<td>
+<p>an index</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -2258,12 +2318,12 @@ function Gst.Buffer.prototype.get_memory(idx: <a title="Number" href="https://de
 				</p>
 	</td>
 	<td>
-		<p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a> that contains the data of the
+		<p>a <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a> that contains the data of the
 memory block at <em>idx</em>. Use gst_memory_unref () after usage.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
+		<a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>
 	</td>
 	</tr>
 
@@ -2290,7 +2350,7 @@ function Gst.Buffer.prototype.get_memory_range(idx: <a title="Number" href="http
 }</pre>
 
 <p>Get <em>length</em> memory blocks in <em>buffer</em> starting at <em>idx</em>. The memory blocks will
-be merged into one large <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
+be merged into one large <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 <p>If <em>length</em> is -1, all memory starting from <em>idx</em> is merged.</p>
 
 
@@ -2304,10 +2364,11 @@ be merged into one large <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2317,7 +2378,8 @@ be merged into one large <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>an index</p>
+		<td>
+<p>an index</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -2330,7 +2392,8 @@ be merged into one large <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 		<i><em><code>length:</code></em></i>
 		</p>
 	</td>
-		<td><p>a length</p>
+		<td>
+<p>a length</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -2357,12 +2420,12 @@ be merged into one large <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 				</p>
 	</td>
 	<td>
-		<p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a> that contains the merged data of <em>length</em>
+		<p>a <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a> that contains the merged data of <em>length</em>
 blocks starting at <em>idx</em>. Use gst_memory_unref () after usage.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
+		<a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>
 	</td>
 	</tr>
 
@@ -2391,7 +2454,7 @@ function Gst.Buffer.prototype.get_meta(api: GObject.Type): {
 <p>Get the metadata for <em>api</em> on buffer. When there is no such metadata, NULL is
 returned. If multiple metadata with the given <em>api</em> are attached to this
 buffer only the first one is returned.  To handle multiple metadata with a
-given API use <a href="../c/gstbuffer.html#gst_buffer_iterate_meta">gst_buffer_iterate_meta (not introspectable)</a> or <a href="gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.prototype.foreach_meta</a> instead
+given API use <a href="libgstreamer-1.0/c/gstbuffer.html#gst_buffer_iterate_meta">gst_buffer_iterate_meta (not introspectable)</a> or <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.prototype.foreach_meta</a> instead
 and check the meta-&gt;info.api member for the API type.</p>
 
 
@@ -2405,10 +2468,11 @@ and check the meta-&gt;info.api member for the API type.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2418,7 +2482,8 @@ and check the meta-&gt;info.api member for the API type.</p>
 		<i><em><code>api:</code></em></i>
 		</p>
 	</td>
-		<td><p>the GType of an API</p>
+		<td>
+<p>the GType of an API</p>
 </td>
 <td>
 GObject.Type
@@ -2450,7 +2515,7 @@ GObject.Type
 
 	</td>
 	<td>
-		<a title="Gst.Meta" href="gstmeta.html#GstMeta">Gst.Meta</a>
+		<a title="Gst.Meta" href="libgstreamer-1.0/javascript/gstmeta.html#GstMeta">Gst.Meta</a>
 	</td>
 	</tr>
 
@@ -2489,10 +2554,11 @@ function Gst.Buffer.prototype.get_size(): {
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2551,7 +2617,7 @@ function Gst.Buffer.prototype.get_sizes(): {
 first memory block in <em>buffer</em> and <em>maxsize</em> will contain the sum of
 the size and <em>offset</em> and the amount of extra padding on the last
 memory block.  <em>offset</em> and <em>maxsize</em> can be used to resize the
-buffer memory blocks with <a href="gstbuffer.html#gst_buffer_resize">Gst.Buffer.prototype.resize</a>.</p>
+buffer memory blocks with <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_resize">Gst.Buffer.prototype.resize</a>.</p>
 
 
 	<div class="parameter_container">
@@ -2564,10 +2630,11 @@ buffer memory blocks with <a href="gstbuffer.html#gst_buffer_resize">Gst.Buffer.
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2657,7 +2724,7 @@ memory block in <em>buffer</em> at <em>idx</em> and <em>maxsize</em> will contai
 and <em>offset</em> and the amount of extra padding on the memory block at <em>idx</em> +
 <em>length</em> -1.
 <em>offset</em> and <em>maxsize</em> can be used to resize the buffer memory blocks with
-<a href="gstbuffer.html#gst_buffer_resize_range">Gst.Buffer.prototype.resize_range</a>.</p>
+<a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_resize_range">Gst.Buffer.prototype.resize_range</a>.</p>
 
 
 	<div class="parameter_container">
@@ -2670,10 +2737,11 @@ and <em>offset</em> and the amount of extra padding on the memory block at <em>i
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2683,7 +2751,8 @@ and <em>offset</em> and the amount of extra padding on the memory block at <em>i
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>an index</p>
+		<td>
+<p>an index</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -2696,7 +2765,8 @@ and <em>offset</em> and the amount of extra padding on the memory block at <em>i
 		<i><em><code>length:</code></em></i>
 		</p>
 	</td>
-		<td><p>a length</p>
+		<td>
+<p>a length</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -2779,7 +2849,7 @@ and <em>offset</em> and the amount of extra padding on the memory block at <em>i
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.has_flags(flags: <a title="Gst.BufferFlags" href="../../javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>): {
+function Gst.Buffer.prototype.has_flags(flags: <a title="Gst.BufferFlags" href="javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>): {
     // javascript wrapper for 'gst_buffer_has_flags'
 }</pre>
 
@@ -2797,7 +2867,7 @@ function Gst.Buffer.prototype.has_flags(flags: <a title="Gst.BufferFlags" href="
 	</td>
 		<td></td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2809,7 +2879,7 @@ function Gst.Buffer.prototype.has_flags(flags: <a title="Gst.BufferFlags" href="
 	</td>
 		<td></td>
 <td>
-<a title="Gst.BufferFlags" href="../../javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
+<a title="Gst.BufferFlags" href="javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
 </td>
 </tr>
 
@@ -2858,13 +2928,13 @@ function Gst.Buffer.prototype.has_flags(flags: <a title="Gst.BufferFlags" href="
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.insert_memory(idx: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, mem: <a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>): {
+function Gst.Buffer.prototype.insert_memory(idx: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, mem: <a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>): {
     // javascript wrapper for 'gst_buffer_insert_memory'
 }</pre>
 
 <p>Insert the memory block <em>mem</em> to <em>buffer</em> at <em>idx</em>. This function takes ownership
 of <em>mem</em> and thus doesn't increase its refcount.</p>
-<p>Only <a href="gstbuffer.html#gst_buffer_get_max_memory">Gst.prototype.buffer_get_max_memory</a> can be added to a buffer. If more memory is
+<p>Only <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_get_max_memory">Gst.prototype.buffer_get_max_memory</a> can be added to a buffer. If more memory is
 added, existing memory blocks will automatically be merged to make room for
 the new memory.</p>
 
@@ -2879,10 +2949,11 @@ the new memory.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -2892,7 +2963,8 @@ the new memory.</p>
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>the index to add the memory at, or -1 to append it to the end</p>
+		<td>
+<p>the index to add the memory at, or -1 to append it to the end</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -2905,10 +2977,11 @@ the new memory.</p>
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 </td>
 <td>
-<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -2936,7 +3009,7 @@ function Gst.Buffer.prototype.is_all_memory_writable(): {
 
 <p>Check if all memory blocks in <em>buffer</em> are writable.</p>
 <p>Note that this function does not check if <em>buffer</em> is writable, use
-<a href="../c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a> to check that if needed.</p>
+<a href="libgstreamer-1.0/c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a> to check that if needed.</p>
 
 
 	<div class="parameter_container">
@@ -2949,10 +3022,11 @@ function Gst.Buffer.prototype.is_all_memory_writable(): {
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3012,7 +3086,7 @@ function Gst.Buffer.prototype.is_memory_range_writable(idx: <a title="Number" hr
 <p>Check if <em>length</em> memory blocks in <em>buffer</em> starting from <em>idx</em> are writable.</p>
 <p><em>length</em> can be -1 to check all the memory blocks after <em>idx</em>.</p>
 <p>Note that this function does not check if <em>buffer</em> is writable, use
-<a href="../c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a> to check that if needed.</p>
+<a href="libgstreamer-1.0/c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a> to check that if needed.</p>
 
 
 	<div class="parameter_container">
@@ -3025,10 +3099,11 @@ function Gst.Buffer.prototype.is_memory_range_writable(idx: <a title="Number" hr
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3038,7 +3113,8 @@ function Gst.Buffer.prototype.is_memory_range_writable(idx: <a title="Number" hr
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>an index</p>
+		<td>
+<p>an index</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3051,7 +3127,8 @@ function Gst.Buffer.prototype.is_memory_range_writable(idx: <a title="Number" hr
 		<i><em><code>length:</code></em></i>
 		</p>
 	</td>
-		<td><p>a length should not be 0</p>
+		<td>
+<p>a length should not be 0</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3107,19 +3184,19 @@ function Gst.Buffer.prototype.is_memory_range_writable(idx: <a title="Number" hr
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.map(flags: <a title="Gst.MapFlags" href="gstmemory.html#GstMapFlags">Gst.MapFlags</a>): {
+function Gst.Buffer.prototype.map(flags: <a title="Gst.MapFlags" href="libgstreamer-1.0/javascript/gstmemory.html#GstMapFlags">Gst.MapFlags</a>): {
     // javascript wrapper for 'gst_buffer_map'
 }</pre>
 
-<p>This function fills <em>info</em> with the <a href="gstmemory.html#GstMapInfo">Gst.MapInfo</a> of all merged memory
+<p>This function fills <em>info</em> with the <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMapInfo">Gst.MapInfo</a> of all merged memory
 blocks in <em>buffer</em>.</p>
 <p><em>flags</em> describe the desired access of the memory. When <em>flags</em> is
-<a href="gstmemory.html#GST_MAP_WRITE">Gst.MapFlags.prototype.write</a>, <em>buffer</em> should be writable (as returned from
-<a href="../c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a>).</p>
+<a href="libgstreamer-1.0/javascript/gstmemory.html#GST_MAP_WRITE">Gst.MapFlags.prototype.write</a>, <em>buffer</em> should be writable (as returned from
+<a href="libgstreamer-1.0/c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a>).</p>
 <p>When <em>buffer</em> is writable but the memory isn't, a writable copy will
 automatically be created and returned. The readonly copy of the
 buffer memory will then also be replaced with this writable copy.</p>
-<p>The memory in <em>info</em> should be unmapped with <a href="gstbuffer.html#gst_buffer_unmap">Gst.Buffer.prototype.unmap</a> after
+<p>The memory in <em>info</em> should be unmapped with <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_unmap">Gst.Buffer.prototype.unmap</a> after
 usage.</p>
 
 
@@ -3133,10 +3210,11 @@ usage.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3146,10 +3224,11 @@ usage.</p>
 		<i><em><code>flags:</code></em></i>
 		</p>
 	</td>
-		<td><p>flags for the mapping</p>
+		<td>
+<p>flags for the mapping</p>
 </td>
 <td>
-<a title="Gst.MapFlags" href="gstmemory.html#GstMapFlags">Gst.MapFlags</a>
+<a title="Gst.MapFlags" href="libgstreamer-1.0/javascript/gstmemory.html#GstMapFlags">Gst.MapFlags</a>
 </td>
 </tr>
 
@@ -3192,7 +3271,7 @@ usage.</p>
 
 	</td>
 	<td>
-		<a title="Gst.MapInfo" href="gstmemory.html#GstMapInfo">Gst.MapInfo</a>
+		<a title="Gst.MapInfo" href="libgstreamer-1.0/javascript/gstmemory.html#GstMapInfo">Gst.MapInfo</a>
 	</td>
 	</tr>
 
@@ -3214,20 +3293,20 @@ usage.</p>
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.map_range(idx: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, length: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, flags: <a title="Gst.MapFlags" href="gstmemory.html#GstMapFlags">Gst.MapFlags</a>): {
+function Gst.Buffer.prototype.map_range(idx: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, length: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, flags: <a title="Gst.MapFlags" href="libgstreamer-1.0/javascript/gstmemory.html#GstMapFlags">Gst.MapFlags</a>): {
     // javascript wrapper for 'gst_buffer_map_range'
 }</pre>
 
-<p>This function fills <em>info</em> with the <a href="gstmemory.html#GstMapInfo">Gst.MapInfo</a> of <em>length</em> merged memory blocks
+<p>This function fills <em>info</em> with the <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMapInfo">Gst.MapInfo</a> of <em>length</em> merged memory blocks
 starting at <em>idx</em> in <em>buffer</em>. When <em>length</em> is -1, all memory blocks starting
 from <em>idx</em> are merged and mapped.</p>
 <p><em>flags</em> describe the desired access of the memory. When <em>flags</em> is
-<a href="gstmemory.html#GST_MAP_WRITE">Gst.MapFlags.prototype.write</a>, <em>buffer</em> should be writable (as returned from
-<a href="../c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a>).</p>
+<a href="libgstreamer-1.0/javascript/gstmemory.html#GST_MAP_WRITE">Gst.MapFlags.prototype.write</a>, <em>buffer</em> should be writable (as returned from
+<a href="libgstreamer-1.0/c/gstbuffer.html#gst_buffer_is_writable">gst_buffer_is_writable (not introspectable)</a>).</p>
 <p>When <em>buffer</em> is writable but the memory isn't, a writable copy will
 automatically be created and returned. The readonly copy of the buffer memory
 will then also be replaced with this writable copy.</p>
-<p>The memory in <em>info</em> should be unmapped with <a href="gstbuffer.html#gst_buffer_unmap">Gst.Buffer.prototype.unmap</a> after usage.</p>
+<p>The memory in <em>info</em> should be unmapped with <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_unmap">Gst.Buffer.prototype.unmap</a> after usage.</p>
 
 
 	<div class="parameter_container">
@@ -3240,10 +3319,11 @@ will then also be replaced with this writable copy.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3253,7 +3333,8 @@ will then also be replaced with this writable copy.</p>
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>an index</p>
+		<td>
+<p>an index</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3266,7 +3347,8 @@ will then also be replaced with this writable copy.</p>
 		<i><em><code>length:</code></em></i>
 		</p>
 	</td>
-		<td><p>a length</p>
+		<td>
+<p>a length</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3279,10 +3361,11 @@ will then also be replaced with this writable copy.</p>
 		<i><em><code>flags:</code></em></i>
 		</p>
 	</td>
-		<td><p>flags for the mapping</p>
+		<td>
+<p>flags for the mapping</p>
 </td>
 <td>
-<a title="Gst.MapFlags" href="gstmemory.html#GstMapFlags">Gst.MapFlags</a>
+<a title="Gst.MapFlags" href="libgstreamer-1.0/javascript/gstmemory.html#GstMapFlags">Gst.MapFlags</a>
 </td>
 </tr>
 
@@ -3327,7 +3410,7 @@ data.</p>
 
 	</td>
 	<td>
-		<a title="Gst.MapInfo" href="gstmemory.html#GstMapInfo">Gst.MapInfo</a>
+		<a title="Gst.MapInfo" href="libgstreamer-1.0/javascript/gstmemory.html#GstMapInfo">Gst.MapInfo</a>
 	</td>
 	</tr>
 
@@ -3366,10 +3449,11 @@ function Gst.Buffer.prototype.memcmp(offset: <a title="Number" href="https://dev
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3379,7 +3463,8 @@ function Gst.Buffer.prototype.memcmp(offset: <a title="Number" href="https://dev
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>the offset in <em>buffer</em></p>
+		<td>
+<p>the offset in <em>buffer</em></p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3392,7 +3477,8 @@ function Gst.Buffer.prototype.memcmp(offset: <a title="Number" href="https://dev
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>the memory to compare</p>
+		<td>
+<p>the memory to compare</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3405,7 +3491,8 @@ function Gst.Buffer.prototype.memcmp(offset: <a title="Number" href="https://dev
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the size to compare</p>
+		<td>
+<p>the size to compare</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3475,10 +3562,11 @@ function Gst.Buffer.prototype.memset(offset: <a title="Number" href="https://dev
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3488,7 +3576,8 @@ function Gst.Buffer.prototype.memset(offset: <a title="Number" href="https://dev
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>the offset in <em>buffer</em></p>
+		<td>
+<p>the offset in <em>buffer</em></p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3501,7 +3590,8 @@ function Gst.Buffer.prototype.memset(offset: <a title="Number" href="https://dev
 		<i><em><code>val:</code></em></i>
 		</p>
 	</td>
-		<td><p>the value to set</p>
+		<td>
+<p>the value to set</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3514,7 +3604,8 @@ function Gst.Buffer.prototype.memset(offset: <a title="Number" href="https://dev
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the size to set</p>
+		<td>
+<p>the size to set</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3573,7 +3664,7 @@ function Gst.Buffer.prototype.n_memory(): {
 }</pre>
 
 <p>Get the amount of memory blocks that this buffer has. This amount is never
-larger than what <a href="gstbuffer.html#gst_buffer_get_max_memory">Gst.prototype.buffer_get_max_memory</a> returns.</p>
+larger than what <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_get_max_memory">Gst.prototype.buffer_get_max_memory</a> returns.</p>
 
 
 	<div class="parameter_container">
@@ -3586,10 +3677,11 @@ larger than what <a href="gstbuffer.html#gst_buffer_get_max_memory">Gst.prototyp
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3658,10 +3750,11 @@ any call that modifies the memory in <em>buffer</em>.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3671,7 +3764,8 @@ any call that modifies the memory in <em>buffer</em>.</p>
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>an index</p>
+		<td>
+<p>an index</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3698,11 +3792,11 @@ any call that modifies the memory in <em>buffer</em>.</p>
 				</p>
 	</td>
 	<td>
-		<p>the <a href="gstmemory.html#GstMemory">Gst.Memory</a> at <em>idx</em>.</p>
+		<p>the <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a> at <em>idx</em>.</p>
 
 	</td>
 	<td>
-		<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
+		<a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>
 	</td>
 	</tr>
 
@@ -3724,14 +3818,14 @@ any call that modifies the memory in <em>buffer</em>.</p>
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.prepend_memory(mem: <a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>): {
+function Gst.Buffer.prototype.prepend_memory(mem: <a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>): {
     // javascript wrapper for 'gst_buffer_prepend_memory'
 }</pre>
 
 <p>Prepend the memory block <em>mem</em> to <em>buffer</em>. This function takes
 ownership of <em>mem</em> and thus doesn't increase its refcount.</p>
-<p>This function is identical to <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.insert_memory</a> with an index of 0.
-See <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.insert_memory</a> for more details.</p>
+<p>This function is identical to <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.insert_memory</a> with an index of 0.
+See <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.insert_memory</a> for more details.</p>
 
 
 	<div class="parameter_container">
@@ -3744,10 +3838,11 @@ See <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.inser
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3757,10 +3852,11 @@ See <a href="gstbuffer.html#gst_buffer_insert_memory">Gst.Buffer.prototype.inser
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>.</p>
 </td>
 <td>
-<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -3799,10 +3895,11 @@ function Gst.Buffer.prototype.remove_all_memory(): {
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3841,10 +3938,11 @@ function Gst.Buffer.prototype.remove_memory(idx: <a title="Number" href="https:/
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3854,7 +3952,8 @@ function Gst.Buffer.prototype.remove_memory(idx: <a title="Number" href="https:/
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>an index</p>
+		<td>
+<p>an index</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3897,10 +3996,11 @@ function Gst.Buffer.prototype.remove_memory_range(idx: <a title="Number" href="h
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3910,7 +4010,8 @@ function Gst.Buffer.prototype.remove_memory_range(idx: <a title="Number" href="h
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>an index</p>
+		<td>
+<p>an index</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3923,7 +4024,8 @@ function Gst.Buffer.prototype.remove_memory_range(idx: <a title="Number" href="h
 		<i><em><code>length:</code></em></i>
 		</p>
 	</td>
-		<td><p>a length</p>
+		<td>
+<p>a length</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -3948,7 +4050,7 @@ function Gst.Buffer.prototype.remove_memory_range(idx: <a title="Number" href="h
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.remove_meta(meta: <a title="Gst.Meta" href="gstmeta.html#GstMeta">Gst.Meta</a>): {
+function Gst.Buffer.prototype.remove_meta(meta: <a title="Gst.Meta" href="libgstreamer-1.0/javascript/gstmeta.html#GstMeta">Gst.Meta</a>): {
     // javascript wrapper for 'gst_buffer_remove_meta'
 }</pre>
 
@@ -3965,10 +4067,11 @@ function Gst.Buffer.prototype.remove_meta(meta: <a title="Gst.Meta" href="gstmet
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -3978,10 +4081,11 @@ function Gst.Buffer.prototype.remove_meta(meta: <a title="Gst.Meta" href="gstmet
 		<i><em><code>meta:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstmeta.html#GstMeta">Gst.Meta</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstmeta.html#GstMeta">Gst.Meta</a></p>
 </td>
 <td>
-<a title="Gst.Meta" href="gstmeta.html#GstMeta">Gst.Meta</a>
+<a title="Gst.Meta" href="libgstreamer-1.0/javascript/gstmeta.html#GstMeta">Gst.Meta</a>
 </td>
 </tr>
 
@@ -4032,7 +4136,7 @@ metadata was on <em>buffer</em>.</p>
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.replace_all_memory(mem: <a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>): {
+function Gst.Buffer.prototype.replace_all_memory(mem: <a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>): {
     // javascript wrapper for 'gst_buffer_replace_all_memory'
 }</pre>
 
@@ -4049,10 +4153,11 @@ function Gst.Buffer.prototype.replace_all_memory(mem: <a title="Gst.Memory" href
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4062,10 +4167,11 @@ function Gst.Buffer.prototype.replace_all_memory(mem: <a title="Gst.Memory" href
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a></p>
 </td>
 <td>
-<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -4087,7 +4193,7 @@ function Gst.Buffer.prototype.replace_all_memory(mem: <a title="Gst.Memory" href
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.replace_memory(idx: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, mem: <a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>): {
+function Gst.Buffer.prototype.replace_memory(idx: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, mem: <a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>): {
     // javascript wrapper for 'gst_buffer_replace_memory'
 }</pre>
 
@@ -4104,10 +4210,11 @@ function Gst.Buffer.prototype.replace_memory(idx: <a title="Number" href="https:
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4117,7 +4224,8 @@ function Gst.Buffer.prototype.replace_memory(idx: <a title="Number" href="https:
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>an index</p>
+		<td>
+<p>an index</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -4130,10 +4238,11 @@ function Gst.Buffer.prototype.replace_memory(idx: <a title="Number" href="https:
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a></p>
 </td>
 <td>
-<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -4155,7 +4264,7 @@ function Gst.Buffer.prototype.replace_memory(idx: <a title="Number" href="https:
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.replace_memory_range(idx: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, length: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, mem: <a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>): {
+function Gst.Buffer.prototype.replace_memory_range(idx: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, length: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, mem: <a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>): {
     // javascript wrapper for 'gst_buffer_replace_memory_range'
 }</pre>
 
@@ -4175,10 +4284,11 @@ replaced with <em>mem</em>.</p>
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4188,7 +4298,8 @@ replaced with <em>mem</em>.</p>
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>an index</p>
+		<td>
+<p>an index</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -4201,7 +4312,8 @@ replaced with <em>mem</em>.</p>
 		<i><em><code>length:</code></em></i>
 		</p>
 	</td>
-		<td><p>a length should not be 0</p>
+		<td>
+<p>a length should not be 0</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -4214,10 +4326,11 @@ replaced with <em>mem</em>.</p>
 		<i><em><code>mem:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstmemory.html#GstMemory">Gst.Memory</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a></p>
 </td>
 <td>
-<a title="Gst.Memory" href="gstmemory.html#GstMemory">Gst.Memory</a>
+<a title="Gst.Memory" href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a>
 </td>
 </tr>
 
@@ -4256,10 +4369,11 @@ function Gst.Buffer.prototype.resize(offset: <a title="Number" href="https://dev
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4269,7 +4383,8 @@ function Gst.Buffer.prototype.resize(offset: <a title="Number" href="https://dev
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>the offset adjustment</p>
+		<td>
+<p>the offset adjustment</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -4282,7 +4397,8 @@ function Gst.Buffer.prototype.resize(offset: <a title="Number" href="https://dev
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the new size or -1 to just adjust the offset</p>
+		<td>
+<p>the new size or -1 to just adjust the offset</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -4325,10 +4441,11 @@ function Gst.Buffer.prototype.resize_range(idx: <a title="Number" href="https://
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4338,7 +4455,8 @@ function Gst.Buffer.prototype.resize_range(idx: <a title="Number" href="https://
 		<i><em><code>idx:</code></em></i>
 		</p>
 	</td>
-		<td><p>an index</p>
+		<td>
+<p>an index</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -4351,7 +4469,8 @@ function Gst.Buffer.prototype.resize_range(idx: <a title="Number" href="https://
 		<i><em><code>length:</code></em></i>
 		</p>
 	</td>
-		<td><p>a length</p>
+		<td>
+<p>a length</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -4364,7 +4483,8 @@ function Gst.Buffer.prototype.resize_range(idx: <a title="Number" href="https://
 		<i><em><code>offset:</code></em></i>
 		</p>
 	</td>
-		<td><p>the offset adjustment</p>
+		<td>
+<p>the offset adjustment</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -4377,7 +4497,8 @@ function Gst.Buffer.prototype.resize_range(idx: <a title="Number" href="https://
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the new size or -1 to just adjust the offset</p>
+		<td>
+<p>the new size or -1 to just adjust the offset</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -4430,7 +4551,7 @@ function Gst.Buffer.prototype.resize_range(idx: <a title="Number" href="https://
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.set_flags(flags: <a title="Gst.BufferFlags" href="../../javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>): {
+function Gst.Buffer.prototype.set_flags(flags: <a title="Gst.BufferFlags" href="javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>): {
     // javascript wrapper for 'gst_buffer_set_flags'
 }</pre>
 
@@ -4447,10 +4568,11 @@ function Gst.Buffer.prototype.set_flags(flags: <a title="Gst.BufferFlags" href="
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4460,10 +4582,11 @@ function Gst.Buffer.prototype.set_flags(flags: <a title="Gst.BufferFlags" href="
 		<i><em><code>flags:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> to set.</p>
+		<td>
+<p>the <a href="javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> to set.</p>
 </td>
 <td>
-<a title="Gst.BufferFlags" href="../../javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
+<a title="Gst.BufferFlags" href="javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
 </td>
 </tr>
 
@@ -4533,10 +4656,11 @@ function Gst.Buffer.prototype.set_size(size: <a title="Number" href="https://dev
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4546,7 +4670,8 @@ function Gst.Buffer.prototype.set_size(size: <a title="Number" href="https://dev
 		<i><em><code>size:</code></em></i>
 		</p>
 	</td>
-		<td><p>the new size</p>
+		<td>
+<p>the new size</p>
 </td>
 <td>
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
@@ -4571,11 +4696,11 @@ function Gst.Buffer.prototype.set_size(size: <a title="Number" href="https://dev
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.unmap(info: <a title="Gst.MapInfo" href="gstmemory.html#GstMapInfo">Gst.MapInfo</a>): {
+function Gst.Buffer.prototype.unmap(info: <a title="Gst.MapInfo" href="libgstreamer-1.0/javascript/gstmemory.html#GstMapInfo">Gst.MapInfo</a>): {
     // javascript wrapper for 'gst_buffer_unmap'
 }</pre>
 
-<p>Release the memory previously mapped with <a href="gstbuffer.html#gst_buffer_map">Gst.Buffer.prototype.map</a>.</p>
+<p>Release the memory previously mapped with <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_map">Gst.Buffer.prototype.map</a>.</p>
 
 
 	<div class="parameter_container">
@@ -4588,10 +4713,11 @@ function Gst.Buffer.prototype.unmap(info: <a title="Gst.MapInfo" href="gstmemory
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4601,10 +4727,11 @@ function Gst.Buffer.prototype.unmap(info: <a title="Gst.MapInfo" href="gstmemory
 		<i><em><code>info:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstmemory.html#GstMapInfo">Gst.MapInfo</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMapInfo">Gst.MapInfo</a></p>
 </td>
 <td>
-<a title="Gst.MapInfo" href="gstmemory.html#GstMapInfo">Gst.MapInfo</a>
+<a title="Gst.MapInfo" href="libgstreamer-1.0/javascript/gstmemory.html#GstMapInfo">Gst.MapInfo</a>
 </td>
 </tr>
 
@@ -4626,7 +4753,7 @@ function Gst.Buffer.prototype.unmap(info: <a title="Gst.MapInfo" href="gstmemory
 </h4>
 
 		<pre class="programlisting">
-function Gst.Buffer.prototype.unset_flags(flags: <a title="Gst.BufferFlags" href="../../javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>): {
+function Gst.Buffer.prototype.unset_flags(flags: <a title="Gst.BufferFlags" href="javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>): {
     // javascript wrapper for 'gst_buffer_unset_flags'
 }</pre>
 
@@ -4643,10 +4770,11 @@ function Gst.Buffer.prototype.unset_flags(flags: <a title="Gst.BufferFlags" href
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -4656,10 +4784,11 @@ function Gst.Buffer.prototype.unset_flags(flags: <a title="Gst.BufferFlags" href
 		<i><em><code>flags:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="../../javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> to clear</p>
+		<td>
+<p>the <a href="javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a> to clear</p>
 </td>
 <td>
-<a title="Gst.BufferFlags" href="../../javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
+<a title="Gst.BufferFlags" href="javascript/GStreamer-core-plugins-1.0/element-identity.html#GstBufferFlags">Gst.BufferFlags</a>
 </td>
 </tr>
 
@@ -4778,7 +4907,7 @@ function Gst.prototype.parent_buffer_meta_get_info(): {
     // javascript wrapper for 'gst_parent_buffer_meta_get_info'
 }</pre>
 
-<p>Get the global <a href="gstmeta.html#GstMetaInfo">Gst.MetaInfo</a> describing  the <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> meta.</p>
+<p>Get the global <a href="libgstreamer-1.0/javascript/gstmeta.html#GstMetaInfo">Gst.MetaInfo</a> describing  the <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> meta.</p>
 
 
 	<div class="multi_return_value_container">
@@ -4797,11 +4926,11 @@ function Gst.prototype.parent_buffer_meta_get_info(): {
 				</p>
 	</td>
 	<td>
-		<p>The <a href="gstmeta.html#GstMetaInfo">Gst.MetaInfo</a></p>
+		<p>The <a href="libgstreamer-1.0/javascript/gstmeta.html#GstMetaInfo">Gst.MetaInfo</a></p>
 
 	</td>
 	<td>
-		<a title="Gst.MetaInfo" href="gstmeta.html#GstMetaInfo">Gst.MetaInfo</a>
+		<a title="Gst.MetaInfo" href="libgstreamer-1.0/javascript/gstmeta.html#GstMetaInfo">Gst.MetaInfo</a>
 	</td>
 	</tr>
 
@@ -4828,7 +4957,7 @@ function Gst.prototype.parent_buffer_meta_get_info(): {
 	Gst.Buffer
 </h3>
 
-		<p>The structure of a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>. Use the associated macros to access the public
+		<p>The structure of a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>. Use the associated macros to access the public
 variables.</p>
 
 
@@ -4841,30 +4970,33 @@ variables.</p>
 						<tr id="GstBuffer.mini_object">
 		<td>
 		<p>
-		<i><em><code><a title="GstMiniObject" href="gstminiobject.html#GstMiniObject">GstMiniObject</a> <em><code>mini_object</code></em>:</code></em></i>
+		<i><em><code><a title="GstMiniObject" href="libgstreamer-1.0/c/gstminiobject.html#GstMiniObject">GstMiniObject</a> <em><code>mini_object</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>the parent structure</p>
+		<td>
+<p>the parent structure</p>
 </td>
 </tr>
 
 						<tr id="GstBuffer.pool">
 		<td>
 		<p>
-		<i><em><code><a title="GstBufferPool" href="gstbufferpool.html#GstBufferPool">GstBufferPool</a> * <em><code>pool</code></em>:</code></em></i>
+		<i><em><code><a title="GstBufferPool" href="libgstreamer-1.0/c/gstbufferpool.html#GstBufferPool">GstBufferPool</a> * <em><code>pool</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>pointer to the pool owner of the buffer</p>
+		<td>
+<p>pointer to the pool owner of the buffer</p>
 </td>
 </tr>
 
 						<tr id="GstBuffer.pts">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> <em><code>pts</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> <em><code>pts</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>presentation timestamp of the buffer, can be <a href="gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a> when the
+		<td>
+<p>presentation timestamp of the buffer, can be <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a> when the
 pts is not known or relevant. The pts contains the timestamp when the
 media should be presented to the user.</p>
 </td>
@@ -4873,10 +5005,11 @@ media should be presented to the user.</p>
 						<tr id="GstBuffer.dts">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> <em><code>dts</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> <em><code>dts</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>decoding timestamp of the buffer, can be <a href="gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a> when the
+		<td>
+<p>decoding timestamp of the buffer, can be <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a> when the
 dts is not known or relevant. The dts contains the timestamp when the
 media should be processed.</p>
 </td>
@@ -4885,10 +5018,11 @@ media should be processed.</p>
 						<tr id="GstBuffer.duration">
 		<td>
 		<p>
-		<i><em><code><a title="GstClockTime" href="gstclock.html#GstClockTime">GstClockTime</a> <em><code>duration</code></em>:</code></em></i>
+		<i><em><code><a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> <em><code>duration</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>duration in time of the buffer data, can be <a href="gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a>
+		<td>
+<p>duration in time of the buffer data, can be <a href="libgstreamer-1.0/c/gstclock.html#GST_CLOCK_TIME_NONE">GST_CLOCK_TIME_NONE</a>
 when the duration is not known or relevant.</p>
 </td>
 </tr>
@@ -4899,7 +5033,8 @@ when the duration is not known or relevant.</p>
 		<i><em><code>guint64 <em><code>offset</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>a media specific offset for the buffer data.
+		<td>
+<p>a media specific offset for the buffer data.
 For video frames, this is the frame number of this buffer.
 For audio samples, this is the offset of the first sample in this buffer.
 For file data or compressed data this is the byte offset of the first
@@ -4913,7 +5048,8 @@ byte in this buffer.</p>
 		<i><em><code>guint64 <em><code>offset_end</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>the last offset contained in this buffer. It has the same
+		<td>
+<p>the last offset contained in this buffer. It has the same
 format as <em>offset</em>.</p>
 </td>
 </tr>
@@ -4933,12 +5069,12 @@ format as <em>offset</em>.</p>
 	Gst.ParentBufferMeta
 </h3>
 
-		<p>The <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is a <a href="gstmeta.html#GstMeta">Gst.Meta</a> which can be attached to a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		<p>The <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is a <a href="libgstreamer-1.0/javascript/gstmeta.html#GstMeta">Gst.Meta</a> which can be attached to a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 to hold a reference to another buffer that is only released when the child
-<a href="gstbuffer.html#GstBuffer">Gst.Buffer</a> is released.</p>
-<p>Typically, <a href="gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is used when the child buffer is directly
-using the <a href="gstmemory.html#GstMemory">Gst.Memory</a> of the parent buffer, and wants to prevent the parent
-buffer from being returned to a buffer pool until the <a href="gstmemory.html#GstMemory">Gst.Memory</a> is available
+<a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a> is released.</p>
+<p>Typically, <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstParentBufferMeta">Gst.ParentBufferMeta</a> is used when the child buffer is directly
+using the <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a> of the parent buffer, and wants to prevent the parent
+buffer from being returned to a buffer pool until the <a href="libgstreamer-1.0/javascript/gstmemory.html#GstMemory">Gst.Memory</a> is available
 for re-use.</p>
 
 
@@ -4951,20 +5087,22 @@ for re-use.</p>
 						<tr id="GstParentBufferMeta.parent">
 		<td>
 		<p>
-		<i><em><code><a title="GstMeta" href="gstmeta.html#GstMeta">GstMeta</a> <em><code>parent</code></em>:</code></em></i>
+		<i><em><code><a title="GstMeta" href="libgstreamer-1.0/c/gstmeta.html#GstMeta">GstMeta</a> <em><code>parent</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>the parent <a href="gstmeta.html#GstMeta">GstMeta</a> structure</p>
+		<td>
+<p>the parent <a href="libgstreamer-1.0/c/gstmeta.html#GstMeta">GstMeta</a> structure</p>
 </td>
 </tr>
 
 						<tr id="GstParentBufferMeta.buffer">
 		<td>
 		<p>
-		<i><em><code><a title="GstBuffer" href="gstbuffer.html#GstBuffer">GstBuffer</a> * <em><code>buffer</code></em>:</code></em></i>
+		<i><em><code><a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * <em><code>buffer</code></em>:</code></em></i>
 		</p>
 	</td>
-		<td><p>the <a href="gstbuffer.html#GstBuffer">GstBuffer</a> on which a reference is being held.</p>
+		<td>
+<p>the <a href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> on which a reference is being held.</p>
 </td>
 </tr>
 
@@ -4988,7 +5126,7 @@ for re-use.</p>
 		enum Gst.BufferCopyFlags
 	</h3>
 
-		<p>A set of flags that can be provided to the <a href="gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.prototype.copy_into</a>
+		<p>A set of flags that can be provided to the <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.prototype.copy_into</a>
 function to specify which items should be copied.</p>
 
 
@@ -5005,7 +5143,8 @@ function to specify which items should be copied.</p>
 		Gst.BufferCopyFlags.prototype.none
 		</p>
 	</td>
-	<td><p>copy nothing</p>
+	<td>
+<p>copy nothing</p>
 </td>
 	<td>
 		<span class="value">Value: 0</span>
@@ -5019,7 +5158,8 @@ function to specify which items should be copied.</p>
 		Gst.BufferCopyFlags.prototype.flags
 		</p>
 	</td>
-	<td><p>flag indicating that buffer flags should be copied</p>
+	<td>
+<p>flag indicating that buffer flags should be copied</p>
 </td>
 	<td>
 		<span class="value">Value: 1</span>
@@ -5033,7 +5173,8 @@ function to specify which items should be copied.</p>
 		Gst.BufferCopyFlags.prototype.timestamps
 		</p>
 	</td>
-	<td><p>flag indicating that buffer pts, dts,
+	<td>
+<p>flag indicating that buffer pts, dts,
 duration, offset and offset_end should be copied</p>
 </td>
 	<td>
@@ -5048,7 +5189,8 @@ duration, offset and offset_end should be copied</p>
 		Gst.BufferCopyFlags.prototype.meta
 		</p>
 	</td>
-	<td><p>flag indicating that buffer meta should be
+	<td>
+<p>flag indicating that buffer meta should be
 copied</p>
 </td>
 	<td>
@@ -5063,7 +5205,8 @@ copied</p>
 		Gst.BufferCopyFlags.prototype.memory
 		</p>
 	</td>
-	<td><p>flag indicating that buffer memory should be reffed
+	<td>
+<p>flag indicating that buffer memory should be reffed
 and appended to already existing memory. Unless the memory is marked as
 NO_SHARE, no actual copy of the memory is made but it is simply reffed.
 Add <em>GST_BUFFER_COPY_DEEP</em> to force a real copy.</p>
@@ -5080,7 +5223,8 @@ Add <em>GST_BUFFER_COPY_DEEP</em> to force a real copy.</p>
 		Gst.BufferCopyFlags.prototype.merge
 		</p>
 	</td>
-	<td><p>flag indicating that buffer memory should be
+	<td>
+<p>flag indicating that buffer memory should be
 merged</p>
 </td>
 	<td>
@@ -5095,7 +5239,8 @@ merged</p>
 		Gst.BufferCopyFlags.prototype.deep
 		</p>
 	</td>
-	<td><p>flag indicating that memory should always be
+	<td>
+<p>flag indicating that memory should always be
 copied instead of reffed (Since 1.2)</p>
 </td>
 	<td>
@@ -5119,7 +5264,7 @@ copied instead of reffed (Since 1.2)</p>
 		enum Gst.BufferFlags
 	</h3>
 
-		<p>A set of buffer flags used to describe properties of a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
+		<p>A set of buffer flags used to describe properties of a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>.</p>
 
 
 <div class="member_details">
@@ -5135,7 +5280,8 @@ copied instead of reffed (Since 1.2)</p>
 		Gst.BufferFlags.prototype.live
 		</p>
 	</td>
-	<td><p>the buffer is live data and should be discarded in
+	<td>
+<p>the buffer is live data and should be discarded in
 the PAUSED state.</p>
 </td>
 	<td>
@@ -5150,7 +5296,8 @@ the PAUSED state.</p>
 		Gst.BufferFlags.prototype.decode_only
 		</p>
 	</td>
-	<td><p>the buffer contains data that should be dropped
+	<td>
+<p>the buffer contains data that should be dropped
 because it will be clipped against the segment
 boundaries or because it does not contain data
 that should be shown to the user.</p>
@@ -5167,7 +5314,8 @@ that should be shown to the user.</p>
 		Gst.BufferFlags.prototype.discont
 		</p>
 	</td>
-	<td><p>the buffer marks a data discontinuity in the stream.
+	<td>
+<p>the buffer marks a data discontinuity in the stream.
 This typically occurs after a seek or a dropped buffer
 from a live or network source.</p>
 </td>
@@ -5183,7 +5331,8 @@ from a live or network source.</p>
 		Gst.BufferFlags.prototype.resync
 		</p>
 	</td>
-	<td><p>the buffer timestamps might have a discontinuity
+	<td>
+<p>the buffer timestamps might have a discontinuity
 and this buffer is a good point to resynchronize.</p>
 </td>
 	<td>
@@ -5198,7 +5347,8 @@ and this buffer is a good point to resynchronize.</p>
 		Gst.BufferFlags.prototype.corrupted
 		</p>
 	</td>
-	<td><p>the buffer data is corrupted.</p>
+	<td>
+<p>the buffer data is corrupted.</p>
 </td>
 	<td>
 		<span class="value">Value: 256</span>
@@ -5212,7 +5362,8 @@ and this buffer is a good point to resynchronize.</p>
 		Gst.BufferFlags.prototype.marker
 		</p>
 	</td>
-	<td><p>the buffer contains a media specific marker. for
+	<td>
+<p>the buffer contains a media specific marker. for
 video this is typically the end of a frame boundary, for audio
 this is usually the start of a talkspurt.</p>
 </td>
@@ -5228,7 +5379,8 @@ this is usually the start of a talkspurt.</p>
 		Gst.BufferFlags.prototype.header
 		</p>
 	</td>
-	<td><p>the buffer contains header information that is
+	<td>
+<p>the buffer contains header information that is
 needed to decode the following data.</p>
 </td>
 	<td>
@@ -5243,7 +5395,8 @@ needed to decode the following data.</p>
 		Gst.BufferFlags.prototype.gap
 		</p>
 	</td>
-	<td><p>the buffer has been created to fill a gap in the
+	<td>
+<p>the buffer has been created to fill a gap in the
 stream and contains media neutral data (elements can
 switch to optimized code path that ignores the buffer
 content).</p>
@@ -5260,7 +5413,8 @@ content).</p>
 		Gst.BufferFlags.prototype.droppable
 		</p>
 	</td>
-	<td><p>the buffer can be dropped without breaking the
+	<td>
+<p>the buffer can be dropped without breaking the
 stream, for example to reduce bandwidth.</p>
 </td>
 	<td>
@@ -5275,7 +5429,8 @@ stream, for example to reduce bandwidth.</p>
 		Gst.BufferFlags.prototype.delta_unit
 		</p>
 	</td>
-	<td><p>this unit cannot be decoded independently.</p>
+	<td>
+<p>this unit cannot be decoded independently.</p>
 </td>
 	<td>
 		<span class="value">Value: 8192</span>
@@ -5289,7 +5444,8 @@ stream, for example to reduce bandwidth.</p>
 		Gst.BufferFlags.prototype.tag_memory
 		</p>
 	</td>
-	<td><p>this flag is set when memory of the buffer
+	<td>
+<p>this flag is set when memory of the buffer
 is added/removed</p>
 </td>
 	<td>
@@ -5304,7 +5460,8 @@ is added/removed</p>
 		Gst.BufferFlags.prototype.sync_after
 		</p>
 	</td>
-	<td><p>Elements which write to disk or permanent
+	<td>
+<p>Elements which write to disk or permanent
 storage should ensure the data is synced after
 writing the contents of this buffer. (Since 1.6)</p>
 </td>
@@ -5320,7 +5477,8 @@ writing the contents of this buffer. (Since 1.6)</p>
 		Gst.BufferFlags.prototype.last
 		</p>
 	</td>
-	<td><p>additional media specific flags can be added starting from
+	<td>
+<p>additional media specific flags can be added starting from
 this flag.</p>
 </td>
 	<td>
@@ -5362,7 +5520,7 @@ this flag.</p>
 </h3>
 
 		<p>Combination of all possible metadata fields that can be copied with
-<a href="gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.prototype.copy_into</a>.</p>
+<a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.prototype.copy_into</a>.</p>
 
 
 </div>
@@ -5376,7 +5534,7 @@ this flag.</p>
 </h3>
 
 		<p>Combination of all possible fields that can be copied with
-<a href="gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.prototype.copy_into</a>.</p>
+<a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_copy_into">Gst.Buffer.prototype.copy_into</a>.</p>
 
 
 </div>
@@ -5397,15 +5555,15 @@ this flag.</p>
 
 <pre class="prototype">
 <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
-(*Gst.BufferForeachMetaFunc) (<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>,
-                              <a title="Gst.Meta" href="gstmeta.html#GstMeta">Gst.Meta</a>,
+(*Gst.BufferForeachMetaFunc) (<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>,
+                              <a title="Gst.Meta" href="libgstreamer-1.0/javascript/gstmeta.html#GstMeta">Gst.Meta</a>,
                               <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</pre>
 
-<p>A function that will be called from <a href="gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.prototype.foreach_meta</a>. The <em>meta</em>
+<p>A function that will be called from <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.prototype.foreach_meta</a>. The <em>meta</em>
 field will point to a the reference of the meta.</p>
 <p><em>buffer</em> should not be modified from this callback.</p>
 <p>When this function returns TRUE, the next meta will be
-returned. When FALSE is returned, <a href="gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.prototype.foreach_meta</a> will return.</p>
+returned. When FALSE is returned, <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.prototype.foreach_meta</a> will return.</p>
 <p>When <em>meta</em> is set to NULL, the item will be removed from the buffer.</p>
 
 
@@ -5419,10 +5577,11 @@ returned. When FALSE is returned, <a href="gstbuffer.html#gst_buffer_foreach_met
 		<i><em><code>buffer:</code></em></i>
 		</p>
 	</td>
-		<td><p>a <a href="gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
+		<td>
+<p>a <a href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a></p>
 </td>
 <td>
-<a title="Gst.Buffer" href="gstbuffer.html#GstBuffer">Gst.Buffer</a>
+<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
 </td>
 </tr>
 
@@ -5432,7 +5591,8 @@ returned. When FALSE is returned, <a href="gstbuffer.html#gst_buffer_foreach_met
 		<i><em><code>user_data:</code></em></i>
 		</p>
 	</td>
-		<td><p>user data passed to <a href="gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.prototype.foreach_meta</a></p>
+		<td>
+<p>user data passed to <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.prototype.foreach_meta</a></p>
 </td>
 <td>
 <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
@@ -5459,7 +5619,7 @@ returned. When FALSE is returned, <a href="gstbuffer.html#gst_buffer_foreach_met
 				</p>
 	</td>
 	<td>
-		<p>FALSE when <a href="gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.prototype.foreach_meta</a> should stop</p>
+		<p>FALSE when <a href="libgstreamer-1.0/javascript/gstbuffer.html#gst_buffer_foreach_meta">Gst.Buffer.prototype.foreach_meta</a> should stop</p>
 
 	</td>
 	<td>
@@ -5481,11 +5641,10 @@ returned. When FALSE is returned, <a href="gstbuffer.html#gst_buffer_foreach_met
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -5503,7 +5662,7 @@ returned. When FALSE is returned, <a href="gstbuffer.html#gst_buffer_foreach_met
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

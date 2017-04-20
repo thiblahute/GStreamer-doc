@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="../..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>Pads and capabilities</title>
 
@@ -12,7 +15,6 @@
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
 <link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -24,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -53,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -96,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -120,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="application-development/basics/pads.html" class="page_container" id="page-wrapper">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -139,14 +139,14 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="pads.md">
+				    <div id="page-description" data-hotdoc-source="pads.md" data-hotdoc-role="main">
         <h1 id="pads-and-capabilities">Pads and capabilities</h1>
-<p>As we have seen in <a href="elements.html">Elements</a>, the pads are the
+<p>As we have seen in <a href="application-development/basics/elements.html">Elements</a>, the pads are the
 element's interface to the outside world. Data streams from one
 element's source pad to another element's sink pad. The specific type of
 media that the element can handle will be exposed by the pad's
 capabilities. We will talk more on capabilities later in this chapter
-(see <a href="../../#capabilities-of-a-pad">Capabilities of a pad</a>).</p>
+(see <a href="#capabilities-of-a-pad">Capabilities of a pad</a>).</p>
 <h2 id="pads">Pads</h2>
 <p>A pad type is defined by two properties: its direction and its
 availability. As we've mentioned before, GStreamer defines two pad
@@ -299,7 +299,7 @@ that can flow or currently flows through the pad by using capabilities.
 Here, we will briefly describe what capabilities are and how to use
 them, enough to get an understanding of the concept. For an in-depth
 look into capabilities and a list of all capabilities defined in
-GStreamer, see the <a href="../../plugin-development/index.html">Plugin Writers Guide</a></p>
+GStreamer, see the <a href="plugin-development/index.html">Plugin Writers Guide</a></p>
 <p>Capabilities are attached to pad templates and to pads. For pad
 templates, it will describe the types of media that may stream over a
 pad created from this template. For pads, it can either be a list of
@@ -449,7 +449,7 @@ media types that can stream between two pads to a specific subset of
 their supported stream types. An application can, for example, use
 “filtered caps” to set a specific (fixed or non-fixed) video size
 that should stream between two pads. You will see an example of
-filtered caps later in this manual, in <a href="../advanced/pipeline-manipulation.html#manually-adding-or-removing-data-fromto-a-pipeline">Manually adding or removing
+filtered caps later in this manual, in <a href="application-development/advanced/pipeline-manipulation.html#manually-adding-or-removing-data-fromto-a-pipeline">Manually adding or removing
 data from/to a pipeline</a>.
 You can do caps filtering by inserting a capsfilter element into
 your pipeline and setting its “caps” property. Caps filters are
@@ -583,16 +583,16 @@ link_elements_with_filter (GstElement *element1, GstElement *element2)
 and
 <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/stable/gstreamer/html/gstreamer-GstCaps.html"><code>GstCaps</code></a>.</p>
 <h2 id="ghost-pads">Ghost pads</h2>
-<p>You can see from <a href="../../#visualisation-of-a-gstbin-------element-without-ghost-pads">Visualisation of a GstBin element without ghost
+<p>You can see from <a href="#visualisation-of-a-gstbin-------element-without-ghost-pads">Visualisation of a GstBin element without ghost
 pads</a> how a
 bin has no pads of its own. This is where "ghost pads" come into play.</p>
-<p><img src="images/bin-element-noghost.png" alt="Visualisation of a GstBin element without ghost pads" title="fig:" id="visualisation-of-a-gstbin-element-without-ghost-pads"></p>
+<p><img src="application-development/basics/images/bin-element-noghost.png" alt="Visualisation of a GstBin element without ghost pads" title="fig:" id="visualisation-of-a-gstbin-element-without-ghost-pads"></p>
 <p>A ghost pad is a pad from some element in the bin that can be accessed
 directly from the bin as well. Compare it to a symbolic link in UNIX
 filesystems. Using ghost pads on bins, the bin also has a pad and can
 transparently be used as an element in other parts of your code.</p>
-<p><img src="images/bin-element-ghost.png" alt="Visualisation of a GstBin element with a ghost pad" title="fig:" id="visualisation-of-a-gstbin-element-with-a-ghost-pad"></p>
-<p><a href="../../#visualisation-of-a-gstbin-------element-with-a-ghost-pad">Visualisation of a GstBin element with a ghost
+<p><img src="application-development/basics/images/bin-element-ghost.png" alt="Visualisation of a GstBin element with a ghost pad" title="fig:" id="visualisation-of-a-gstbin-element-with-a-ghost-pad"></p>
+<p><a href="#visualisation-of-a-gstbin-------element-with-a-ghost-pad">Visualisation of a GstBin element with a ghost
 pad</a> is a
 representation of a ghost pad. The sink pad of element one is now also a
 pad of the bin. Because ghost pads look and work like any other pads,
@@ -643,11 +643,10 @@ one element to the sink pad of another.</li>
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -665,7 +664,7 @@ one element to the sink pad of another.</li>
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

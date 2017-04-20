@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href=".">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>RTP and RTSP support</title>
 
@@ -12,7 +15,6 @@
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
 <link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -24,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -53,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -96,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -120,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="rtp.html" class="page_container" id="page-wrapper">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -139,7 +139,7 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="rtp.md">
+				    <div id="page-description" data-hotdoc-source="rtp.md" data-hotdoc-role="main">
         <h1 id="rtp-and-rtsp-support">RTP and RTSP support</h1>
 <p>GStreamer has excellent support for both RTP and RTSP, and its RTP/RTSP
 stack has proved itself over years of being widely used in production use
@@ -171,7 +171,8 @@ which you may want to configure to a lower value to achieve lower latency.</p>
 <li>The <tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-plugin-rtpmanager.html">rtpmanager</a></tt>
 plugin contains elements like
 <tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-rtpbin.html">rtpbin</a></tt> and
-<tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-rtpjitterbuffer.html">rtpjitterbuffer</a></tt></li>
+<tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-rtpjitterbuffer.html">rtpjitterbuffer</a></tt>
+</li>
 <li>The <tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-plugin-rtp.html">rtp</a></tt> plugin
 contains RTP payloading and depayloading elements for many different
 codecs and container formats</li>
@@ -189,28 +190,34 @@ contains utility functions for SDP message parsing and creation.</li>
 </ul>
 <p>Some of the main components are:</p>
 <ul>
-<li><tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-rtpbin.html">rtpbin</a></tt>
+<li>
+<tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-rtpbin.html">rtpbin</a></tt>
 is the high-level RTP component and supports sending
 and receiving, just sending or just receiving data, with and without RTCP
 support. This is the bin that does it all: it adapts dynamically to your
 needs based on the requested pads; it also contains an rtpjitterbuffer.</li>
-<li><tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-rtpjitterbuffer.html">rtpjitterbuffer</a></tt>
+<li>
+<tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-rtpjitterbuffer.html">rtpjitterbuffer</a></tt>
 is an RTP buffer that controls network jitter and reorders packets. It also
 dumps packets that arrive to late, handles packet retransmission and lost
 packet notification and adjusts for sender-receiver clock drift.</li>
-<li><tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-rtpptdemux.html">rtpptdemux</a></tt>
+<li>
+<tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-rtpptdemux.html">rtpptdemux</a></tt>
 is an element that usually sits on the rtpbin src
 pad and will detect any new payload types that arrive in the RTP stream.
 It will then create a pad for that new payload and you can connect a
 depayloader/decoder pipeline to that pad.</li>
-<li><tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-rtpssrcdemux.html">rtpssrcdemux</a></tt>
+<li>
+<tt><a href="/data/doc/gstreamer/head/gst-plugins-good-plugins/html/gst-plugins-good-plugins-rtpssrcdemux.html">rtpssrcdemux</a></tt>
 is an element that usually sits on the rtpbin src
 pad and will detect any new SSRCs that arrive in the RTP stream.
 It will then create a pad for that new SSRC and you can connect a
 depayloader/decoder pipeline to that pad.</li>
-<li><tt><a href="/data/doc/gstreamer/head/gst-plugins-base-libs/html/gst-plugins-base-libs-gstrtpbasedepayload.html">GstRTPBaseDepayload</a></tt>
+<li>
+<tt><a href="/data/doc/gstreamer/head/gst-plugins-base-libs/html/gst-plugins-base-libs-gstrtpbasedepayload.html">GstRTPBaseDepayload</a></tt>
 is a base class for RTP depayloaders</li>
-<li><tt><a href="/data/doc/gstreamer/head/gst-plugins-base-libs/html/gst-plugins-base-libs-gstrtpbasepayload.html">GstRTPBasePayload</a></tt>
+<li>
+<tt><a href="/data/doc/gstreamer/head/gst-plugins-base-libs/html/gst-plugins-base-libs-gstrtpbasepayload.html">GstRTPBasePayload</a></tt>
 is a base class for RTP payloaders</li>
 <li><tt><a href="/data/doc/gstreamer/head/gst-plugins-base-libs/html/gst-plugins-base-libs-gstrtpbaseaudiopayload.html">GstRTPBaseAudioPayload</a>
 is a base class for audio RTP payloaders</tt></li>
@@ -225,11 +232,10 @@ meta data set on them (as udpsrc will produce).</p>
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -247,7 +253,7 @@ meta data set on them (as udpsrc will produce).</p>
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 

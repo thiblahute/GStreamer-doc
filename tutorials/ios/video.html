@@ -1,9 +1,12 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+
+<base href="../..">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <title>iOS tutorial 3: Video</title>
 
@@ -12,7 +15,6 @@
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
 <link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
-<link rel="stylesheet" href="assets/css/devhelp.css" type="text/css">
 <link rel="stylesheet" href="assets/css/prism.css" type="text/css">
 
 <script src="assets/js/mustache.min.js"></script>
@@ -24,27 +26,28 @@
 <script src="assets/js/compare-versions.js"></script>
 <script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="assets/js/bootstrap-toc.min.js"></script>
-<script src="assets/js/utils.js"></script>
 <script src="assets/js/tag_filtering.js"></script>
 <script src="assets/js/language_switching.js"></script>
-<script src="assets/js/navigation.js"></script>
-
 
 <script src="assets/js/lines_around_headings.js"></script>
 
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
 
 </head>
 
-<body data-spy="scroll" data-target="#toc" data-offset="70">
+<body class="no-script" data-spy="scroll" data-target="#toc" data-offset="70">
 
-<nav class="navbar navbar-fixed-top navbar-default">
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
@@ -53,9 +56,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a id="home-link" class="hotdoc-navbar-brand">
-				
-<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
 			</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-wrapper">
@@ -96,7 +98,8 @@
 					<li>
 				<a href="gst-editing-services-1.0/c/index.html">GStreamer Editing Services</a>
 			</li>
-		</ul></li>
+		</ul>
+</li>
 
 <li>
     <a href="application-development/index.html">Application manual</a>
@@ -120,16 +123,13 @@
 
 <main class="page-row page-row-expanded">
 <div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/ios/video.html" class="page_container" id="page-wrapper">
+<script src="assets/js/utils.js"></script>
 	<div class="row">
 		
 <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2" id="sidenav-column">
 	<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
-		<div id="sitenav-wrapper">
-			<div class="sidenav-main-panel-body">
-				<div id="site-navigation">
-				</div>
-			</div>
-		</div>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/sitemap.js"></script>
 	</div>
 	<button id="offcanvasleft" class="btn btn-xs" type="button" data-toggle="offcanvasleft">
 		<i class="glyphicon glyphicon-chevron-right" id="offcanvasleft-chevron"></i>
@@ -139,11 +139,11 @@
 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-7 col-xl-8" id="content-column">
 
 	<div id="main">
-				    <div id="page-description" data-hotdoc-source="video.md">
+				    <div id="page-description" data-hotdoc-source="video.md" data-hotdoc-role="main">
         <h1 id="ios-tutorial-3-video">iOS tutorial 3: Video</h1>
 <h2 id="goal">Goal</h2>
-<p><img src="images/tutorials/ios-video-screenshot.png" alt="screenshot" id="screenshot"></p>
-<p>Except for <a href="../basic/toolkit-integration.html">Basic tutorial 5: GUI toolkit integration</a>,
+<p><img src="tutorials/ios/images/tutorials/ios-video-screenshot.png" alt="screenshot" id="screenshot"></p>
+<p>Except for <a href="tutorials/basic/toolkit-integration.html">Basic tutorial 5: GUI toolkit integration</a>,
 which embedded a video window on a GTK application, all tutorials so far
 relied on GStreamer video sinks to create a window to display their
 contents. The video sink on iOS is not capable of creating its own
@@ -158,7 +158,7 @@ pass it to GStreamer</li>
 cannot create pop-up windows as it would do on a Desktop platform.
 Fortunately, the <code>VideoOverlay</code> interface allows providing video sinks with
 an already created window onto which they can draw, as we have seen
-in <a href="../basic/toolkit-integration.html">Basic tutorial 5: GUI toolkit integration</a>.</p>
+in <a href="tutorials/basic/toolkit-integration.html">Basic tutorial 5: GUI toolkit integration</a>.</p>
 <p>In this tutorial, a <code>UIView</code> widget (actually, a subclass of it) is
 placed on the main storyboard. In the <code>viewDidLoad</code> method of the
 <code>ViewController</code>, we pass a pointer to this <code>UIView</code>to the instance of
@@ -611,7 +611,7 @@ ask for it immediately.</p>
 <p>The <code>gst_bin_get_by_interface()</code> method will examine the whole pipeline
 and return a pointer to an element which supports the requested
 interface. We are asking for the <code>VideoOverlay</code> interface, explained in
-<a href="../basic/toolkit-integration.html">Basic tutorial 5: GUI toolkit integration</a>,
+<a href="tutorials/basic/toolkit-integration.html">Basic tutorial 5: GUI toolkit integration</a>,
 which controls how to perform rendering into foreign (non-GStreamer)
 windows. The internal video sink instantiated by <code>autovideosink</code> is the
 only element in this pipeline implementing it, so it will be returned.</p>
@@ -665,11 +665,10 @@ to this tutorial in order to build a simple media player.</p>
 
 
 
-		<div id="subpages"></div>
-		</div>
-		<div id="search_results">
-			<p>The results of the search are</p>
-		</div>
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
 	</div>
 
 </div>
@@ -687,7 +686,7 @@ to this tutorial in order to build a simple media player.</p>
 	</div>
 </div>
 	</div>
-
+</div>
 </main>
 
 
