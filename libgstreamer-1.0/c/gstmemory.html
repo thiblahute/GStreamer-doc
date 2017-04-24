@@ -31,10 +31,10 @@
 
 <script src="assets/js/lines_around_headings.js"></script>
 
+<script src="assets/js/trie.js"></script>
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
@@ -127,7 +127,7 @@ size does not change during the lifetime of the memory object. The memory
 also has an offset and size property that specifies the valid range of memory
 in the allocated region.</p>
 <p>Memory is usually created by allocators with a <a href="libgstreamer-1.0/c/gstallocator.html#gst_allocator_alloc">gst_allocator_alloc</a>
-method call. When <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> is used as the allocator, the default allocator will
+method call. When <a href="libgstcheck-1.0/c/internal-check.html#NULL">NULL</a> is used as the allocator, the default allocator will
 be used.</p>
 <p>New allocators can be registered with <a href="libgstreamer-1.0/c/gstallocator.html#gst_allocator_register">gst_allocator_register</a>.
 Allocators are identified by name and can be retrieved with
@@ -170,12 +170,12 @@ size.</p>
 <pre class="prototype">
 <a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> *
 gst_memory_new_wrapped (<a title="GstMemoryFlags" href="libgstreamer-1.0/c/gstmemory.html#GstMemoryFlags">GstMemoryFlags</a> flags,
-                        <a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * data,
-                        <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> maxsize,
-                        <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> offset,
-                        <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> size,
-                        <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> user_data,
-                        <a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a> notify)</pre>
+                        guint8* data,
+                        gsize maxsize,
+                        gsize offset,
+                        gsize size,
+                        gpointer user_data,
+                        GDestroyNotify notify)</pre>
 
 <p>Allocate a new memory block that wraps the given <em>data</em>.</p>
 <p>The prefix/padding must be filled with 0 if <em>flags</em> contains
@@ -358,8 +358,8 @@ wrap</p>
 <pre class="prototype">
 <a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> *
 gst_memory_copy (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem,
-                 <a title="gssize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gssize">gssize</a> offset,
-                 <a title="gssize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gssize">gssize</a> size)</pre>
+                 gssize offset,
+                 gssize size)</pre>
 
 <p>Return a copy of <em>size</em> bytes from <em>mem</em> starting from <em>offset</em>. This copy is
 guaranteed to be writable. <em>size</em> can be set to -1 to return a copy
@@ -467,10 +467,10 @@ from <em>offset</em> to the end of the memory region.</p>
 		
 
 <pre class="prototype">
-<a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a>
+gsize
 gst_memory_get_sizes (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem,
-                      <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> * offset,
-                      <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> * maxsize)</pre>
+                      gsize* offset,
+                      gsize* maxsize)</pre>
 
 <p>Get the current <em>size</em>, <em>offset</em> and <em>maxsize</em> of <em>mem</em>.</p>
 
@@ -548,7 +548,7 @@ gst_memory_get_sizes (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.ht
 
 	</td>
 	<td>
-		<a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a>
+		gsize
 	</td>
 				<td>
 	
@@ -576,15 +576,14 @@ gst_memory_get_sizes (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.ht
 		
 
 <pre class="prototype">
-void
 gst_memory_init (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem,
                  <a title="GstMemoryFlags" href="libgstreamer-1.0/c/gstmemory.html#GstMemoryFlags">GstMemoryFlags</a> flags,
                  <a title="GstAllocator" href="libgstreamer-1.0/c/gstallocator.html#GstAllocator">GstAllocator</a> * allocator,
                  <a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * parent,
-                 <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> maxsize,
-                 <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> align,
-                 <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> offset,
-                 <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> size)</pre>
+                 gsize maxsize,
+                 gsize align,
+                 gsize offset,
+                 gsize size)</pre>
 
 <p>Initializes a newly allocated <em>mem</em> with the given parameters. This function
 will call <a href="libgstreamer-1.0/c/gstminiobject.html#gst_mini_object_init">gst_mini_object_init</a> with the default memory parameters.</p>
@@ -737,7 +736,7 @@ will call <a href="libgstreamer-1.0/c/gstminiobject.html#gst_mini_object_init">g
 <a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 gst_memory_is_span (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem1,
                     <a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem2,
-                    <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> * offset)</pre>
+                    gsize* offset)</pre>
 
 <p>Check if <em>mem1</em> and mem2 share the memory with a common parent memory object
 and that the memory is contiguous.</p>
@@ -849,7 +848,7 @@ the returned <em>offset</em>.</p>
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 gst_memory_is_type (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem,
-                    const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * mem_type)</pre>
+                    const gchar* mem_type)</pre>
 
 <p>Check if <em>mem</em> if allocated with an allocator for <em>mem_type</em>.</p>
 
@@ -1027,7 +1026,7 @@ mapped copy of <em>mem</em> is returned.</p>
 	</td>
 	<td>
 		<p>a <a href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> object mapped
-with <em>flags</em> or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> when a mapping is not possible.</p>
+with <em>flags</em> or <a href="libgstcheck-1.0/c/internal-check.html#NULL">NULL</a> when a mapping is not possible.</p>
 
 	</td>
 	<td>
@@ -1049,7 +1048,7 @@ with <em>flags</em> or <a href="https://developer.gnome.org/glib/unstable/glib-S
 	</td>
 	<td>
 		<p>a <a href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> object mapped
-with <em>flags</em> or <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> when a mapping is not possible.</p>
+with <em>flags</em> or <a href="libgstcheck-1.0/c/internal-check.html#NULL">NULL</a> when a mapping is not possible.</p>
 
 	</td>
 	<td>
@@ -1222,10 +1221,9 @@ should be done.</p>
 		
 
 <pre class="prototype">
-void
 gst_memory_resize (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem,
-                   <a title="gssize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gssize">gssize</a> offset,
-                   <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> size)</pre>
+                   gssize offset,
+                   gsize size)</pre>
 
 <p>Resize the memory region. <em>mem</em> should be writable and offset + size should be
 less than the maxsize of <em>mem</em>.</p>
@@ -1304,8 +1302,8 @@ cleared when offset or padding is increased respectively.</p>
 <pre class="prototype">
 <a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> *
 gst_memory_share (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem,
-                  <a title="gssize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gssize">gssize</a> offset,
-                  <a title="gssize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gssize">gssize</a> size)</pre>
+                  gssize offset,
+                  gssize size)</pre>
 
 <p>Return a shared copy of <em>size</em> bytes from <em>mem</em> starting from <em>offset</em>. No
 memory copy is performed and the memory region is simply shared. The result
@@ -1414,7 +1412,6 @@ copy from <em>offset</em> to the end of the memory region.</p>
 		
 
 <pre class="prototype">
-void
 gst_memory_unmap (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem,
                   <a title="GstMapInfo" href="libgstreamer-1.0/c/gstmemory.html#GstMapInfo">GstMapInfo</a> * info)</pre>
 
@@ -2042,7 +2039,7 @@ struct GstMapInfo {
 						<tr id="GstMapInfo.data">
 		<td>
 		<p>
-		<i><em><code><a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> * <em><code>data</code></em>:</code></em></i>
+		<i><em><code>guint8* <em><code>data</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td>
@@ -2053,7 +2050,7 @@ struct GstMapInfo {
 						<tr id="GstMapInfo.size">
 		<td>
 		<p>
-		<i><em><code><a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> <em><code>size</code></em>:</code></em></i>
+		<i><em><code>gsize <em><code>size</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td>
@@ -2064,7 +2061,7 @@ struct GstMapInfo {
 						<tr id="GstMapInfo.maxsize">
 		<td>
 		<p>
-		<i><em><code><a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> <em><code>maxsize</code></em>:</code></em></i>
+		<i><em><code>gsize <em><code>maxsize</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td>
@@ -2075,7 +2072,7 @@ struct GstMapInfo {
 						<tr id="GstMapInfo.user_data">
 		<td>
 		<p>
-		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>user_data</code></em>:</code></em></i>
+		<i><em><code>gpointer <em><code>user_data</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td>
@@ -2087,7 +2084,7 @@ can use to store extra info.</p>
 						<tr id="GstMapInfo._gst_reserved">
 		<td>
 		<p>
-		<i><em><code><a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> <em><code>_gst_reserved</code></em>:</code></em></i>
+		<i><em><code>gpointer <em><code>_gst_reserved</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td></td>
@@ -2167,7 +2164,7 @@ as the first member of their structure.</p>
 						<tr id="GstMemory.maxsize">
 		<td>
 		<p>
-		<i><em><code><a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> <em><code>maxsize</code></em>:</code></em></i>
+		<i><em><code>gsize <em><code>maxsize</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td>
@@ -2178,7 +2175,7 @@ as the first member of their structure.</p>
 						<tr id="GstMemory.align">
 		<td>
 		<p>
-		<i><em><code><a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> <em><code>align</code></em>:</code></em></i>
+		<i><em><code>gsize <em><code>align</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td>
@@ -2189,7 +2186,7 @@ as the first member of their structure.</p>
 						<tr id="GstMemory.offset">
 		<td>
 		<p>
-		<i><em><code><a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> <em><code>offset</code></em>:</code></em></i>
+		<i><em><code>gsize <em><code>offset</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td>
@@ -2200,7 +2197,7 @@ as the first member of their structure.</p>
 						<tr id="GstMemory.size">
 		<td>
 		<p>
-		<i><em><code><a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> <em><code>size</code></em>:</code></em></i>
+		<i><em><code>gsize <em><code>size</code></em>:</code></em></i>
 		</p>
 	</td>
 		<td>
@@ -2493,8 +2490,8 @@ made when this memory needs to be shared between buffers.</p>
 <pre class="prototype">
 <a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> *
 (*GstMemoryCopyFunction) (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem,
-                          <a title="gssize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gssize">gssize</a> offset,
-                          <a title="gssize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gssize">gssize</a> size)</pre>
+                          gssize offset,
+                          gssize size)</pre>
 
 <p>Copy <em>size</em> bytes from <em>mem</em> starting at <em>offset</em> and return them wrapped in a
 new GstMemory object.
@@ -2606,7 +2603,7 @@ If <em>size</em> is set to -1, all bytes starting at <em>offset</em> are copied.
 <a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a>
 (*GstMemoryIsSpanFunction) (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem1,
                             <a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem2,
-                            <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> * offset)</pre>
+                            gsize* offset)</pre>
 
 <p>Check if <em>mem1</em> and <em>mem2</em> occupy contiguous memory and return the offset of
 <em>mem1</em> in the parent buffer in <em>offset</em>.</p>
@@ -2713,10 +2710,10 @@ If <em>size</em> is set to -1, all bytes starting at <em>offset</em> are copied.
 		
 
 <pre class="prototype">
-<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>
+gpointer
 (*GstMemoryMapFullFunction) (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem,
                              <a title="GstMapInfo" href="libgstreamer-1.0/c/gstmemory.html#GstMapInfo">GstMapInfo</a> * info,
-                             <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> maxsize)</pre>
+                             gsize maxsize)</pre>
 
 <p>Get the memory of <em>mem</em> that can be accessed according to the mode specified
 in <em>info</em>'s flags. The function should return a pointer that contains at least
@@ -2797,7 +2794,7 @@ accessed according to the access pattern in <em>info</em>'s flags.</p>
 
 	</td>
 	<td>
-		<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>
+		gpointer
 	</td>
 				<td>
 	
@@ -2825,9 +2822,9 @@ accessed according to the access pattern in <em>info</em>'s flags.</p>
 		
 
 <pre class="prototype">
-<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>
+gpointer
 (*GstMemoryMapFunction) (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem,
-                         <a title="gsize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gsize">gsize</a> maxsize,
+                         gsize maxsize,
                          <a title="GstMapFlags" href="libgstreamer-1.0/c/gstmemory.html#GstMapFlags">GstMapFlags</a> flags)</pre>
 
 <p>Get the memory of <em>mem</em> that can be accessed according to the mode specified
@@ -2909,7 +2906,7 @@ accessed according to the access pattern in <em>flags</em>.</p>
 
 	</td>
 	<td>
-		<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>
+		gpointer
 	</td>
 				<td>
 	
@@ -2939,8 +2936,8 @@ accessed according to the access pattern in <em>flags</em>.</p>
 <pre class="prototype">
 <a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> *
 (*GstMemoryShareFunction) (<a title="GstMemory" href="libgstreamer-1.0/c/gstmemory.html#GstMemory">GstMemory</a> * mem,
-                           <a title="gssize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gssize">gssize</a> offset,
-                           <a title="gssize" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gssize">gssize</a> size)</pre>
+                           gssize offset,
+                           gssize size)</pre>
 
 <p>Share <em>size</em> bytes from <em>mem</em> starting at <em>offset</em> and return them wrapped in a
 new GstMemory object. If <em>size</em> is set to -1, all bytes starting at <em>offset</em> are

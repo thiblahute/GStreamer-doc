@@ -31,10 +31,10 @@
 
 <script src="assets/js/lines_around_headings.js"></script>
 
+<script src="assets/js/trie.js"></script>
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
@@ -101,7 +101,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main class="page-row page-row-expanded">
-<div data-extension="gst-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-base-plugins-1.0" data-hotdoc-ref="element-playbin3.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="javascript">
+<div data-extension="gst-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-base-plugins-1.0" data-hotdoc-ref="element-playbin3.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="c,python,javascript" data-hotdoc-meta-gi-language="c">
 <script src="assets/js/utils.js"></script>
 	<div class="row">
 		
@@ -348,22 +348,27 @@ GObject
             <h2 class="symbol_section" id="Signals">Signals</h2>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin3::about-to-finish">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin3::source-setup">
 		
-<h3 id="abouttofinish">
-	<span><code>about-to-finish</code></span>
+<h3 id="sourcesetup">
+	<span><code>source-setup</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-about_to_finish_callback (GstPlayBin3 * playbin,
-                          gpointer udata)</pre>
+source_setup_callback (GstPlayBin3 * playbin,
+                       GstElement * source,
+                       gpointer udata)</pre>
 
-<p>This signal is emitted when the current uri is about to finish. You can
-set the uri and suburi to make sure that playback continues.</p>
-<p>This signal is emitted from the context of a GStreamer streaming thread.</p>
+<p>This signal is emitted after the source element has been created, so
+it can be configured by setting additional properties (e.g. set a
+proxy server for an http source, or set the device and read speed for
+an audio cd source). This is functionally equivalent to connecting to
+the notify::source signal, but more convenient.</p>
+<p>This signal is usually emitted from the context of a GStreamer streaming
+thread.</p>
 
 
 	<div class="parameter_container">
@@ -378,6 +383,17 @@ set the uri and suburi to make sure that playback continues.</p>
 	</td>
 		<td>
 <p>a <a href="gst-plugins-base-plugins-1.0/element-playbin3.html#playbin3">playbin3</a></p>
+</td>
+</tr>
+
+									<tr>
+		<td>
+		<p>
+		<i><em><code>source:</code></em></i>
+		</p>
+	</td>
+		<td>
+<p>source element</p>
 </td>
 </tr>
 
@@ -428,27 +444,22 @@ set the uri and suburi to make sure that playback continues.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin3::source-setup">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstPlayBin3::about-to-finish">
 		
-<h3 id="sourcesetup">
-	<span><code>source-setup</code></span>
+<h3 id="abouttofinish">
+	<span><code>about-to-finish</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
 void
-source_setup_callback (GstPlayBin3 * playbin,
-                       GstElement * source,
-                       gpointer udata)</pre>
+about_to_finish_callback (GstPlayBin3 * playbin,
+                          gpointer udata)</pre>
 
-<p>This signal is emitted after the source element has been created, so
-it can be configured by setting additional properties (e.g. set a
-proxy server for an http source, or set the device and read speed for
-an audio cd source). This is functionally equivalent to connecting to
-the notify::source signal, but more convenient.</p>
-<p>This signal is usually emitted from the context of a GStreamer streaming
-thread.</p>
+<p>This signal is emitted when the current uri is about to finish. You can
+set the uri and suburi to make sure that playback continues.</p>
+<p>This signal is emitted from the context of a GStreamer streaming thread.</p>
 
 
 	<div class="parameter_container">
@@ -463,17 +474,6 @@ thread.</p>
 	</td>
 		<td>
 <p>a <a href="gst-plugins-base-plugins-1.0/element-playbin3.html#playbin3">playbin3</a></p>
-</td>
-</tr>
-
-									<tr>
-		<td>
-		<p>
-		<i><em><code>source:</code></em></i>
-		</p>
-	</td>
-		<td>
-<p>source element</p>
 </td>
 </tr>
 
@@ -639,7 +639,7 @@ convert_sample_callback (GstPlayBin3 * playbin,
 
 <p>Action signal to retrieve the currently playing video frame in the format
 specified by <em>caps</em>.
-If <em>caps</em> is <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a>, no conversion will be performed and this function is
+If <em>caps</em> is <a href="libgstcheck-1.0/c/internal-check.html#NULL">NULL</a>, no conversion will be performed and this function is
 equivalent to the GstPlayBin3::frame property.</p>
 
 
@@ -700,7 +700,7 @@ equivalent to the GstPlayBin3::frame property.</p>
 	<td>
 		<p>a <a href="libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> of the current video frame converted to caps.
 The caps on the sample will describe the final layout of the buffer data.
-<a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> is returned when no current buffer can be retrieved or when the
+<a href="libgstcheck-1.0/c/internal-check.html#NULL">NULL</a> is returned when no current buffer can be retrieved or when the
 conversion failed.</p>
 
 	</td>
@@ -1093,7 +1093,7 @@ set from the about-to-finish signal to queue the next subtitle media file.</p>
 </h3>
 
 		<pre class="property_signature">
-“flags” <span class="type"><a title="GstPlayFlags" href="gst-plugins-base-plugins-1.0/element-playsink.html#GstPlayFlags">GstPlayFlags</a></span>
+“flags” <span class="type"><a title="GstPlayFlags" href="gst-plugins-base-plugins-1.0/element-playbin.html#GstPlayFlags">GstPlayFlags</a></span>
 </pre>
 
 <p>Control the behaviour of playbin.</p>
@@ -1754,7 +1754,7 @@ buffer is disabled. Default 0.</p>
 </h3>
 
 		<pre class="property_signature">
-“video-multiview-flags” <span class="type"><a title="GstVideoMultiviewFlags" href="c/GstVideoMultiviewFlags">GstVideoMultiviewFlags</a></span>
+“video-multiview-flags” <span class="type"><a title="GstVideoMultiviewFlags" href="c/gst-plugins-bad-plugins-1.0/element-glimagesink.html#GstVideoMultiviewFlags">GstVideoMultiviewFlags</a></span>
 </pre>
 
 <p>Override details of the multiview frame layout</p>
