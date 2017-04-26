@@ -1,1 +1,0 @@
-urls_downloaded_cb({"token": "ges.videotestpattern.red", "urls": ["gst-editing-services-1.0/python/ges-enums.html#GES_VIDEO_TEST_PATTERN_WHITE"]});
