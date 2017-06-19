@@ -11,6 +11,7 @@
 <title>Latency</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/bootstrap-toc.min.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
@@ -33,10 +34,10 @@
 
 <script src="assets/js/lines_around_headings.js"></script>
 
-<script src="assets/js/trie.js"></script>
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
@@ -138,7 +139,7 @@ of the way a live source works. Consider an audio source, it will start
 capturing the first sample at time 0. If the source pushes buffers with
 44100 samples at a time at 44100Hz, it will have collected the buffer at
 second 1. Since the timestamp of the buffer is 0 and the time of the
-clock is now &gt;= 1 second, the sink will drop this buffer because it is
+clock is now <code>&gt;= 1</code> second, the sink will drop this buffer because it is
 too late. Without any latency compensation in the sink, all buffers will
 be dropped.</p>
 <p>The situation becomes more complex in the presence of:</p>
@@ -183,13 +184,13 @@ capture pipelines.</p>
 <li>asrc: audio source, provides a clock</li>
 <li>asink audio sink, provides a clock</li>
 </ul>
-<pre><code>.--------------------------.
+<pre><code>+--------------------------+
 | pipeline                 |
-| .------.      .-------.  |
+| +------+      +-------+  |
 | | asrc |      | asink |  |
 | |     src -&gt; sink     |  |
-| '------'      '-------'  |
-'--------------------------'
+| +------+      +-------+  |
++--------------------------+
 </code></pre>
 <ul>
 <li>
@@ -350,8 +351,8 @@ that require preroll (the ones that return ASYNC from the state change).
 These elements posted an <code>ASYNC_START</code> message without a matching
 <code>ASYNC_DONE</code> one.</p>
 <p>The pipeline will not change the state of the elements that are still
-doing an ASYNC state change.</p>
-<p>When an ASYNC element prerolls, it commits its state to PAUSED and posts
+doing an <code>ASYNC</code> state change.</p>
+<p>When an ASYNC element prerolls, it commits its state to <code>PAUSED</code> and posts
 an <code>ASYNC_DONE</code> message. The pipeline notices this <code>ASYNC_DONE</code> message
 and matches it with the <code>ASYNC_START</code> message it cached for the
 corresponding element.</p>
@@ -359,11 +360,11 @@ corresponding element.</p>
 the pipeline proceeds with setting the elements to the final state
 again.</p>
 <p>The base time of the element was already set by the pipeline when it
-changed the NO_PREROLL element to PLAYING. This operation has to be
+changed the <code>NO_PREROLL</code> element to <code>PLAYING</code>. This operation has to be
 performed in the separate async state change thread (like the one
 currently used for going from <code>PAUSED→PLAYING</code> in a non-live pipeline).</p>
 <h2 id="query">Query</h2>
-<p>The pipeline latency is queried with the LATENCY query.</p>
+<p>The pipeline latency is queried with the <code>LATENCY</code> query.</p>
 <ul>
 <li>
 <p><strong><code>live</code></strong> <code>G_TYPE_BOOLEAN</code> (default FALSE): - if a live element is found upstream</p>
@@ -384,7 +385,7 @@ Considering upstream's minimum latency generally means that the
 element's own value is added to upstream's value, as this will give
 the overall minimum latency of all elements from the source to the
 current element:</p>
-<pre><code>min_latency = upstream_min_latency + own_min_latency
+<pre><code class="language-c">min_latency = upstream_min_latency + own_min_latency
 </code></pre>
 <ul>
 <li>
@@ -410,10 +411,10 @@ latency (i.e. the size of its internal buffer) to upstream's value. If
 upstream's maximum latency, or the elements internal maximum latency was NONE
 (i.e. infinity), it will be set to infinity.</li>
 </ul>
-<pre><code>if (upstream_max_latency == NONE || own_max_latency == NONE)
+<pre><code class="language-c">if (upstream_max_latency == NONE || own_max_latency == NONE)
   max_latency = NONE;
 else
-  max_latency = upstream_max_latency + own_max_latency
+  max_latency = upstream_max_latency + own_max_latency;
 </code></pre>
 <p>If the element has multiple sinkpads, the minimum upstream latency is
 the maximum of all live upstream minimum latencies.</p>
@@ -422,7 +423,7 @@ when its internal buffer is full, it should take the minimum of its own
 maximum latency and upstream’s. Examples for such elements are audio sinks
 and sources with an internal ringbuffer, leaky queues and in general live
 sources with a limited amount of internal buffers that can be used.</p>
-<pre><code>    max_latency = MIN (upstream_max_latency, own_max_latency)
+<pre><code class="language-c">max_latency = MIN (upstream_max_latency, own_max_latency)
 </code></pre>
 <blockquote>
 <p>Note: many GStreamer base classes allow subclasses to set a
@@ -459,12 +460,12 @@ to those chains.</li>
 <p>The sinks gather this information with a LATENCY query upstream.
 Intermediate elements pass the query upstream and add the amount of
 latency they add to the result.</p>
-<pre><code>ex1: sink1: \[20 - 20\] sink2: \[33 - 40\]
+<pre><code>ex1: sink1: [20 - 20] sink2: [33 - 40]
 
     MAX (20, 33) = 33
     MIN (20, 40) = 20 &lt; 33 -&gt; impossible
 
-ex2: sink1: \[20 - 50\] sink2: \[33 - 40\]
+ex2: sink1: [20 - 50] sink2: [33 - 40]
 
     MAX (20, 33) = 33
     MIN (50, 40) = 40 &gt;= 33 -&gt; latency = 33
@@ -510,29 +511,29 @@ PAUSED state and has to be set to the <code>PLAYING</code> state again later.</p
 <p>The <code>ASYNC_START</code> message is kept by the parent bin. When the element
 prerolls, it posts an <code>ASYNC_DONE</code> message.</p>
 <p>When all <code>ASYNC_START</code> messages are matched with an <code>ASYNC_DONE</code> message,
-the bin will capture a new base_time from the clock and will bring all
+the bin will capture a new <code>base_time</code> from the clock and will bring all
 the sinks back to <code>PLAYING</code> after setting the new base time on them. It’s
 also possible to perform additional latency calculations and adjustments
 before doing this.</p>
 <h2 id="dynamically-adjusting-latency">Dynamically adjusting latency</h2>
 <p>An element that wants to change the latency in the pipeline can do this
-by posting a LATENCY message on the bus. This message instructs the
+by posting a <code>LATENCY</code> message on the bus. This message instructs the
 pipeline to:</p>
 <ul>
 <li>
 <p>query the latency in the pipeline (which might now have changed)
-with a LATENCY query.</p>
+with a <code>LATENCY</code> query.</p>
 </li>
 <li>
-<p>redistribute a new global latency to all elements with a LATENCY
+<p>redistribute a new global latency to all elements with a <code>LATENCY</code>
 event.</p>
 </li>
 </ul>
 <p>A use case where the latency in a pipeline can change could be a network
 element that observes an increased inter-packet arrival jitter or
 excessive packet loss and decides to increase its internal buffering
-(and thus the latency). The element must post a LATENCY message and
-perform the additional latency adjustments when it receives the LATENCY
+(and thus the latency). The element must post a <code>LATENCY</code> message and
+perform the additional latency adjustments when it receives the <code>LATENCY</code>
 event from the downstream peer element.</p>
 <p>In a similar way, the latency can be decreased when network conditions
 improve.</p>

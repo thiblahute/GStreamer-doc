@@ -11,6 +11,7 @@
 <title>Live sources</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/bootstrap-toc.min.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
@@ -33,10 +34,10 @@
 
 <script src="assets/js/lines_around_headings.js"></script>
 
-<script src="assets/js/trie.js"></script>
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
@@ -140,17 +141,17 @@ has implications for sinks waiting for a buffer to complete the preroll
 state since such a buffer might never arrive.</p>
 <p>Live sources return <code>NO_PREROLL</code> when going to the <code>PAUSED</code> state to inform
 the bin/pipeline that this element will not be able to produce data in
-the <code>PAUSED</code> state. <code>NO_PREROLL</code> should be returned for both READY→PAUSED
-and PLAYING→PAUSED.</p>
+the <code>PAUSED</code> state. <code>NO_PREROLL</code> should be returned for both <code>READY→PAUSED</code>
+and <code>PLAYING→PAUSED</code>.</p>
 <p>When performing a <code>get_state()</code> on a bin with a non-zero timeout value,
 the bin must be sure that there are no live sources in the pipeline
-because otherwise, the <code>get_state()</code> function would block on the sinks.</p>
-<p>A gstbin therefore always performs a zero timeout <code>get_state()</code> on its
-elements to discover the <code>NO_PREROLL</code> (and ERROR) elements before
+because otherwise, <code>get_state()</code> would block on the sinks.</p>
+<p>A <code>GstBin</code> therefore always performs a zero-timeout <code>get_state()</code> on its
+elements to discover the <code>NO_PREROLL</code> (and <code>ERROR</code>) elements before
 performing a blocking wait.</p>
 <h2 id="scheduling">Scheduling</h2>
 <p>Live sources will not produce data in the <code>PAUSED</code> state. They block in
-the <code>get_range()</code> function or in the loop function until they go to PLAYING.</p>
+<code>get_range()</code> or in the loop function until they go to <code>PLAYING</code>.</p>
 <h2 id="latency">Latency</h2>
 <p>The live source timestamps its data with the time of the clock when
 the data was captured. Normally, it will take some time to capture

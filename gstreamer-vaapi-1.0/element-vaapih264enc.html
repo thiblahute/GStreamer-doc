@@ -11,6 +11,7 @@
 <title>element vaapih264enc</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/bootstrap-toc.min.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
@@ -33,10 +34,10 @@
 
 <script src="assets/js/lines_around_headings.js"></script>
 
-<script src="assets/js/trie.js"></script>
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
@@ -135,6 +136,73 @@ $('body').removeClass('no-script');
   gst-launch-1.0 -ev videotestsrc num-buffers=60 ! timeoverlay ! vaapih264enc ! h264parse ! mp4mux ! filesink location=test.mp4
  ]|
  </refsect2>
+ <refsect2>
+ <title>Region of Interest</title>
+ Since libva supports Region Of Interest for avc encoding depending on H/W,
+ GStreamer VA-API supports it by #GstEvent.
+ To enable ROI, an application must send an event of type GST_EVENT_CUSTOM_DOWNSTREAM,
+ having a structure of name "GstVaapiEncoderRegionOfInterest" with fields set
+ according to the following table:
+ <informaltable>
+ <tgroup cols="3">
+ <colspec colname="Name"></colspec>
+ <colspec colname="Type"></colspec>
+ <colspec colname="Purpose"></colspec>
+ <thead>
+ <row>
+ <entry>Name</entry>
+ <entry>GType</entry>
+ <entry>Description</entry>
+ </row>
+ </thead>
+ <tbody>
+ <row>
+ <entry>roi-value</entry>
+ <entry>G_TYPE_INT</entry>
+ <entry>specifies ROI delta QP or ROI priority.
+ ROI delta QP is the value that will be added on top of the frame level QP.
+ ROI priority specifies the priority of a region, it can be positive (more important)
+ or negative (less important) values and is compared with non-ROI region (taken as value 0),
+ </entry>
+ </row>
+ <row>
+ <entry>roi-x</entry>
+ <entry>G_TYPE_UINT</entry>
+ <entry>X</entry>
+ </row>
+ <row>
+ <entry>roi-y</entry>
+ <entry>G_TYPE_UINT</entry>
+ <entry>Y</entry>
+ </row>
+ <row>
+ <entry>roi-width</entry>
+ <entry>G_TYPE_UINT</entry>
+ <entry>width</entry>
+ </row>
+ <row>
+ <entry>roi-height</entry>
+ <entry>G_TYPE_UINT</entry>
+ <entry>height</entry>
+ </row>
+ </tbody>
+ </tgroup>
+ </informaltable>
+<p>For example, the following code informs the encoder to enable ROI
+with a region for ROI.
+Note that if an application wants to disable the region,
+just send an event with roi-value=0 and same coordination.</p>
+ <programlisting>
+   GstEvent *event = gst_event_new_custom (GST_EVENT_CUSTOM_DOWNSTREAM,
+       gst_structure_new ("GstVaapiEncoderRegionOfInterest",
+       "roi-x", G_TYPE_UINT, 1820,
+       "roi-y", G_TYPE_UINT, 980,
+       "roi-width", G_TYPE_UINT, 100,
+       "roi-height", G_TYPE_UINT, 100,
+       "roi-value", G_TYPE_INT, 4, NULL));
+<p>gst_element_send_event (pipeline, event);
+</p></programlisting>
+</refsect2>
 
     </div>
         
@@ -378,7 +446,7 @@ video/x-raw
 </h3>
 
 		<pre class="property_signature">
-“bitrate” <span class="type"><a title="guint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#guint">guint</a></span>
+“bitrate” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
 </pre>
 
 <p>The desired bitrate expressed in kbps (0: auto-calculate)</p>
@@ -409,7 +477,7 @@ video/x-raw
 </h3>
 
 		<pre class="property_signature">
-“keyframe-period” <span class="type"><a title="guint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#guint">guint</a></span>
+“keyframe-period” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
 </pre>
 
 <p>Maximal distance between two keyframes (0: auto-calculate)</p>
@@ -464,6 +532,37 @@ video/x-raw
 
             
 
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVaapiEncodeH264:quality-level">
+		
+<h3 class="method" id="qualitylevel">
+	<span><code>quality-level</code></span>
+</h3>
+
+		<pre class="property_signature">
+“quality-level” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Encoding Quality Level</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	4
+</p>
+
+</div>
+
+            
+
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstVaapiEncodeH264:max-bframes">
 		
 <h3 class="method" id="maxbframes">
@@ -471,7 +570,7 @@ video/x-raw
 </h3>
 
 		<pre class="property_signature">
-“max-bframes” <span class="type"><a title="guint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#guint">guint</a></span>
+“max-bframes” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
 </pre>
 
 <p>Number of B-frames between I and P</p>
@@ -502,7 +601,7 @@ video/x-raw
 </h3>
 
 		<pre class="property_signature">
-“init-qp” <span class="type"><a title="guint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#guint">guint</a></span>
+“init-qp” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
 </pre>
 
 <p>Initial quantizer value</p>
@@ -533,7 +632,7 @@ video/x-raw
 </h3>
 
 		<pre class="property_signature">
-“min-qp” <span class="type"><a title="guint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#guint">guint</a></span>
+“min-qp” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
 </pre>
 
 <p>Minimum quantizer value</p>
@@ -564,7 +663,7 @@ video/x-raw
 </h3>
 
 		<pre class="property_signature">
-“num-slices” <span class="type"><a title="guint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#guint">guint</a></span>
+“num-slices” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
 </pre>
 
 <p>Number of slices per frame</p>
@@ -595,7 +694,7 @@ video/x-raw
 </h3>
 
 		<pre class="property_signature">
-“cabac” <span class="type"><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a></span>
+“cabac” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
 </pre>
 
 <p>Enable CABAC entropy coding mode</p>
@@ -626,7 +725,7 @@ video/x-raw
 </h3>
 
 		<pre class="property_signature">
-“dct8x8” <span class="type"><a title="gboolean" href="gst-plugins-bad-codecparsers-1.0/parserutils.html#gboolean">gboolean</a></span>
+“dct8x8” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
 </pre>
 
 <p>Enable adaptive use of 8x8 transforms in I-frames</p>
@@ -657,7 +756,7 @@ video/x-raw
 </h3>
 
 		<pre class="property_signature">
-“cpb-length” <span class="type"><a title="guint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#guint">guint</a></span>
+“cpb-length” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
 </pre>
 
 <p>Length of the CPB buffer in milliseconds</p>
@@ -688,7 +787,7 @@ video/x-raw
 </h3>
 
 		<pre class="property_signature">
-“num-views” <span class="type"><a title="guint" href="gst-plugins-bad-codecparsers-1.0/nalutils.html#guint">guint</a></span>
+“num-views” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
 </pre>
 
 <p>Number of Views for MVC encoding</p>

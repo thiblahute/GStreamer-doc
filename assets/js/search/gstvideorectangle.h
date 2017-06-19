@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gstvideorectangle.h", "urls": ["gst-plugins-base-video-1.0/c/gstvideosink.html#GstVideoRectangle.w", "gst-plugins-base-video-1.0/python/gstvideosink.html#GstVideoRectangle.w", "gst-plugins-base-video-1.0/javascript/gstvideosink.html#GstVideoRectangle.w"]});
+urls_downloaded_cb({"token": "gstvideorectangle.h", "urls": ["gst-plugins-base-video-1.0/c/gstvideosink.html#GstVideoRectangle.w", "gst-plugins-base-video-1.0/javascript/gstvideosink.html#GstVideoRectangle.w", "gst-plugins-base-video-1.0/python/gstvideosink.html#GstVideoRectangle.w"]});

@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "cubic.h", "urls": ["libgstcontroller-1.0/c/gsttimedvaluecontrolsource.html#fields1", "libgstcontroller-1.0/python/gsttimedvaluecontrolsource.html#attributes1", "libgstcontroller-1.0/javascript/gsttimedvaluecontrolsource.html#attributes1"]});
+urls_downloaded_cb({"token": "cubic.h", "urls": ["libgstcontroller-1.0/c/gsttimedvaluecontrolsource.html#Classes", "libgstcontroller-1.0/python/gsttimedvaluecontrolsource.html#Classes", "libgstcontroller-1.0/javascript/gsttimedvaluecontrolsource.html#Classes"]});

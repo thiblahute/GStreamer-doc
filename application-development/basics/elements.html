@@ -11,6 +11,7 @@
 <title>Elements</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/bootstrap-toc.min.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
@@ -33,10 +34,10 @@
 
 <script src="assets/js/lines_around_headings.js"></script>
 
-<script src="assets/js/trie.js"></script>
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
@@ -145,7 +146,7 @@ capabilities</a>), you will learn more about data input
 and output in elements, and how you can set that up in your application.</p>
 <h3 id="source-elements">Source elements</h3>
 <p>Source elements generate data for use by a pipeline, for example reading
-from disk or from a sound card. <a href="#visualisation-of-a-source-element">Visualisation of a source
+from disk or from a sound card. <a href="application-development/basics/elements.html#visualisation-of-a-source-element">Visualisation of a source
 element</a> shows how we will visualise
 a source element. We always draw a source pad to the right of the
 element.</p>
@@ -164,13 +165,13 @@ demuxer, for example, would have one sink pad and several (1-N) source
 pads, one for each elementary stream contained in the container format.
 Decoders, on the other hand, will only have one source and sink pads.</p>
 <p><img src="application-development/basics/images/filter-element.png" alt="Visualisation of a filter element" title="fig:" id="visualisation-of-a-filter-element"></p>
-<p><a href="#visualisation-of-a-filter-element">Visualisation of a filter element</a>
+<p><a href="application-development/basics/elements.html#visualisation-of-a-filter-element">Visualisation of a filter element</a>
 shows how we will visualise a filter-like element. This specific element
 has one source and one sink element. Sink pads, receiving input data,
 are depicted at the left of the element; source pads are still on the
 right.</p>
 <p><img src="application-development/basics/images/filter-element-multi.png" alt="Visualisation of a filter element with more than one output pad" title="fig:" id="visualisation-of-a-filter-element-with-more-than-one-output-pad"></p>
-<p><a href="#visualisation-of-a-filter-element-with----more-than-one-output-pad">Visualisation of a filter element with more than one output
+<p><a href="application-development/basics/elements.html#visualisation-of-a-filter-element-with----more-than-one-output-pad">Visualisation of a filter element with more than one output
 pad</a>
 shows another filter-like element, this one having more than one output
 (source) pad. An example of one such element could, for example, be an
@@ -182,7 +183,7 @@ handle the new elementary stream in the signal handler.</p>
 <h3 id="sink-elements">Sink elements</h3>
 <p>Sink elements are end points in a media pipeline. They accept data but
 do not produce anything. Disk writing, soundcard playback, and video
-output would all be implemented by sink elements. <a href="#visualisation-of-a-sink-element">Visualisation of a
+output would all be implemented by sink elements. <a href="application-development/basics/elements.html#visualisation-of-a-sink-element">Visualisation of a
 sink element</a> shows a sink element.</p>
 <p><img src="application-development/basics/images/sink-element.png" alt="Visualisation of a sink element" title="fig:" id="visualisation-of-a-sink-element"></p>
 <h2 id="creating-a-gstelement">Creating a <code>GstElement</code>
@@ -263,6 +264,7 @@ main (int   argc,
   }
 
   gst_object_unref (GST_OBJECT (element));
+  gst_object_unref (GST_OBJECT (factory));
 
   return 0;
 }
@@ -369,6 +371,8 @@ main (int   argc,
            gst_plugin_feature_get_name (GST_PLUGIN_FEATURE (factory)),
            gst_element_factory_get_metadata (factory, GST_ELEMENT_METADATA_KLASS),
            gst_element_factory_get_metadata (factory, GST_ELEMENT_METADATA_DESCRIPTION));
+
+  gst_object_unref (GST_OBJECT (factory));
 
   return 0;
 }

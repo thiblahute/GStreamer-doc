@@ -11,6 +11,7 @@
 <title>Basic tutorial 1: Hello world!</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/bootstrap-toc.min.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
@@ -33,10 +34,10 @@
 
 <script src="assets/js/lines_around_headings.js"></script>
 
-<script src="assets/js/trie.js"></script>
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
@@ -139,7 +140,7 @@ always a bit verbose.</p>
 <p>Without further ado, get ready for your first GStreamer application...</p>
 <h2 id="hello-world">Hello world</h2>
 <p>Copy this code into a text file named <code>basic-tutorial-1.c</code> (or find it
-in the SDK installation).</p>
+in your GStreamer installation).</p>
 <p><strong>basic-tutorial-1.c</strong></p>
 <pre><code class="language-c">#include &lt;gst/gst.h&gt;
 
@@ -196,8 +197,8 @@ tutorial 12: Streaming</a> solves this issue.</p>
 </blockquote>
 <h2 id="walkthrough">Walkthrough</h2>
 <p>Let's review these lines of code and see what they do:</p>
-<pre><code class="language-c">    /* Initialize GStreamer */
-    gst_init (&amp;argc, &amp;argv);
+<pre><code class="language-c">/* Initialize GStreamer */
+gst_init (&amp;argc, &amp;argv);
 </code></pre>
 <p>This must always be your first GStreamer command. Among other things,
 <code>gst_init()</code>:</p>
@@ -216,8 +217,8 @@ tutorial 12: Streaming</a> solves this issue.</p>
 <code>argc</code> and <code>argv</code> to <code>gst_init()</code> your application will automatically
 benefit from the GStreamer standard command-line options (more on this
 in <a href="tutorials/basic/gstreamer-tools.html">Basic tutorial 10: GStreamer tools</a>)</p>
-<pre><code class="language-c">    /* Build the pipeline */
-    pipeline = gst_parse_launch ("playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm", NULL);
+<pre><code class="language-c">/* Build the pipeline */
+pipeline = gst_parse_launch ("playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm", NULL);
 </code></pre>
 <p>This line is the heart of this tutorial, and exemplifies <strong>two</strong> key
 points: <code>gst_parse_launch()</code> and <code>playbin</code>.</p>
@@ -255,8 +256,8 @@ instantiate the appropriate GStreamer source transparently!</p>
 plug-in, GStreamer provides several notification mechanisms, but the
 only thing we are doing in this example is exiting on error, so do not
 expect much feedback.</p>
-<pre><code class="language-c">    /* Start playing */
-    gst_element_set_state (pipeline, GST_STATE_PLAYING);
+<pre><code class="language-c">/* Start playing */
+gst_element_set_state (pipeline, GST_STATE_PLAYING);
 </code></pre>
 <p>This line highlights another interesting concept: the state. Every
 GStreamer element has an associated state, which you can more or less
@@ -265,11 +266,9 @@ suffice to say that playback will not start unless you set the pipeline
 to the PLAYING state.</p>
 <p>In this line, <code>gst_element_set_state()</code> is setting <code>pipeline</code> (our only
 element, remember) to the PLAYING state, thus initiating playback.</p>
-<pre><code>
-``` c
-    /* Wait until error or EOS */
-    bus = gst_element_get_bus (pipeline);
-    gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
+<pre><code class="language-c">/* Wait until error or EOS */
+bus = gst_element_get_bus (pipeline);
+gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
 </code></pre>
 <p>These lines will wait until an error occurs or the end of the stream is
 found. <code>gst_element_get_bus()</code> retrieves the pipeline's bus, and
@@ -285,12 +284,13 @@ control-C in the console.</p>
 <h3 id="cleanup">Cleanup</h3>
 <p>Before terminating the application, though, there is a couple of things
 we need to do to tidy up correctly after ourselves.</p>
-<pre><code class="language-c">    /* Free resources */
-    if (msg != NULL)
-      gst_message_unref (msg);
-    gst_object_unref (bus);
-    gst_element_set_state (pipeline, GST_STATE_NULL);
-    gst_object_unref (pipeline);
+<pre><code class="language-c">/* Free resources */
+if (msg != NULL)
+  gst_message_unref (msg);
+
+gst_object_unref (bus);
+gst_element_set_state (pipeline, GST_STATE_NULL);
+gst_object_unref (pipeline);
 </code></pre>
 <p>Always read the documentation of the functions you use, to know if you
 should free the objects they return after using them.</p>

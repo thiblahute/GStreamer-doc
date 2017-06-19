@@ -11,6 +11,7 @@
 <title>Stream selection</title>
 
 <link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/bootstrap-toc.min.css" type="text/css">
 <link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
 <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
 
@@ -33,10 +34,10 @@
 
 <script src="assets/js/lines_around_headings.js"></script>
 
-<script src="assets/js/trie.js"></script>
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
+<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
@@ -238,12 +239,12 @@ streams and current status: <code>GST_MESSAGE_STREAM_COLLECTION</code> and
 </li>
 </ol>
 <h2 id="gststream-objects">GstStream objects</h2>
-<pre><code>API:
+<p>API:</p>
+<pre><code>GstStream
 
-GstStream
-gst_stream_new(..)
-gst_stream_get_\*(...)
-gst_stream_set_\*()
+gst_stream_new(...)
+gst_stream_get_*(...)
+gst_stream_set_*(...)
 gst_event_set_stream(...)
 gst_event_parse_stream(...)
 </code></pre>
@@ -265,13 +266,13 @@ information that the existing components don't provide.</p>
 <p><code>GstStream</code> objects can be subclassed so that they can be re-used by
 elements already using the notion of stream (which is common for
 example in demuxers).</p>
-<p>Elements that create GstStream should also set it on the
+<p>Elements that create <code>GstStream</code> should also set it on the
 <code>GST_EVENT_STREAM_START</code> event of the relevant pad. This helps
 downstream elements to have all information in one location.</p>
 <h2 id="exposing-collections-of-streams">Exposing collections of streams</h2>
-<pre><code>API:
+<p>API:</p>
+<pre><code>GstStreamCollection
 
-GstStreamCollection
 gst_stream_collection_new(...)
 gst_stream_collection_add_stream(...)
 gst_stream_collection_get_size(...)
@@ -285,7 +286,7 @@ gst_event_parse_stream_collection(...)
 </code></pre>
 <p>Elements that create new streams (such as demuxers) or can create
 new streams (like the HLS/DASH alternative streams) can list the
-streams they can make available with the GstStreamCollection object.</p>
+streams they can make available with the <code>GstStreamCollection</code> object.</p>
 <p>Other elements that might generate <code>GstStreamCollections</code> are the
 DVD-VM, which handles internal switching of tracks, or parsebin and
 decodebin3 when it aggregates and presents multiple internal stream
@@ -329,10 +330,10 @@ rather than <code>GstStream</code> references in order to avoid circular
 referencing problems.</p>
 <h3 id="usage-from-elements">Usage from elements</h3>
 <p>When a demuxer knows the list of streams it can expose, it
-creates a new GstStream for each stream it can provide with the
+creates a new <code>GstStream</code> for each stream it can provide with the
 appropriate information (stream id, flag, tags, caps, ...).</p>
-<p>The demuxer then creates a GstStreamCollection object in which it
-will put the list of GstStream it can expose.  That collection is
+<p>The demuxer then creates a <code>GstStreamCollection</code> object in which it
+will put the list of <code>GstStream</code> it can expose.  That collection is
 then both posted on the bus (via a <code>GST_MESSAGE_COLLECTION</code>) and on
 each pad (via a <code>GST_EVENT_STREAM_COLLECTION</code>).</p>
 <p>That new collection must be posted on the bus <em>before</em> the changes
@@ -359,8 +360,8 @@ added/removed from an element.</p>
 <p>This allows providing stream listing/selection for any demuxer-like
 element even if it doesn't implement the <code>GstStreamCollection</code> usage.</p>
 <h2 id="stream-selection-event">Stream selection event</h2>
-<pre><code>API:
-
+<p>API:</p>
+<pre><code>
 GST_EVENT_SELECT_STREAMS
 gst_event_new_select_streams(...)
 gst_event_parse_select_streams(...)
@@ -417,7 +418,7 @@ pre-roll before a pipeline is completely linked down to sinks.</p>
 <h2 id="decodebin3-usage-and-example">decodebin3 usage and example</h2>
 <p>This is an example of how decodebin3 works by using the
 above-mentioned objects/events/messages.</p>
-<p>For clarity/completeness, we will consider a mpeg-ts stream that has
+<p>For clarity/completeness, we will consider a MPEG-TS stream that has
 multiple audio streams. Furthermore that stream might have changes
 at some point (switching video codec, or adding/removing audio
 streams).</p>
@@ -553,11 +554,11 @@ through the same pad as the previous video stream in a gapless fashion.</p>
 <h3 id="further-examples">Further examples</h3>
 <h5 id="hls-alternates">HLS alternates</h5>
 <p>There is a main (multi-bitrate or not) stream with audio and
-video interleaved in mpeg-ts. The manifest also indicates the
+video interleaved in MPEG-TS. The manifest also indicates the
 presence of alternate language audio-only streams.
 HLS would expose one collection containing:</p>
 <ol>
-<li>The main A+V CONTAINER stream (mpeg-ts), initially active,
+<li>The main A+V CONTAINER stream (MPEG-TS), initially active,
 downloaded and exposed as a pad</li>
 <li>The alternate A-only streams, initially inactive and not exposed as pads
 the tsdemux element connected to the first stream will also expose
@@ -591,7 +592,7 @@ If it appears a bit later, it will wait until that "kor" stream
 is available before switching</li>
 </ol>
 <h4 id="multiprogram-mpegts">multi-program MPEG-TS</h4>
-<p>Assuming the case of a mpeg-ts stream which contains multiple
+<p>Assuming the case of a MPEG-TS stream which contains multiple
 programs.
 There would be three "levels" of collection:</p>
 <ol>
@@ -661,18 +662,18 @@ another or not.</p>
 <h3 id="open-questions">OPEN QUESTIONS</h3>
 <ul>
 <li>
-<p>Is a <code>FLUSHING</code> flag for stream-selection required or not ? This would
+<p>Is a <code>FLUSHING</code> flag for stream-selection required or not? This would
 make the handler of the <code>SELECT_STREAMS</code> event send <code>FLUSH START/STOP</code>
 before switching to the other streams. This is tricky when dealing
 where situations where we keep some streams and only switch some
-others. Do we flush all streams ? Do we only flush the new streams,
-potentially resulting in delay to fully switch ? Furthermore, due to
+others. Do we flush all streams? Do we only flush the new streams,
+potentially resulting in delay to fully switch? Furthermore, due to
 efficient buffering in decodebin3, the switching time has been
 minimized extensively, to the point where flushing might not bring a
 noticeable improvement.</p>
 </li>
 <li>
-<p>Store the stream collection in bins/pipelines ? A Bin/Pipeline could
+<p>Store the stream collection in bins/pipelines? A Bin/Pipeline could
 store all active collection internally, so that it could be queried
 later on. This could be useful to then get, on any pipeline, at any
 point in time, the full list of collections available without having
@@ -684,7 +685,7 @@ fixing the "is a collection a replacement or not" issue first.</p>
 to <em>map</em> corresponding streams from the old to new PMT - that is,
 try and stick to the <em>english</em> language audio track, for example?
 Alternatively, rely on the app to do such smarts with stream-select
-messages ?</p>
+messages?</p>
 </li>
 </ul>
 
