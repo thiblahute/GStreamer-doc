@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "GstFFTS16Complex.r", "urls": ["gst-plugins-base-fft-1.0/c/gstffts16.html#Classes", "gst-plugins-base-fft-1.0/python/gstffts16.html#Classes", "gst-plugins-base-fft-1.0/javascript/gstffts16.html#Classes"]});
+urls_downloaded_cb({"token": "GstFFTS16Complex.r", "urls": ["gst-plugins-base-fft-1.0/c/gstffts16.html#struct-gstffts16complex", "gst-plugins-base-fft-1.0/python/gstffts16.html#gstfftffts16complex", "gst-plugins-base-fft-1.0/javascript/gstffts16.html#gstfftffts16complex"]});

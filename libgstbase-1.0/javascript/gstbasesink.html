@@ -159,16 +159,16 @@ install a pad template in its class_init function, like so:</p>
 <p><a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a> will handle the prerolling correctly. This means that it will
 return <a href="libgstreamer-1.0/javascript/gstelement-h.html#GST_STATE_CHANGE_ASYNC">Gst.StateChangeReturn.prototype.async</a> from a state change to PAUSED until the first
 buffer arrives in this element. The base class will call the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.preroll">GstBaseSinkClass.preroll()</a>() vmethod with this preroll buffer and will then
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::preroll">GstBaseSinkClass.preroll</a>() vmethod with this preroll buffer and will then
 commit the state change to the next asynchronously pending state.</p>
 <p>When the element is set to PLAYING, <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a> will synchronise on the
-clock using the times returned from <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.get_times">GstBaseSinkClass.get_times()</a>(). If this
+clock using the times returned from <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::get_times">GstBaseSinkClass.get_times</a>(). If this
 function returns <a href="libgstreamer-1.0/javascript/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> for the start time, no synchronisation
 will be done. Synchronisation can be disabled entirely by setting the object
 <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink:sync">sync</a> property to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a>.</p>
-<p>After synchronisation the virtual method <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.render">GstBaseSinkClass.render()</a>() will be
+<p>After synchronisation the virtual method <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSinkClass.render</a>() will be
 called. Subclasses should minimally implement this method.</p>
-<p>Subclasses that synchronise on the clock in the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.render">GstBaseSinkClass.render()</a>()
+<p>Subclasses that synchronise on the clock in the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSinkClass.render</a>()
 method are supported as well. These classes typically receive a buffer in
 the render method and can then potentially block on the clock while
 rendering. A typical example is an audiosink.
@@ -176,7 +176,7 @@ These subclasses can use <a href="libgstbase-1.0/javascript/gstbasesink.html#gst
 blocking wait.</p>
 <p>Upon receiving the EOS event in the PLAYING state, <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a> will wait
 for the clock to reach the time indicated by the stop time of the last
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.get_times">GstBaseSinkClass.get_times()</a>() call before posting an EOS message. When the
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::get_times">GstBaseSinkClass.get_times</a>() call before posting an EOS message. When the
 element receives EOS in PAUSED, preroll completes, the event is queued and an
 EOS message is posted when going to PLAYING.</p>
 <p><a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a> will internally use the <a href="libgstreamer-1.0/javascript/gstevent.html#GST_EVENT_SEGMENT">Gst.EventType.prototype.segment</a> events to schedule
@@ -188,21 +188,21 @@ clipping themselves when needed.</p>
 <a href="libgstreamer-1.0/javascript/gstformat.html#GST_FORMAT_TIME">Gst.Format.prototype.time</a> based on the current clock time and segment information.
 If no clock has been set on the element, the query will be forwarded
 upstream.</p>
-<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.set_caps">GstBaseSinkClass.set_caps()</a>() function will be called when the subclass
+<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::set_caps">GstBaseSinkClass.set_caps</a>() function will be called when the subclass
 should configure itself to process a specific media type.</p>
-<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.start">GstBaseSinkClass.start()</a>() and <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.stop">GstBaseSinkClass.stop()</a>() virtual methods
+<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::start">GstBaseSinkClass.start</a>() and <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::stop">GstBaseSinkClass.stop</a>() virtual methods
 will be called when resources should be allocated. Any
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.preroll">GstBaseSinkClass.preroll()</a>(), <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.render">GstBaseSinkClass.render()</a>() and
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.set_caps">GstBaseSinkClass.set_caps()</a>() function will be called between the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.start">GstBaseSinkClass.start()</a>() and <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.stop">GstBaseSinkClass.stop()</a>() calls.</p>
-<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.event">GstBaseSinkClass.event()</a>() virtual method will be called when an event is
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::preroll">GstBaseSinkClass.preroll</a>(), <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSinkClass.render</a>() and
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::set_caps">GstBaseSinkClass.set_caps</a>() function will be called between the
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::start">GstBaseSinkClass.start</a>() and <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::stop">GstBaseSinkClass.stop</a>() calls.</p>
+<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::event">GstBaseSinkClass.event</a>() virtual method will be called when an event is
 received by <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>. Normally this method should only be overridden by
 very specific elements (such as file sinks) which need to handle the
 newsegment event specially.</p>
-<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.unlock">GstBaseSinkClass.unlock()</a>() method is called when the elements should
+<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::unlock">GstBaseSinkClass.unlock</a>() method is called when the elements should
 unblock any blocking operations they perform in the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.render">GstBaseSinkClass.render()</a>() method. This is mostly useful when the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.render">GstBaseSinkClass.render()</a>() method performs a blocking write on a file
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSinkClass.render</a>() method. This is mostly useful when the
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSinkClass.render</a>() method performs a blocking write on a file
 descriptor, for example.</p>
 <p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink:max-lateness">max-lateness</a> property affects how the sink deals with
 buffers that arrive too late in the sink. A buffer arrives too late in the
@@ -212,7 +212,7 @@ time of the clock.
 If the frame is later than max-lateness, the sink will drop the buffer
 without calling the render method.
 This feature is disabled if sync is disabled, the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.get_times">GstBaseSinkClass.get_times()</a>() method does not return a valid start time or
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::get_times">GstBaseSinkClass.get_times</a>() method does not return a valid start time or
 max-lateness is set to -1 (the default).
 Subclasses can use <a href="libgstbase-1.0/javascript/gstbasesink.html#gst_base_sink_set_max_lateness">GstBase.BaseSink.prototype.set_max_lateness</a> to configure the
 max-lateness value.</p>
@@ -232,9 +232,6 @@ with non-synchronized streams or sparse streams.</p>
             <h2 class="symbol_section" id="">GstBaseSink</h2>
         
 
-
-
-            <h3 class="symbol_section" id="GstBaseSinkClasses">Classes</h3>
                     
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink">
@@ -566,388 +563,6 @@ with non-synchronized streams or sparse streams.</p>
 	<div class="col-sm-12 col-md-2">
 		<p>
 		<i><em><code>GstBaseSink._gst_reserved:</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">Object</a>
-	</div>
-</div>
-
-					</div>
-	</div>
-
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass">
-			
-		
-<div class="class_details">
-	<p>Subclasses can override any of the available virtual methods or not, as
-needed. At the minimum, the <em>render</em> method should be overridden to
-output/present buffers.</p>
-
-</div>
-<pre class="raw_code">
-struct GstBaseSinkClass {
-    GstElementClass parent_class;
-    GstCaps* GstBaseSinkClass.get_caps() (GstBaseSink* sink, GstCaps* filter);
-    gboolean GstBaseSinkClass.set_caps() (GstBaseSink* sink, GstCaps* caps);
-    GstCaps* GstBaseSinkClass.fixate() (GstBaseSink* sink, GstCaps* caps);
-    gboolean GstBaseSinkClass.activate_pull() (GstBaseSink* sink, gboolean active);
-    void GstBaseSinkClass.get_times() (GstBaseSink* sink, GstBuffer* buffer, GstClockTime* start, GstClockTime* end);
-    gboolean GstBaseSinkClass.propose_allocation() (GstBaseSink* sink, GstQuery* query);
-    gboolean GstBaseSinkClass.start() (GstBaseSink* sink);
-    gboolean GstBaseSinkClass.stop() (GstBaseSink* sink);
-    gboolean GstBaseSinkClass.unlock() (GstBaseSink* sink);
-    gboolean GstBaseSinkClass.unlock_stop() (GstBaseSink* sink);
-    gboolean GstBaseSinkClass.query() (GstBaseSink* sink, GstQuery* query);
-    gboolean GstBaseSinkClass.event() (GstBaseSink* sink, GstEvent* event);
-    GstFlowReturn GstBaseSinkClass.wait_event() (GstBaseSink* sink, GstEvent* event);
-    GstFlowReturn GstBaseSinkClass.prepare() (GstBaseSink* sink, GstBuffer* buffer);
-    GstFlowReturn GstBaseSinkClass.prepare_list() (GstBaseSink* sink, GstBufferList* buffer_list);
-    GstFlowReturn GstBaseSinkClass.preroll() (GstBaseSink* sink, GstBuffer* buffer);
-    GstFlowReturn GstBaseSinkClass.render() (GstBaseSink* sink, GstBuffer* buffer);
-    GstFlowReturn GstBaseSinkClass.render_list() (GstBaseSink* sink, GstBufferList* buffer_list);
-    gpointer _gst_reserved; /* &lt; private &gt; */
-};
-</pre>
-
-
-	<div class="member_details">
-		<span><b>Members</b></span>
-		<div class="container-fluid">
-						
-<div class="row" id="GstBaseSinkClass.parent_class">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.parent_class:</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Element parent class</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.ElementClass" href="libgstreamer-1.0/javascript/gstelement-h.html#GstElementClass">Gst.ElementClass</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.get_caps">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.get_caps():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Called to get sink pad caps from the subclass</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.set_caps">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.set_caps():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Notify subclass of changed caps</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.fixate">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.fixate():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Only useful in pull mode. Implement if you have
-ideas about what should be the default values for the caps you support.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.activate_pull">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.activate_pull():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Subclasses should override this when they can provide an
-alternate method of spawning a thread to drive the pipeline in pull mode.
-Should start or stop the pulling thread, depending on the value of the
-"active" argument. Called after actually activating the sink pad in pull
-mode. The default implementation starts a task on the sink pad.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.get_times">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.get_times():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Called to get the start and end times for synchronising
-the passed buffer to the clock</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		void (not introspectable)
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.propose_allocation">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.propose_allocation():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>configure the allocation query</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.start">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.start():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Start processing. Ideal for opening resources in the subclass</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.stop">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.stop():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Stop processing. Subclasses should use this to close resources.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.unlock">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.unlock():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Unlock any pending access to the resource. Subclasses should
-unblock any blocked function ASAP and call <a href="libgstbase-1.0/javascript/gstbasesink.html#gst_base_sink_wait_preroll">GstBase.BaseSink.prototype.wait_preroll</a></p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.unlock_stop">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.unlock_stop():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Clear the previous unlock request. Subclasses should clear
-any state they set during <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.unlock">GstBaseSinkClass.unlock()</a>(), and be ready to
-continue where they left off after <a href="libgstbase-1.0/javascript/gstbasesink.html#gst_base_sink_wait_preroll">GstBase.BaseSink.prototype.wait_preroll</a>,
-<a href="libgstbase-1.0/javascript/gstbasesink.html#gst_base_sink_wait">GstBase.BaseSink.prototype.wait</a> or gst_wait_sink_wait_clock return or
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.render">GstBaseSinkClass.render()</a>() is called again.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.query">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.query():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>perform a <a href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a> on the element.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.event">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.event():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Override this to handle events arriving on the sink pad</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.wait_event">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.wait_event():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Override this to implement custom logic to wait for the event
-time (for events like EOS and GAP). Subclasses should always first
-chain up to the default implementation.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.prepare">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.prepare():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Called to prepare the buffer for <em>render</em> and <em>preroll</em>. This
-function is called before synchronisation is performed.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.prepare_list">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.prepare_list():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Called to prepare the buffer list for <em>render_list</em>. This
-function is called before synchronisation is performed.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.preroll">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.preroll():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Called to present the preroll buffer if desired.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.render">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.render():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Called when a buffer should be presented or output, at the
-correct moment if the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a> has been set to sync to the clock.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass.render_list">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass.render_list():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Same as <em>render</em> but used with buffer lists instead of
-buffers.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSinkClass._gst_reserved">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSinkClass._gst_reserved:</code></em></i>
 		</p>
 	</div>
 	<div class="col-sm-12 col-md-8 field-description">
@@ -2935,9 +2550,9 @@ subclasses that use their own internal synchronisation.</p>
 returned. Likewise, if synchronisation is disabled in the element or there
 is no clock, no synchronisation is done and <a href="libgstreamer-1.0/javascript/gstclock.html#GST_CLOCK_BADTIME">Gst.ClockReturn.prototype.badtime</a> is returned.</p>
 <p>This function should only be called with the PREROLL_LOCK held, like when
-receiving an EOS event in the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.event">GstBaseSinkClass.event()</a>() vmethod or when
+receiving an EOS event in the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::event">GstBaseSinkClass.event</a>() vmethod or when
 receiving a buffer in
-the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.render">GstBaseSinkClass.render()</a>() vmethod.</p>
+the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSinkClass.render</a>() vmethod.</p>
 <p>The <em>time</em> argument should be the running_time of when this method should
 return and is not adjusted with any latency or offset configured in the
 sink.</p>
@@ -3043,13 +2658,13 @@ function GstBase.BaseSink.prototype.wait_preroll(): {
     // javascript wrapper for 'gst_base_sink_wait_preroll'
 }</pre>
 
-<p>If the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.render">GstBaseSinkClass.render()</a>() method performs its own synchronisation
+<p>If the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSinkClass.render</a>() method performs its own synchronisation
 against the clock it must unblock when going from PLAYING to the PAUSED state
 and call this method before continuing to render the remaining data.</p>
-<p>If the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.render">GstBaseSinkClass.render()</a>() method can block on something else than
+<p>If the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSinkClass.render</a>() method can block on something else than
 the clock, it must also be ready to unblock immediately on
-the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.unlock">GstBaseSinkClass.unlock()</a>() method and cause the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass.render">GstBaseSinkClass.render()</a>() method to immediately call this function.
+the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::unlock">GstBaseSinkClass.unlock</a>() method and cause the
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSinkClass.render</a>() method to immediately call this function.
 In this case, the subclass must be prepared to continue rendering where it
 left off if this function returns <a href="libgstreamer-1.0/javascript/gstpad.html#GST_FLOW_OK">Gst.FlowReturn.prototype.ok</a>.</p>
 <p>This function will block until a state change to PLAYING happens (in which
@@ -3438,6 +3053,1723 @@ used to fix synchronisation in bad files.</p>
 
 
 
+            <h3 class="symbol_section" id="GstBaseSinkStructures">Structures</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass">
+		<h3 id="gstbasebasesinkclass">
+	GstBase.BaseSinkClass
+</h3>
+
+		<p>Subclasses can override any of the available virtual methods or not, as
+needed. At the minimum, the <em>render</em> method should be overridden to
+output/present buffers.</p>
+
+
+	<div class="member_details">
+		<span><b>Attributes</b></span>
+		<div class="container-fluid">
+						
+<div class="row" id="GstBaseSinkClass.parent_class">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.parent_class:</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		<p>Element parent class</p>
+
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.ElementClass" href="libgstreamer-1.0/javascript/gstelement-h.html#GstElementClass">Gst.ElementClass</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.get_caps()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.get_caps():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.set_caps()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.set_caps():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.fixate()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.fixate():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.activate_pull()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.activate_pull():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.get_times()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.get_times():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		void (not introspectable)
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.propose_allocation()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.propose_allocation():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.start()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.start():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.stop()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.stop():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.unlock()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.unlock():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.unlock_stop()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.unlock_stop():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.query()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.query():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.event()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.event():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.wait_event()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.wait_event():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.prepare()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.prepare():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.prepare_list()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.prepare_list():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.preroll()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.preroll():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.render()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.render():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass.render_list()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass.render_list():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSinkClass._gst_reserved">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSinkClass._gst_reserved:</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">Object</a>
+	</div>
+</div>
+
+					</div>
+	</div>
+
+
+</div>
+
+
+
+
+            <h3 class="symbol_section" id="GstBaseSinkVirtual_Methods">Virtual Methods</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::activate_pull">
+		
+<h4 id="gstbasesinkclassactivate_pull">
+	<span><code>GstBaseSinkClass.activate_pull</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.activate_pull(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, active: <a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.activate_pull' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>active:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::event">
+		
+<h4 id="gstbasesinkclassevent">
+	<span><code>GstBaseSinkClass.event</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.event(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, event: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.event' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::fixate">
+		
+<h4 id="gstbasesinkclassfixate">
+	<span><code>GstBaseSinkClass.fixate</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.fixate(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, caps: <a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.fixate' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::get_caps">
+		
+<h4 id="gstbasesinkclassget_caps">
+	<span><code>GstBaseSinkClass.get_caps</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.get_caps(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, filter: <a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.get_caps' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>filter:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::get_times">
+		
+<h4 id="gstbasesinkclassget_times">
+	<span><code>GstBaseSinkClass.get_times</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.get_times(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>, start: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>, end: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.get_times' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>start:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>end:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::prepare">
+		
+<h4 id="gstbasesinkclassprepare">
+	<span><code>GstBaseSinkClass.prepare</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.prepare(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.prepare' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::prepare_list">
+		
+<h4 id="gstbasesinkclassprepare_list">
+	<span><code>GstBaseSinkClass.prepare_list</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.prepare_list(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer_list: <a title="Gst.BufferList" href="libgstreamer-1.0/javascript/gstbufferlist.html#GstBufferList">Gst.BufferList</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.prepare_list' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>buffer_list:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.BufferList" href="libgstreamer-1.0/javascript/gstbufferlist.html#GstBufferList">Gst.BufferList</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::preroll">
+		
+<h4 id="gstbasesinkclasspreroll">
+	<span><code>GstBaseSinkClass.preroll</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.preroll(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.preroll' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::propose_allocation">
+		
+<h4 id="gstbasesinkclasspropose_allocation">
+	<span><code>GstBaseSinkClass.propose_allocation</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.propose_allocation(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.propose_allocation' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::query">
+		
+<h4 id="gstbasesinkclassquery">
+	<span><code>GstBaseSinkClass.query</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.query(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.query' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::render">
+		
+<h4 id="gstbasesinkclassrender">
+	<span><code>GstBaseSinkClass.render</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.render(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.render' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::render_list">
+		
+<h4 id="gstbasesinkclassrender_list">
+	<span><code>GstBaseSinkClass.render_list</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.render_list(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer_list: <a title="Gst.BufferList" href="libgstreamer-1.0/javascript/gstbufferlist.html#GstBufferList">Gst.BufferList</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.render_list' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>buffer_list:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.BufferList" href="libgstreamer-1.0/javascript/gstbufferlist.html#GstBufferList">Gst.BufferList</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::set_caps">
+		
+<h4 id="gstbasesinkclassset_caps">
+	<span><code>GstBaseSinkClass.set_caps</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.set_caps(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, caps: <a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.set_caps' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::start">
+		
+<h4 id="gstbasesinkclassstart">
+	<span><code>GstBaseSinkClass.start</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.start(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.start' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::stop">
+		
+<h4 id="gstbasesinkclassstop">
+	<span><code>GstBaseSinkClass.stop</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.stop(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.stop' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::unlock">
+		
+<h4 id="gstbasesinkclassunlock">
+	<span><code>GstBaseSinkClass.unlock</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.unlock(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.unlock' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::unlock_stop">
+		
+<h4 id="gstbasesinkclassunlock_stop">
+	<span><code>GstBaseSinkClass.unlock_stop</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.unlock_stop(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.unlock_stop' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::wait_event">
+		
+<h4 id="gstbasesinkclasswait_event">
+	<span><code>GstBaseSinkClass.wait_event</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSinkClass.wait_event(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, event: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>): {
+    // javascript implementation of the 'GstBaseSinkClass.wait_event' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>sink:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
 
 
 		
@@ -3445,6 +4777,7 @@ used to fix synchronisation in bad files.</p>
 	<div id="search_results">
 		<p>The results of the search are</p>
 	</div>
+	<hr>
 	<div id="footer">
 		    
 

@@ -134,7 +134,7 @@ Control is given to the subclass when all pads have data.</p>
 <ul>
 <li>
 <p>Base class for mixers and muxers. Subclasses should at least implement
-the <a href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregatorClass.aggregate">GstAggregatorClass.aggregate()</a>() virtual method.</p>
+the <a href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregatorClass::aggregate">GstAggregatorClass.aggregate</a>() virtual method.</p>
 </li>
 <li>
 <p>When data is queued on all pads, tha aggregate vmethod is called.</p>
@@ -172,9 +172,6 @@ to ease their identification and subsequent processing.</p>
             <h2 class="symbol_section" id="">GstAggregator</h2>
         
 
-
-
-            <h3 class="symbol_section" id="GstAggregatorClasses">Classes</h3>
                     
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregator">
@@ -268,423 +265,6 @@ to ease their identification and subsequent processing.</p>
 	<div class="col-sm-12 col-md-2">
 		<p>
 		<i><em><code>GstAggregator._gst_reserved:</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">object</a>
-	</div>
-</div>
-
-					</div>
-	</div>
-
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass">
-			
-		
-<div class="class_details">
-	<p>The aggregator base class will handle in a thread-safe way all manners of
-concurrent flushes, seeks, pad additions and removals, leaving to the
-subclass the responsibility of clipping buffers, and aggregating buffers in
-the way the implementor sees fit.</p>
-<p>It will also take care of event ordering (stream-start, segment, eos).</p>
-<p>Basically, a basic implementation will override <em>aggregate</em>, and call
-_finish_buffer from inside that function.</p>
-
-</div>
-<pre class="raw_code">
-struct GstAggregatorClass {
-    GstElementClass parent_class;
-    GType sinkpads_type;
-    GstFlowReturn GstAggregatorClass.flush() (GstAggregator* aggregator);
-    GstBuffer* GstAggregatorClass.clip() (GstAggregator* aggregator, GstAggregatorPad* aggregator_pad, GstBuffer* buf);
-    gboolean GstAggregatorClass.sink_event() (GstAggregator* aggregator, GstAggregatorPad* aggregator_pad, GstEvent* event);
-    gboolean GstAggregatorClass.sink_query() (GstAggregator* aggregator, GstAggregatorPad* aggregator_pad, GstQuery* query);
-    gboolean GstAggregatorClass.src_event() (GstAggregator* aggregator, GstEvent* event);
-    gboolean GstAggregatorClass.src_query() (GstAggregator* aggregator, GstQuery* query);
-    gboolean GstAggregatorClass.src_activate() (GstAggregator* aggregator, GstPadMode mode, gboolean active);
-    GstFlowReturn GstAggregatorClass.aggregate() (GstAggregator* aggregator, gboolean timeout);
-    gboolean GstAggregatorClass.stop() (GstAggregator* aggregator);
-    gboolean GstAggregatorClass.start() (GstAggregator* aggregator);
-    GstClockTime GstAggregatorClass.get_next_time() (GstAggregator* aggregator);
-    GstAggregatorPad* GstAggregatorClass.create_new_pad() (GstAggregator* self, GstPadTemplate* templ, const gchar* req_name, const GstCaps* caps);
-    GstFlowReturn GstAggregatorClass.update_src_caps() (GstAggregator* self, GstCaps* caps, GstCaps** ret);
-    GstCaps* GstAggregatorClass.fixate_src_caps() (GstAggregator* self, GstCaps* caps);
-    gboolean GstAggregatorClass.negotiated_src_caps() (GstAggregator* self, GstCaps* caps);
-    gboolean GstAggregatorClass.decide_allocation() (GstAggregator* self, GstQuery* query);
-    gboolean GstAggregatorClass.propose_allocation() (GstAggregator* self, GstAggregatorPad* pad, GstQuery* decide_query, GstQuery* query);
-    gpointer _gst_reserved; /* &lt; private &gt; */
-};
-</pre>
-
-
-	<div class="member_details">
-		<span><b>Members</b></span>
-		<div class="container-fluid">
-						
-<div class="row" id="GstAggregatorClass.parent_class">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.parent_class:</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.ElementClass" href="libgstreamer-1.0/python/gstelement-h.html#GstElementClass">Gst.ElementClass</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.sinkpads_type">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.sinkpads_type:</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-The type of the pads that should be created when
-GstElement.request_new_pad is called.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="GObject.Type" href="https://developer.gnome.org/gobject/stable/gobject-Type-Information.html#GType">GObject.Type</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.flush">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.flush():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Called after a succesful flushing seek, once all the flush
-stops have been received. Flush pad-specific data in
-<a href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregatorPad">GstBadBase.AggregatorPad</a>-&gt;flush.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.clip">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.clip():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Called when a buffer is received on a sink pad, the task of
-clipping it and translating it to the current segment falls
-on the subclass. The function should use the segment of data
-and the negotiated media type on the pad to perform
-clipping of inbuffer. This function takes ownership of
-buf and should output a buffer or return NULL in
-if the buffer should be dropped.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.sink_event">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.sink_event():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Called when an event is received on a sink pad, the subclass
-should always chain up.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.sink_query">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.sink_query():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Called when a query is received on a sink pad, the subclass
-should always chain up.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.src_event">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.src_event():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Called when an event is received on the src pad, the subclass
-should always chain up.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.src_query">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.src_query():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Called when a query is received on the src pad, the subclass
-should always chain up.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.src_activate">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.src_activate():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Called when the src pad is activated, it will start/stop its
-pad task right after that call.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.aggregate">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.aggregate():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Mandatory.
-Called when buffers are queued on all sinkpads. Classes
-should iterate the GstElement-&gt;sinkpads and peek or steal
-buffers from the <a href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregatorPad">GstBadBase.AggregatorPad</a>. If the subclass returns
-GST_FLOW_EOS, sending of the eos event will be taken care
-of. Once / if a buffer has been constructed from the
-aggregated buffers, the subclass should call _finish_buffer.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.stop">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.stop():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Called when the element goes from PAUSED to READY.
-The subclass should free all resources and reset its state.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.start">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.start():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Called when the element goes from READY to PAUSED.
-The subclass should get ready to process
-aggregated buffers.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.get_next_time">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.get_next_time():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Called when the element needs to know the running time of the next
-rendered buffer for live pipelines. This causes deadline
-based aggregation to occur. Defaults to returning
-GST_CLOCK_TIME_NONE causing the element to wait for buffers
-on all sink pads before aggregating.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.ClockTime" href="libgstreamer-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.create_new_pad">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.create_new_pad() (not introspectable):</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="GstBadBase.AggregatorPad" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregatorPad">GstBadBase.AggregatorPad</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.update_src_caps">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.update_src_caps():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Lets subclasses update the <a href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a> representing
-the src pad caps before usage.  The result should end up
-in <em>ret</em>. Return <a href="gst-plugins-bad-base-1.0/c/gstaggregator.html#GST_AGGREGATOR_FLOW_NEED_DATA">GST_AGGREGATOR_FLOW_NEED_DATA (not introspectable)</a> to indicate that the
-element needs more information (caps, a buffer, etc) to
-choose the correct caps. Should return ANY caps if the
-stream has not caps at all.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.fixate_src_caps">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.fixate_src_caps():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Fixate and return the src pad caps provided.  The function takes
-ownership of <em>caps</em> and returns a fixated version of
-<em>caps</em>. <em>caps</em> is not guaranteed to be writable.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.negotiated_src_caps">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.negotiated_src_caps():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Notifies subclasses what caps format has been negotiated</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.decide_allocation">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.decide_allocation():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional.
-Allows the subclass to influence the allocation choices.
-Setup the allocation parameters for allocating output
-buffers. The passed in query contains the result of the
-downstream allocation query.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass.propose_allocation">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass.propose_allocation():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorClass._gst_reserved">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorClass._gst_reserved:</code></em></i>
 		</p>
 	</div>
 	<div class="col-sm-12 col-md-8 field-description">
@@ -1267,12 +847,1654 @@ def GstBadBase.Aggregator.set_src_caps (self, caps):
 
 
 
+
+            <h3 class="symbol_section" id="GstAggregatorStructures">Structures</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass">
+		<h3 id="gstbadbaseaggregatorclass">
+	GstBadBase.AggregatorClass
+</h3>
+
+		<p>The aggregator base class will handle in a thread-safe way all manners of
+concurrent flushes, seeks, pad additions and removals, leaving to the
+subclass the responsibility of clipping buffers, and aggregating buffers in
+the way the implementor sees fit.</p>
+<p>It will also take care of event ordering (stream-start, segment, eos).</p>
+<p>Basically, a basic implementation will override <em>aggregate</em>, and call
+_finish_buffer from inside that function.</p>
+
+
+	<div class="member_details">
+		<span><b>Attributes</b></span>
+		<div class="container-fluid">
+						
+<div class="row" id="GstAggregatorClass.parent_class">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.parent_class:</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.ElementClass" href="libgstreamer-1.0/python/gstelement-h.html#GstElementClass">Gst.ElementClass</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.sinkpads_type">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.sinkpads_type:</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		<p>Optional.
+The type of the pads that should be created when
+GstElement.request_new_pad is called.</p>
+
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="GObject.Type" href="https://developer.gnome.org/gobject/stable/gobject-Type-Information.html#GType">GObject.Type</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.flush()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.flush():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.clip()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.clip():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.sink_event()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.sink_event():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.sink_query()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.sink_query():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.src_event()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.src_event():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.src_query()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.src_query():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.src_activate()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.src_activate():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.aggregate()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.aggregate():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.stop()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.stop():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.start()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.start():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.get_next_time()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.get_next_time():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.ClockTime" href="libgstreamer-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.create_new_pad()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.create_new_pad() (not introspectable):</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="GstBadBase.AggregatorPad" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregatorPad">GstBadBase.AggregatorPad</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.update_src_caps()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.update_src_caps():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.fixate_src_caps()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.fixate_src_caps():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.negotiated_src_caps()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.negotiated_src_caps():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.decide_allocation()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.decide_allocation():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass.propose_allocation()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass.propose_allocation():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorClass._gst_reserved">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorClass._gst_reserved:</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">object</a>
+	</div>
+</div>
+
+					</div>
+	</div>
+
+
+</div>
+
+
+
+
+            <h3 class="symbol_section" id="GstAggregatorVirtual_Methods">Virtual Methods</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::aggregate">
+		
+<h4 id="gstaggregatorclassaggregate">
+	<span><code>GstAggregatorClass.aggregate</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.aggregate (aggregator, timeout):
+    #python implementation of the 'GstAggregatorClass.aggregate' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>timeout:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::clip">
+		
+<h4 id="gstaggregatorclassclip">
+	<span><code>GstAggregatorClass.clip</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.clip (aggregator, aggregator_pad, buf):
+    #python implementation of the 'GstAggregatorClass.clip' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator_pad:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.AggregatorPad" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregatorPad">GstBadBase.AggregatorPad</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>buf:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::decide_allocation">
+		
+<h4 id="gstaggregatorclassdecide_allocation">
+	<span><code>GstAggregatorClass.decide_allocation</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.decide_allocation (self, query):
+    #python implementation of the 'GstAggregatorClass.decide_allocation' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Query" href="libgstreamer-1.0/python/gstquery.html#GstQuery">Gst.Query</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::fixate_src_caps">
+		
+<h4 id="gstaggregatorclassfixate_src_caps">
+	<span><code>GstAggregatorClass.fixate_src_caps</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.fixate_src_caps (self, caps):
+    #python implementation of the 'GstAggregatorClass.fixate_src_caps' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::flush">
+		
+<h4 id="gstaggregatorclassflush">
+	<span><code>GstAggregatorClass.flush</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.flush (aggregator):
+    #python implementation of the 'GstAggregatorClass.flush' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::get_next_time">
+		
+<h4 id="gstaggregatorclassget_next_time">
+	<span><code>GstAggregatorClass.get_next_time</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.get_next_time (aggregator):
+    #python implementation of the 'GstAggregatorClass.get_next_time' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.ClockTime" href="libgstreamer-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::negotiated_src_caps">
+		
+<h4 id="gstaggregatorclassnegotiated_src_caps">
+	<span><code>GstAggregatorClass.negotiated_src_caps</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.negotiated_src_caps (self, caps):
+    #python implementation of the 'GstAggregatorClass.negotiated_src_caps' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::propose_allocation">
+		
+<h4 id="gstaggregatorclasspropose_allocation">
+	<span><code>GstAggregatorClass.propose_allocation</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.propose_allocation (self, pad, decide_query, query):
+    #python implementation of the 'GstAggregatorClass.propose_allocation' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>pad:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.AggregatorPad" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregatorPad">GstBadBase.AggregatorPad</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>decide_query:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Query" href="libgstreamer-1.0/python/gstquery.html#GstQuery">Gst.Query</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Query" href="libgstreamer-1.0/python/gstquery.html#GstQuery">Gst.Query</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::sink_event">
+		
+<h4 id="gstaggregatorclasssink_event">
+	<span><code>GstAggregatorClass.sink_event</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.sink_event (aggregator, aggregator_pad, event):
+    #python implementation of the 'GstAggregatorClass.sink_event' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator_pad:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.AggregatorPad" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregatorPad">GstBadBase.AggregatorPad</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Event" href="libgstreamer-1.0/python/gstevent.html#GstEvent">Gst.Event</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::sink_query">
+		
+<h4 id="gstaggregatorclasssink_query">
+	<span><code>GstAggregatorClass.sink_query</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.sink_query (aggregator, aggregator_pad, query):
+    #python implementation of the 'GstAggregatorClass.sink_query' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator_pad:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.AggregatorPad" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregatorPad">GstBadBase.AggregatorPad</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Query" href="libgstreamer-1.0/python/gstquery.html#GstQuery">Gst.Query</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::src_activate">
+		
+<h4 id="gstaggregatorclasssrc_activate">
+	<span><code>GstAggregatorClass.src_activate</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.src_activate (aggregator, mode, active):
+    #python implementation of the 'GstAggregatorClass.src_activate' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>mode:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.PadMode" href="libgstreamer-1.0/python/gstpad.html#GstPadMode">Gst.PadMode</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>active:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::src_event">
+		
+<h4 id="gstaggregatorclasssrc_event">
+	<span><code>GstAggregatorClass.src_event</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.src_event (aggregator, event):
+    #python implementation of the 'GstAggregatorClass.src_event' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Event" href="libgstreamer-1.0/python/gstevent.html#GstEvent">Gst.Event</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::src_query">
+		
+<h4 id="gstaggregatorclasssrc_query">
+	<span><code>GstAggregatorClass.src_query</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.src_query (aggregator, query):
+    #python implementation of the 'GstAggregatorClass.src_query' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Query" href="libgstreamer-1.0/python/gstquery.html#GstQuery">Gst.Query</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::start">
+		
+<h4 id="gstaggregatorclassstart">
+	<span><code>GstAggregatorClass.start</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.start (aggregator):
+    #python implementation of the 'GstAggregatorClass.start' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::stop">
+		
+<h4 id="gstaggregatorclassstop">
+	<span><code>GstAggregatorClass.stop</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.stop (aggregator):
+    #python implementation of the 'GstAggregatorClass.stop' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorClass::update_src_caps">
+		
+<h4 id="gstaggregatorclassupdate_src_caps">
+	<span><code>GstAggregatorClass.update_src_caps</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorClass.update_src_caps (self, caps, ret):
+    #python implementation of the 'GstAggregatorClass.update_src_caps' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>self:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>ret:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+
+
             <h2 class="symbol_section" id="">GstAggregatorPad</h2>
         
 
-
-
-            <h3 class="symbol_section" id="GstAggregatorPadClasses">Classes</h3>
                     
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorPad">
@@ -1350,78 +2572,6 @@ def GstBadBase.Aggregator.set_src_caps (self, caps):
 	<div class="col-sm-12 col-md-2">
 		<p>
 		<i><em><code>GstAggregatorPad._gst_reserved:</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">object</a>
-	</div>
-</div>
-
-					</div>
-	</div>
-
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorPadClass">
-			
-		
-<pre class="raw_code">
-struct GstAggregatorPadClass {
-    GstPadClass parent_class;
-    GstFlowReturn GstAggregatorPadClass.flush() (GstAggregatorPad* aggpad, GstAggregator* aggregator);
-    gpointer _gst_reserved; /* &lt; private &gt; */
-};
-</pre>
-
-
-	<div class="member_details">
-		<span><b>Members</b></span>
-		<div class="container-fluid">
-						
-<div class="row" id="GstAggregatorPadClass.parent_class">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorPadClass.parent_class:</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.PadClass" href="libgstreamer-1.0/python/gstpad.html#GstPadClass">Gst.PadClass</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorPadClass.flush">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorPadClass.flush():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Optional
-Called when the pad has received a flush stop, this is the place
-to flush any information specific to the pad, it allows for individual
-pads to be flushed while others might not be.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstAggregatorPadClass._gst_reserved">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstAggregatorPadClass._gst_reserved:</code></em></i>
 		</p>
 	</div>
 	<div class="col-sm-12 col-md-8 field-description">
@@ -1712,6 +2862,155 @@ queued. You should unref the buffer after usage.</p>
 
 
 
+            <h3 class="symbol_section" id="GstAggregatorPadStructures">Structures</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorPadClass">
+		<h3 id="gstbadbaseaggregatorpadclass">
+	GstBadBase.AggregatorPadClass
+</h3>
+
+		
+	<div class="member_details">
+		<span><b>Attributes</b></span>
+		<div class="container-fluid">
+						
+<div class="row" id="GstAggregatorPadClass.parent_class">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorPadClass.parent_class:</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.PadClass" href="libgstreamer-1.0/python/gstpad.html#GstPadClass">Gst.PadClass</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorPadClass.flush()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorPadClass.flush():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstAggregatorPadClass._gst_reserved">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstAggregatorPadClass._gst_reserved:</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">object</a>
+	</div>
+</div>
+
+					</div>
+	</div>
+
+
+</div>
+
+
+
+
+            <h3 class="symbol_section" id="GstAggregatorPadVirtual_Methods">Virtual Methods</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAggregatorPadClass::flush">
+		
+<h4 id="gstaggregatorpadclassflush">
+	<span><code>GstAggregatorPadClass.flush</code></span>
+</h4>
+
+		<pre class="programlisting">
+def GstAggregatorPadClass.flush (aggpad, aggregator):
+    #python implementation of the 'GstAggregatorPadClass.flush' virtual method</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggpad:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.AggregatorPad" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregatorPad">GstBadBase.AggregatorPad</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>aggregator:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBadBase.Aggregator" href="gst-plugins-bad-base-1.0/python/gstaggregator.html#GstAggregator">GstBadBase.Aggregator</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
 
 
 		
@@ -1719,6 +3018,7 @@ queued. You should unref the buffer after usage.</p>
 	<div id="search_results">
 		<p>The results of the search are</p>
 	</div>
+	<hr>
 	<div id="footer">
 		    
 

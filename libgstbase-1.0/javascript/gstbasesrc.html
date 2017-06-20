@@ -145,7 +145,7 @@ conditions are met, it also supports pull mode scheduling:</p>
 <ul>
 <li>The format is set to <a href="libgstreamer-1.0/javascript/gstformat.html#GST_FORMAT_BYTES">Gst.Format.prototype.bytes</a> (default).</li>
 <li>
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.is_seekable">GstBaseSrcClass.is_seekable()</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrcClass.is_seekable</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
 </ul>
 <p>If all the conditions are met for operating in pull mode, <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> is
 automatically seekable in push mode as well. The following conditions must
@@ -153,27 +153,27 @@ be met to make the element seekable in push mode when the format is not
 <a href="libgstreamer-1.0/javascript/gstformat.html#GST_FORMAT_BYTES">Gst.Format.prototype.bytes</a>:</p>
 <ul>
 <li>
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.is_seekable">GstBaseSrcClass.is_seekable()</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrcClass.is_seekable</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
 <li>
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.query">GstBaseSrcClass.query()</a>() can convert all supported seek formats to the
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::query">GstBaseSrcClass.query</a>() can convert all supported seek formats to the
 internal format as set with <a href="libgstbase-1.0/javascript/gstbasesrc.html#gst_base_src_set_format">GstBase.BaseSrc.prototype.set_format</a>.</li>
 <li>
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.do_seek">GstBaseSrcClass.do_seek()</a>() is implemented, performs the seek and returns
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::do_seek">GstBaseSrcClass.do_seek</a>() is implemented, performs the seek and returns
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
 </ul>
 <p>When the element does not meet the requirements to operate in pull mode, the
-offset and length in the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.create">GstBaseSrcClass.create()</a>() method should be ignored.
+offset and length in the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrcClass.create</a>() method should be ignored.
 It is recommended to subclass <a href="libgstbase-1.0/javascript/gstpushsrc.html#GstPushSrc">GstBase.PushSrc</a> instead, in this situation. If the
 element can operate in pull mode but only with specific offsets and
 lengths, it is allowed to generate an error when the wrong values are passed
-to the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.create">GstBaseSrcClass.create()</a>() function.</p>
+to the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrcClass.create</a>() function.</p>
 <p><a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> has support for live sources. Live sources are sources that when
 paused discard data, such as audio or video capture devices. A typical live
 source also produces data at a fixed rate and thus provides a clock to publish
 this rate.
 Use <a href="libgstbase-1.0/javascript/gstbasesrc.html#gst_base_src_set_live">GstBase.BaseSrc.prototype.set_live</a> to activate the live source mode.</p>
 <p>A live source does not produce data in the PAUSED state. This means that the
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.create">GstBaseSrcClass.create()</a>() method will not be called in PAUSED but only in
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrcClass.create</a>() method will not be called in PAUSED but only in
 PLAYING. To signal the pipeline that the element will not produce data, the
 return value from the READY to PAUSED state will be
 <a href="libgstreamer-1.0/javascript/gstelement-h.html#GST_STATE_CHANGE_NO_PREROLL">Gst.StateChangeReturn.prototype.no_preroll</a>.</p>
@@ -183,11 +183,11 @@ can only produce data in the PLAYING state, when the clock is actually
 distributed and running.</p>
 <p>Live sources that synchronize and block on the clock (an audio source, for
 example) can use <a href="libgstbase-1.0/javascript/gstbasesrc.html#gst_base_src_wait_playing">GstBase.BaseSrc.prototype.wait_playing</a> when the
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.create">GstBaseSrcClass.create()</a>() function was interrupted by a state change to
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrcClass.create</a>() function was interrupted by a state change to
 PAUSED.</p>
-<p>The <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.get_times">GstBaseSrcClass.get_times()</a>() method can be used to implement pseudo-live
-sources. It only makes sense to implement the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.get_times">GstBaseSrcClass.get_times()</a>()
-function if the source is a live source. The <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.get_times">GstBaseSrcClass.get_times()</a>()
+<p>The <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrcClass.get_times</a>() method can be used to implement pseudo-live
+sources. It only makes sense to implement the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrcClass.get_times</a>()
+function if the source is a live source. The <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrcClass.get_times</a>()
 function should return timestamps starting from 0, as if it were a non-live
 source. The base class will make sure that the timestamps are transformed
 into the current running_time. The base source will then wait for the
@@ -239,9 +239,6 @@ received, it may safely shut down the entire pipeline.</p>
             <h2 class="symbol_section" id="">GstBaseSrc</h2>
         
 
-
-
-            <h3 class="symbol_section" id="GstBaseSrcClasses">Classes</h3>
                     
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrc">
@@ -544,415 +541,6 @@ received, it may safely shut down the entire pipeline.</p>
 	<div class="col-sm-12 col-md-2">
 		<p>
 		<i><em><code>GstBaseSrc._gst_reserved:</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">Object</a>
-	</div>
-</div>
-
-					</div>
-	</div>
-
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass">
-			
-		
-<div class="class_details">
-	<p>Subclasses can override any of the available virtual methods or not, as
-needed. At the minimum, the <em>create</em> method should be overridden to produce
-buffers.</p>
-
-</div>
-<pre class="raw_code">
-struct GstBaseSrcClass {
-    GstElementClass parent_class;
-    GstCaps* GstBaseSrcClass.get_caps() (GstBaseSrc* src, GstCaps* filter);
-    gboolean GstBaseSrcClass.negotiate() (GstBaseSrc* src);
-    GstCaps* GstBaseSrcClass.fixate() (GstBaseSrc* src, GstCaps* caps);
-    gboolean GstBaseSrcClass.set_caps() (GstBaseSrc* src, GstCaps* caps);
-    gboolean GstBaseSrcClass.decide_allocation() (GstBaseSrc* src, GstQuery* query);
-    gboolean GstBaseSrcClass.start() (GstBaseSrc* src);
-    gboolean GstBaseSrcClass.stop() (GstBaseSrc* src);
-    void GstBaseSrcClass.get_times() (GstBaseSrc* src, GstBuffer* buffer, GstClockTime* start, GstClockTime* end);
-    gboolean GstBaseSrcClass.get_size() (GstBaseSrc* src, guint64* size);
-    gboolean GstBaseSrcClass.is_seekable() (GstBaseSrc* src);
-    gboolean GstBaseSrcClass.prepare_seek_segment() (GstBaseSrc* src, GstEvent* seek, GstSegment* segment);
-    gboolean GstBaseSrcClass.do_seek() (GstBaseSrc* src, GstSegment* segment);
-    gboolean GstBaseSrcClass.unlock() (GstBaseSrc* src);
-    gboolean GstBaseSrcClass.unlock_stop() (GstBaseSrc* src);
-    gboolean GstBaseSrcClass.query() (GstBaseSrc* src, GstQuery* query);
-    gboolean GstBaseSrcClass.event() (GstBaseSrc* src, GstEvent* event);
-    GstFlowReturn GstBaseSrcClass.create() (GstBaseSrc* src, guint64 offset, guint size, GstBuffer** buf);
-    GstFlowReturn GstBaseSrcClass.alloc() (GstBaseSrc* src, guint64 offset, guint size, GstBuffer** buf);
-    GstFlowReturn GstBaseSrcClass.fill() (GstBaseSrc* src, guint64 offset, guint size, GstBuffer* buf);
-    gpointer _gst_reserved; /* &lt; private &gt; */
-};
-</pre>
-
-
-	<div class="member_details">
-		<span><b>Members</b></span>
-		<div class="container-fluid">
-						
-<div class="row" id="GstBaseSrcClass.parent_class">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.parent_class:</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Element parent class</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.ElementClass" href="libgstreamer-1.0/javascript/gstelement-h.html#GstElementClass">Gst.ElementClass</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.get_caps">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.get_caps():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Called to get the caps to report</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.negotiate">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.negotiate():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Negotiated the caps with the peer.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.fixate">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.fixate():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Called during negotiation if caps need fixating. Implement instead of
-setting a fixate function on the source pad.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.set_caps">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.set_caps():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Notify subclass of changed output caps</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.decide_allocation">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.decide_allocation():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>configure the allocation query</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.start">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.start():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Start processing. Subclasses should open resources and prepare
-to produce data. Implementation should call <a href="libgstbase-1.0/javascript/gstbasesrc.html#gst_base_src_start_complete">GstBase.BaseSrc.prototype.start_complete</a>
-when the operation completes, either from the current thread or any other
-thread that finishes the start operation asynchronously.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.stop">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.stop():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Stop processing. Subclasses should use this to close resources.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.get_times">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.get_times():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Given a buffer, return the start and stop time when it
-should be pushed out. The base class will sync on the clock using
-these times.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		void (not introspectable)
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.get_size">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.get_size():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Return the total size of the resource, in the format set by
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#gst_base_src_set_format">GstBase.BaseSrc.prototype.set_format</a>.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.is_seekable">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.is_seekable():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Check if the source can seek</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.prepare_seek_segment">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.prepare_seek_segment():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Prepare the <a href="libgstreamer-1.0/javascript/gstsegment.html#GstSegment">Gst.Segment</a> that will be passed to the
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.do_seek">GstBaseSrcClass.do_seek()</a>() vmethod for executing a seek
-request. Sub-classes should override this if they support seeking in
-formats other than the configured native format. By default, it tries to
-convert the seek arguments to the configured native format and prepare a
-segment in that format.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.do_seek">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.do_seek():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Perform seeking on the resource to the indicated segment.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.unlock">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.unlock():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Unlock any pending access to the resource. Subclasses should unblock
-any blocked function ASAP. In particular, any create function in
-progress should be unblocked and should return GST_FLOW_FLUSHING. Any
-future <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.create">GstBaseSrcClass.create()</a>() function call should also return
-GST_FLOW_FLUSHING until the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.unlock_stop">GstBaseSrcClass.unlock_stop()</a>() function has
-been called.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.unlock_stop">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.unlock_stop():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Clear the previous unlock request. Subclasses should clear any
-state they set during <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.unlock">GstBaseSrcClass.unlock()</a>(), such as clearing command
-queues.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.query">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.query():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Handle a requested query.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.event">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.event():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Override this to implement custom event handling.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.create">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.create():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Ask the subclass to create a buffer with offset and size.  When the
-subclass returns GST_FLOW_OK, it MUST return a buffer of the requested size
-unless fewer bytes are available because an EOS condition is near. No
-buffer should be returned when the return value is different from
-GST_FLOW_OK. A return value of GST_FLOW_EOS signifies that the end of
-stream is reached. The default implementation will call
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.alloc">GstBaseSrcClass.alloc()</a>() and then call <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.fill">GstBaseSrcClass.fill()</a>().</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.alloc">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.alloc():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Ask the subclass to allocate a buffer with for offset and size. The
-default implementation will create a new buffer from the negotiated allocator.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass.fill">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.fill():</code></em></i>
-		</p>
-	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Ask the subclass to fill the buffer with data for offset and size. The
-passed buffer is guaranteed to hold the requested amount of bytes.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
-
-						
-<div class="row" id="GstBaseSrcClass._gst_reserved">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass._gst_reserved:</code></em></i>
 		</p>
 	</div>
 	<div class="col-sm-12 col-md-8 field-description">
@@ -2022,7 +1610,7 @@ function GstBase.BaseSrc.prototype.set_format(format: <a title="Gst.Format" href
 <p>Sets the default format of the source. This will be the format used
 for sending SEGMENT events and for performing seeks.</p>
 <p>If a format of GST_FORMAT_BYTES is set, the element will be able to
-operate in pull mode if the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.is_seekable">GstBaseSrcClass.is_seekable()</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</p>
+operate in pull mode if the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrcClass.is_seekable</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</p>
 <p>This function must only be called in states &lt; <a href="libgstreamer-1.0/javascript/gstelement-h.html#GST_STATE_PAUSED">Gst.State.prototype.paused</a>.</p>
 
 
@@ -2280,7 +1868,7 @@ function GstBase.BaseSrc.prototype.wait_playing(): {
     // javascript wrapper for 'gst_base_src_wait_playing'
 }</pre>
 
-<p>If the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass.create">GstBaseSrcClass.create()</a>() method performs its own synchronisation
+<p>If the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrcClass.create</a>() method performs its own synchronisation
 against the clock it must unblock when going from PLAYING to the PAUSED state
 and call this method before continuing to produce the remaining data.</p>
 <p>This function will block until a state change to PLAYING happens (in which
@@ -2456,6 +2044,1893 @@ continue. Any other return value should be returned from the create vmethod.</p>
 
 
 
+
+            <h3 class="symbol_section" id="GstBaseSrcStructures">Structures</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass">
+		<h3 id="gstbasebasesrcclass">
+	GstBase.BaseSrcClass
+</h3>
+
+		<p>Subclasses can override any of the available virtual methods or not, as
+needed. At the minimum, the <em>create</em> method should be overridden to produce
+buffers.</p>
+
+
+	<div class="member_details">
+		<span><b>Attributes</b></span>
+		<div class="container-fluid">
+						
+<div class="row" id="GstBaseSrcClass.parent_class">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.parent_class:</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		<p>Element parent class</p>
+
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.ElementClass" href="libgstreamer-1.0/javascript/gstelement-h.html#GstElementClass">Gst.ElementClass</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.get_caps()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.get_caps():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.negotiate()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.negotiate():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.fixate()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.fixate():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.set_caps()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.set_caps():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.decide_allocation()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.decide_allocation():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.start()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.start():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.stop()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.stop():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.get_times()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.get_times():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		void (not introspectable)
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.get_size()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.get_size():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.is_seekable()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.is_seekable():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.prepare_seek_segment()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.prepare_seek_segment():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.do_seek()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.do_seek():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.unlock()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.unlock():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.unlock_stop()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.unlock_stop():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.query()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.query():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.event()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.event():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.create()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.create():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.alloc()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.alloc():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass.fill()">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass.fill():</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+</div>
+
+						
+<div class="row" id="GstBaseSrcClass._gst_reserved">
+	<div class="col-sm-12 col-md-2">
+		<p>
+		<i><em><code>GstBaseSrcClass._gst_reserved:</code></em></i>
+		</p>
+	</div>
+	<div class="col-sm-12 col-md-8 field-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 field-link">
+		<a title="Object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">Object</a>
+	</div>
+</div>
+
+					</div>
+	</div>
+
+
+</div>
+
+
+
+
+            <h3 class="symbol_section" id="GstBaseSrcVirtual_Methods">Virtual Methods</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::alloc">
+		
+<h4 id="gstbasesrcclassalloc">
+	<span><code>GstBaseSrcClass.alloc</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.alloc(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>, size: <a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">Number</a>, buf: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.alloc' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>offset:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">Number</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>buf:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::create">
+		
+<h4 id="gstbasesrcclasscreate">
+	<span><code>GstBaseSrcClass.create</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.create(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>, size: <a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">Number</a>, buf: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.create' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>offset:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">Number</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>buf:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::decide_allocation">
+		
+<h4 id="gstbasesrcclassdecide_allocation">
+	<span><code>GstBaseSrcClass.decide_allocation</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.decide_allocation(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.decide_allocation' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::do_seek">
+		
+<h4 id="gstbasesrcclassdo_seek">
+	<span><code>GstBaseSrcClass.do_seek</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.do_seek(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, segment: <a title="Gst.Segment" href="libgstreamer-1.0/javascript/gstsegment.html#GstSegment">Gst.Segment</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.do_seek' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Segment" href="libgstreamer-1.0/javascript/gstsegment.html#GstSegment">Gst.Segment</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::event">
+		
+<h4 id="gstbasesrcclassevent">
+	<span><code>GstBaseSrcClass.event</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.event(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, event: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.event' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>event:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::fill">
+		
+<h4 id="gstbasesrcclassfill">
+	<span><code>GstBaseSrcClass.fill</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.fill(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>, size: <a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">Number</a>, buf: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.fill' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>offset:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">Number</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>buf:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::fixate">
+		
+<h4 id="gstbasesrcclassfixate">
+	<span><code>GstBaseSrcClass.fixate</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.fixate(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, caps: <a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.fixate' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_caps">
+		
+<h4 id="gstbasesrcclassget_caps">
+	<span><code>GstBaseSrcClass.get_caps</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.get_caps(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, filter: <a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.get_caps' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>filter:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_size">
+		
+<h4 id="gstbasesrcclassget_size">
+	<span><code>GstBaseSrcClass.get_size</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.get_size(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, size: <a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.get_size' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>size:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_times">
+		
+<h4 id="gstbasesrcclassget_times">
+	<span><code>GstBaseSrcClass.get_times</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.get_times(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>, start: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>, end: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.get_times' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>buffer:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>start:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>end:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::is_seekable">
+		
+<h4 id="gstbasesrcclassis_seekable">
+	<span><code>GstBaseSrcClass.is_seekable</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.is_seekable(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.is_seekable' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::negotiate">
+		
+<h4 id="gstbasesrcclassnegotiate">
+	<span><code>GstBaseSrcClass.negotiate</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.negotiate(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.negotiate' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::prepare_seek_segment">
+		
+<h4 id="gstbasesrcclassprepare_seek_segment">
+	<span><code>GstBaseSrcClass.prepare_seek_segment</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.prepare_seek_segment(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, seek: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>, segment: <a title="Gst.Segment" href="libgstreamer-1.0/javascript/gstsegment.html#GstSegment">Gst.Segment</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.prepare_seek_segment' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>seek:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>segment:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Segment" href="libgstreamer-1.0/javascript/gstsegment.html#GstSegment">Gst.Segment</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::query">
+		
+<h4 id="gstbasesrcclassquery">
+	<span><code>GstBaseSrcClass.query</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.query(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.query' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>query:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::set_caps">
+		
+<h4 id="gstbasesrcclassset_caps">
+	<span><code>GstBaseSrcClass.set_caps</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.set_caps(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, caps: <a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.set_caps' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>caps:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::start">
+		
+<h4 id="gstbasesrcclassstart">
+	<span><code>GstBaseSrcClass.start</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.start(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.start' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::stop">
+		
+<h4 id="gstbasesrcclassstop">
+	<span><code>GstBaseSrcClass.stop</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.stop(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.stop' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::unlock">
+		
+<h4 id="gstbasesrcclassunlock">
+	<span><code>GstBaseSrcClass.unlock</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.unlock(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.unlock' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::unlock_stop">
+		
+<h4 id="gstbasesrcclassunlock_stop">
+	<span><code>GstBaseSrcClass.unlock_stop</code></span>
+</h4>
+
+		<pre class="programlisting">
+function GstBaseSrcClass.unlock_stop(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrcClass.unlock_stop' virtual method
+}</pre>
+
+
+
+
+	<div class="parameter_container">
+		<span><b>Parameters:</b></span>
+		<div class="container-fluid">
+							
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+			<p>
+		<i><em><code>src:</code></em></i>
+		</p>
+		</div>
+	<div class="col-sm-12 col-md-8 parameter-description">
+	
+	</div>
+	<div class="col-sm-12 col-md-2 parameter-extra">
+		<a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+		</div>
+</div>
+
+					</div>
+	</div>
+
+	<div class="multi_return_value_container">
+		<span><b>Returns:<b></b></b></span>
+		<div class="container-fluid">
+				
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<p>
+				</p>
+	</div>
+	<div class="col-sm-12 col-md-6 return-value-description">
+		
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-link">
+		<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>
+	</div>
+	<div class="col-sm-12 col-md-2 return-value-extra">
+				
+	</div>
+</div>
+
+			</div>
+</div>
+
+
+
+
+</div>
+
+
+
         
 
 
@@ -2542,6 +4017,7 @@ continue. Any other return value should be returned from the create vmethod.</p>
 	<div id="search_results">
 		<p>The results of the search are</p>
 	</div>
+	<hr>
 	<div id="footer">
 		    
 
