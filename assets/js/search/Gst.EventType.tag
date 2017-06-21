@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "Gst.EventType.tag", "urls": ["libgstreamer-1.0/python/gstevent.html#GST_EVENT_STREAM_COLLECTION", "libgstreamer-1.0/python/gsttaglist.html#enum-gsttagmergemode"]});
+urls_downloaded_cb({"token": "Gst.EventType.tag", "urls": ["libgstreamer-1.0/python/gsttaglist.html#enum-gsttagmergemode"]});

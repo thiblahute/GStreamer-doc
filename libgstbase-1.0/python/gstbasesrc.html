@@ -34,10 +34,10 @@
 
 <script src="assets/js/lines_around_headings.js"></script>
 
+<script src="assets/js/trie.js"></script>
 <script src="assets/js/prism-core.js"></script>
 <script src="assets/js/prism-autoloader.js"></script>
 <script src="assets/js/prism_autoloader_path_override.js"></script>
-<script src="assets/js/trie.js"></script>
 
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
 <link rel="shortcut icon" href="assets/images/favicon.png">
@@ -145,7 +145,7 @@ conditions are met, it also supports pull mode scheduling:</p>
 <ul>
 <li>The format is set to <a href="libgstreamer-1.0/python/gstformat.html#GST_FORMAT_BYTES">Gst.Format.bytes</a> (default).</li>
 <li>
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrcClass.is_seekable</a>() returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>.</li>
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">is_seekable</a>() returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>.</li>
 </ul>
 <p>If all the conditions are met for operating in pull mode, <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> is
 automatically seekable in push mode as well. The following conditions must
@@ -153,27 +153,27 @@ be met to make the element seekable in push mode when the format is not
 <a href="libgstreamer-1.0/python/gstformat.html#GST_FORMAT_BYTES">Gst.Format.bytes</a>:</p>
 <ul>
 <li>
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrcClass.is_seekable</a>() returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>.</li>
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">is_seekable</a>() returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>.</li>
 <li>
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::query">GstBaseSrcClass.query</a>() can convert all supported seek formats to the
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::query">query</a>() can convert all supported seek formats to the
 internal format as set with <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_set_format">GstBase.BaseSrc.set_format</a>.</li>
 <li>
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::do_seek">GstBaseSrcClass.do_seek</a>() is implemented, performs the seek and returns
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::do_seek">do_seek</a>() is implemented, performs the seek and returns
 <a href="https://docs.python.org/2/library/constants.html#True">True</a>.</li>
 </ul>
 <p>When the element does not meet the requirements to operate in pull mode, the
-offset and length in the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrcClass.create</a>() method should be ignored.
+offset and length in the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">create</a>() method should be ignored.
 It is recommended to subclass <a href="libgstbase-1.0/python/gstpushsrc.html#GstPushSrc">GstBase.PushSrc</a> instead, in this situation. If the
 element can operate in pull mode but only with specific offsets and
 lengths, it is allowed to generate an error when the wrong values are passed
-to the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrcClass.create</a>() function.</p>
+to the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">create</a>() function.</p>
 <p><a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> has support for live sources. Live sources are sources that when
 paused discard data, such as audio or video capture devices. A typical live
 source also produces data at a fixed rate and thus provides a clock to publish
 this rate.
 Use <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_set_live">GstBase.BaseSrc.set_live</a> to activate the live source mode.</p>
 <p>A live source does not produce data in the PAUSED state. This means that the
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrcClass.create</a>() method will not be called in PAUSED but only in
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">create</a>() method will not be called in PAUSED but only in
 PLAYING. To signal the pipeline that the element will not produce data, the
 return value from the READY to PAUSED state will be
 <a href="libgstreamer-1.0/python/gstelement-h.html#GST_STATE_CHANGE_NO_PREROLL">Gst.StateChangeReturn.no_preroll</a>.</p>
@@ -183,11 +183,11 @@ can only produce data in the PLAYING state, when the clock is actually
 distributed and running.</p>
 <p>Live sources that synchronize and block on the clock (an audio source, for
 example) can use <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_wait_playing">GstBase.BaseSrc.wait_playing</a> when the
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrcClass.create</a>() function was interrupted by a state change to
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">create</a>() function was interrupted by a state change to
 PAUSED.</p>
-<p>The <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrcClass.get_times</a>() method can be used to implement pseudo-live
-sources. It only makes sense to implement the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrcClass.get_times</a>()
-function if the source is a live source. The <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrcClass.get_times</a>()
+<p>The <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">get_times</a>() method can be used to implement pseudo-live
+sources. It only makes sense to implement the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">get_times</a>()
+function if the source is a live source. The <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">get_times</a>()
 function should return timestamps starting from 0, as if it were a non-live
 source. The base class will make sure that the timestamps are transformed
 into the current running_time. The base source will then wait for the
@@ -263,296 +263,199 @@ received, it may safely shut down the entire pipeline.</p>
 
 </div>
 
-	<div class="member_details">
-		<span><b>Members</b></span>
-		<div class="container-fluid">
-						
-<div class="row" id="GstBaseSrc.element">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.element:</code></em></i>
-		</p>
+	<div class="members-container">
+		<p><b>Members</b></p>
+					
+<div class="symbol-detail" id="GstBaseSrc.element">
+	<div>
+		<i><em><code>GstBaseSrc.element</code></em></i>
+		(<a title="Gst.Element" href="libgstreamer-1.0/python/gstelement-h.html#GstElement">Gst.Element</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Element" href="libgstreamer-1.0/python/gstelement-h.html#GstElement">Gst.Element</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.srcpad">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.srcpad:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.srcpad">
+	<div>
+		<i><em><code>GstBaseSrc.srcpad</code></em></i>
+		(<a title="Gst.Pad" href="libgstreamer-1.0/python/gstpad.html#GstPad">Gst.Pad</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Pad" href="libgstreamer-1.0/python/gstpad.html#GstPad">Gst.Pad</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.live_lock">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.live_lock:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.live_lock">
+	<div>
+		<i><em><code>GstBaseSrc.live_lock</code></em></i>
+		(GLib.Mutex)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		GLib.Mutex
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.live_cond">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.live_cond:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.live_cond">
+	<div>
+		<i><em><code>GstBaseSrc.live_cond</code></em></i>
+		(<a title="GLib.Cond" href="https://developer.gnome.org/glib/unstable/glib-Threads.html#GCond">GLib.Cond</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="GLib.Cond" href="https://developer.gnome.org/glib/unstable/glib-Threads.html#GCond">GLib.Cond</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.is_live">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.is_live:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.is_live">
+	<div>
+		<i><em><code>GstBaseSrc.is_live</code></em></i>
+		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.live_running">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.live_running:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.live_running">
+	<div>
+		<i><em><code>GstBaseSrc.live_running</code></em></i>
+		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.blocksize">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.blocksize:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.blocksize">
+	<div>
+		<i><em><code>GstBaseSrc.blocksize</code></em></i>
+		(<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.can_activate_push">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.can_activate_push:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.can_activate_push">
+	<div>
+		<i><em><code>GstBaseSrc.can_activate_push</code></em></i>
+		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.random_access">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.random_access:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.random_access">
+	<div>
+		<i><em><code>GstBaseSrc.random_access</code></em></i>
+		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.clock_id">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.clock_id:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.clock_id">
+	<div>
+		<i><em><code>GstBaseSrc.clock_id</code></em></i>
+		(<a title="Gst.ClockID" href="libgstreamer-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.ClockID" href="libgstreamer-1.0/python/gstclock.html#GstClockID">Gst.ClockID</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.segment">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.segment:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.segment">
+	<div>
+		<i><em><code>GstBaseSrc.segment</code></em></i>
+		(<a title="Gst.Segment" href="libgstreamer-1.0/python/gstsegment.html#GstSegment">Gst.Segment</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Segment" href="libgstreamer-1.0/python/gstsegment.html#GstSegment">Gst.Segment</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.need_newsegment">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.need_newsegment:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.need_newsegment">
+	<div>
+		<i><em><code>GstBaseSrc.need_newsegment</code></em></i>
+		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.num_buffers">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.num_buffers:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.num_buffers">
+	<div>
+		<i><em><code>GstBaseSrc.num_buffers</code></em></i>
+		(<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.num_buffers_left">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.num_buffers_left:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.num_buffers_left">
+	<div>
+		<i><em><code>GstBaseSrc.num_buffers_left</code></em></i>
+		(<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.typefind">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.typefind:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.typefind">
+	<div>
+		<i><em><code>GstBaseSrc.typefind</code></em></i>
+		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.running">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.running:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.running">
+	<div>
+		<i><em><code>GstBaseSrc.running</code></em></i>
+		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.pending_seek">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.pending_seek:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.pending_seek">
+	<div>
+		<i><em><code>GstBaseSrc.pending_seek</code></em></i>
+		(<a title="Gst.Event" href="libgstreamer-1.0/python/gstevent.html#GstEvent">Gst.Event</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Event" href="libgstreamer-1.0/python/gstevent.html#GstEvent">Gst.Event</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc.priv">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc.priv:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc.priv">
+	<div>
+		<i><em><code>GstBaseSrc.priv</code></em></i>
+		(GstBase.BaseSrcPrivate)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		GstBase.BaseSrcPrivate
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrc._gst_reserved">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrc._gst_reserved:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrc._gst_reserved">
+	<div>
+		<i><em><code>GstBaseSrc._gst_reserved</code></em></i>
+		(<a title="object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">object</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">object</a>
-	</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 </div>
@@ -579,27 +482,22 @@ used by the base class and its <em>params</em>.</p>
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>a <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a></p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>a <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a></p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 
@@ -622,51 +520,36 @@ def GstBase.BaseSrc.get_blocksize (self):
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>the source</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>the source</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">int</a>
+										)
+								–
+			</div>
+							<p>the number of bytes pushed with each buffer.</p>
 
 					</div>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p>the number of bytes pushed with each buffer.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">int</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-			</div>
-</div>
 
 
 
@@ -688,52 +571,37 @@ def GstBase.BaseSrc.get_buffer_pool (self):
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>a <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a></p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>a <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a></p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Gst.BufferPool" href="libgstreamer-1.0/python/gstbufferpool.html#GstBufferPool">Gst.BufferPool</a>
+										)
+								–
+			</div>
+							<p>the instance of the <a href="libgstreamer-1.0/python/gstbufferpool.html#GstBufferPool">Gst.BufferPool</a> used
+by the src; unref it after usage.</p>
 
 					</div>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p>the instance of the <a href="libgstreamer-1.0/python/gstbufferpool.html#GstBufferPool">Gst.BufferPool</a> used
-by the src; unref it after usage.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="Gst.BufferPool" href="libgstreamer-1.0/python/gstbufferpool.html#GstBufferPool">Gst.BufferPool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-			</div>
-</div>
 
 
 
@@ -756,51 +624,36 @@ def GstBase.BaseSrc.get_do_timestamp (self):
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>the source</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>the source</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the base class will automatically timestamp outgoing buffers.</p>
 
 					</div>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the base class will automatically timestamp outgoing buffers.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-			</div>
-</div>
 
 
 
@@ -823,51 +676,36 @@ def GstBase.BaseSrc.is_async (self):
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>base source instance</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>base source instance</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if <em>src</em> is operating in async mode.</p>
 
 					</div>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if <em>src</em> is operating in async mode.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-			</div>
-</div>
 
 
 
@@ -890,51 +728,36 @@ def GstBase.BaseSrc.is_live (self):
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>base source instance</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>base source instance</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if element is in live mode.</p>
 
 					</div>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if element is in live mode.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-			</div>
-</div>
 
 
 
@@ -961,99 +784,75 @@ configured with <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_set_
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>The source</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>The source</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>start:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>The new start value for the segment</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>start</code></em></i>
+					(
+						<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">int</a>
+						)
+				–
+	</div>
+			<p>The new start value for the segment</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">int</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>stop:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>Stop value for the new segment</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>stop</code></em></i>
+					(
+						<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">int</a>
+						)
+				–
+	</div>
+			<p>Stop value for the new segment</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">int</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>time:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>The new time value for the start of the new segment</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>time</code></em></i>
+					(
+						<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">int</a>
+						)
+				–
+	</div>
+			<p>The new time value for the start of the new segment</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">int</a>
-		</div>
-</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if preparation of the seamless segment succeeded.</p>
 
 					</div>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if preparation of the seamless segment succeeded.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-			</div>
-</div>
 
 
 
@@ -1080,108 +879,77 @@ buffer.</p>
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>the source</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>the source</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-					</div>
-	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns a tuple made of</b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				<i>live:</i>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				<i>min_latency:</i>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="Gst.ClockTime" href="libgstreamer-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				<i>max_latency:</i>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="Gst.ClockTime" href="libgstreamer-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<p><b>Returns a tuple made of:</b></p>
+				
+<div class="symbol-detail">
+	<div>
+									(
+			<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+						)
+				–
+	</div>
+			<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
+
+	</div>
+
+				
+<div class="symbol-detail">
+	<div>
+				<i><em><code>live</code></em></i>
+									(
+			<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+						)
+				–
+	</div>
+			<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
+
+	</div>
+
+				
+<div class="symbol-detail">
+	<div>
+				<i><em><code>min_latency</code></em></i>
+									(
+			<a title="Gst.ClockTime" href="libgstreamer-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
+						)
+				–
+	</div>
+			<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
+
+	</div>
+
+				
+<div class="symbol-detail">
+	<div>
+				<i><em><code>max_latency</code></em></i>
+									(
+			<a title="Gst.ClockTime" href="libgstreamer-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
+						)
+				–
+	</div>
+			<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
+
+	</div>
+
+			</div>
 
 
 
@@ -1207,43 +975,35 @@ blocking operation should be unblocked with the unlock vmethod.</p>
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>base source instance</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>base source instance</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>async:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>new async mode</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>async</code></em></i>
+					(
+						<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+						)
+				–
+	</div>
+			<p>new async mode</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-		</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 
@@ -1269,43 +1029,35 @@ when trying to read more should set this to <a href="https://docs.python.org/2/l
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>base source instance</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>base source instance</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>automatic_eos:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>automatic eos</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>automatic_eos</code></em></i>
+					(
+						<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+						)
+				–
+	</div>
+			<p>automatic eos</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-		</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 
@@ -1332,43 +1084,35 @@ def GstBase.BaseSrc.set_blocksize (self, blocksize):
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>the source</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>the source</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>blocksize:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>the new blocksize in bytes</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>blocksize</code></em></i>
+					(
+						<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">int</a>
+						)
+				–
+	</div>
+			<p>the new blocksize in bytes</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">int</a>
-		</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 
@@ -1391,67 +1135,49 @@ def GstBase.BaseSrc.set_caps (self, caps):
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>a <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a></p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>a <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a></p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>caps:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>a <a href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>caps</code></em></i>
+					(
+						<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+						)
+				–
+	</div>
+			<p>a <a href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a></p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-		</div>
-</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the caps could be set</p>
 
 					</div>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the caps could be set</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-			</div>
-</div>
 
 
 
@@ -1476,43 +1202,35 @@ sources.</p>
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>the source</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>the source</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>timestamp:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>enable or disable timestamping</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>timestamp</code></em></i>
+					(
+						<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+						)
+				–
+	</div>
+			<p>enable or disable timestamping</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-		</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 
@@ -1537,43 +1255,35 @@ read.</p>
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>base source instance</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>base source instance</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>dynamic:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>new dynamic size mode</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>dynamic</code></em></i>
+					(
+						<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+						)
+				–
+	</div>
+			<p>new dynamic size mode</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-		</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 
@@ -1595,48 +1305,40 @@ def GstBase.BaseSrc.set_format (self, format):
 <p>Sets the default format of the source. This will be the format used
 for sending SEGMENT events and for performing seeks.</p>
 <p>If a format of GST_FORMAT_BYTES is set, the element will be able to
-operate in pull mode if the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrcClass.is_seekable</a>() returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>.</p>
+operate in pull mode if the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">is_seekable</a>() returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>.</p>
 <p>This function must only be called in states &lt; <a href="libgstreamer-1.0/python/gstelement-h.html#GST_STATE_PAUSED">Gst.State.paused</a>.</p>
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>base source instance</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>base source instance</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>format:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>the format to use</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>format</code></em></i>
+					(
+						<a title="Gst.Format" href="python/GstFormat">Gst.Format</a>
+						)
+				–
+	</div>
+			<p>the format to use</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Format" href="python/GstFormat">Gst.Format</a>
-		</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 
@@ -1665,43 +1367,35 @@ be GST_STATE_CHANGE_NO_PREROLL.</p>
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>base source instance</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>base source instance</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>live:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>new live-mode</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>live</code></em></i>
+					(
+						<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+						)
+				–
+	</div>
+			<p>new live-mode</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-		</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 
@@ -1727,43 +1421,35 @@ helper thread.</p>
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>basesrc:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>base source instance</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>basesrc</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>base source instance</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>ret:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>a <a href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ret</code></em></i>
+					(
+						<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+						)
+				–
+	</div>
+			<p>a <a href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a></p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-		</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 
@@ -1786,51 +1472,36 @@ def GstBase.BaseSrc.start_wait (self):
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>basesrc:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>base source instance</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>basesrc</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>base source instance</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+										)
+								–
+			</div>
+							<p>a <a href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>.</p>
 
 					</div>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p>a <a href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-			</div>
-</div>
 
 
 
@@ -1849,7 +1520,7 @@ def GstBase.BaseSrc.start_wait (self):
 def GstBase.BaseSrc.wait_playing (self):
     #python wrapper for 'gst_base_src_wait_playing'</pre>
 
-<p>If the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrcClass.create</a>() method performs its own synchronisation
+<p>If the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">create</a>() method performs its own synchronisation
 against the clock it must unblock when going from PLAYING to the PAUSED state
 and call this method before continuing to produce the remaining data.</p>
 <p>This function will block until a state change to PLAYING happens (in which
@@ -1859,52 +1530,37 @@ returns <a href="libgstreamer-1.0/python/gstpad.html#GST_FLOW_FLUSHING">Gst.Flow
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	<p>the src</p>
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
+	</div>
+			<p>the src</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+										)
+								–
+			</div>
+							<p><a href="libgstreamer-1.0/python/gstpad.html#GST_FLOW_OK">Gst.FlowReturn.ok</a> if <em>src</em> is PLAYING and processing can
+continue. Any other return value should be returned from the create vmethod.</p>
 
 					</div>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		<p><a href="libgstreamer-1.0/python/gstpad.html#GST_FLOW_OK">Gst.FlowReturn.ok</a> if <em>src</em> is PLAYING and processing can
-continue. Any other return value should be returned from the create vmethod.</p>
-
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
-
-			</div>
-</div>
 
 
 
@@ -2039,327 +1695,220 @@ needed. At the minimum, the <em>create</em> method should be overridden to produ
 buffers.</p>
 
 
-	<div class="member_details">
-		<span><b>Attributes</b></span>
-		<div class="container-fluid">
-						
-<div class="row" id="GstBaseSrcClass.parent_class">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.parent_class:</code></em></i>
-		</p>
+	<div class="members-container">
+		<p><b>Attributes</b></p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.parent_class">
+	<div>
+		<i><em><code>GstBaseSrcClass.parent_class</code></em></i>
+		(<a title="Gst.ElementClass" href="libgstreamer-1.0/python/gstelement-h.html#GstElementClass">Gst.ElementClass</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		<p>Element parent class</p>
+			<p>Element parent class</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.ElementClass" href="libgstreamer-1.0/python/gstelement-h.html#GstElementClass">Gst.ElementClass</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.get_caps()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.get_caps():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.get_caps()">
+	<div>
+		<i><em><code>GstBaseSrcClass.get_caps()</code></em></i>
+		(<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.negotiate()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.negotiate():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.negotiate()">
+	<div>
+		<i><em><code>GstBaseSrcClass.negotiate()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.fixate()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.fixate():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.fixate()">
+	<div>
+		<i><em><code>GstBaseSrcClass.fixate()</code></em></i>
+		(<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.set_caps()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.set_caps():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.set_caps()">
+	<div>
+		<i><em><code>GstBaseSrcClass.set_caps()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.decide_allocation()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.decide_allocation():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.decide_allocation()">
+	<div>
+		<i><em><code>GstBaseSrcClass.decide_allocation()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.start()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.start():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.start()">
+	<div>
+		<i><em><code>GstBaseSrcClass.start()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.stop()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.stop():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.stop()">
+	<div>
+		<i><em><code>GstBaseSrcClass.stop()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.get_times()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.get_times():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.get_times()">
+	<div>
+		<i><em><code>GstBaseSrcClass.get_times()</code></em></i>
+		(void (not introspectable))
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		void (not introspectable)
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.get_size()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.get_size():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.get_size()">
+	<div>
+		<i><em><code>GstBaseSrcClass.get_size()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.is_seekable()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.is_seekable():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.is_seekable()">
+	<div>
+		<i><em><code>GstBaseSrcClass.is_seekable()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.prepare_seek_segment()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.prepare_seek_segment():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.prepare_seek_segment()">
+	<div>
+		<i><em><code>GstBaseSrcClass.prepare_seek_segment()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.do_seek()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.do_seek():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.do_seek()">
+	<div>
+		<i><em><code>GstBaseSrcClass.do_seek()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.unlock()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.unlock():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.unlock()">
+	<div>
+		<i><em><code>GstBaseSrcClass.unlock()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.unlock_stop()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.unlock_stop():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.unlock_stop()">
+	<div>
+		<i><em><code>GstBaseSrcClass.unlock_stop()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.query()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.query():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.query()">
+	<div>
+		<i><em><code>GstBaseSrcClass.query()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.event()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.event():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.event()">
+	<div>
+		<i><em><code>GstBaseSrcClass.event()</code></em></i>
+		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.create()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.create():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.create()">
+	<div>
+		<i><em><code>GstBaseSrcClass.create()</code></em></i>
+		(<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.alloc()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.alloc():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.alloc()">
+	<div>
+		<i><em><code>GstBaseSrcClass.alloc()</code></em></i>
+		(<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass.fill()">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass.fill():</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.fill()">
+	<div>
+		<i><em><code>GstBaseSrcClass.fill()</code></em></i>
+		(<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
-	</div>
-</div>
 
-						
-<div class="row" id="GstBaseSrcClass._gst_reserved">
-	<div class="col-sm-12 col-md-2">
-		<p>
-		<i><em><code>GstBaseSrcClass._gst_reserved:</code></em></i>
-		</p>
+					
+<div class="symbol-detail" id="GstBaseSrcClass._gst_reserved">
+	<div>
+		<i><em><code>GstBaseSrcClass._gst_reserved</code></em></i>
+		(<a title="object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">object</a>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 field-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 field-link">
-		<a title="object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">object</a>
-	</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 </div>
@@ -2372,105 +1921,81 @@ buffers.</p>
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::alloc">
 		
-<h4 id="gstbasesrcclassalloc">
-	<span><code>GstBaseSrcClass.alloc</code></span>
+<h4 id="alloc">
+	<span><code>alloc</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.alloc (src, offset, size, buf):
-    #python implementation of the 'GstBaseSrcClass.alloc' virtual method</pre>
+def alloc (src, offset, size, buf):
+    #python implementation of the 'alloc' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>offset:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">int</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>size:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">int</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>buf:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>offset</code></em></i>
+					(
+						<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">int</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>size</code></em></i>
+					(
+						<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">int</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
+			<i>No description available</i>
 	</div>
-</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>buf</code></em></i>
+					(
+						<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -2481,105 +2006,81 @@ def GstBaseSrcClass.alloc (src, offset, size, buf):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::create">
 		
-<h4 id="gstbasesrcclasscreate">
-	<span><code>GstBaseSrcClass.create</code></span>
+<h4 id="create">
+	<span><code>create</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.create (src, offset, size, buf):
-    #python implementation of the 'GstBaseSrcClass.create' virtual method</pre>
+def create (src, offset, size, buf):
+    #python implementation of the 'create' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>offset:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">int</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>size:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">int</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>buf:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>offset</code></em></i>
+					(
+						<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">int</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>size</code></em></i>
+					(
+						<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">int</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
+			<i>No description available</i>
 	</div>
-</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>buf</code></em></i>
+					(
+						<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -2590,75 +2091,57 @@ def GstBaseSrcClass.create (src, offset, size, buf):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::decide_allocation">
 		
-<h4 id="gstbasesrcclassdecide_allocation">
-	<span><code>GstBaseSrcClass.decide_allocation</code></span>
+<h4 id="decide_allocation">
+	<span><code>decide_allocation</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.decide_allocation (src, query):
-    #python implementation of the 'GstBaseSrcClass.decide_allocation' virtual method</pre>
+def decide_allocation (src, query):
+    #python implementation of the 'decide_allocation' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>query:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Query" href="libgstreamer-1.0/python/gstquery.html#GstQuery">Gst.Query</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>query</code></em></i>
+					(
+						<a title="Gst.Query" href="libgstreamer-1.0/python/gstquery.html#GstQuery">Gst.Query</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -2669,75 +2152,57 @@ def GstBaseSrcClass.decide_allocation (src, query):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::do_seek">
 		
-<h4 id="gstbasesrcclassdo_seek">
-	<span><code>GstBaseSrcClass.do_seek</code></span>
+<h4 id="do_seek">
+	<span><code>do_seek</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.do_seek (src, segment):
-    #python implementation of the 'GstBaseSrcClass.do_seek' virtual method</pre>
+def do_seek (src, segment):
+    #python implementation of the 'do_seek' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>segment:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Segment" href="libgstreamer-1.0/python/gstsegment.html#GstSegment">Gst.Segment</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>segment</code></em></i>
+					(
+						<a title="Gst.Segment" href="libgstreamer-1.0/python/gstsegment.html#GstSegment">Gst.Segment</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -2748,75 +2213,57 @@ def GstBaseSrcClass.do_seek (src, segment):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::event">
 		
-<h4 id="gstbasesrcclassevent">
-	<span><code>GstBaseSrcClass.event</code></span>
+<h4 id="event">
+	<span><code>event</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.event (src, event):
-    #python implementation of the 'GstBaseSrcClass.event' virtual method</pre>
+def event (src, event):
+    #python implementation of the 'event' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>event:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Event" href="libgstreamer-1.0/python/gstevent.html#GstEvent">Gst.Event</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>event</code></em></i>
+					(
+						<a title="Gst.Event" href="libgstreamer-1.0/python/gstevent.html#GstEvent">Gst.Event</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -2827,105 +2274,81 @@ def GstBaseSrcClass.event (src, event):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::fill">
 		
-<h4 id="gstbasesrcclassfill">
-	<span><code>GstBaseSrcClass.fill</code></span>
+<h4 id="fill">
+	<span><code>fill</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.fill (src, offset, size, buf):
-    #python implementation of the 'GstBaseSrcClass.fill' virtual method</pre>
+def fill (src, offset, size, buf):
+    #python implementation of the 'fill' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>offset:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">int</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>size:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">int</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>buf:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>offset</code></em></i>
+					(
+						<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">int</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>size</code></em></i>
+					(
+						<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">int</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
+			<i>No description available</i>
 	</div>
-</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>buf</code></em></i>
+					(
+						<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Gst.FlowReturn" href="python/gst-plugins-bad-plugins-1.0/element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -2936,75 +2359,57 @@ def GstBaseSrcClass.fill (src, offset, size, buf):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::fixate">
 		
-<h4 id="gstbasesrcclassfixate">
-	<span><code>GstBaseSrcClass.fixate</code></span>
+<h4 id="fixate">
+	<span><code>fixate</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.fixate (src, caps):
-    #python implementation of the 'GstBaseSrcClass.fixate' virtual method</pre>
+def fixate (src, caps):
+    #python implementation of the 'fixate' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>caps:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>caps</code></em></i>
+					(
+						<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3015,75 +2420,57 @@ def GstBaseSrcClass.fixate (src, caps):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_caps">
 		
-<h4 id="gstbasesrcclassget_caps">
-	<span><code>GstBaseSrcClass.get_caps</code></span>
+<h4 id="get_caps">
+	<span><code>get_caps</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.get_caps (src, filter):
-    #python implementation of the 'GstBaseSrcClass.get_caps' virtual method</pre>
+def get_caps (src, filter):
+    #python implementation of the 'get_caps' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>filter:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>filter</code></em></i>
+					(
+						<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3094,75 +2481,57 @@ def GstBaseSrcClass.get_caps (src, filter):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_size">
 		
-<h4 id="gstbasesrcclassget_size">
-	<span><code>GstBaseSrcClass.get_size</code></span>
+<h4 id="get_size">
+	<span><code>get_size</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.get_size (src, size):
-    #python implementation of the 'GstBaseSrcClass.get_size' virtual method</pre>
+def get_size (src, size):
+    #python implementation of the 'get_size' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>size:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">int</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>size</code></em></i>
+					(
+						<a title="int" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">int</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3173,82 +2542,68 @@ def GstBaseSrcClass.get_size (src, size):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_times">
 		
-<h4 id="gstbasesrcclassget_times">
-	<span><code>GstBaseSrcClass.get_times</code></span>
+<h4 id="get_times">
+	<span><code>get_times</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.get_times (src, buffer, start, end):
-    #python implementation of the 'GstBaseSrcClass.get_times' virtual method</pre>
+def get_times (src, buffer, start, end):
+    #python implementation of the 'get_times' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>buffer:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
-		</div>
-</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>start:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>buffer</code></em></i>
+					(
+						<a title="Gst.Buffer" href="libgstreamer-1.0/python/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.ClockTime" href="libgstreamer-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
-		</div>
-</div>
+			<i>No description available</i>
+	</div>
 
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>end:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>start</code></em></i>
+					(
+						<a title="Gst.ClockTime" href="libgstreamer-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.ClockTime" href="libgstreamer-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
-		</div>
-</div>
+			<i>No description available</i>
+	</div>
 
-					</div>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>end</code></em></i>
+					(
+						<a title="Gst.ClockTime" href="libgstreamer-1.0/python/gstclock.html#GstClockTime">Gst.ClockTime</a>
+						)
+				–
 	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
 
 
 
@@ -3259,60 +2614,45 @@ def GstBaseSrcClass.get_times (src, buffer, start, end):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::is_seekable">
 		
-<h4 id="gstbasesrcclassis_seekable">
-	<span><code>GstBaseSrcClass.is_seekable</code></span>
+<h4 id="is_seekable">
+	<span><code>is_seekable</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.is_seekable (src):
-    #python implementation of the 'GstBaseSrcClass.is_seekable' virtual method</pre>
+def is_seekable (src):
+    #python implementation of the 'is_seekable' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3323,60 +2663,45 @@ def GstBaseSrcClass.is_seekable (src):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::negotiate">
 		
-<h4 id="gstbasesrcclassnegotiate">
-	<span><code>GstBaseSrcClass.negotiate</code></span>
+<h4 id="negotiate">
+	<span><code>negotiate</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.negotiate (src):
-    #python implementation of the 'GstBaseSrcClass.negotiate' virtual method</pre>
+def negotiate (src):
+    #python implementation of the 'negotiate' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3387,90 +2712,69 @@ def GstBaseSrcClass.negotiate (src):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::prepare_seek_segment">
 		
-<h4 id="gstbasesrcclassprepare_seek_segment">
-	<span><code>GstBaseSrcClass.prepare_seek_segment</code></span>
+<h4 id="prepare_seek_segment">
+	<span><code>prepare_seek_segment</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.prepare_seek_segment (src, seek, segment):
-    #python implementation of the 'GstBaseSrcClass.prepare_seek_segment' virtual method</pre>
+def prepare_seek_segment (src, seek, segment):
+    #python implementation of the 'prepare_seek_segment' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>seek:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Event" href="libgstreamer-1.0/python/gstevent.html#GstEvent">Gst.Event</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>segment:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Segment" href="libgstreamer-1.0/python/gstsegment.html#GstSegment">Gst.Segment</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>seek</code></em></i>
+					(
+						<a title="Gst.Event" href="libgstreamer-1.0/python/gstevent.html#GstEvent">Gst.Event</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>segment</code></em></i>
+					(
+						<a title="Gst.Segment" href="libgstreamer-1.0/python/gstsegment.html#GstSegment">Gst.Segment</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
+			<i>No description available</i>
 	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3481,75 +2785,57 @@ def GstBaseSrcClass.prepare_seek_segment (src, seek, segment):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::query">
 		
-<h4 id="gstbasesrcclassquery">
-	<span><code>GstBaseSrcClass.query</code></span>
+<h4 id="query">
+	<span><code>query</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.query (src, query):
-    #python implementation of the 'GstBaseSrcClass.query' virtual method</pre>
+def query (src, query):
+    #python implementation of the 'query' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>query:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Query" href="libgstreamer-1.0/python/gstquery.html#GstQuery">Gst.Query</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>query</code></em></i>
+					(
+						<a title="Gst.Query" href="libgstreamer-1.0/python/gstquery.html#GstQuery">Gst.Query</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3560,75 +2846,57 @@ def GstBaseSrcClass.query (src, query):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::set_caps">
 		
-<h4 id="gstbasesrcclassset_caps">
-	<span><code>GstBaseSrcClass.set_caps</code></span>
+<h4 id="set_caps">
+	<span><code>set_caps</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.set_caps (src, caps):
-    #python implementation of the 'GstBaseSrcClass.set_caps' virtual method</pre>
+def set_caps (src, caps):
+    #python implementation of the 'set_caps' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>caps:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
-	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
 
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>caps</code></em></i>
+					(
+						<a title="Gst.Caps" href="python/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
+			<i>No description available</i>
 	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3639,60 +2907,45 @@ def GstBaseSrcClass.set_caps (src, caps):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::start">
 		
-<h4 id="gstbasesrcclassstart">
-	<span><code>GstBaseSrcClass.start</code></span>
+<h4 id="start">
+	<span><code>start</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.start (src):
-    #python implementation of the 'GstBaseSrcClass.start' virtual method</pre>
+def start (src):
+    #python implementation of the 'start' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3703,60 +2956,45 @@ def GstBaseSrcClass.start (src):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::stop">
 		
-<h4 id="gstbasesrcclassstop">
-	<span><code>GstBaseSrcClass.stop</code></span>
+<h4 id="stop">
+	<span><code>stop</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.stop (src):
-    #python implementation of the 'GstBaseSrcClass.stop' virtual method</pre>
+def stop (src):
+    #python implementation of the 'stop' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3767,60 +3005,45 @@ def GstBaseSrcClass.stop (src):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::unlock">
 		
-<h4 id="gstbasesrcclassunlock">
-	<span><code>GstBaseSrcClass.unlock</code></span>
+<h4 id="unlock">
+	<span><code>unlock</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.unlock (src):
-    #python implementation of the 'GstBaseSrcClass.unlock' virtual method</pre>
+def unlock (src):
+    #python implementation of the 'unlock' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3831,60 +3054,45 @@ def GstBaseSrcClass.unlock (src):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::unlock_stop">
 		
-<h4 id="gstbasesrcclassunlock_stop">
-	<span><code>GstBaseSrcClass.unlock_stop</code></span>
+<h4 id="unlock_stop">
+	<span><code>unlock_stop</code></span>
 </h4>
 
 		<pre class="programlisting">
-def GstBaseSrcClass.unlock_stop (src):
-    #python implementation of the 'GstBaseSrcClass.unlock_stop' virtual method</pre>
+def unlock_stop (src):
+    #python implementation of the 'unlock_stop' virtual method</pre>
 
 
 
 
-	<div class="parameter_container">
-		<span><b>Parameters:</b></span>
-		<div class="container-fluid">
-							
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-			<p>
-		<i><em><code>src:</code></em></i>
-		</p>
-		</div>
-	<div class="col-sm-12 col-md-8 parameter-description">
-	
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
+						)
+				–
 	</div>
-	<div class="col-sm-12 col-md-2 parameter-extra">
-		<a title="GstBase.BaseSrc" href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>
-		</div>
-</div>
-
-					</div>
+			<i>No description available</i>
 	</div>
-
-	<div class="multi_return_value_container">
-		<span><b>Returns:<b></b></b></span>
-		<div class="container-fluid">
-				
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
-				</p>
-	</div>
-	<div class="col-sm-12 col-md-6 return-value-description">
-		
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-link">
-		<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
-	</div>
-	<div class="col-sm-12 col-md-2 return-value-extra">
-				
-	</div>
-</div>
 
 			</div>
-</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
 
 
 
@@ -3909,62 +3117,45 @@ def GstBaseSrcClass.unlock_stop (src):
 		<p>The <a href="libgstreamer-1.0/python/gstelement-h.html#GstElement">Gst.Element</a> flags that a basesrc element may have.</p>
 
 
-	<div class="member_details">
-		<span><b>Members</b></span>
-		<div class="container-fluid">
-						
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
+	<div class="members-container">
+		<p><b>Members</b></p>
+					
+<div class="symbol-detail">
+	<div>
 		<a id="GST_BASE_SRC_FLAG_STARTING"></a>
-		GstBase.BaseSrcFlags.starting
-		</p>
+		<i><em><code>GstBase.BaseSrcFlags.starting</code></em></i>
+		(<span class="value">16384</span>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 member-description">
-		<p>has source is starting</p>
+			<p>has source is starting</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 member-value">
-		<span class="value">Value: 16384</span>
-	</div>
-</div>
 
-						
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
+					
+<div class="symbol-detail">
+	<div>
 		<a id="GST_BASE_SRC_FLAG_STARTED"></a>
-		GstBase.BaseSrcFlags.started
-		</p>
+		<i><em><code>GstBase.BaseSrcFlags.started</code></em></i>
+		(<span class="value">32768</span>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 member-description">
-		<p>has source been started</p>
+			<p>has source been started</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 member-value">
-		<span class="value">Value: 32768</span>
-	</div>
-</div>
 
-						
-<div class="row">
-	<div class="col-sm-12 col-md-2">
-		<p>
+					
+<div class="symbol-detail">
+	<div>
 		<a id="GST_BASE_SRC_FLAG_LAST"></a>
-		GstBase.BaseSrcFlags.last
-		</p>
+		<i><em><code>GstBase.BaseSrcFlags.last</code></em></i>
+		(<span class="value">1048576</span>)
+		–
 	</div>
-	<div class="col-sm-12 col-md-8 member-description">
-		<p>offset to define more flags</p>
+			<p>offset to define more flags</p>
 
 	</div>
-	<div class="col-sm-12 col-md-2 member-value">
-		<span class="value">Value: 1048576</span>
-	</div>
-</div>
 
-					</div>
-	</div>
+			</div>
 
 
 </div>
