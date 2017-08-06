@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gstappsink.h", "urls": ["gst-plugins-base-app-1.0/c/gstappsink.html#gstappsink", "gst-plugins-base-app-1.0/python/gstappsink.html#gstappsink", "gst-plugins-base-app-1.0/javascript/gstappsink.html#gstappsink"]});
+urls_downloaded_cb({"token": "gstappsink.h", "urls": ["gst-plugins-base-app-1.0/c/gstappsink.html#gstappsink-page", "gst-plugins-base-app-1.0/python/gstappsink.html#gstappsink-page", "gst-plugins-base-app-1.0/javascript/gstappsink.html#gstappsink-page"]});

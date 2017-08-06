@@ -1,1 +1,0 @@
-urls_downloaded_cb({"token": "GstVideo.NavigationEventType.prototype.command", "urls": ["gst-plugins-base-video-1.0/javascript/navigation.html#GstNavigationEventType"]});

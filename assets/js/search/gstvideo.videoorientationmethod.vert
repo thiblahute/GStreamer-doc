@@ -1,1 +1,0 @@
-urls_downloaded_cb({"token": "gstvideo.videoorientationmethod.vert", "urls": ["gst-plugins-base-video-1.0/python/video.html#GST_VIDEO_ORIENTATION_HORIZ"]});

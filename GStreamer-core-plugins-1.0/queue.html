@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<base href="..">
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>queue</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/bootstrap-toc.min.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/bootstrap-toc.min.js"></script>
+<script src="assets/js/jquery.touchSwipe.min.js"></script>
+<script src="assets/js/anchor.min.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body class="no-script
+" data-spy="scroll" data-target="#toc" data-offset="70">
+
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
+	<div class="container-fluid">
+		<div class="navbar-right">
+			<a id="toc-toggle">
+				<span class="glyphicon glyphicon-menu-right"></span>
+				<span class="glyphicon glyphicon-menu-left"></span>
+			</a>
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<form action="" class="navbar-form pull-right" id="navbar-search-form">
+                               <div class="form-group has-feedback">
+                                       <input type="text" class="form-control input-sm" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+				       <span class="glyphicon glyphicon-search form-control-feedback" id="search-mgn-glass"></span>
+                               </div>
+                        </form>
+		</div>
+		<div class="navbar-header">
+			<a id="sidenav-toggle">
+				<span class="glyphicon glyphicon-menu-right"></span>
+				<span class="glyphicon glyphicon-menu-left"></span>
+			</a>
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home" id="home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+				
+<li class="dropdown">
+    <a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        API References<span class="caret"></span>
+    </a>
+	<ul class="dropdown-menu" id="modules-menu">
+					<li>
+				<a href="libgstreamer-1.0/c/index.html">GStreamer core</a>
+			</li>
+					<li>
+				<a href="libs.html">GStreamer Libraries</a>
+			</li>
+					<li>
+				<a href="plugins_doc.html">GStreamer Plugins</a>
+			</li>
+		</ul>
+</li>
+
+<li>
+    <a href="application-development/index.html">Application manual</a>
+</li>
+
+
+<li>
+    <a href="tutorials/index.html">Tutorials</a>
+</li>
+
+			</ul>
+			<div class="hidden-xs hidden-sm navbar-text navbar-center">
+							</div>
+		</div>
+	</div>
+</nav>
+
+<main>
+<div data-extension="gst-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="GStreamer-core-plugins-1.0" data-hotdoc-ref="queue.html" class="page_container" id="page-wrapper">
+<script src="assets/js/utils.js"></script>
+
+<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
+	<script src="assets/js/navigation.js"></script>
+			<script src="assets/js/sitemap.js"></script>
+	</div>
+
+<div id="body">
+	<div id="main">
+				    <div id="page-description" data-hotdoc-source="queue" data-hotdoc-role="main">
+        <h1 id="queue-page">queue</h1>
+<p>Data is queued until one of the limits specified by the
+<a href="GStreamer-core-plugins-1.0/queue.html#GstQueue:max-size-buffers">max-size-buffers</a>, <a href="GStreamer-core-plugins-1.0/queue.html#GstQueue:max-size-bytes">max-size-bytes</a> and/or
+<a href="GStreamer-core-plugins-1.0/queue.html#GstQueue:max-size-time">max-size-time</a> properties has been reached. Any attempt to push
+more buffers into the queue will block the pushing thread until more space
+becomes available.</p>
+<p>The queue will create a new thread on the source pad to decouple the
+processing on sink and source pad.</p>
+<p>You can query how many buffers are queued by reading the
+<a href="GStreamer-core-plugins-1.0/queue.html#GstQueue:current-level-buffers">current-level-buffers</a> property. You can track changes
+by connecting to the notify::current-level-buffers signal (which
+like all signals will be emitted from the streaming thread). The same
+applies to the <a href="GStreamer-core-plugins-1.0/queue.html#GstQueue:current-level-time">current-level-time</a> and
+<a href="GStreamer-core-plugins-1.0/queue.html#GstQueue:current-level-bytes">current-level-bytes</a> properties.</p>
+<p>The default queue size limits are 200 buffers, 10MB of data, or
+one second worth of data, whichever is reached first.</p>
+<p>As said earlier, the queue blocks by default when one of the specified
+maximums (bytes, time, buffers) has been reached. You can set the
+<a href="GStreamer-core-plugins-1.0/queue.html#GstQueue:leaky">leaky</a> property to specify that instead of blocking it should
+leak (drop) new or old buffers.</p>
+<p>The <a href="GStreamer-core-plugins-1.0/queue.html#GstQueue::underrun">underrun</a> signal is emitted when the queue has less data than
+the specified minimum thresholds require (by default: when the queue is
+empty). The <a href="GStreamer-core-plugins-1.0/queue.html#GstQueue::overrun">overrun</a> signal is emitted when the queue is filled
+up. Both signals are emitted from the context of the streaming thread.</p>
+
+    </div>
+        
+
+                    
+        <h2 id="hierarchy">Hierarchy</h2>
+        <div class="hierarchy_container">
+            <div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="libgstreamer-1.0/c/gstelement-h.html#GstElement">GstElement</a>
+                <span class="lineart">╰──</span>queue
+</pre>
+
+</div>
+
+        </div>
+        <h2 class="symbol_section" id="factory-details">Factory details</h2>
+        <div class="base_symbol_container">
+        <table class="table table-striped table-hover">
+            <tbody>
+                <tr>
+                    <th>Authors:</th>
+                    <td>Erik Walthinsen <omega></omega>
+</td>
+                </tr>
+                <tr>
+                    <th>Classification:</th>
+                    <td>Generic</td>
+                </tr>
+                <tr>
+                    <th>Rank:</th>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <th>Plugin:</th>
+                    <td>coreelements</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+
+
+
+
+            <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue-&gt;sink-wpr">
+		        <h4 id="sink">
+            sink
+        </h4>
+
+		        <table class="table table-striped">
+            <tbody>
+                <tr>
+<td><b>Presence:</b></td>
+<td>always</td>
+</tr>
+                <tr>
+<td><b>Direction:</b></td>
+<td>sink</td>
+</tr>
+                <tr>
+<td><b>Capabilities:</b></td>
+<td><pre><code>ANY</code></pre></td>
+</tr>
+            </tbody>
+        </table>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue-&gt;src-wpr">
+		        <h4 id="src">
+            src
+        </h4>
+
+		        <table class="table table-striped">
+            <tbody>
+                <tr>
+<td><b>Presence:</b></td>
+<td>always</td>
+</tr>
+                <tr>
+<td><b>Direction:</b></td>
+<td>src</td>
+</tr>
+                <tr>
+<td><b>Capabilities:</b></td>
+<td><pre><code>ANY</code></pre></td>
+</tr>
+            </tbody>
+        </table>
+
+</div>
+
+
+
+
+            <h2 class="symbol_section" id="Signals">Signals</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue::overrun-wpr">
+		
+<h3 id="overrun">
+	<span><code>overrun</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+overrun_callback (GstQueue * queue,
+                  gpointer udata)</pre>
+
+<p>Reports that the buffer became full (overrun).
+A buffer is full if the total amount of data inside it (num-buffers, time,
+size) is higher than the boundary values which can be set through the
+GObject properties.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>queue</code></em></i>
+				–
+	</div>
+			<p>the queue instance</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>udata</code></em></i>
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					void
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue::pushing-wpr">
+		
+<h3 id="pushing">
+	<span><code>pushing</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+pushing_callback (GstQueue * queue,
+                  gpointer udata)</pre>
+
+<p>Reports when the queue has enough data to start pushing data again on the
+source pad.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>queue</code></em></i>
+				–
+	</div>
+			<p>the queue instance</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>udata</code></em></i>
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					void
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue::running-wpr">
+		
+<h3 id="running">
+	<span><code>running</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+running_callback (GstQueue * queue,
+                  gpointer udata)</pre>
+
+<p>Reports that enough (min-threshold) data is in the queue. Use this signal
+together with the underrun signal to pause the pipeline on underrun and
+wait for the queue to fill-up before resume playback.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>queue</code></em></i>
+				–
+	</div>
+			<p>the queue instance</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>udata</code></em></i>
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					void
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue::underrun-wpr">
+		
+<h3 id="underrun">
+	<span><code>underrun</code></span>
+</h3>
+
+		
+
+<pre class="prototype">
+void
+underrun_callback (GstQueue * queue,
+                   gpointer udata)</pre>
+
+<p>Reports that the buffer became empty (underrun).
+A buffer is empty if the total amount of data inside it (num-buffers, time,
+size) is lower than the boundary values which can be set through the
+GObject properties.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>queue</code></em></i>
+				–
+	</div>
+			<p>the queue instance</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>udata</code></em></i>
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					void
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+</div>
+
+
+
+
+            <h2 class="symbol_section" id="Properties">Properties</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:current-level-buffers-wpr">
+		
+<h3 class="method" id="currentlevelbuffers">
+	<span><code>current-level-buffers</code></span>
+</h3>
+
+		<pre class="property_signature">
+“current-level-buffers” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Current number of buffers in the queue</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:current-level-bytes-wpr">
+		
+<h3 class="method" id="currentlevelbytes">
+	<span><code>current-level-bytes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“current-level-bytes” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Current amount of data in the queue (bytes)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:current-level-time-wpr">
+		
+<h3 class="method" id="currentleveltime">
+	<span><code>current-level-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“current-level-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Current amount of data in the queue (in ns)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="GstQueue:flush-on-eos-wpr">
+		
+<h3 class="method" id="flushoneos">
+	<span><code>flush-on-eos</code></span>
+</h3>
+
+		<pre class="property_signature">
+“flush-on-eos” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Discard all data in the queue when an EOS event is received, and pass
+on the EOS event as soon as possible (instead of waiting until all
+buffers in the queue have been processed, which is the default behaviour).</p>
+<p>Flushing the queue on EOS might be useful when capturing and encoding
+from a live source, to finish up the recording quickly in cases when
+the encoder is slow. Note that this might mean some data from the end of
+the recording data might be lost though (never more than the configured
+max. sizes though).</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:leaky-wpr">
+		
+<h3 class="method" id="leaky">
+	<span><code>leaky</code></span>
+</h3>
+
+		<pre class="property_signature">
+“leaky” <span class="type"><a title="GstQueueLeaky" href="GStreamer-core-plugins-1.0/queue.html#GstQueueLeaky">GstQueueLeaky</a></span>
+</pre>
+
+<p>Where the queue leaks, if at all</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	no (0)
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:max-size-buffers-wpr">
+		
+<h3 class="method" id="maxsizebuffers">
+	<span><code>max-size-buffers</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-size-buffers” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Max. number of buffers in the queue (0=disable)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	200
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:max-size-bytes-wpr">
+		
+<h3 class="method" id="maxsizebytes">
+	<span><code>max-size-bytes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-size-bytes” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Max. amount of data in the queue (bytes, 0=disable)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	10485760
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:max-size-time-wpr">
+		
+<h3 class="method" id="maxsizetime">
+	<span><code>max-size-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-size-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Max. amount of data in the queue (in ns, 0=disable)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	1000000000
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:min-threshold-buffers-wpr">
+		
+<h3 class="method" id="minthresholdbuffers">
+	<span><code>min-threshold-buffers</code></span>
+</h3>
+
+		<pre class="property_signature">
+“min-threshold-buffers” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Min. number of buffers in the queue to allow reading (0=disable)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:min-threshold-bytes-wpr">
+		
+<h3 class="method" id="minthresholdbytes">
+	<span><code>min-threshold-bytes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“min-threshold-bytes” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Min. amount of data in the queue to allow reading (bytes, 0=disable)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:min-threshold-time-wpr">
+		
+<h3 class="method" id="minthresholdtime">
+	<span><code>min-threshold-time</code></span>
+</h3>
+
+		<pre class="property_signature">
+“min-threshold-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Min. amount of data in the queue to allow reading (in ns, 0=disable)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:name-wpr">
+		
+<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>The name of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	queue0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:parent-wpr">
+		
+<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+<p>The parent of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueue:silent-wpr">
+		
+<h3 class="method" id="silent">
+	<span><code>silent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“silent” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Don't emit queue signals. Makes queues more lightweight if no signals are
+needed.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+
+
+
+            <h2 class="symbol_section" id="Enumerations">Enumerations</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstQueueLeaky-wpr">
+		
+<h3 id="enum-gstqueueleaky">
+		enum GstQueueLeaky
+	</h3>
+
+		
+<table class="table table-striped">
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>no</td>
+            <td>Not Leaky</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>upstream</td>
+            <td>Leaky on upstream (new buffers)</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>downstream</td>
+            <td>Leaky on downstream (old buffers)</td>
+            <td>0x00000002</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</div>
+
+
+
+
+
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+	<hr>
+	<div id="footer">
+		    
+
+	</div>
+</div>
+
+<div id="toc-column">
+	
+		<div class="edit-button">
+		
+
+	</div>
+		<div id="toc-wrapper">
+		<nav id="toc"></nav>
+	</div>
+</div>
+</div>
+</main>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

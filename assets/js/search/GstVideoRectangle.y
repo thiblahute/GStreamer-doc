@@ -1,1 +1,0 @@
-urls_downloaded_cb({"token": "GstVideoRectangle.y", "urls": ["gst-plugins-base-video-1.0/python/gstvideosink.html#GstVideoRectangle.x", "gst-plugins-base-video-1.0/c/gstvideosink.html#GstVideoRectangle.x", "gst-plugins-base-video-1.0/javascript/gstvideosink.html#GstVideoRectangle.x"]});

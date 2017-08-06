@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -128,7 +129,7 @@ $('body').removeClass('no-script');
 <div id="body">
 	<div id="main">
 				    <div id="page-description" data-hotdoc-source="gstbasesink.h" data-hotdoc-role="main">
-        <h1 id="gstbasesink">GstBaseSink</h1>
+        <h1 id="gstbasesink-page">GstBaseSink</h1>
 <p><a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a> is the base class for sink elements in GStreamer, such as
 xvimagesink or filesink. It is a layer on top of <a href="libgstreamer-1.0/javascript/gstelement-h.html#GstElement">Gst.Element</a> that provides a
 simplified interface to plugin writers. <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a> handles many details
@@ -159,16 +160,16 @@ install a pad template in its class_init function, like so:</p>
 <p><a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a> will handle the prerolling correctly. This means that it will
 return <a href="libgstreamer-1.0/javascript/gstelement-h.html#GST_STATE_CHANGE_ASYNC">Gst.StateChangeReturn.prototype.async</a> from a state change to PAUSED until the first
 buffer arrives in this element. The base class will call the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::preroll">preroll</a>() vmethod with this preroll buffer and will then
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::preroll">do_preroll</a>() vmethod with this preroll buffer and will then
 commit the state change to the next asynchronously pending state.</p>
 <p>When the element is set to PLAYING, <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a> will synchronise on the
-clock using the times returned from <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::get_times">get_times</a>(). If this
+clock using the times returned from <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::get_times">do_get_times</a>(). If this
 function returns <a href="libgstreamer-1.0/javascript/gstclock.html#GST_CLOCK_TIME_NONE">Gst.CLOCK_TIME_NONE</a> for the start time, no synchronisation
 will be done. Synchronisation can be disabled entirely by setting the object
 <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink:sync">sync</a> property to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">false</a>.</p>
-<p>After synchronisation the virtual method <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">render</a>() will be
+<p>After synchronisation the virtual method <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">do_render</a>() will be
 called. Subclasses should minimally implement this method.</p>
-<p>Subclasses that synchronise on the clock in the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">render</a>()
+<p>Subclasses that synchronise on the clock in the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">do_render</a>()
 method are supported as well. These classes typically receive a buffer in
 the render method and can then potentially block on the clock while
 rendering. A typical example is an audiosink.
@@ -176,7 +177,7 @@ These subclasses can use <a href="libgstbase-1.0/javascript/gstbasesink.html#gst
 blocking wait.</p>
 <p>Upon receiving the EOS event in the PLAYING state, <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a> will wait
 for the clock to reach the time indicated by the stop time of the last
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::get_times">get_times</a>() call before posting an EOS message. When the
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::get_times">do_get_times</a>() call before posting an EOS message. When the
 element receives EOS in PAUSED, preroll completes, the event is queued and an
 EOS message is posted when going to PLAYING.</p>
 <p><a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a> will internally use the <a href="libgstreamer-1.0/javascript/gstevent.html#GST_EVENT_SEGMENT">Gst.EventType.prototype.segment</a> events to schedule
@@ -188,21 +189,21 @@ clipping themselves when needed.</p>
 <a href="libgstreamer-1.0/javascript/gstformat.html#GST_FORMAT_TIME">Gst.Format.prototype.time</a> based on the current clock time and segment information.
 If no clock has been set on the element, the query will be forwarded
 upstream.</p>
-<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::set_caps">set_caps</a>() function will be called when the subclass
+<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::set_caps">do_set_caps</a>() function will be called when the subclass
 should configure itself to process a specific media type.</p>
-<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::start">start</a>() and <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::stop">stop</a>() virtual methods
+<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::start">do_start</a>() and <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::stop">do_stop</a>() virtual methods
 will be called when resources should be allocated. Any
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::preroll">preroll</a>(), <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">render</a>() and
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::set_caps">set_caps</a>() function will be called between the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::start">start</a>() and <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::stop">stop</a>() calls.</p>
-<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::event">event</a>() virtual method will be called when an event is
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::preroll">do_preroll</a>(), <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">do_render</a>() and
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::set_caps">do_set_caps</a>() function will be called between the
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::start">do_start</a>() and <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::stop">do_stop</a>() calls.</p>
+<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::event">do_event</a>() virtual method will be called when an event is
 received by <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>. Normally this method should only be overridden by
 very specific elements (such as file sinks) which need to handle the
 newsegment event specially.</p>
-<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::unlock">unlock</a>() method is called when the elements should
+<p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::unlock">do_unlock</a>() method is called when the elements should
 unblock any blocking operations they perform in the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">render</a>() method. This is mostly useful when the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">render</a>() method performs a blocking write on a file
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">do_render</a>() method. This is mostly useful when the
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">do_render</a>() method performs a blocking write on a file
 descriptor, for example.</p>
 <p>The <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink:max-lateness">max-lateness</a> property affects how the sink deals with
 buffers that arrive too late in the sink. A buffer arrives too late in the
@@ -212,7 +213,7 @@ time of the clock.
 If the frame is later than max-lateness, the sink will drop the buffer
 without calling the render method.
 This feature is disabled if sync is disabled, the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::get_times">get_times</a>() method does not return a valid start time or
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::get_times">do_get_times</a>() method does not return a valid start time or
 max-lateness is set to -1 (the default).
 Subclasses can use <a href="libgstbase-1.0/javascript/gstbasesink.html#gst_base_sink_set_max_lateness">GstBase.BaseSink.prototype.set_max_lateness</a> to configure the
 max-lateness value.</p>
@@ -234,7 +235,7 @@ with non-synchronized streams or sparse streams.</p>
 
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink-wpr">
 			
 		<div class="hierarchy_container">
 	<div class="hierarchy_details">
@@ -461,7 +462,7 @@ with non-synchronized streams or sparse streams.</p>
 <div class="symbol-detail" id="GstBaseSink._gst_reserved">
 	<div>
 		<i><em><code>GstBaseSink._gst_reserved</code></em></i>
-		(<a title="Object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">Object</a>)
+		(<a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -478,7 +479,7 @@ with non-synchronized streams or sparse streams.</p>
             <h3 class="symbol_section" id="GstBaseSinkMethods">Methods</h3>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_do_preroll">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_do_preroll-wpr">
 		
 <h4 id="gstbasebasesinkprototypedo_preroll">
 	<span><code>GstBase.BaseSink.prototype.do_preroll</code></span>
@@ -532,7 +533,7 @@ until the element state is changed.</p>
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+					<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 										)
 								–
 			</div>
@@ -549,7 +550,7 @@ continue. Any other return value should be returned from the render vmethod.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_blocksize">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_blocksize-wpr">
 		
 <h4 id="gstbasebasesinkprototypeget_blocksize">
 	<span><code>GstBase.BaseSink.prototype.get_blocksize</code></span>
@@ -587,7 +588,7 @@ mode.</p>
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">Number</a>
+					<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
 										)
 								–
 			</div>
@@ -603,7 +604,7 @@ mode.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="since:1.12;" id="gst_base_sink_get_drop_out_of_segment">
+<div class="base_symbol_container" data-hotdoc-tags="since:1.12;" id="gst_base_sink_get_drop_out_of_segment-wpr">
 		
 <h4 id="gstbasebasesinkprototypeget_drop_out_of_segment">
 	<span><code>GstBase.BaseSink.prototype.get_drop_out_of_segment</code></span>
@@ -654,14 +655,14 @@ current segment.</p>
 
 
 	<p>
-	Since			: 1.12
+	<b>Since</b>			: 1.12
 		</p>
 
 </div>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_last_sample">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_last_sample-wpr">
 		
 <h4 id="gstbasebasesinkprototypeget_last_sample">
 	<span><code>GstBase.BaseSink.prototype.get_last_sample</code></span>
@@ -674,7 +675,7 @@ function GstBase.BaseSink.prototype.get_last_sample(): {
 
 <p>Get the last sample that arrived in the sink and was used for preroll or for
 rendering. This property can be used to generate thumbnails.</p>
-<p>The <a href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a> on the sample can be used to determine the type of the buffer.</p>
+<p>The <a href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a> on the sample can be used to determine the type of the buffer.</p>
 <p>Free-function: gst_sample_unref</p>
 
 
@@ -719,7 +720,7 @@ sink yet or when the sink is not in PAUSED or PLAYING.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_latency">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_latency-wpr">
 		
 <h4 id="gstbasebasesinkprototypeget_latency">
 	<span><code>GstBase.BaseSink.prototype.get_latency</code></span>
@@ -772,7 +773,7 @@ function GstBase.BaseSink.prototype.get_latency(): {
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_base_sink_get_max_bitrate">
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_base_sink_get_max_bitrate-wpr">
 		
 <h4 id="gstbasebasesinkprototypeget_max_bitrate">
 	<span><code>GstBase.BaseSink.prototype.get_max_bitrate</code></span>
@@ -809,7 +810,7 @@ function GstBase.BaseSink.prototype.get_max_bitrate(): {
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>
+					<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
 										)
 								–
 			</div>
@@ -821,14 +822,14 @@ function GstBase.BaseSink.prototype.get_max_bitrate(): {
 
 
 	<p>
-	Since			: 1.2
+	<b>Since</b>			: 1.2
 		</p>
 
 </div>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_max_lateness">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_max_lateness-wpr">
 		
 <h4 id="gstbasebasesinkprototypeget_max_lateness">
 	<span><code>GstBase.BaseSink.prototype.get_max_lateness</code></span>
@@ -866,7 +867,7 @@ more details.</p>
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">Number</a>
+					<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
 										)
 								–
 			</div>
@@ -884,7 +885,7 @@ unlimited time.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_render_delay">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_render_delay-wpr">
 		
 <h4 id="gstbasebasesinkprototypeget_render_delay">
 	<span><code>GstBase.BaseSink.prototype.get_render_delay</code></span>
@@ -938,7 +939,7 @@ information about the render delay.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_sync">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_sync-wpr">
 		
 <h4 id="gstbasebasesinkprototypeget_sync">
 	<span><code>GstBase.BaseSink.prototype.get_sync</code></span>
@@ -992,7 +993,7 @@ clock.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_throttle_time">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_throttle_time-wpr">
 		
 <h4 id="gstbasebasesinkprototypeget_throttle_time">
 	<span><code>GstBase.BaseSink.prototype.get_throttle_time</code></span>
@@ -1030,7 +1031,7 @@ maximum buffers per second.</p>
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>
+					<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
 										)
 								–
 			</div>
@@ -1046,7 +1047,7 @@ maximum buffers per second.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_ts_offset">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_get_ts_offset-wpr">
 		
 <h4 id="gstbasebasesinkprototypeget_ts_offset">
 	<span><code>GstBase.BaseSink.prototype.get_ts_offset</code></span>
@@ -1099,7 +1100,7 @@ function GstBase.BaseSink.prototype.get_ts_offset(): {
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_is_async_enabled">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_is_async_enabled-wpr">
 		
 <h4 id="gstbasebasesinkprototypeis_async_enabled">
 	<span><code>GstBase.BaseSink.prototype.is_async_enabled</code></span>
@@ -1154,7 +1155,7 @@ changes.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_is_last_sample_enabled">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_is_last_sample_enabled-wpr">
 		
 <h4 id="gstbasebasesinkprototypeis_last_sample_enabled">
 	<span><code>GstBase.BaseSink.prototype.is_last_sample_enabled</code></span>
@@ -1208,7 +1209,7 @@ the last-sample property.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_is_qos_enabled">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_is_qos_enabled-wpr">
 		
 <h4 id="gstbasebasesinkprototypeis_qos_enabled">
 	<span><code>GstBase.BaseSink.prototype.is_qos_enabled</code></span>
@@ -1262,7 +1263,7 @@ upstream.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_query_latency">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_query_latency-wpr">
 		
 <h4 id="gstbasebasesinkprototypequery_latency">
 	<span><code>GstBase.BaseSink.prototype.query_latency</code></span>
@@ -1376,7 +1377,7 @@ for the latency introduced by the upstream elements by setting the
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_async_enabled">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_async_enabled-wpr">
 		
 <h4 id="gstbasebasesinkprototypeset_async_enabled">
 	<span><code>GstBase.BaseSink.prototype.set_async_enabled</code></span>
@@ -1431,14 +1432,14 @@ against the clock or when it is dealing with sparse streams.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_blocksize">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_blocksize-wpr">
 		
 <h4 id="gstbasebasesinkprototypeset_blocksize">
 	<span><code>GstBase.BaseSink.prototype.set_blocksize</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBase.BaseSink.prototype.set_blocksize(blocksize: <a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">Number</a>): {
+function GstBase.BaseSink.prototype.set_blocksize(blocksize: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
     // javascript wrapper for 'gst_base_sink_set_blocksize'
 }</pre>
 
@@ -1467,7 +1468,7 @@ mode.</p>
 	<div>
 		<i><em><code>blocksize</code></em></i>
 					(
-						<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">Number</a>
+						<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
 						)
 				–
 	</div>
@@ -1484,7 +1485,7 @@ mode.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="since:1.12;" id="gst_base_sink_set_drop_out_of_segment">
+<div class="base_symbol_container" data-hotdoc-tags="since:1.12;" id="gst_base_sink_set_drop_out_of_segment-wpr">
 		
 <h4 id="gstbasebasesinkprototypeset_drop_out_of_segment">
 	<span><code>GstBase.BaseSink.prototype.set_drop_out_of_segment</code></span>
@@ -1532,14 +1533,14 @@ function GstBase.BaseSink.prototype.set_drop_out_of_segment(drop_out_of_segment:
 
 
 	<p>
-	Since			: 1.12
+	<b>Since</b>			: 1.12
 		</p>
 
 </div>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_last_sample_enabled">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_last_sample_enabled-wpr">
 		
 <h4 id="gstbasebasesinkprototypeset_last_sample_enabled">
 	<span><code>GstBase.BaseSink.prototype.set_last_sample_enabled</code></span>
@@ -1592,14 +1593,14 @@ property.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_base_sink_set_max_bitrate">
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="gst_base_sink_set_max_bitrate-wpr">
 		
 <h4 id="gstbasebasesinkprototypeset_max_bitrate">
 	<span><code>GstBase.BaseSink.prototype.set_max_bitrate</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBase.BaseSink.prototype.set_max_bitrate(max_bitrate: <a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>): {
+function GstBase.BaseSink.prototype.set_max_bitrate(max_bitrate: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
     // javascript wrapper for 'gst_base_sink_set_max_bitrate'
 }</pre>
 
@@ -1627,7 +1628,7 @@ function GstBase.BaseSink.prototype.set_max_bitrate(max_bitrate: <a title="Numbe
 	<div>
 		<i><em><code>max_bitrate</code></em></i>
 					(
-						<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>
+						<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
 						)
 				–
 	</div>
@@ -1640,21 +1641,21 @@ function GstBase.BaseSink.prototype.set_max_bitrate(max_bitrate: <a title="Numbe
 
 
 	<p>
-	Since			: 1.2
+	<b>Since</b>			: 1.2
 		</p>
 
 </div>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_max_lateness">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_max_lateness-wpr">
 		
 <h4 id="gstbasebasesinkprototypeset_max_lateness">
 	<span><code>GstBase.BaseSink.prototype.set_max_lateness</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBase.BaseSink.prototype.set_max_lateness(max_lateness: <a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">Number</a>): {
+function GstBase.BaseSink.prototype.set_max_lateness(max_lateness: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
     // javascript wrapper for 'gst_base_sink_set_max_lateness'
 }</pre>
 
@@ -1685,7 +1686,7 @@ an unlimited time.</p>
 	<div>
 		<i><em><code>max_lateness</code></em></i>
 					(
-						<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">Number</a>
+						<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
 						)
 				–
 	</div>
@@ -1702,7 +1703,7 @@ an unlimited time.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_qos_enabled">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_qos_enabled-wpr">
 		
 <h4 id="gstbasebasesinkprototypeset_qos_enabled">
 	<span><code>GstBase.BaseSink.prototype.set_qos_enabled</code></span>
@@ -1754,7 +1755,7 @@ function GstBase.BaseSink.prototype.set_qos_enabled(enabled: <a title="Number" h
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_render_delay">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_render_delay-wpr">
 		
 <h4 id="gstbasebasesinkprototypeset_render_delay">
 	<span><code>GstBase.BaseSink.prototype.set_render_delay</code></span>
@@ -1812,7 +1813,7 @@ other sinks will adjust their latency to delay the rendering of their media.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_sync">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_sync-wpr">
 		
 <h4 id="gstbasebasesinkprototypeset_sync">
 	<span><code>GstBase.BaseSink.prototype.set_sync</code></span>
@@ -1868,14 +1869,14 @@ contents.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_throttle_time">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_throttle_time-wpr">
 		
 <h4 id="gstbasebasesinkprototypeset_throttle_time">
 	<span><code>GstBase.BaseSink.prototype.set_throttle_time</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBase.BaseSink.prototype.set_throttle_time(throttle: <a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>): {
+function GstBase.BaseSink.prototype.set_throttle_time(throttle: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
     // javascript wrapper for 'gst_base_sink_set_throttle_time'
 }</pre>
 
@@ -1905,7 +1906,7 @@ will render.</p>
 	<div>
 		<i><em><code>throttle</code></em></i>
 					(
-						<a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a>
+						<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
 						)
 				–
 	</div>
@@ -1922,7 +1923,7 @@ will render.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_ts_offset">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_set_ts_offset-wpr">
 		
 <h4 id="gstbasebasesinkprototypeset_ts_offset">
 	<span><code>GstBase.BaseSink.prototype.set_ts_offset</code></span>
@@ -1977,7 +1978,7 @@ buffers.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_wait">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_wait-wpr">
 		
 <h4 id="gstbasebasesinkprototypewait">
 	<span><code>GstBase.BaseSink.prototype.wait</code></span>
@@ -2036,11 +2037,11 @@ and will be adjusted with any latency and offset configured in the sink.</p>
 <div class="symbol-detail">
 	<div>
 									(
-			<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+			<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 						)
 				–
 	</div>
-			<p><a href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a></p>
+			<p><a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a></p>
 
 	</div>
 
@@ -2053,7 +2054,7 @@ and will be adjusted with any latency and offset configured in the sink.</p>
 						)
 				–
 	</div>
-			<p><a href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a></p>
+			<p><a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a></p>
 
 	</div>
 
@@ -2066,7 +2067,7 @@ and will be adjusted with any latency and offset configured in the sink.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_wait_clock">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_wait_clock-wpr">
 		
 <h4 id="gstbasebasesinkprototypewait_clock">
 	<span><code>GstBase.BaseSink.prototype.wait_clock</code></span>
@@ -2083,9 +2084,9 @@ subclasses that use their own internal synchronisation.</p>
 returned. Likewise, if synchronisation is disabled in the element or there
 is no clock, no synchronisation is done and <a href="libgstreamer-1.0/javascript/gstclock.html#GST_CLOCK_BADTIME">Gst.ClockReturn.prototype.badtime</a> is returned.</p>
 <p>This function should only be called with the PREROLL_LOCK held, like when
-receiving an EOS event in the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::event">event</a>() vmethod or when
+receiving an EOS event in the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::event">GstBaseSink::event</a>() vmethod or when
 receiving a buffer in
-the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">render</a>() vmethod.</p>
+the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSink::render</a>() vmethod.</p>
 <p>The <em>time</em> argument should be the running_time of when this method should
 return and is not adjusted with any latency or offset configured in the
 sink.</p>
@@ -2158,7 +2159,7 @@ sink.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_wait_preroll">
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_base_sink_wait_preroll-wpr">
 		
 <h4 id="gstbasebasesinkprototypewait_preroll">
 	<span><code>GstBase.BaseSink.prototype.wait_preroll</code></span>
@@ -2169,13 +2170,13 @@ function GstBase.BaseSink.prototype.wait_preroll(): {
     // javascript wrapper for 'gst_base_sink_wait_preroll'
 }</pre>
 
-<p>If the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">render</a>() method performs its own synchronisation
+<p>If the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSink::render</a>() method performs its own synchronisation
 against the clock it must unblock when going from PLAYING to the PAUSED state
 and call this method before continuing to render the remaining data.</p>
-<p>If the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">render</a>() method can block on something else than
+<p>If the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSink::render</a>() method can block on something else than
 the clock, it must also be ready to unblock immediately on
-the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::unlock">unlock</a>() method and cause the
-<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">render</a>() method to immediately call this function.
+the <a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::unlock">GstBaseSink::unlock</a>() method and cause the
+<a href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSinkClass::render">GstBaseSink::render</a>() method to immediately call this function.
 In this case, the subclass must be prepared to continue rendering where it
 left off if this function returns <a href="libgstreamer-1.0/javascript/gstpad.html#GST_FLOW_OK">Gst.FlowReturn.prototype.ok</a>.</p>
 <p>This function will block until a state change to PLAYING happens (in which
@@ -2209,7 +2210,7 @@ render function.</p>
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+					<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 										)
 								–
 			</div>
@@ -2230,7 +2231,7 @@ continue. Any other return value should be returned from the render vmethod.</p>
             <h3 class="symbol_section" id="GstBaseSinkProperties">Properties</h3>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:async">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:async-wpr">
 		
 <h4 class="method" id="async">
 	<span><code>async</code></span>
@@ -2261,14 +2262,14 @@ not required.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:blocksize">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:blocksize-wpr">
 		
 <h4 class="method" id="blocksize">
 	<span><code>blocksize</code></span>
 </h4>
 
 		<pre class="property_signature">
-“blocksize” <span class="type"><a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">Number</a></span>
+“blocksize” <span class="type"><a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
 </pre>
 
 <p>The amount of bytes to pull when operating in pull mode.</p>
@@ -2289,7 +2290,7 @@ not required.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:enable-last-sample">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:enable-last-sample-wpr">
 		
 <h4 class="method" id="enablelastsample">
 	<span><code>enable-last-sample</code></span>
@@ -2320,7 +2321,7 @@ as possible, eg. if you're using a buffer pool.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:last-sample">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:last-sample-wpr">
 		
 <h4 class="method" id="lastsample">
 	<span><code>last-sample</code></span>
@@ -2347,14 +2348,14 @@ can be <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referenc
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="GstBaseSink:max-bitrate">
+<div class="base_symbol_container" data-hotdoc-tags="since:1.2;" id="GstBaseSink:max-bitrate-wpr">
 		
 <h4 class="method" id="maxbitrate">
 	<span><code>max-bitrate</code></span>
 </h4>
 
 		<pre class="property_signature">
-“max-bitrate” <span class="type"><a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a></span>
+“max-bitrate” <span class="type"><a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
 </pre>
 
 <p>Control the maximum amount of bits that will be rendered per second.
@@ -2377,14 +2378,14 @@ rendering of the buffers when it would exceed to max-bitrate.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:max-lateness">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:max-lateness-wpr">
 		
 <h4 class="method" id="maxlateness">
 	<span><code>max-lateness</code></span>
 </h4>
 
 		<pre class="property_signature">
-“max-lateness” <span class="type"><a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">Number</a></span>
+“max-lateness” <span class="type"><a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
 </pre>
 
 
@@ -2404,7 +2405,7 @@ rendering of the buffers when it would exceed to max-bitrate.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:qos">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:qos-wpr">
 		
 <h4 class="method" id="qos">
 	<span><code>qos</code></span>
@@ -2431,14 +2432,14 @@ rendering of the buffers when it would exceed to max-bitrate.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:render-delay">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:render-delay-wpr">
 		
 <h4 class="method" id="renderdelay">
 	<span><code>render-delay</code></span>
 </h4>
 
 		<pre class="property_signature">
-“render-delay” <span class="type"><a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a></span>
+“render-delay” <span class="type"><a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
 </pre>
 
 <p>The additional delay between synchronisation and actual rendering of the
@@ -2461,7 +2462,7 @@ make other sinks compensate for the delay.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:sync">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:sync-wpr">
 		
 <h4 class="method" id="sync">
 	<span><code>sync</code></span>
@@ -2488,14 +2489,14 @@ make other sinks compensate for the delay.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:throttle-time">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:throttle-time-wpr">
 		
 <h4 class="method" id="throttletime">
 	<span><code>throttle-time</code></span>
 </h4>
 
 		<pre class="property_signature">
-“throttle-time” <span class="type"><a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">Number</a></span>
+“throttle-time” <span class="type"><a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
 </pre>
 
 <p>The time to insert between buffers. This property can be used to control
@@ -2518,14 +2519,14 @@ to a value bigger than 0 will make the sink create THROTTLE QoS events.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:ts-offset">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSink:ts-offset-wpr">
 		
 <h4 class="method" id="tsoffset">
 	<span><code>ts-offset</code></span>
 </h4>
 
 		<pre class="property_signature">
-“ts-offset” <span class="type"><a title="Number" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">Number</a></span>
+“ts-offset” <span class="type"><a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
 </pre>
 
 <p>Controls the final synchronisation, a negative value will render the buffer
@@ -2552,7 +2553,7 @@ used to fix synchronisation in bad files.</p>
             <h3 class="symbol_section" id="GstBaseSinkStructures">Structures</h3>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass-wpr">
 		<h3 id="gstbasebasesinkclass">
 	GstBase.BaseSinkClass
 </h3>
@@ -2579,7 +2580,7 @@ output/present buffers.</p>
 <div class="symbol-detail" id="GstBaseSinkClass.get_caps()">
 	<div>
 		<i><em><code>GstBaseSinkClass.get_caps()</code></em></i>
-		(<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>)
+		(<a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -2599,7 +2600,7 @@ output/present buffers.</p>
 <div class="symbol-detail" id="GstBaseSinkClass.fixate()">
 	<div>
 		<i><em><code>GstBaseSinkClass.fixate()</code></em></i>
-		(<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>)
+		(<a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -2699,7 +2700,7 @@ output/present buffers.</p>
 <div class="symbol-detail" id="GstBaseSinkClass.wait_event()">
 	<div>
 		<i><em><code>GstBaseSinkClass.wait_event()</code></em></i>
-		(<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
+		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -2709,7 +2710,7 @@ output/present buffers.</p>
 <div class="symbol-detail" id="GstBaseSinkClass.prepare()">
 	<div>
 		<i><em><code>GstBaseSinkClass.prepare()</code></em></i>
-		(<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
+		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -2719,7 +2720,7 @@ output/present buffers.</p>
 <div class="symbol-detail" id="GstBaseSinkClass.prepare_list()">
 	<div>
 		<i><em><code>GstBaseSinkClass.prepare_list()</code></em></i>
-		(<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
+		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -2729,7 +2730,7 @@ output/present buffers.</p>
 <div class="symbol-detail" id="GstBaseSinkClass.preroll()">
 	<div>
 		<i><em><code>GstBaseSinkClass.preroll()</code></em></i>
-		(<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
+		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -2739,7 +2740,7 @@ output/present buffers.</p>
 <div class="symbol-detail" id="GstBaseSinkClass.render()">
 	<div>
 		<i><em><code>GstBaseSinkClass.render()</code></em></i>
-		(<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
+		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -2749,7 +2750,7 @@ output/present buffers.</p>
 <div class="symbol-detail" id="GstBaseSinkClass.render_list()">
 	<div>
 		<i><em><code>GstBaseSinkClass.render_list()</code></em></i>
-		(<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
+		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -2759,7 +2760,7 @@ output/present buffers.</p>
 <div class="symbol-detail" id="GstBaseSinkClass._gst_reserved">
 	<div>
 		<i><em><code>GstBaseSinkClass._gst_reserved</code></em></i>
-		(<a title="Object" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">Object</a>)
+		(<a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -2776,14 +2777,14 @@ output/present buffers.</p>
             <h3 class="symbol_section" id="GstBaseSinkVirtual_Methods">Virtual Methods</h3>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::activate_pull">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::activate_pull-wpr">
 		
-<h4 id="activate_pull">
-	<span><code>activate_pull</code></span>
+<h4 id="gstbasesinkactivate_pull">
+	<span><code>GstBaseSink::activate_pull</code></span>
 </h4>
 
 		<pre class="programlisting">
-function activate_pull(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, active: <a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>): {
+function GstBaseSink::activate_pull(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, active: <a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>): {
     // javascript implementation of the 'activate_pull' virtual method
 }</pre>
 
@@ -2838,14 +2839,14 @@ function activate_pull(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/ja
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::event">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::event-wpr">
 		
-<h4 id="event">
-	<span><code>event</code></span>
+<h4 id="gstbasesinkevent">
+	<span><code>GstBaseSink::event</code></span>
 </h4>
 
 		<pre class="programlisting">
-function event(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, event: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>): {
+function GstBaseSink::event(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, event: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>): {
     // javascript implementation of the 'event' virtual method
 }</pre>
 
@@ -2900,14 +2901,14 @@ function event(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::fixate">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::fixate-wpr">
 		
-<h4 id="fixate">
-	<span><code>fixate</code></span>
+<h4 id="gstbasesinkfixate">
+	<span><code>GstBaseSink::fixate</code></span>
 </h4>
 
 		<pre class="programlisting">
-function fixate(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, caps: <a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+function GstBaseSink::fixate(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, caps: <a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
     // javascript implementation of the 'fixate' virtual method
 }</pre>
 
@@ -2933,7 +2934,7 @@ function fixate(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascrip
 	<div>
 		<i><em><code>caps</code></em></i>
 					(
-						<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+						<a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
 						)
 				–
 	</div>
@@ -2947,7 +2948,7 @@ function fixate(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascrip
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+					<a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
 										)
 								–
 			</div>
@@ -2962,14 +2963,14 @@ function fixate(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascrip
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::get_caps">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::get_caps-wpr">
 		
-<h4 id="get_caps">
-	<span><code>get_caps</code></span>
+<h4 id="gstbasesinkget_caps">
+	<span><code>GstBaseSink::get_caps</code></span>
 </h4>
 
 		<pre class="programlisting">
-function get_caps(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, filter: <a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+function GstBaseSink::get_caps(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, filter: <a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
     // javascript implementation of the 'get_caps' virtual method
 }</pre>
 
@@ -2995,7 +2996,7 @@ function get_caps(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascr
 	<div>
 		<i><em><code>filter</code></em></i>
 					(
-						<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+						<a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
 						)
 				–
 	</div>
@@ -3009,7 +3010,7 @@ function get_caps(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascr
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+					<a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
 										)
 								–
 			</div>
@@ -3024,14 +3025,14 @@ function get_caps(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascr
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::get_times">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::get_times-wpr">
 		
-<h4 id="get_times">
-	<span><code>get_times</code></span>
+<h4 id="gstbasesinkget_times">
+	<span><code>GstBaseSink::get_times</code></span>
 </h4>
 
 		<pre class="programlisting">
-function get_times(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>, start: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>, end: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>): {
+function GstBaseSink::get_times(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>, start: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>, end: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>): {
     // javascript implementation of the 'get_times' virtual method
 }</pre>
 
@@ -3097,14 +3098,14 @@ function get_times(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javasc
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::prepare">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::prepare-wpr">
 		
-<h4 id="prepare">
-	<span><code>prepare</code></span>
+<h4 id="gstbasesinkprepare">
+	<span><code>GstBaseSink::prepare</code></span>
 </h4>
 
 		<pre class="programlisting">
-function prepare(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+function GstBaseSink::prepare(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
     // javascript implementation of the 'prepare' virtual method
 }</pre>
 
@@ -3144,7 +3145,7 @@ function prepare(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascri
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+					<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 										)
 								–
 			</div>
@@ -3159,14 +3160,14 @@ function prepare(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascri
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::prepare_list">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::prepare_list-wpr">
 		
-<h4 id="prepare_list">
-	<span><code>prepare_list</code></span>
+<h4 id="gstbasesinkprepare_list">
+	<span><code>GstBaseSink::prepare_list</code></span>
 </h4>
 
 		<pre class="programlisting">
-function prepare_list(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer_list: <a title="Gst.BufferList" href="libgstreamer-1.0/javascript/gstbufferlist.html#GstBufferList">Gst.BufferList</a>): {
+function GstBaseSink::prepare_list(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer_list: <a title="Gst.BufferList" href="libgstreamer-1.0/javascript/gstbufferlist.html#GstBufferList">Gst.BufferList</a>): {
     // javascript implementation of the 'prepare_list' virtual method
 }</pre>
 
@@ -3206,7 +3207,7 @@ function prepare_list(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/jav
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+					<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 										)
 								–
 			</div>
@@ -3221,14 +3222,14 @@ function prepare_list(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/jav
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::preroll">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::preroll-wpr">
 		
-<h4 id="preroll">
-	<span><code>preroll</code></span>
+<h4 id="gstbasesinkpreroll">
+	<span><code>GstBaseSink::preroll</code></span>
 </h4>
 
 		<pre class="programlisting">
-function preroll(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+function GstBaseSink::preroll(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
     // javascript implementation of the 'preroll' virtual method
 }</pre>
 
@@ -3268,7 +3269,7 @@ function preroll(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascri
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+					<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 										)
 								–
 			</div>
@@ -3283,14 +3284,14 @@ function preroll(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascri
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::propose_allocation">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::propose_allocation-wpr">
 		
-<h4 id="propose_allocation">
-	<span><code>propose_allocation</code></span>
+<h4 id="gstbasesinkpropose_allocation">
+	<span><code>GstBaseSink::propose_allocation</code></span>
 </h4>
 
 		<pre class="programlisting">
-function propose_allocation(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
+function GstBaseSink::propose_allocation(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
     // javascript implementation of the 'propose_allocation' virtual method
 }</pre>
 
@@ -3345,14 +3346,14 @@ function propose_allocation(sink: <a title="GstBase.BaseSink" href="libgstbase-1
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::query">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::query-wpr">
 		
-<h4 id="query">
-	<span><code>query</code></span>
+<h4 id="gstbasesinkquery">
+	<span><code>GstBaseSink::query</code></span>
 </h4>
 
 		<pre class="programlisting">
-function query(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
+function GstBaseSink::query(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
     // javascript implementation of the 'query' virtual method
 }</pre>
 
@@ -3407,14 +3408,14 @@ function query(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::render">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::render-wpr">
 		
-<h4 id="render">
-	<span><code>render</code></span>
+<h4 id="gstbasesinkrender">
+	<span><code>GstBaseSink::render</code></span>
 </h4>
 
 		<pre class="programlisting">
-function render(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+function GstBaseSink::render(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
     // javascript implementation of the 'render' virtual method
 }</pre>
 
@@ -3454,7 +3455,7 @@ function render(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascrip
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+					<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 										)
 								–
 			</div>
@@ -3469,14 +3470,14 @@ function render(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascrip
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::render_list">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::render_list-wpr">
 		
-<h4 id="render_list">
-	<span><code>render_list</code></span>
+<h4 id="gstbasesinkrender_list">
+	<span><code>GstBaseSink::render_list</code></span>
 </h4>
 
 		<pre class="programlisting">
-function render_list(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer_list: <a title="Gst.BufferList" href="libgstreamer-1.0/javascript/gstbufferlist.html#GstBufferList">Gst.BufferList</a>): {
+function GstBaseSink::render_list(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, buffer_list: <a title="Gst.BufferList" href="libgstreamer-1.0/javascript/gstbufferlist.html#GstBufferList">Gst.BufferList</a>): {
     // javascript implementation of the 'render_list' virtual method
 }</pre>
 
@@ -3516,7 +3517,7 @@ function render_list(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/java
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+					<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 										)
 								–
 			</div>
@@ -3531,14 +3532,14 @@ function render_list(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/java
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::set_caps">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::set_caps-wpr">
 		
-<h4 id="set_caps">
-	<span><code>set_caps</code></span>
+<h4 id="gstbasesinkset_caps">
+	<span><code>GstBaseSink::set_caps</code></span>
 </h4>
 
 		<pre class="programlisting">
-function set_caps(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, caps: <a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+function GstBaseSink::set_caps(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, caps: <a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
     // javascript implementation of the 'set_caps' virtual method
 }</pre>
 
@@ -3564,7 +3565,7 @@ function set_caps(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascr
 	<div>
 		<i><em><code>caps</code></em></i>
 					(
-						<a title="Gst.Caps" href="javascript/gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
+						<a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>
 						)
 				–
 	</div>
@@ -3593,14 +3594,14 @@ function set_caps(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascr
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::start">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::start-wpr">
 		
-<h4 id="start">
-	<span><code>start</code></span>
+<h4 id="gstbasesinkstart">
+	<span><code>GstBaseSink::start</code></span>
 </h4>
 
 		<pre class="programlisting">
-function start(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
+function GstBaseSink::start(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
     // javascript implementation of the 'start' virtual method
 }</pre>
 
@@ -3643,14 +3644,14 @@ function start(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::stop">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::stop-wpr">
 		
-<h4 id="stop">
-	<span><code>stop</code></span>
+<h4 id="gstbasesinkstop">
+	<span><code>GstBaseSink::stop</code></span>
 </h4>
 
 		<pre class="programlisting">
-function stop(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
+function GstBaseSink::stop(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
     // javascript implementation of the 'stop' virtual method
 }</pre>
 
@@ -3693,14 +3694,14 @@ function stop(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::unlock">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::unlock-wpr">
 		
-<h4 id="unlock">
-	<span><code>unlock</code></span>
+<h4 id="gstbasesinkunlock">
+	<span><code>GstBaseSink::unlock</code></span>
 </h4>
 
 		<pre class="programlisting">
-function unlock(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
+function GstBaseSink::unlock(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
     // javascript implementation of the 'unlock' virtual method
 }</pre>
 
@@ -3743,14 +3744,14 @@ function unlock(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascrip
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::unlock_stop">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::unlock_stop-wpr">
 		
-<h4 id="unlock_stop">
-	<span><code>unlock_stop</code></span>
+<h4 id="gstbasesinkunlock_stop">
+	<span><code>GstBaseSink::unlock_stop</code></span>
 </h4>
 
 		<pre class="programlisting">
-function unlock_stop(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
+function GstBaseSink::unlock_stop(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>): {
     // javascript implementation of the 'unlock_stop' virtual method
 }</pre>
 
@@ -3793,14 +3794,14 @@ function unlock_stop(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/java
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::wait_event">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSinkClass::wait_event-wpr">
 		
-<h4 id="wait_event">
-	<span><code>wait_event</code></span>
+<h4 id="gstbasesinkwait_event">
+	<span><code>GstBaseSink::wait_event</code></span>
 </h4>
 
 		<pre class="programlisting">
-function wait_event(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, event: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>): {
+function GstBaseSink::wait_event(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javascript/gstbasesink.html#GstBaseSink">GstBase.BaseSink</a>, event: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>): {
     // javascript implementation of the 'wait_event' virtual method
 }</pre>
 
@@ -3840,7 +3841,7 @@ function wait_event(sink: <a title="GstBase.BaseSink" href="libgstbase-1.0/javas
 			<div>
 				<b>Returns</b>
 									(
-					<a title="Gst.FlowReturn" href="javascript/gst-plugins-bad-plugins-1.0/Element-errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
+					<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>
 										)
 								–
 			</div>
