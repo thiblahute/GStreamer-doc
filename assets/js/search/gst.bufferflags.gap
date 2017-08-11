@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gst.bufferflags.gap", "urls": ["libgstbase-1.0/python/gstbasetransform.html#gst_base_transform_set_gap_aware-wpr"]});
+urls_downloaded_cb({"token": "gst.bufferflags.gap", "urls": ["libgstbase-1.0/python/gstbasetransform.html#gst_base_transform_set_gap_aware"]});

@@ -1,0 +1,1 @@
+urls_downloaded_cb({"token": "GstPbutils.AudioVisualizer.shader", "urls": ["gst-plugins-base-pbutils-1.0/javascript/Miscellaneous.html#GstAudioVisualizer:shader-wpr", "gst-plugins-base-pbutils-1.0/python/Miscellaneous.html#GstAudioVisualizer:shader-wpr"]});
