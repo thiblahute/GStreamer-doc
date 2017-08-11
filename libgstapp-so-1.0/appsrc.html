@@ -136,6 +136,8 @@ $('body').removeClass('no-script');
         
 
                     
+        
+
         <h2 id="hierarchy">Hierarchy</h2>
         <div class="hierarchy_container">
             <div class="hierarchy_details">
@@ -212,26 +214,20 @@ $('body').removeClass('no-script');
             <h2 class="symbol_section" id="Signals">Signals</h2>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::need-data-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::end-of-stream-wpr">
 		
-<h3 id="needdata">
-	<span><code>need-data</code></span>
+<h3 id="endofstream">
+	<span><code>end-of-stream</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-void
-need_data_callback (GstAppSrc * appsrc,
-                    guint length,
-                    gpointer udata)</pre>
+GstFlowReturn
+end_of_stream_callback (GstAppSrc * appsrc,
+                        gpointer udata)</pre>
 
-<p>Signal that the source needs more data. In the callback or from another
-thread you should call push-buffer or end-of-stream.</p>
-<p><em>length</em> is just a hint and when it is set to -1, any number of bytes can be
-pushed into <em>appsrc</em>.</p>
-<p>You can call push-buffer multiple times until the enough-data signal is
-fired.</p>
+<p>Notify <em>appsrc</em> that no more buffer are available.</p>
 
 
 
@@ -243,17 +239,7 @@ fired.</p>
 		<i><em><code>appsrc</code></em></i>
 				–
 	</div>
-			<p>the appsrc element that emitted the signal</p>
-
-	</div>
-
-					
-<div class="symbol-detail">
-	<div>
-		<i><em><code>length</code></em></i>
-				–
-	</div>
-			<p>the amount of bytes needed.</p>
+			<p>the appsrc</p>
 
 	</div>
 
@@ -273,7 +259,7 @@ fired.</p>
 			<div>
 				<b>Returns</b>
 									(
-					void
+					GstFlowReturn
 										)
 								–
 			</div>
@@ -350,23 +336,26 @@ emitted again to avoid excessive buffer queueing.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::seek-data-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::need-data-wpr">
 		
-<h3 id="seekdata">
-	<span><code>seek-data</code></span>
+<h3 id="needdata">
+	<span><code>need-data</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-gboolean
-seek_data_callback (GstAppSrc * appsrc,
-                    guint64 offset,
+void
+need_data_callback (GstAppSrc * appsrc,
+                    guint length,
                     gpointer udata)</pre>
 
-<p>Seek to the given offset. The next push-buffer should produce buffers from
-the new <em>offset</em>.
-This callback is only called for seekable stream types.</p>
+<p>Signal that the source needs more data. In the callback or from another
+thread you should call push-buffer or end-of-stream.</p>
+<p><em>length</em> is just a hint and when it is set to -1, any number of bytes can be
+pushed into <em>appsrc</em>.</p>
+<p>You can call push-buffer multiple times until the enough-data signal is
+fired.</p>
 
 
 
@@ -385,10 +374,10 @@ This callback is only called for seekable stream types.</p>
 					
 <div class="symbol-detail">
 	<div>
-		<i><em><code>offset</code></em></i>
+		<i><em><code>length</code></em></i>
 				–
 	</div>
-			<p>the offset to seek to</p>
+			<p>the amount of bytes needed.</p>
 
 	</div>
 
@@ -408,12 +397,11 @@ This callback is only called for seekable stream types.</p>
 			<div>
 				<b>Returns</b>
 									(
-					gboolean
+					void
 										)
 								–
 			</div>
-							<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the seek succeeded.</p>
-
+							<i>No description available</i>
 					</div>
 	</div>
 
@@ -582,20 +570,23 @@ becomes available in the queue.</p>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::end-of-stream-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc::seek-data-wpr">
 		
-<h3 id="endofstream">
-	<span><code>end-of-stream</code></span>
+<h3 id="seekdata">
+	<span><code>seek-data</code></span>
 </h3>
 
 		
 
 <pre class="prototype">
-GstFlowReturn
-end_of_stream_callback (GstAppSrc * appsrc,
-                        gpointer udata)</pre>
+gboolean
+seek_data_callback (GstAppSrc * appsrc,
+                    guint64 offset,
+                    gpointer udata)</pre>
 
-<p>Notify <em>appsrc</em> that no more buffer are available.</p>
+<p>Seek to the given offset. The next push-buffer should produce buffers from
+the new <em>offset</em>.
+This callback is only called for seekable stream types.</p>
 
 
 
@@ -607,7 +598,17 @@ end_of_stream_callback (GstAppSrc * appsrc,
 		<i><em><code>appsrc</code></em></i>
 				–
 	</div>
-			<p>the appsrc</p>
+			<p>the appsrc element that emitted the signal</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>offset</code></em></i>
+				–
+	</div>
+			<p>the offset to seek to</p>
 
 	</div>
 
@@ -627,11 +628,12 @@ end_of_stream_callback (GstAppSrc * appsrc,
 			<div>
 				<b>Returns</b>
 									(
-					GstFlowReturn
+					gboolean
 										)
 								–
 			</div>
-							<i>No description available</i>
+							<p><a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> if the seek succeeded.</p>
+
 					</div>
 	</div>
 
@@ -646,17 +648,17 @@ end_of_stream_callback (GstAppSrc * appsrc,
             <h2 class="symbol_section" id="Properties">Properties</h2>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:name-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:block-wpr">
 		
-<h3 class="method" id="name">
-	<span><code>name</code></span>
+<h3 class="method" id="block">
+	<span><code>block</code></span>
 </h3>
 
 		<pre class="property_signature">
-“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+“block” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
 </pre>
 
-<p>The name of the object</p>
+<p>Block push-buffer when max-bytes are queued</p>
 
 
 <p>
@@ -668,40 +670,9 @@ end_of_stream_callback (GstAppSrc * appsrc,
 				/		
 				Write
 			
-				/		
-				Construct
-			
 </p>
 <p>
-	Default value :	appsrc0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:parent-wpr">
-		
-<h3 class="method" id="parent">
-	<span><code>parent</code></span>
-</h3>
-
-		<pre class="property_signature">
-“parent” <span class="type"><a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
-</pre>
-
-<p>The parent of the object</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
+	Default value :	false
 </p>
 
 </div>
@@ -739,17 +710,17 @@ end_of_stream_callback (GstAppSrc * appsrc,
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:num-buffers-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:caps-wpr">
 		
-<h3 class="method" id="numbuffers">
-	<span><code>num-buffers</code></span>
+<h3 class="method" id="caps">
+	<span><code>caps</code></span>
 </h3>
 
 		<pre class="property_signature">
-“num-buffers” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“caps” <span class="type"><a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> *</span>
 </pre>
 
-<p>Number of buffers to output before sending EOS (-1 = unlimited)</p>
+<p>The allowed caps for the src pad</p>
 
 
 <p>
@@ -761,26 +732,23 @@ end_of_stream_callback (GstAppSrc * appsrc,
 				/		
 				Write
 			
-</p>
-<p>
-	Default value :	-1
 </p>
 
 </div>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:typefind-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:current-level-bytes-wpr">
 		
-<h3 class="method" id="typefind">
-	<span><code>typefind</code></span>
+<h3 class="method" id="currentlevelbytes">
+	<span><code>current-level-bytes</code></span>
 </h3>
 
 		<pre class="property_signature">
-“typefind” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
+“current-level-bytes” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
 </pre>
 
-<p>Run typefind before negotiating (deprecated, non-functional)</p>
+<p>The number of currently queued bytes</p>
 
 
 <p>
@@ -789,12 +757,9 @@ end_of_stream_callback (GstAppSrc * appsrc,
 		
 				Read
 			
-				/		
-				Write
-			
 </p>
 <p>
-	Default value :	false
+	Default value :	0
 </p>
 
 </div>
@@ -832,17 +797,330 @@ end_of_stream_callback (GstAppSrc * appsrc,
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:caps-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:duration-wpr">
 		
-<h3 class="method" id="caps">
-	<span><code>caps</code></span>
+<h3 class="method" id="duration">
+	<span><code>duration</code></span>
 </h3>
 
 		<pre class="property_signature">
-“caps” <span class="type"><a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> *</span>
+“duration” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
 </pre>
 
-<p>The allowed caps for the src pad</p>
+<p>The duration of the data stream in nanoseconds (GST_CLOCK_TIME_NONE if unknown)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	18446744073709551615
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:emit-signals-wpr">
+		
+<h3 class="method" id="emitsignals">
+	<span><code>emit-signals</code></span>
+</h3>
+
+		<pre class="property_signature">
+“emit-signals” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Emit need-data, enough-data and seek-data signals</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:format-wpr">
+		
+<h3 class="method" id="format">
+	<span><code>format</code></span>
+</h3>
+
+		<pre class="property_signature">
+“format” <span class="type"><a title="GstFormat" href="GstFormat">GstFormat</a></span>
+</pre>
+
+<p>The format of the segment events and seek</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	bytes (2)
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:is-live-wpr">
+		
+<h3 class="method" id="islive">
+	<span><code>is-live</code></span>
+</h3>
+
+		<pre class="property_signature">
+“is-live” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Whether to act as a live source</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:max-bytes-wpr">
+		
+<h3 class="method" id="maxbytes">
+	<span><code>max-bytes</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-bytes” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>The maximum number of bytes to queue internally (0 = unlimited)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	200000
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:max-latency-wpr">
+		
+<h3 class="method" id="maxlatency">
+	<span><code>max-latency</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-latency” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+<p>The maximum latency (-1 = unlimited)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	18446744073709551615
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:min-latency-wpr">
+		
+<h3 class="method" id="minlatency">
+	<span><code>min-latency</code></span>
+</h3>
+
+		<pre class="property_signature">
+“min-latency” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+<p>The minimum latency (-1 = default)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	18446744073709551615
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:min-percent-wpr">
+		
+<h3 class="method" id="minpercent">
+	<span><code>min-percent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“min-percent” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Emit need-data when queued bytes drops below this percent of max-bytes</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:name-wpr">
+		
+<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>The name of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	appsrc0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:num-buffers-wpr">
+		
+<h3 class="method" id="numbuffers">
+	<span><code>num-buffers</code></span>
+</h3>
+
+		<pre class="property_signature">
+“num-buffers” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+<p>Number of buffers to output before sending EOS (-1 = unlimited)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	-1
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:parent-wpr">
+		
+<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+<p>The parent of the object</p>
 
 
 <p>
@@ -922,79 +1200,17 @@ end_of_stream_callback (GstAppSrc * appsrc,
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:max-bytes-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:typefind-wpr">
 		
-<h3 class="method" id="maxbytes">
-	<span><code>max-bytes</code></span>
+<h3 class="method" id="typefind">
+	<span><code>typefind</code></span>
 </h3>
 
 		<pre class="property_signature">
-“max-bytes” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+“typefind” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
 </pre>
 
-<p>The maximum number of bytes to queue internally (0 = unlimited)</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	200000
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:format-wpr">
-		
-<h3 class="method" id="format">
-	<span><code>format</code></span>
-</h3>
-
-		<pre class="property_signature">
-“format” <span class="type"><a title="GstFormat" href="GstFormat">GstFormat</a></span>
-</pre>
-
-<p>The format of the segment events and seek</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	bytes (2)
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:block-wpr">
-		
-<h3 class="method" id="block">
-	<span><code>block</code></span>
-</h3>
-
-		<pre class="property_signature">
-“block” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
-</pre>
-
-<p>Block push-buffer when max-bytes are queued</p>
+<p>Run typefind before negotiating (deprecated, non-functional)</p>
 
 
 <p>
@@ -1009,220 +1225,6 @@ end_of_stream_callback (GstAppSrc * appsrc,
 </p>
 <p>
 	Default value :	false
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:is-live-wpr">
-		
-<h3 class="method" id="islive">
-	<span><code>is-live</code></span>
-</h3>
-
-		<pre class="property_signature">
-“is-live” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
-</pre>
-
-<p>Whether to act as a live source</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	false
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:min-latency-wpr">
-		
-<h3 class="method" id="minlatency">
-	<span><code>min-latency</code></span>
-</h3>
-
-		<pre class="property_signature">
-“min-latency” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
-</pre>
-
-<p>The minimum latency (-1 = default)</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	18446744073709551615
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:max-latency-wpr">
-		
-<h3 class="method" id="maxlatency">
-	<span><code>max-latency</code></span>
-</h3>
-
-		<pre class="property_signature">
-“max-latency” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
-</pre>
-
-<p>The maximum latency (-1 = unlimited)</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	18446744073709551615
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:emit-signals-wpr">
-		
-<h3 class="method" id="emitsignals">
-	<span><code>emit-signals</code></span>
-</h3>
-
-		<pre class="property_signature">
-“emit-signals” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
-</pre>
-
-<p>Emit need-data, enough-data and seek-data signals</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	true
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:min-percent-wpr">
-		
-<h3 class="method" id="minpercent">
-	<span><code>min-percent</code></span>
-</h3>
-
-		<pre class="property_signature">
-“min-percent” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
-</pre>
-
-<p>Emit need-data when queued bytes drops below this percent of max-bytes</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:current-level-bytes-wpr">
-		
-<h3 class="method" id="currentlevelbytes">
-	<span><code>current-level-bytes</code></span>
-</h3>
-
-		<pre class="property_signature">
-“current-level-bytes” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
-</pre>
-
-<p>The number of currently queued bytes</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-</p>
-<p>
-	Default value :	0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppSrc:duration-wpr">
-		
-<h3 class="method" id="duration">
-	<span><code>duration</code></span>
-</h3>
-
-		<pre class="property_signature">
-“duration” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
-</pre>
-
-<p>The duration of the data stream in nanoseconds (GST_CLOCK_TIME_NONE if unknown)</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	18446744073709551615
 </p>
 
 </div>
@@ -1232,45 +1234,6 @@ end_of_stream_callback (GstAppSrc * appsrc,
 
             <h2 class="symbol_section" id="Enumerations">Enumerations</h2>
                     
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppStreamType-wpr">
-		
-<h3 id="enum-gstappstreamtype">
-		enum GstAppStreamType
-	</h3>
-
-		
-<table class="table table-striped">
-    <tbody>
-        <tr>
-            <td><b>Name</b></td>
-            <td><b>Description</b></td>
-            <td><b>Value</b></td>
-        </tr>
-        <tr>
-            <td>stream</td>
-            <td>GST_APP_STREAM_TYPE_STREAM</td>
-            <td>0x00000000</td>
-        </tr>
-        <tr>
-            <td>seekable</td>
-            <td>GST_APP_STREAM_TYPE_SEEKABLE</td>
-            <td>0x00000001</td>
-        </tr>
-        <tr>
-            <td>random-access</td>
-            <td>GST_APP_STREAM_TYPE_RANDOM_ACCESS</td>
-            <td>0x00000002</td>
-        </tr>
-    </tbody>
-</table>
-
-
-
-
-</div>
-
-            
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstFormat-wpr">
 		
@@ -1318,6 +1281,47 @@ end_of_stream_callback (GstAppSrc * appsrc,
         </tr>
     </tbody>
 </table>
+
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAppStreamType-wpr">
+		
+<h3 id="enum-gstappstreamtype">
+		enum GstAppStreamType
+	</h3>
+
+		
+<table class="table table-striped">
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>stream</td>
+            <td>GST_APP_STREAM_TYPE_STREAM</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>seekable</td>
+            <td>GST_APP_STREAM_TYPE_SEEKABLE</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>random-access</td>
+            <td>GST_APP_STREAM_TYPE_RANDOM_ACCESS</td>
+            <td>0x00000002</td>
+        </tr>
+    </tbody>
+</table>
+
 
 
 

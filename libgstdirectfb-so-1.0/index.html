@@ -155,6 +155,52 @@ $('body').removeClass('no-script');
 
 
                     
+        <p>DfbVideoSink renders video frames using the
+<ulink url="http://www.directfb.org/">DirectFB</ulink> library.
+Rendering can happen in two different modes :</p>
+<ul>
+<li>
+<p>Standalone: this mode will take complete control of the monitor forcing
+<ulink url="http://www.directfb.org/">DirectFB</ulink> to fullscreen layout.
+This is convenient to test using the  gst-launch-1.0 command line tool or
+other simple applications. It is possible to interrupt playback while
+being in this mode by pressing the Escape key.
+This mode handles navigation events for every input device supported by
+the <ulink url="http://www.directfb.org/">DirectFB</ulink> library, it will
+look for available video modes in the fb.modes file and try to switch
+the framebuffer video mode to the most suitable one. Depending on
+hardware acceleration capabilities the element will handle scaling or not.
+If no acceleration is available it will do clipping or centering of the
+video frames respecting the original aspect ratio.</p>
+</li>
+<li>
+<p>Embedded: this mode will render video frames in a
+<a href="libgstdirectfb-so-1.0/index.html#GstDfbVideoSink:surface">surface</a> provided by the
+application developer. This is a more advanced usage of the element and
+it is required to integrate video playback in existing
+<ulink url="http://www.directfb.org/">DirectFB</ulink> applications.
+When using this mode the element just renders to the
+<a href="libgstdirectfb-so-1.0/index.html#GstDfbVideoSink:surface">surface</a> provided by the
+application, that means it won't handle navigation events and won't resize
+the <a href="libgstdirectfb-so-1.0/index.html#GstDfbVideoSink:surface">surface</a> to fit video
+frames geometry. Application has to implement the necessary code to grab
+informations about the negotiated geometry and resize there
+<a href="libgstdirectfb-so-1.0/index.html#GstDfbVideoSink:surface">surface</a> accordingly.</p>
+</li>
+</ul>
+<p>For both modes the element implements a buffer pool allocation system to
+optimize memory allocation time and handle reverse negotiation. Indeed if
+you insert an element like videoscale in the pipeline the video sink will
+negotiate with it to try get a scaled video for either the fullscreen layout
+or the application provided external <a href="libgstdirectfb-so-1.0/index.html#GstDfbVideoSink:surface">surface</a>.</p>
+<h2 id="example-application">Example application</h2>
+ <include xmlns="http://www.w3.org/2003/XInclude" href="element-dfb-example.xml"></include>
+<h2 id="example-pipelines">Example pipelines</h2>
+<pre><code class="language-["> gst-launch-1.0 -v videotestsrc ! dfbvideosink hue=20000 saturation=40000 brightness=25000
+</code></pre>
+<p>test the colorbalance interface implementation in dfbvideosink</p>
+
+
         <h2 id="hierarchy">Hierarchy</h2>
         <div class="hierarchy_container">
             <div class="hierarchy_details">
@@ -245,6 +291,310 @@ $('body').removeClass('no-script');
             <h2 class="symbol_section" id="Properties">Properties</h2>
                     
 
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:async-wpr">
+		
+<h3 class="method" id="async">
+	<span><code>async</code></span>
+</h3>
+
+		<pre class="property_signature">
+“async” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Go asynchronously to PAUSED</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:blocksize-wpr">
+		
+<h3 class="method" id="blocksize">
+	<span><code>blocksize</code></span>
+</h3>
+
+		<pre class="property_signature">
+“blocksize” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+<p>Size in bytes to pull per buffer (0 = default)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	4096
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:brightness-wpr">
+		
+<h3 class="method" id="brightness">
+	<span><code>brightness</code></span>
+</h3>
+
+		<pre class="property_signature">
+“brightness” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+<p>The brightness of the video</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	-1
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:contrast-wpr">
+		
+<h3 class="method" id="contrast">
+	<span><code>contrast</code></span>
+</h3>
+
+		<pre class="property_signature">
+“contrast” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+<p>The contrast of the video</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	-1
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:enable-last-sample-wpr">
+		
+<h3 class="method" id="enablelastsample">
+	<span><code>enable-last-sample</code></span>
+</h3>
+
+		<pre class="property_signature">
+“enable-last-sample” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Enable the last-sample property</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	true
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:hue-wpr">
+		
+<h3 class="method" id="hue">
+	<span><code>hue</code></span>
+</h3>
+
+		<pre class="property_signature">
+“hue” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+<p>The hue of the video</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	-1
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:last-sample-wpr">
+		
+<h3 class="method" id="lastsample">
+	<span><code>last-sample</code></span>
+</h3>
+
+		<pre class="property_signature">
+“last-sample” <span class="type"><a title="GstSample" href="libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *</span>
+</pre>
+
+<p>The last sample received in the sink</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:layer-mode-wpr">
+		
+<h3 class="method" id="layermode">
+	<span><code>layer-mode</code></span>
+</h3>
+
+		<pre class="property_signature">
+“layer-mode” <span class="type"><a title="GstDfbVideoSinkLayerMode" href="libgstdirectfb-so-1.0/index.html#GstDfbVideoSinkLayerMode">GstDfbVideoSinkLayerMode</a></span>
+</pre>
+
+<p>The cooperative level handling the access permission (set this to 'administrative' when the cursor is required)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	exclusive (1)
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:max-bitrate-wpr">
+		
+<h3 class="method" id="maxbitrate">
+	<span><code>max-bitrate</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-bitrate” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>The maximum bits per second to render (0 = disabled)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:max-lateness-wpr">
+		
+<h3 class="method" id="maxlateness">
+	<span><code>max-lateness</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-lateness” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+</pre>
+
+<p>Maximum number of nanoseconds that a buffer can be late before it is dropped (-1 unlimited)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	20000000
+</p>
+
+</div>
+
+            
+
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:name-wpr">
 		
 <h3 class="method" id="name">
@@ -307,17 +657,17 @@ $('body').removeClass('no-script');
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:sync-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:pixel-aspect-ratio-wpr">
 		
-<h3 class="method" id="sync">
-	<span><code>sync</code></span>
+<h3 class="method" id="pixelaspectratio">
+	<span><code>pixel-aspect-ratio</code></span>
 </h3>
 
 		<pre class="property_signature">
-“sync” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
+“pixel-aspect-ratio” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
 </pre>
 
-<p>Sync on the clock</p>
+<p>The pixel aspect ratio of the device</p>
 
 
 <p>
@@ -331,38 +681,7 @@ $('body').removeClass('no-script');
 			
 </p>
 <p>
-	Default value :	true
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:max-lateness-wpr">
-		
-<h3 class="method" id="maxlateness">
-	<span><code>max-lateness</code></span>
-</h3>
-
-		<pre class="property_signature">
-“max-lateness” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
-</pre>
-
-<p>Maximum number of nanoseconds that a buffer can be late before it is dropped (-1 unlimited)</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	20000000
+	Default value :	NULL
 </p>
 
 </div>
@@ -400,155 +719,6 @@ $('body').removeClass('no-script');
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:async-wpr">
-		
-<h3 class="method" id="async">
-	<span><code>async</code></span>
-</h3>
-
-		<pre class="property_signature">
-“async” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
-</pre>
-
-<p>Go asynchronously to PAUSED</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	true
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:ts-offset-wpr">
-		
-<h3 class="method" id="tsoffset">
-	<span><code>ts-offset</code></span>
-</h3>
-
-		<pre class="property_signature">
-“ts-offset” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
-</pre>
-
-<p>Timestamp offset in nanoseconds</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:enable-last-sample-wpr">
-		
-<h3 class="method" id="enablelastsample">
-	<span><code>enable-last-sample</code></span>
-</h3>
-
-		<pre class="property_signature">
-“enable-last-sample” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
-</pre>
-
-<p>Enable the last-sample property</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	true
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:last-sample-wpr">
-		
-<h3 class="method" id="lastsample">
-	<span><code>last-sample</code></span>
-</h3>
-
-		<pre class="property_signature">
-“last-sample” <span class="type"><a title="GstSample" href="libgstreamer-1.0/c/gstsample.html#GstSample">GstSample</a> *</span>
-</pre>
-
-<p>The last sample received in the sink</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:blocksize-wpr">
-		
-<h3 class="method" id="blocksize">
-	<span><code>blocksize</code></span>
-</h3>
-
-		<pre class="property_signature">
-“blocksize” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
-</pre>
-
-<p>Size in bytes to pull per buffer (0 = default)</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	4096
-</p>
-
-</div>
-
-            
-
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:render-delay-wpr">
 		
 <h3 class="method" id="renderdelay">
@@ -580,17 +750,17 @@ $('body').removeClass('no-script');
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:throttle-time-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:saturation-wpr">
 		
-<h3 class="method" id="throttletime">
-	<span><code>throttle-time</code></span>
+<h3 class="method" id="saturation">
+	<span><code>saturation</code></span>
 </h3>
 
 		<pre class="property_signature">
-“throttle-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+“saturation” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
 </pre>
 
-<p>The time to keep between rendered buffers (0 = disabled)</p>
+<p>The saturation of the video</p>
 
 
 <p>
@@ -604,38 +774,7 @@ $('body').removeClass('no-script');
 			
 </p>
 <p>
-	Default value :	0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:max-bitrate-wpr">
-		
-<h3 class="method" id="maxbitrate">
-	<span><code>max-bitrate</code></span>
-</h3>
-
-		<pre class="property_signature">
-“max-bitrate” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
-</pre>
-
-<p>The maximum bits per second to render (0 = disabled)</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	0
+	Default value :	-1
 </p>
 
 </div>
@@ -704,17 +843,17 @@ $('body').removeClass('no-script');
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:contrast-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:sync-wpr">
 		
-<h3 class="method" id="contrast">
-	<span><code>contrast</code></span>
+<h3 class="method" id="sync">
+	<span><code>sync</code></span>
 </h3>
 
 		<pre class="property_signature">
-“contrast” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“sync” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
 </pre>
 
-<p>The contrast of the video</p>
+<p>Sync on the clock</p>
 
 
 <p>
@@ -728,24 +867,24 @@ $('body').removeClass('no-script');
 			
 </p>
 <p>
-	Default value :	-1
+	Default value :	true
 </p>
 
 </div>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:brightness-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:throttle-time-wpr">
 		
-<h3 class="method" id="brightness">
-	<span><code>brightness</code></span>
+<h3 class="method" id="throttletime">
+	<span><code>throttle-time</code></span>
 </h3>
 
 		<pre class="property_signature">
-“brightness” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“throttle-time” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
 </pre>
 
-<p>The brightness of the video</p>
+<p>The time to keep between rendered buffers (0 = disabled)</p>
 
 
 <p>
@@ -759,24 +898,24 @@ $('body').removeClass('no-script');
 			
 </p>
 <p>
-	Default value :	-1
+	Default value :	0
 </p>
 
 </div>
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:hue-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:ts-offset-wpr">
 		
-<h3 class="method" id="hue">
-	<span><code>hue</code></span>
+<h3 class="method" id="tsoffset">
+	<span><code>ts-offset</code></span>
 </h3>
 
 		<pre class="property_signature">
-“hue” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“ts-offset” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
 </pre>
 
-<p>The hue of the video</p>
+<p>Timestamp offset in nanoseconds</p>
 
 
 <p>
@@ -790,69 +929,7 @@ $('body').removeClass('no-script');
 			
 </p>
 <p>
-	Default value :	-1
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:saturation-wpr">
-		
-<h3 class="method" id="saturation">
-	<span><code>saturation</code></span>
-</h3>
-
-		<pre class="property_signature">
-“saturation” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
-</pre>
-
-<p>The saturation of the video</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	-1
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:pixel-aspect-ratio-wpr">
-		
-<h3 class="method" id="pixelaspectratio">
-	<span><code>pixel-aspect-ratio</code></span>
-</h3>
-
-		<pre class="property_signature">
-“pixel-aspect-ratio” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
-</pre>
-
-<p>The pixel aspect ratio of the device</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	NULL
+	Default value :	0
 </p>
 
 </div>
@@ -884,37 +961,6 @@ $('body').removeClass('no-script');
 </p>
 <p>
 	Default value :	true
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstDfbVideoSink:layer-mode-wpr">
-		
-<h3 class="method" id="layermode">
-	<span><code>layer-mode</code></span>
-</h3>
-
-		<pre class="property_signature">
-“layer-mode” <span class="type"><a title="GstDfbVideoSinkLayerMode" href="libgstdirectfb-so-1.0/index.html#GstDfbVideoSinkLayerMode">GstDfbVideoSinkLayerMode</a></span>
-</pre>
-
-<p>The cooperative level handling the access permission (set this to 'administrative' when the cursor is required)</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	exclusive (1)
 </p>
 
 </div>
@@ -956,6 +1002,7 @@ $('body').removeClass('no-script');
         </tr>
     </tbody>
 </table>
+
 
 
 

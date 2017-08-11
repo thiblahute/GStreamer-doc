@@ -146,7 +146,7 @@ conditions are met, it also supports pull mode scheduling:</p>
 <ul>
 <li>The format is set to <a href="libgstreamer-1.0/python/gstformat.html#GST_FORMAT_BYTES">Gst.Format.bytes</a> (default).</li>
 <li>
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">is_seekable</a>() returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>.</li>
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrc.is_seekable()</a>() returns <a href="https://docs.python.org/3/library/constants.html#True">True</a>.</li>
 </ul>
 <p>If all the conditions are met for operating in pull mode, <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> is
 automatically seekable in push mode as well. The following conditions must
@@ -154,27 +154,27 @@ be met to make the element seekable in push mode when the format is not
 <a href="libgstreamer-1.0/python/gstformat.html#GST_FORMAT_BYTES">Gst.Format.bytes</a>:</p>
 <ul>
 <li>
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">is_seekable</a>() returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>.</li>
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrc.is_seekable()</a>() returns <a href="https://docs.python.org/3/library/constants.html#True">True</a>.</li>
 <li>
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::query">query</a>() can convert all supported seek formats to the
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::query">GstBaseSrc.query()</a>() can convert all supported seek formats to the
 internal format as set with <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_set_format">GstBase.BaseSrc.set_format</a>.</li>
 <li>
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::do_seek">do_seek</a>() is implemented, performs the seek and returns
-<a href="https://docs.python.org/2/library/constants.html#True">True</a>.</li>
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::do_seek">GstBaseSrc.do_seek()</a>() is implemented, performs the seek and returns
+<a href="https://docs.python.org/3/library/constants.html#True">True</a>.</li>
 </ul>
 <p>When the element does not meet the requirements to operate in pull mode, the
-offset and length in the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">create</a>() method should be ignored.
+offset and length in the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrc.create()</a>() method should be ignored.
 It is recommended to subclass <a href="libgstbase-1.0/python/gstpushsrc.html#GstPushSrc">GstBase.PushSrc</a> instead, in this situation. If the
 element can operate in pull mode but only with specific offsets and
 lengths, it is allowed to generate an error when the wrong values are passed
-to the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">create</a>() function.</p>
+to the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrc.create()</a>() function.</p>
 <p><a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> has support for live sources. Live sources are sources that when
 paused discard data, such as audio or video capture devices. A typical live
 source also produces data at a fixed rate and thus provides a clock to publish
 this rate.
 Use <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_set_live">GstBase.BaseSrc.set_live</a> to activate the live source mode.</p>
 <p>A live source does not produce data in the PAUSED state. This means that the
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">create</a>() method will not be called in PAUSED but only in
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrc.create()</a>() method will not be called in PAUSED but only in
 PLAYING. To signal the pipeline that the element will not produce data, the
 return value from the READY to PAUSED state will be
 <a href="libgstreamer-1.0/python/gstelement-h.html#GST_STATE_CHANGE_NO_PREROLL">Gst.StateChangeReturn.no_preroll</a>.</p>
@@ -184,11 +184,11 @@ can only produce data in the PLAYING state, when the clock is actually
 distributed and running.</p>
 <p>Live sources that synchronize and block on the clock (an audio source, for
 example) can use <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_wait_playing">GstBase.BaseSrc.wait_playing</a> when the
-<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">create</a>() function was interrupted by a state change to
+<a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrc.create()</a>() function was interrupted by a state change to
 PAUSED.</p>
-<p>The <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">get_times</a>() method can be used to implement pseudo-live
-sources. It only makes sense to implement the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">get_times</a>()
-function if the source is a live source. The <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">get_times</a>()
+<p>The <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrc.get_times()</a>() method can be used to implement pseudo-live
+sources. It only makes sense to implement the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrc.get_times()</a>()
+function if the source is a live source. The <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrc.get_times()</a>()
 function should return timestamps starting from 0, as if it were a non-live
 source. The base class will make sure that the timestamps are transformed
 into the current running_time. The base source will then wait for the
@@ -264,8 +264,10 @@ received, it may safely shut down the entire pipeline.</p>
 
 </div>
 
+
+
 	<div class="members-container">
-		<p><b>Members</b></p>
+		<h3 id="members">Members</h3>
 					
 <div class="symbol-detail" id="GstBaseSrc.element">
 	<div>
@@ -310,7 +312,7 @@ received, it may safely shut down the entire pipeline.</p>
 <div class="symbol-detail" id="GstBaseSrc.is_live">
 	<div>
 		<i><em><code>GstBaseSrc.is_live</code></em></i>
-		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		(<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -320,7 +322,7 @@ received, it may safely shut down the entire pipeline.</p>
 <div class="symbol-detail" id="GstBaseSrc.live_running">
 	<div>
 		<i><em><code>GstBaseSrc.live_running</code></em></i>
-		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		(<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -330,7 +332,7 @@ received, it may safely shut down the entire pipeline.</p>
 <div class="symbol-detail" id="GstBaseSrc.blocksize">
 	<div>
 		<i><em><code>GstBaseSrc.blocksize</code></em></i>
-		(<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>)
+		(<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -340,7 +342,7 @@ received, it may safely shut down the entire pipeline.</p>
 <div class="symbol-detail" id="GstBaseSrc.can_activate_push">
 	<div>
 		<i><em><code>GstBaseSrc.can_activate_push</code></em></i>
-		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		(<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -350,7 +352,7 @@ received, it may safely shut down the entire pipeline.</p>
 <div class="symbol-detail" id="GstBaseSrc.random_access">
 	<div>
 		<i><em><code>GstBaseSrc.random_access</code></em></i>
-		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		(<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -380,7 +382,7 @@ received, it may safely shut down the entire pipeline.</p>
 <div class="symbol-detail" id="GstBaseSrc.need_newsegment">
 	<div>
 		<i><em><code>GstBaseSrc.need_newsegment</code></em></i>
-		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		(<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -390,7 +392,7 @@ received, it may safely shut down the entire pipeline.</p>
 <div class="symbol-detail" id="GstBaseSrc.num_buffers">
 	<div>
 		<i><em><code>GstBaseSrc.num_buffers</code></em></i>
-		(<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>)
+		(<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -400,7 +402,7 @@ received, it may safely shut down the entire pipeline.</p>
 <div class="symbol-detail" id="GstBaseSrc.num_buffers_left">
 	<div>
 		<i><em><code>GstBaseSrc.num_buffers_left</code></em></i>
-		(<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>)
+		(<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -410,7 +412,7 @@ received, it may safely shut down the entire pipeline.</p>
 <div class="symbol-detail" id="GstBaseSrc.typefind">
 	<div>
 		<i><em><code>GstBaseSrc.typefind</code></em></i>
-		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		(<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -420,7 +422,7 @@ received, it may safely shut down the entire pipeline.</p>
 <div class="symbol-detail" id="GstBaseSrc.running">
 	<div>
 		<i><em><code>GstBaseSrc.running</code></em></i>
-		(<a title="bool" href="https://docs.python.org/2.7/library/functions.html#bool">bool</a>)
+		(<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -450,7 +452,7 @@ received, it may safely shut down the entire pipeline.</p>
 <div class="symbol-detail" id="GstBaseSrc._gst_reserved">
 	<div>
 		<i><em><code>GstBaseSrc._gst_reserved</code></em></i>
-		(<a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>)
+		(<a title="object" href="https://docs.python.org/3/library/functions.html#object">object</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -543,7 +545,7 @@ def GstBase.BaseSrc.get_blocksize (self):
 			<div>
 				<b>Returns</b>
 									(
-					<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+					<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 										)
 								–
 			</div>
@@ -651,7 +653,7 @@ def GstBase.BaseSrc.get_do_timestamp (self):
 										)
 								–
 			</div>
-							<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the base class will automatically timestamp outgoing buffers.</p>
+							<p><a href="https://docs.python.org/3/library/constants.html#True">True</a> if the base class will automatically timestamp outgoing buffers.</p>
 
 					</div>
 	</div>
@@ -703,7 +705,7 @@ def GstBase.BaseSrc.is_async (self):
 										)
 								–
 			</div>
-							<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if <em>src</em> is operating in async mode.</p>
+							<p><a href="https://docs.python.org/3/library/constants.html#True">True</a> if <em>src</em> is operating in async mode.</p>
 
 					</div>
 	</div>
@@ -755,7 +757,7 @@ def GstBase.BaseSrc.is_live (self):
 										)
 								–
 			</div>
-							<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if element is in live mode.</p>
+							<p><a href="https://docs.python.org/3/library/constants.html#True">True</a> if element is in live mode.</p>
 
 					</div>
 	</div>
@@ -805,7 +807,7 @@ configured with <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_set_
 	<div>
 		<i><em><code>start</code></em></i>
 					(
-						<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 						)
 				–
 	</div>
@@ -818,7 +820,7 @@ configured with <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_set_
 	<div>
 		<i><em><code>stop</code></em></i>
 					(
-						<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 						)
 				–
 	</div>
@@ -831,7 +833,7 @@ configured with <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_set_
 	<div>
 		<i><em><code>time</code></em></i>
 					(
-						<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 						)
 				–
 	</div>
@@ -850,7 +852,7 @@ configured with <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_set_
 										)
 								–
 			</div>
-							<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if preparation of the seamless segment succeeded.</p>
+							<p><a href="https://docs.python.org/3/library/constants.html#True">True</a> if preparation of the seamless segment succeeded.</p>
 
 					</div>
 	</div>
@@ -872,7 +874,7 @@ configured with <a href="libgstbase-1.0/python/gstbasesrc.html#gst_base_src_set_
 def GstBase.BaseSrc.query_latency (self):
     #python wrapper for 'gst_base_src_query_latency'</pre>
 
-<p>Query the source for the latency parameters. <em>live</em> will be <a href="https://docs.python.org/2/library/constants.html#True">True</a> when <em>src</em> is
+<p>Query the source for the latency parameters. <em>live</em> will be <a href="https://docs.python.org/3/library/constants.html#True">True</a> when <em>src</em> is
 configured as a live source. <em>min_latency</em> and <em>max_latency</em> will be set
 to the difference between the running time and the timestamp of the first
 buffer.</p>
@@ -907,7 +909,7 @@ buffer.</p>
 						)
 				–
 	</div>
-			<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
+			<p><a href="https://docs.python.org/3/library/constants.html#True">True</a> if the query succeeded.</p>
 
 	</div>
 
@@ -920,7 +922,7 @@ buffer.</p>
 						)
 				–
 	</div>
-			<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
+			<p><a href="https://docs.python.org/3/library/constants.html#True">True</a> if the query succeeded.</p>
 
 	</div>
 
@@ -933,7 +935,7 @@ buffer.</p>
 						)
 				–
 	</div>
-			<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
+			<p><a href="https://docs.python.org/3/library/constants.html#True">True</a> if the query succeeded.</p>
 
 	</div>
 
@@ -946,7 +948,7 @@ buffer.</p>
 						)
 				–
 	</div>
-			<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the query succeeded.</p>
+			<p><a href="https://docs.python.org/3/library/constants.html#True">True</a> if the query succeeded.</p>
 
 	</div>
 
@@ -1023,10 +1025,10 @@ blocking operation should be unblocked with the unlock vmethod.</p>
 def GstBase.BaseSrc.set_automatic_eos (self, automatic_eos):
     #python wrapper for 'gst_base_src_set_automatic_eos'</pre>
 
-<p>If <em>automatic_eos</em> is <a href="https://docs.python.org/2/library/constants.html#True">True</a>, <em>src</em> will automatically go EOS if a buffer
-after the total size is returned. By default this is <a href="https://docs.python.org/2/library/constants.html#True">True</a> but sources
+<p>If <em>automatic_eos</em> is <a href="https://docs.python.org/3/library/constants.html#True">True</a>, <em>src</em> will automatically go EOS if a buffer
+after the total size is returned. By default this is <a href="https://docs.python.org/3/library/constants.html#True">True</a> but sources
 that can't return an authoritative size and only know that they're EOS
-when trying to read more should set this to <a href="https://docs.python.org/2/library/constants.html#False">False</a>.</p>
+when trying to read more should set this to <a href="https://docs.python.org/3/library/constants.html#False">False</a>.</p>
 
 
 
@@ -1105,7 +1107,7 @@ def GstBase.BaseSrc.set_blocksize (self, blocksize):
 	<div>
 		<i><em><code>blocksize</code></em></i>
 					(
-						<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 						)
 				–
 	</div>
@@ -1175,7 +1177,7 @@ def GstBase.BaseSrc.set_caps (self, caps):
 										)
 								–
 			</div>
-							<p><a href="https://docs.python.org/2/library/constants.html#True">True</a> if the caps could be set</p>
+							<p><a href="https://docs.python.org/3/library/constants.html#True">True</a> if the caps could be set</p>
 
 					</div>
 	</div>
@@ -1306,7 +1308,7 @@ def GstBase.BaseSrc.set_format (self, format):
 <p>Sets the default format of the source. This will be the format used
 for sending SEGMENT events and for performing seeks.</p>
 <p>If a format of GST_FORMAT_BYTES is set, the element will be able to
-operate in pull mode if the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">do_is_seekable</a>() returns <a href="https://docs.python.org/2/library/constants.html#True">True</a>.</p>
+operate in pull mode if the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::is_seekable">do_GstBaseSrc.is_seekable()</a>() returns <a href="https://docs.python.org/3/library/constants.html#True">True</a>.</p>
 <p>This function must only be called in states &lt; <a href="libgstreamer-1.0/python/gstelement-h.html#GST_STATE_PAUSED">Gst.State.paused</a>.</p>
 
 
@@ -1359,7 +1361,7 @@ def GstBase.BaseSrc.set_live (self, live):
     #python wrapper for 'gst_base_src_set_live'</pre>
 
 <p>If the element listens to a live source, <em>live</em> should
-be set to <a href="https://docs.python.org/2/library/constants.html#True">True</a>.</p>
+be set to <a href="https://docs.python.org/3/library/constants.html#True">True</a>.</p>
 <p>A live source will not produce data in the PAUSED state and
 will therefore not be able to participate in the PREROLL phase
 of a pipeline. To signal this fact to the application and the
@@ -1521,7 +1523,7 @@ def GstBase.BaseSrc.start_wait (self):
 def GstBase.BaseSrc.wait_playing (self):
     #python wrapper for 'gst_base_src_wait_playing'</pre>
 
-<p>If the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">do_create</a>() method performs its own synchronisation
+<p>If the <a href="libgstbase-1.0/python/gstbasesrc.html#GstBaseSrcClass::create">do_GstBaseSrc.create()</a>() method performs its own synchronisation
 against the clock it must unblock when going from PLAYING to the PAUSED state
 and call this method before continuing to produce the remaining data.</p>
 <p>This function will block until a state change to PLAYING happens (in which
@@ -1581,7 +1583,7 @@ continue. Any other return value should be returned from the create vmethod.</p>
 </h4>
 
 		<pre class="property_signature">
-“blocksize” <span class="type"><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a></span>
+“blocksize” <span class="type"><a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
 </pre>
 
 
@@ -1635,7 +1637,7 @@ continue. Any other return value should be returned from the create vmethod.</p>
 </h4>
 
 		<pre class="property_signature">
-“num-buffers” <span class="type"><a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a></span>
+“num-buffers” <span class="type"><a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
 </pre>
 
 
@@ -1683,252 +1685,18 @@ continue. Any other return value should be returned from the create vmethod.</p>
 
 
 
-            <h3 class="symbol_section" id="GstBaseSrcStructures">Structures</h3>
-                    
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass-wpr">
-		<h3 id="gstbasebasesrcclass">
-	GstBase.BaseSrcClass
-</h3>
-
-		<p>Subclasses can override any of the available virtual methods or not, as
-needed. At the minimum, the <em>create</em> method should be overridden to produce
-buffers.</p>
-
-
-	<div class="members-container">
-		<p><b>Attributes</b></p>
-					
-<div class="symbol-detail" id="GstBaseSrcClass.parent_class">
-	<div>
-		<i><em><code>GstBaseSrcClass.parent_class</code></em></i>
-		(<a title="Gst.ElementClass" href="libgstreamer-1.0/python/gstelement-h.html#GstElementClass">Gst.ElementClass</a>)
-		–
-	</div>
-			<p>Element parent class</p>
-
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.get_caps()">
-	<div>
-		<i><em><code>GstBaseSrcClass.get_caps()</code></em></i>
-		(<a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.negotiate()">
-	<div>
-		<i><em><code>GstBaseSrcClass.negotiate()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.fixate()">
-	<div>
-		<i><em><code>GstBaseSrcClass.fixate()</code></em></i>
-		(<a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.set_caps()">
-	<div>
-		<i><em><code>GstBaseSrcClass.set_caps()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.decide_allocation()">
-	<div>
-		<i><em><code>GstBaseSrcClass.decide_allocation()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.start()">
-	<div>
-		<i><em><code>GstBaseSrcClass.start()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.stop()">
-	<div>
-		<i><em><code>GstBaseSrcClass.stop()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.get_times()">
-	<div>
-		<i><em><code>GstBaseSrcClass.get_times()</code></em></i>
-		(void (not introspectable))
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.get_size()">
-	<div>
-		<i><em><code>GstBaseSrcClass.get_size()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.is_seekable()">
-	<div>
-		<i><em><code>GstBaseSrcClass.is_seekable()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.prepare_seek_segment()">
-	<div>
-		<i><em><code>GstBaseSrcClass.prepare_seek_segment()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.do_seek()">
-	<div>
-		<i><em><code>GstBaseSrcClass.do_seek()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.unlock()">
-	<div>
-		<i><em><code>GstBaseSrcClass.unlock()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.unlock_stop()">
-	<div>
-		<i><em><code>GstBaseSrcClass.unlock_stop()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.query()">
-	<div>
-		<i><em><code>GstBaseSrcClass.query()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.event()">
-	<div>
-		<i><em><code>GstBaseSrcClass.event()</code></em></i>
-		(<a title="bool" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">bool</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.create()">
-	<div>
-		<i><em><code>GstBaseSrcClass.create()</code></em></i>
-		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.alloc()">
-	<div>
-		<i><em><code>GstBaseSrcClass.alloc()</code></em></i>
-		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.fill()">
-	<div>
-		<i><em><code>GstBaseSrcClass.fill()</code></em></i>
-		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass._gst_reserved">
-	<div>
-		<i><em><code>GstBaseSrcClass._gst_reserved</code></em></i>
-		(<a title="object" href="https://docs.python.org/2.7/library/functions.html#object">object</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-			</div>
-
-
-</div>
-
-
-
-
             <h3 class="symbol_section" id="GstBaseSrcVirtual_Methods">Virtual Methods</h3>
                     
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::alloc-wpr">
 		
-<h4 id="do_alloc">
-	<span><code>do_alloc</code></span>
+<h4 id="do_gstbasesrcalloc">
+	<span><code>do_GstBaseSrc.alloc()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_alloc (src, offset, size, buf):
-    #python implementation of the 'alloc' virtual method</pre>
+def do_GstBaseSrc.alloc() (src, offset, size, buf):
+    #python implementation of the 'GstBaseSrc.alloc()' virtual method</pre>
 
 
 
@@ -1952,7 +1720,7 @@ def do_alloc (src, offset, size, buf):
 	<div>
 		<i><em><code>offset</code></em></i>
 					(
-						<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 						)
 				–
 	</div>
@@ -1964,7 +1732,7 @@ def do_alloc (src, offset, size, buf):
 	<div>
 		<i><em><code>size</code></em></i>
 					(
-						<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 						)
 				–
 	</div>
@@ -2007,13 +1775,13 @@ def do_alloc (src, offset, size, buf):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::create-wpr">
 		
-<h4 id="do_create">
-	<span><code>do_create</code></span>
+<h4 id="do_gstbasesrccreate">
+	<span><code>do_GstBaseSrc.create()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_create (src, offset, size, buf):
-    #python implementation of the 'create' virtual method</pre>
+def do_GstBaseSrc.create() (src, offset, size, buf):
+    #python implementation of the 'GstBaseSrc.create()' virtual method</pre>
 
 
 
@@ -2037,7 +1805,7 @@ def do_create (src, offset, size, buf):
 	<div>
 		<i><em><code>offset</code></em></i>
 					(
-						<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 						)
 				–
 	</div>
@@ -2049,7 +1817,7 @@ def do_create (src, offset, size, buf):
 	<div>
 		<i><em><code>size</code></em></i>
 					(
-						<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 						)
 				–
 	</div>
@@ -2092,13 +1860,13 @@ def do_create (src, offset, size, buf):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::decide_allocation-wpr">
 		
-<h4 id="do_decide_allocation">
-	<span><code>do_decide_allocation</code></span>
+<h4 id="do_gstbasesrcdecide_allocation">
+	<span><code>do_GstBaseSrc.decide_allocation()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_decide_allocation (src, query):
-    #python implementation of the 'decide_allocation' virtual method</pre>
+def do_GstBaseSrc.decide_allocation() (src, query):
+    #python implementation of the 'GstBaseSrc.decide_allocation()' virtual method</pre>
 
 
 
@@ -2153,13 +1921,13 @@ def do_decide_allocation (src, query):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::do_seek-wpr">
 		
-<h4 id="do_do_seek">
-	<span><code>do_do_seek</code></span>
+<h4 id="do_gstbasesrcdo_seek">
+	<span><code>do_GstBaseSrc.do_seek()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_do_seek (src, segment):
-    #python implementation of the 'do_seek' virtual method</pre>
+def do_GstBaseSrc.do_seek() (src, segment):
+    #python implementation of the 'GstBaseSrc.do_seek()' virtual method</pre>
 
 
 
@@ -2214,13 +1982,13 @@ def do_do_seek (src, segment):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::event-wpr">
 		
-<h4 id="do_event">
-	<span><code>do_event</code></span>
+<h4 id="do_gstbasesrcevent">
+	<span><code>do_GstBaseSrc.event()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_event (src, event):
-    #python implementation of the 'event' virtual method</pre>
+def do_GstBaseSrc.event() (src, event):
+    #python implementation of the 'GstBaseSrc.event()' virtual method</pre>
 
 
 
@@ -2275,13 +2043,13 @@ def do_event (src, event):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::fill-wpr">
 		
-<h4 id="do_fill">
-	<span><code>do_fill</code></span>
+<h4 id="do_gstbasesrcfill">
+	<span><code>do_GstBaseSrc.fill()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_fill (src, offset, size, buf):
-    #python implementation of the 'fill' virtual method</pre>
+def do_GstBaseSrc.fill() (src, offset, size, buf):
+    #python implementation of the 'GstBaseSrc.fill()' virtual method</pre>
 
 
 
@@ -2305,7 +2073,7 @@ def do_fill (src, offset, size, buf):
 	<div>
 		<i><em><code>offset</code></em></i>
 					(
-						<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 						)
 				–
 	</div>
@@ -2317,7 +2085,7 @@ def do_fill (src, offset, size, buf):
 	<div>
 		<i><em><code>size</code></em></i>
 					(
-						<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 						)
 				–
 	</div>
@@ -2360,13 +2128,13 @@ def do_fill (src, offset, size, buf):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::fixate-wpr">
 		
-<h4 id="do_fixate">
-	<span><code>do_fixate</code></span>
+<h4 id="do_gstbasesrcfixate">
+	<span><code>do_GstBaseSrc.fixate()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_fixate (src, caps):
-    #python implementation of the 'fixate' virtual method</pre>
+def do_GstBaseSrc.fixate() (src, caps):
+    #python implementation of the 'GstBaseSrc.fixate()' virtual method</pre>
 
 
 
@@ -2421,13 +2189,13 @@ def do_fixate (src, caps):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_caps-wpr">
 		
-<h4 id="do_get_caps">
-	<span><code>do_get_caps</code></span>
+<h4 id="do_gstbasesrcget_caps">
+	<span><code>do_GstBaseSrc.get_caps()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_get_caps (src, filter):
-    #python implementation of the 'get_caps' virtual method</pre>
+def do_GstBaseSrc.get_caps() (src, filter):
+    #python implementation of the 'GstBaseSrc.get_caps()' virtual method</pre>
 
 
 
@@ -2482,13 +2250,13 @@ def do_get_caps (src, filter):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_size-wpr">
 		
-<h4 id="do_get_size">
-	<span><code>do_get_size</code></span>
+<h4 id="do_gstbasesrcget_size">
+	<span><code>do_GstBaseSrc.get_size()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_get_size (src, size):
-    #python implementation of the 'get_size' virtual method</pre>
+def do_GstBaseSrc.get_size() (src, size):
+    #python implementation of the 'GstBaseSrc.get_size()' virtual method</pre>
 
 
 
@@ -2512,7 +2280,7 @@ def do_get_size (src, size):
 	<div>
 		<i><em><code>size</code></em></i>
 					(
-						<a title="int" href="https://docs.python.org/2/library/functions.html#int">int</a>
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
 						)
 				–
 	</div>
@@ -2543,13 +2311,13 @@ def do_get_size (src, size):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_times-wpr">
 		
-<h4 id="do_get_times">
-	<span><code>do_get_times</code></span>
+<h4 id="do_gstbasesrcget_times">
+	<span><code>do_GstBaseSrc.get_times()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_get_times (src, buffer, start, end):
-    #python implementation of the 'get_times' virtual method</pre>
+def do_GstBaseSrc.get_times() (src, buffer, start, end):
+    #python implementation of the 'GstBaseSrc.get_times()' virtual method</pre>
 
 
 
@@ -2615,13 +2383,13 @@ def do_get_times (src, buffer, start, end):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::is_seekable-wpr">
 		
-<h4 id="do_is_seekable">
-	<span><code>do_is_seekable</code></span>
+<h4 id="do_gstbasesrcis_seekable">
+	<span><code>do_GstBaseSrc.is_seekable()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_is_seekable (src):
-    #python implementation of the 'is_seekable' virtual method</pre>
+def do_GstBaseSrc.is_seekable() (src):
+    #python implementation of the 'GstBaseSrc.is_seekable()' virtual method</pre>
 
 
 
@@ -2664,13 +2432,13 @@ def do_is_seekable (src):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::negotiate-wpr">
 		
-<h4 id="do_negotiate">
-	<span><code>do_negotiate</code></span>
+<h4 id="do_gstbasesrcnegotiate">
+	<span><code>do_GstBaseSrc.negotiate()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_negotiate (src):
-    #python implementation of the 'negotiate' virtual method</pre>
+def do_GstBaseSrc.negotiate() (src):
+    #python implementation of the 'GstBaseSrc.negotiate()' virtual method</pre>
 
 
 
@@ -2713,13 +2481,13 @@ def do_negotiate (src):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::prepare_seek_segment-wpr">
 		
-<h4 id="do_prepare_seek_segment">
-	<span><code>do_prepare_seek_segment</code></span>
+<h4 id="do_gstbasesrcprepare_seek_segment">
+	<span><code>do_GstBaseSrc.prepare_seek_segment()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_prepare_seek_segment (src, seek, segment):
-    #python implementation of the 'prepare_seek_segment' virtual method</pre>
+def do_GstBaseSrc.prepare_seek_segment() (src, seek, segment):
+    #python implementation of the 'GstBaseSrc.prepare_seek_segment()' virtual method</pre>
 
 
 
@@ -2786,13 +2554,13 @@ def do_prepare_seek_segment (src, seek, segment):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::query-wpr">
 		
-<h4 id="do_query">
-	<span><code>do_query</code></span>
+<h4 id="do_gstbasesrcquery">
+	<span><code>do_GstBaseSrc.query()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_query (src, query):
-    #python implementation of the 'query' virtual method</pre>
+def do_GstBaseSrc.query() (src, query):
+    #python implementation of the 'GstBaseSrc.query()' virtual method</pre>
 
 
 
@@ -2847,13 +2615,13 @@ def do_query (src, query):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::set_caps-wpr">
 		
-<h4 id="do_set_caps">
-	<span><code>do_set_caps</code></span>
+<h4 id="do_gstbasesrcset_caps">
+	<span><code>do_GstBaseSrc.set_caps()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_set_caps (src, caps):
-    #python implementation of the 'set_caps' virtual method</pre>
+def do_GstBaseSrc.set_caps() (src, caps):
+    #python implementation of the 'GstBaseSrc.set_caps()' virtual method</pre>
 
 
 
@@ -2908,13 +2676,13 @@ def do_set_caps (src, caps):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::start-wpr">
 		
-<h4 id="do_start">
-	<span><code>do_start</code></span>
+<h4 id="do_gstbasesrcstart">
+	<span><code>do_GstBaseSrc.start()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_start (src):
-    #python implementation of the 'start' virtual method</pre>
+def do_GstBaseSrc.start() (src):
+    #python implementation of the 'GstBaseSrc.start()' virtual method</pre>
 
 
 
@@ -2957,13 +2725,13 @@ def do_start (src):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::stop-wpr">
 		
-<h4 id="do_stop">
-	<span><code>do_stop</code></span>
+<h4 id="do_gstbasesrcstop">
+	<span><code>do_GstBaseSrc.stop()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_stop (src):
-    #python implementation of the 'stop' virtual method</pre>
+def do_GstBaseSrc.stop() (src):
+    #python implementation of the 'GstBaseSrc.stop()' virtual method</pre>
 
 
 
@@ -3006,13 +2774,13 @@ def do_stop (src):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::unlock-wpr">
 		
-<h4 id="do_unlock">
-	<span><code>do_unlock</code></span>
+<h4 id="do_gstbasesrcunlock">
+	<span><code>do_GstBaseSrc.unlock()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_unlock (src):
-    #python implementation of the 'unlock' virtual method</pre>
+def do_GstBaseSrc.unlock() (src):
+    #python implementation of the 'GstBaseSrc.unlock()' virtual method</pre>
 
 
 
@@ -3055,13 +2823,13 @@ def do_unlock (src):
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::unlock_stop-wpr">
 		
-<h4 id="do_unlock_stop">
-	<span><code>do_unlock_stop</code></span>
+<h4 id="do_gstbasesrcunlock_stop">
+	<span><code>do_GstBaseSrc.unlock_stop()</code></span>
 </h4>
 
 		<pre class="programlisting">
-def do_unlock_stop (src):
-    #python implementation of the 'unlock_stop' virtual method</pre>
+def do_GstBaseSrc.unlock_stop() (src):
+    #python implementation of the 'GstBaseSrc.unlock_stop()' virtual method</pre>
 
 
 
@@ -3118,8 +2886,10 @@ def do_unlock_stop (src):
 		<p>The <a href="libgstreamer-1.0/python/gstelement-h.html#GstElement">Gst.Element</a> flags that a basesrc element may have.</p>
 
 
+
+
 	<div class="members-container">
-		<p><b>Members</b></p>
+		<h4 id="members1">Members</h4>
 					
 <div class="symbol-detail">
 	<div>

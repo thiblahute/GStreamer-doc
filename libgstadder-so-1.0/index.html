@@ -155,6 +155,24 @@ $('body').removeClass('no-script');
 
 
                     
+        <p>The adder allows to mix several streams into one by adding the data.
+Mixed data is clamped to the min/max values of the data format.</p>
+<p>The adder currently mixes all data received on the sinkpads as soon as
+possible without trying to synchronize the streams.</p>
+<p>Check out the audiomixer element in gst-plugins-bad for a better-behaving
+audio mixing element: It will sync input streams correctly and also handle
+live inputs properly.</p>
+<p>Caps negotiation is inherently racy with the adder element. You can set
+the "caps" property to force adder to operate in a specific audio
+format, sample rate and channel count. In this case you may also need
+audioconvert and/or audioresample elements for each input stream before the
+adder element to make sure the input branch can produce the forced format.</p>
+<h2 id="example-launch-line">Example launch line</h2>
+<pre><code class="language-["> gst-launch-1.0 audiotestsrc freq=100 ! adder name=mix ! audioconvert ! autoaudiosink audiotestsrc freq=500 ! mix.
+</code></pre>
+<p>This pipeline produces two sine waves mixed together.</p>
+
+
         <h2 id="hierarchy">Hierarchy</h2>
         <div class="hierarchy_container">
             <div class="hierarchy_details">
@@ -302,6 +320,34 @@ $('body').removeClass('no-script');
             <h2 class="symbol_section" id="Properties">Properties</h2>
                     
 
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAdder:caps-wpr">
+		
+<h3 class="method" id="caps">
+	<span><code>caps</code></span>
+</h3>
+
+		<pre class="property_signature">
+“caps” <span class="type"><a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> *</span>
+</pre>
+
+<p>Set target format for mixing (NULL means ANY). Setting this property takes a reference to the supplied GstCaps object.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+            
+
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstAdder:name-wpr">
 		
 <h3 class="method" id="name">
@@ -347,34 +393,6 @@ $('body').removeClass('no-script');
 </pre>
 
 <p>The parent of the object</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAdder:caps-wpr">
-		
-<h3 class="method" id="caps">
-	<span><code>caps</code></span>
-</h3>
-
-		<pre class="property_signature">
-“caps” <span class="type"><a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> *</span>
-</pre>
-
-<p>Set target format for mixing (NULL means ANY). Setting this property takes a reference to the supplied GstCaps object.</p>
 
 
 <p>

@@ -155,6 +155,41 @@ $('body').removeClass('no-script');
 
 
                     
+        <p>This element takes an incoming stream of timestamped raw audio frames and
+produces a perfect stream by inserting or dropping samples as needed.</p>
+<p>This operation may be of use to link to elements that require or otherwise
+implicitly assume a perfect stream as they do not store timestamps,
+but derive this by some means (e.g. bitrate for some AVI cases).</p>
+<p>The properties <a href="libgstaudiorate-so-1.0/index.html#GstAudioRate:in">in</a>, <a href="libgstaudiorate-so-1.0/index.html#GstAudioRate:out">out</a>, <a href="libgstaudiorate-so-1.0/index.html#GstAudioRate:add">add</a>
+and <a href="libgstaudiorate-so-1.0/index.html#GstAudioRate:drop">drop</a> can be read to obtain information about number of
+input samples, output samples, dropped samples (i.e. the number of unused
+input samples) and inserted samples (i.e. the number of samples added to
+stream).</p>
+<p>When the <a href="libgstaudiorate-so-1.0/index.html#GstAudioRate:silent">silent</a> property is set to FALSE, a GObject property
+notification will be emitted whenever one of the <a href="libgstaudiorate-so-1.0/index.html#GstAudioRate:add">add</a> or
+<a href="libgstaudiorate-so-1.0/index.html#GstAudioRate:drop">drop</a> values changes.
+This can potentially cause performance degradation.
+Note that property notification will happen from the streaming thread, so
+applications should be prepared for this.</p>
+<p>If the <a href="libgstaudiorate-so-1.0/index.html#GstAudioRate:tolerance">tolerance</a> property is non-zero, and an incoming buffer's
+timestamp deviates less than the property indicates from what would make a
+'perfect time', then no samples will be added or dropped.
+Note that the output is still guaranteed to be a perfect stream, which means
+that the incoming data is then simply shifted (by less than the indicated
+tolerance) to a perfect time.</p>
+<h2 id="example-pipelines">Example pipelines</h2>
+<pre><code class="language-["> gst-launch-1.0 -v autoaudiosrc ! audiorate ! audioconvert ! wavenc ! filesink location=alsa.wav
+</code></pre>
+<p>Capture audio from the sound card and turn it into a perfect stream
+for saving in a raw audio file.</p>
+<pre><code class="language-["> gst-launch-1.0 -v uridecodebin uri=file:///path/to/audio.file ! audiorate ! audioconvert ! wavenc ! filesink location=alsa.wav
+</code></pre>
+<p>Decodes an audio file and transforms it into a perfect stream for saving
+in a raw audio WAV file. Without the audio rate, the timing might not be
+preserved correctly in the WAV file in case the decoded stream is jittery
+or there are samples missing.</p>
+
+
         <h2 id="hierarchy">Hierarchy</h2>
         <div class="hierarchy_container">
             <div class="hierarchy_details">
@@ -199,77 +234,6 @@ $('body').removeClass('no-script');
 
             <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
                     
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate-&gt;src-wpr">
-		        <h4 id="src">
-            src
-        </h4>
-
-		        <table class="table table-striped">
-            <tbody>
-                <tr>
-<td><b>Presence:</b></td>
-<td>always</td>
-</tr>
-                <tr>
-<td><b>Direction:</b></td>
-<td>src</td>
-</tr>
-                <tr>
-<td><b>Capabilities:</b></td>
-<td><pre><code>audio/x-raw
-    format: {
-         S8,
-         U8,
-         S16LE,
-         S16BE,
-         U16LE,
-         U16BE,
-         S24_32LE,
-         S24_32BE,
-         U24_32LE,
-         U24_32BE,
-         S32LE,
-         S32BE,
-         U32LE,
-         U32BE,
-         S24LE,
-         S24BE,
-         U24LE,
-         U24BE,
-         S20LE,
-         S20BE,
-         U20LE,
-         U20BE,
-         S18LE,
-         S18BE,
-         U18LE,
-         U18BE,
-         F32LE,
-         F32BE,
-         F64LE,
-         F64BE
-         }
-      rate: [
-         1,
-         2147483647
-         ]
-  channels: [
-         1,
-         2147483647
-         ]
-    layout: {
-         (string)interleaved,
-         (string)non-interleaved
-         }
-</code></pre></td>
-</tr>
-            </tbody>
-        </table>
-
-</div>
-
-            
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate-&gt;sink-wpr">
 		        <h4 id="sink">
@@ -340,129 +304,82 @@ $('body').removeClass('no-script');
 
 </div>
 
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate-&gt;src-wpr">
+		        <h4 id="src">
+            src
+        </h4>
+
+		        <table class="table table-striped">
+            <tbody>
+                <tr>
+<td><b>Presence:</b></td>
+<td>always</td>
+</tr>
+                <tr>
+<td><b>Direction:</b></td>
+<td>src</td>
+</tr>
+                <tr>
+<td><b>Capabilities:</b></td>
+<td><pre><code>audio/x-raw
+    format: {
+         S8,
+         U8,
+         S16LE,
+         S16BE,
+         U16LE,
+         U16BE,
+         S24_32LE,
+         S24_32BE,
+         U24_32LE,
+         U24_32BE,
+         S32LE,
+         S32BE,
+         U32LE,
+         U32BE,
+         S24LE,
+         S24BE,
+         U24LE,
+         U24BE,
+         S20LE,
+         S20BE,
+         U20LE,
+         U20BE,
+         S18LE,
+         S18BE,
+         U18LE,
+         U18BE,
+         F32LE,
+         F32BE,
+         F64LE,
+         F64BE
+         }
+      rate: [
+         1,
+         2147483647
+         ]
+  channels: [
+         1,
+         2147483647
+         ]
+    layout: {
+         (string)interleaved,
+         (string)non-interleaved
+         }
+</code></pre></td>
+</tr>
+            </tbody>
+        </table>
+
+</div>
+
 
 
 
             <h2 class="symbol_section" id="Properties">Properties</h2>
                     
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:name-wpr">
-		
-<h3 class="method" id="name">
-	<span><code>name</code></span>
-</h3>
-
-		<pre class="property_signature">
-“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
-</pre>
-
-<p>The name of the object</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-				/		
-				Construct
-			
-</p>
-<p>
-	Default value :	audiorate0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:parent-wpr">
-		
-<h3 class="method" id="parent">
-	<span><code>parent</code></span>
-</h3>
-
-		<pre class="property_signature">
-“parent” <span class="type"><a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
-</pre>
-
-<p>The parent of the object</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:in-wpr">
-		
-<h3 class="method" id="in">
-	<span><code>in</code></span>
-</h3>
-
-		<pre class="property_signature">
-“in” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
-</pre>
-
-<p>Number of input samples</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-</p>
-<p>
-	Default value :	0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:out-wpr">
-		
-<h3 class="method" id="out">
-	<span><code>out</code></span>
-</h3>
-
-		<pre class="property_signature">
-“out” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
-</pre>
-
-<p>Number of output samples</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-</p>
-<p>
-	Default value :	0
-</p>
-
-</div>
-
-            
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:add-wpr">
 		
@@ -520,6 +437,124 @@ $('body').removeClass('no-script');
 
             
 
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:in-wpr">
+		
+<h3 class="method" id="in">
+	<span><code>in</code></span>
+</h3>
+
+		<pre class="property_signature">
+“in” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Number of input samples</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:name-wpr">
+		
+<h3 class="method" id="name">
+	<span><code>name</code></span>
+</h3>
+
+		<pre class="property_signature">
+“name” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+<p>The name of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	audiorate0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:out-wpr">
+		
+<h3 class="method" id="out">
+	<span><code>out</code></span>
+</h3>
+
+		<pre class="property_signature">
+“out” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Number of output samples</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:parent-wpr">
+		
+<h3 class="method" id="parent">
+	<span><code>parent</code></span>
+</h3>
+
+		<pre class="property_signature">
+“parent” <span class="type"><a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> *</span>
+</pre>
+
+<p>The parent of the object</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+</div>
+
+            
+
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:silent-wpr">
 		
 <h3 class="method" id="silent">
@@ -545,6 +580,37 @@ $('body').removeClass('no-script');
 </p>
 <p>
 	Default value :	true
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:skip-to-first-wpr">
+		
+<h3 class="method" id="skiptofirst">
+	<span><code>skip-to-first</code></span>
+</h3>
+
+		<pre class="property_signature">
+“skip-to-first” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Don't produce buffers before the first one we receive.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
 </p>
 
 </div>
@@ -577,37 +643,6 @@ the given value for audiorate to add or drop samples.</p>
 </p>
 <p>
 	Default value :	40000000
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioRate:skip-to-first-wpr">
-		
-<h3 class="method" id="skiptofirst">
-	<span><code>skip-to-first</code></span>
-</h3>
-
-		<pre class="property_signature">
-“skip-to-first” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
-</pre>
-
-<p>Don't produce buffers before the first one we receive.</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	false
 </p>
 
 </div>

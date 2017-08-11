@@ -146,7 +146,7 @@ conditions are met, it also supports pull mode scheduling:</p>
 <ul>
 <li>The format is set to <a href="libgstreamer-1.0/javascript/gstformat.html#GST_FORMAT_BYTES">Gst.Format.prototype.bytes</a> (default).</li>
 <li>
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::is_seekable">do_is_seekable</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::is_seekable">do_GstBaseSrc.is_seekable()</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
 </ul>
 <p>If all the conditions are met for operating in pull mode, <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> is
 automatically seekable in push mode as well. The following conditions must
@@ -154,27 +154,27 @@ be met to make the element seekable in push mode when the format is not
 <a href="libgstreamer-1.0/javascript/gstformat.html#GST_FORMAT_BYTES">Gst.Format.prototype.bytes</a>:</p>
 <ul>
 <li>
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::is_seekable">do_is_seekable</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::is_seekable">do_GstBaseSrc.is_seekable()</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
 <li>
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::query">do_query</a>() can convert all supported seek formats to the
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::query">do_GstBaseSrc.query()</a>() can convert all supported seek formats to the
 internal format as set with <a href="libgstbase-1.0/javascript/gstbasesrc.html#gst_base_src_set_format">GstBase.BaseSrc.prototype.set_format</a>.</li>
 <li>
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::do_seek">do_do_seek</a>() is implemented, performs the seek and returns
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::do_seek">do_GstBaseSrc.do_seek()</a>() is implemented, performs the seek and returns
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</li>
 </ul>
 <p>When the element does not meet the requirements to operate in pull mode, the
-offset and length in the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">do_create</a>() method should be ignored.
+offset and length in the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">do_GstBaseSrc.create()</a>() method should be ignored.
 It is recommended to subclass <a href="libgstbase-1.0/javascript/gstpushsrc.html#GstPushSrc">GstBase.PushSrc</a> instead, in this situation. If the
 element can operate in pull mode but only with specific offsets and
 lengths, it is allowed to generate an error when the wrong values are passed
-to the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">do_create</a>() function.</p>
+to the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">do_GstBaseSrc.create()</a>() function.</p>
 <p><a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a> has support for live sources. Live sources are sources that when
 paused discard data, such as audio or video capture devices. A typical live
 source also produces data at a fixed rate and thus provides a clock to publish
 this rate.
 Use <a href="libgstbase-1.0/javascript/gstbasesrc.html#gst_base_src_set_live">GstBase.BaseSrc.prototype.set_live</a> to activate the live source mode.</p>
 <p>A live source does not produce data in the PAUSED state. This means that the
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">do_create</a>() method will not be called in PAUSED but only in
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">do_GstBaseSrc.create()</a>() method will not be called in PAUSED but only in
 PLAYING. To signal the pipeline that the element will not produce data, the
 return value from the READY to PAUSED state will be
 <a href="libgstreamer-1.0/javascript/gstelement-h.html#GST_STATE_CHANGE_NO_PREROLL">Gst.StateChangeReturn.prototype.no_preroll</a>.</p>
@@ -184,11 +184,11 @@ can only produce data in the PLAYING state, when the clock is actually
 distributed and running.</p>
 <p>Live sources that synchronize and block on the clock (an audio source, for
 example) can use <a href="libgstbase-1.0/javascript/gstbasesrc.html#gst_base_src_wait_playing">GstBase.BaseSrc.prototype.wait_playing</a> when the
-<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">do_create</a>() function was interrupted by a state change to
+<a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">do_GstBaseSrc.create()</a>() function was interrupted by a state change to
 PAUSED.</p>
-<p>The <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::get_times">do_get_times</a>() method can be used to implement pseudo-live
-sources. It only makes sense to implement the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::get_times">do_get_times</a>()
-function if the source is a live source. The <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::get_times">do_get_times</a>()
+<p>The <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::get_times">do_GstBaseSrc.get_times()</a>() method can be used to implement pseudo-live
+sources. It only makes sense to implement the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::get_times">do_GstBaseSrc.get_times()</a>()
+function if the source is a live source. The <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::get_times">do_GstBaseSrc.get_times()</a>()
 function should return timestamps starting from 0, as if it were a non-live
 source. The base class will make sure that the timestamps are transformed
 into the current running_time. The base source will then wait for the
@@ -264,8 +264,10 @@ received, it may safely shut down the entire pipeline.</p>
 
 </div>
 
+
+
 	<div class="members-container">
-		<p><b>Members</b></p>
+		<h3 id="members">Members</h3>
 					
 <div class="symbol-detail" id="GstBaseSrc.element">
 	<div>
@@ -1321,7 +1323,7 @@ function GstBase.BaseSrc.prototype.set_format(format: <a title="Gst.Format" href
 <p>Sets the default format of the source. This will be the format used
 for sending SEGMENT events and for performing seeks.</p>
 <p>If a format of GST_FORMAT_BYTES is set, the element will be able to
-operate in pull mode if the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrc::is_seekable</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</p>
+operate in pull mode if the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrc::GstBaseSrc.is_seekable()</a>() returns <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">true</a>.</p>
 <p>This function must only be called in states &lt; <a href="libgstreamer-1.0/javascript/gstelement-h.html#GST_STATE_PAUSED">Gst.State.prototype.paused</a>.</p>
 
 
@@ -1540,7 +1542,7 @@ function GstBase.BaseSrc.prototype.wait_playing(): {
     // javascript wrapper for 'gst_base_src_wait_playing'
 }</pre>
 
-<p>If the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrc::create</a>() method performs its own synchronisation
+<p>If the <a href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrc::GstBaseSrc.create()</a>() method performs its own synchronisation
 against the clock it must unblock when going from PLAYING to the PAUSED state
 and call this method before continuing to produce the remaining data.</p>
 <p>This function will block until a state change to PLAYING happens (in which
@@ -1702,252 +1704,18 @@ continue. Any other return value should be returned from the create vmethod.</p>
 
 
 
-            <h3 class="symbol_section" id="GstBaseSrcStructures">Structures</h3>
-                    
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass-wpr">
-		<h3 id="gstbasebasesrcclass">
-	GstBase.BaseSrcClass
-</h3>
-
-		<p>Subclasses can override any of the available virtual methods or not, as
-needed. At the minimum, the <em>create</em> method should be overridden to produce
-buffers.</p>
-
-
-	<div class="members-container">
-		<p><b>Attributes</b></p>
-					
-<div class="symbol-detail" id="GstBaseSrcClass.parent_class">
-	<div>
-		<i><em><code>GstBaseSrcClass.parent_class</code></em></i>
-		(<a title="Gst.ElementClass" href="libgstreamer-1.0/javascript/gstelement-h.html#GstElementClass">Gst.ElementClass</a>)
-		–
-	</div>
-			<p>Element parent class</p>
-
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.get_caps()">
-	<div>
-		<i><em><code>GstBaseSrcClass.get_caps()</code></em></i>
-		(<a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.negotiate()">
-	<div>
-		<i><em><code>GstBaseSrcClass.negotiate()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.fixate()">
-	<div>
-		<i><em><code>GstBaseSrcClass.fixate()</code></em></i>
-		(<a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.set_caps()">
-	<div>
-		<i><em><code>GstBaseSrcClass.set_caps()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.decide_allocation()">
-	<div>
-		<i><em><code>GstBaseSrcClass.decide_allocation()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.start()">
-	<div>
-		<i><em><code>GstBaseSrcClass.start()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.stop()">
-	<div>
-		<i><em><code>GstBaseSrcClass.stop()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.get_times()">
-	<div>
-		<i><em><code>GstBaseSrcClass.get_times()</code></em></i>
-		(void (not introspectable))
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.get_size()">
-	<div>
-		<i><em><code>GstBaseSrcClass.get_size()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.is_seekable()">
-	<div>
-		<i><em><code>GstBaseSrcClass.is_seekable()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.prepare_seek_segment()">
-	<div>
-		<i><em><code>GstBaseSrcClass.prepare_seek_segment()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.do_seek()">
-	<div>
-		<i><em><code>GstBaseSrcClass.do_seek()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.unlock()">
-	<div>
-		<i><em><code>GstBaseSrcClass.unlock()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.unlock_stop()">
-	<div>
-		<i><em><code>GstBaseSrcClass.unlock_stop()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.query()">
-	<div>
-		<i><em><code>GstBaseSrcClass.query()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.event()">
-	<div>
-		<i><em><code>GstBaseSrcClass.event()</code></em></i>
-		(<a title="Number" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">Number</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.create()">
-	<div>
-		<i><em><code>GstBaseSrcClass.create()</code></em></i>
-		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.alloc()">
-	<div>
-		<i><em><code>GstBaseSrcClass.alloc()</code></em></i>
-		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.fill()">
-	<div>
-		<i><em><code>GstBaseSrcClass.fill()</code></em></i>
-		(<a title="Gst.FlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">Gst.FlowReturn</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass._gst_reserved">
-	<div>
-		<i><em><code>GstBaseSrcClass._gst_reserved</code></em></i>
-		(<a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-			</div>
-
-
-</div>
-
-
-
-
             <h3 class="symbol_section" id="GstBaseSrcVirtual_Methods">Virtual Methods</h3>
                     
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::alloc-wpr">
 		
-<h4 id="gstbasesrcalloc">
-	<span><code>GstBaseSrc::alloc</code></span>
+<h4 id="gstbasesrcgstbasesrcalloc">
+	<span><code>GstBaseSrc::GstBaseSrc.alloc()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::alloc(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, buf: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
-    // javascript implementation of the 'alloc' virtual method
+function GstBaseSrc::GstBaseSrc.alloc()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, buf: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'GstBaseSrc.alloc()' virtual method
 }</pre>
 
 
@@ -2027,13 +1795,13 @@ function GstBaseSrc::alloc(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::create-wpr">
 		
-<h4 id="gstbasesrccreate">
-	<span><code>GstBaseSrc::create</code></span>
+<h4 id="gstbasesrcgstbasesrccreate">
+	<span><code>GstBaseSrc::GstBaseSrc.create()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::create(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, buf: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
-    // javascript implementation of the 'create' virtual method
+function GstBaseSrc::GstBaseSrc.create()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, buf: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'GstBaseSrc.create()' virtual method
 }</pre>
 
 
@@ -2113,13 +1881,13 @@ function GstBaseSrc::create(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::decide_allocation-wpr">
 		
-<h4 id="gstbasesrcdecide_allocation">
-	<span><code>GstBaseSrc::decide_allocation</code></span>
+<h4 id="gstbasesrcgstbasesrcdecide_allocation">
+	<span><code>GstBaseSrc::GstBaseSrc.decide_allocation()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::decide_allocation(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
-    // javascript implementation of the 'decide_allocation' virtual method
+function GstBaseSrc::GstBaseSrc.decide_allocation()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
+    // javascript implementation of the 'GstBaseSrc.decide_allocation()' virtual method
 }</pre>
 
 
@@ -2175,13 +1943,13 @@ function GstBaseSrc::decide_allocation(src: <a title="GstBase.BaseSrc" href="lib
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::do_seek-wpr">
 		
-<h4 id="gstbasesrcdo_seek">
-	<span><code>GstBaseSrc::do_seek</code></span>
+<h4 id="gstbasesrcgstbasesrcdo_seek">
+	<span><code>GstBaseSrc::GstBaseSrc.do_seek()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::do_seek(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, segment: <a title="Gst.Segment" href="libgstreamer-1.0/javascript/gstsegment.html#GstSegment">Gst.Segment</a>): {
-    // javascript implementation of the 'do_seek' virtual method
+function GstBaseSrc::GstBaseSrc.do_seek()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, segment: <a title="Gst.Segment" href="libgstreamer-1.0/javascript/gstsegment.html#GstSegment">Gst.Segment</a>): {
+    // javascript implementation of the 'GstBaseSrc.do_seek()' virtual method
 }</pre>
 
 
@@ -2237,13 +2005,13 @@ function GstBaseSrc::do_seek(src: <a title="GstBase.BaseSrc" href="libgstbase-1.
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::event-wpr">
 		
-<h4 id="gstbasesrcevent">
-	<span><code>GstBaseSrc::event</code></span>
+<h4 id="gstbasesrcgstbasesrcevent">
+	<span><code>GstBaseSrc::GstBaseSrc.event()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::event(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, event: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>): {
-    // javascript implementation of the 'event' virtual method
+function GstBaseSrc::GstBaseSrc.event()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, event: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>): {
+    // javascript implementation of the 'GstBaseSrc.event()' virtual method
 }</pre>
 
 
@@ -2299,13 +2067,13 @@ function GstBaseSrc::event(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::fill-wpr">
 		
-<h4 id="gstbasesrcfill">
-	<span><code>GstBaseSrc::fill</code></span>
+<h4 id="gstbasesrcgstbasesrcfill">
+	<span><code>GstBaseSrc::GstBaseSrc.fill()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::fill(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, buf: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
-    // javascript implementation of the 'fill' virtual method
+function GstBaseSrc::GstBaseSrc.fill()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, offset: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>, buf: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>): {
+    // javascript implementation of the 'GstBaseSrc.fill()' virtual method
 }</pre>
 
 
@@ -2385,13 +2153,13 @@ function GstBaseSrc::fill(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/j
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::fixate-wpr">
 		
-<h4 id="gstbasesrcfixate">
-	<span><code>GstBaseSrc::fixate</code></span>
+<h4 id="gstbasesrcgstbasesrcfixate">
+	<span><code>GstBaseSrc::GstBaseSrc.fixate()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::fixate(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, caps: <a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
-    // javascript implementation of the 'fixate' virtual method
+function GstBaseSrc::GstBaseSrc.fixate()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, caps: <a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'GstBaseSrc.fixate()' virtual method
 }</pre>
 
 
@@ -2447,13 +2215,13 @@ function GstBaseSrc::fixate(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_caps-wpr">
 		
-<h4 id="gstbasesrcget_caps">
-	<span><code>GstBaseSrc::get_caps</code></span>
+<h4 id="gstbasesrcgstbasesrcget_caps">
+	<span><code>GstBaseSrc::GstBaseSrc.get_caps()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::get_caps(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, filter: <a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
-    // javascript implementation of the 'get_caps' virtual method
+function GstBaseSrc::GstBaseSrc.get_caps()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, filter: <a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'GstBaseSrc.get_caps()' virtual method
 }</pre>
 
 
@@ -2509,13 +2277,13 @@ function GstBaseSrc::get_caps(src: <a title="GstBase.BaseSrc" href="libgstbase-1
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_size-wpr">
 		
-<h4 id="gstbasesrcget_size">
-	<span><code>GstBaseSrc::get_size</code></span>
+<h4 id="gstbasesrcgstbasesrcget_size">
+	<span><code>GstBaseSrc::GstBaseSrc.get_size()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::get_size(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
-    // javascript implementation of the 'get_size' virtual method
+function GstBaseSrc::GstBaseSrc.get_size()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, size: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript implementation of the 'GstBaseSrc.get_size()' virtual method
 }</pre>
 
 
@@ -2571,13 +2339,13 @@ function GstBaseSrc::get_size(src: <a title="GstBase.BaseSrc" href="libgstbase-1
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_times-wpr">
 		
-<h4 id="gstbasesrcget_times">
-	<span><code>GstBaseSrc::get_times</code></span>
+<h4 id="gstbasesrcgstbasesrcget_times">
+	<span><code>GstBaseSrc::GstBaseSrc.get_times()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::get_times(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>, start: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>, end: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>): {
-    // javascript implementation of the 'get_times' virtual method
+function GstBaseSrc::GstBaseSrc.get_times()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, buffer: <a title="Gst.Buffer" href="libgstreamer-1.0/javascript/gstbuffer.html#GstBuffer">Gst.Buffer</a>, start: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>, end: <a title="Gst.ClockTime" href="libgstreamer-1.0/javascript/gstclock.html#GstClockTime">Gst.ClockTime</a>): {
+    // javascript implementation of the 'GstBaseSrc.get_times()' virtual method
 }</pre>
 
 
@@ -2644,13 +2412,13 @@ function GstBaseSrc::get_times(src: <a title="GstBase.BaseSrc" href="libgstbase-
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::is_seekable-wpr">
 		
-<h4 id="gstbasesrcis_seekable">
-	<span><code>GstBaseSrc::is_seekable</code></span>
+<h4 id="gstbasesrcgstbasesrcis_seekable">
+	<span><code>GstBaseSrc::GstBaseSrc.is_seekable()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::is_seekable(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
-    // javascript implementation of the 'is_seekable' virtual method
+function GstBaseSrc::GstBaseSrc.is_seekable()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrc.is_seekable()' virtual method
 }</pre>
 
 
@@ -2694,13 +2462,13 @@ function GstBaseSrc::is_seekable(src: <a title="GstBase.BaseSrc" href="libgstbas
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::negotiate-wpr">
 		
-<h4 id="gstbasesrcnegotiate">
-	<span><code>GstBaseSrc::negotiate</code></span>
+<h4 id="gstbasesrcgstbasesrcnegotiate">
+	<span><code>GstBaseSrc::GstBaseSrc.negotiate()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::negotiate(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
-    // javascript implementation of the 'negotiate' virtual method
+function GstBaseSrc::GstBaseSrc.negotiate()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrc.negotiate()' virtual method
 }</pre>
 
 
@@ -2744,13 +2512,13 @@ function GstBaseSrc::negotiate(src: <a title="GstBase.BaseSrc" href="libgstbase-
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::prepare_seek_segment-wpr">
 		
-<h4 id="gstbasesrcprepare_seek_segment">
-	<span><code>GstBaseSrc::prepare_seek_segment</code></span>
+<h4 id="gstbasesrcgstbasesrcprepare_seek_segment">
+	<span><code>GstBaseSrc::GstBaseSrc.prepare_seek_segment()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::prepare_seek_segment(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, seek: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>, segment: <a title="Gst.Segment" href="libgstreamer-1.0/javascript/gstsegment.html#GstSegment">Gst.Segment</a>): {
-    // javascript implementation of the 'prepare_seek_segment' virtual method
+function GstBaseSrc::GstBaseSrc.prepare_seek_segment()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, seek: <a title="Gst.Event" href="libgstreamer-1.0/javascript/gstevent.html#GstEvent">Gst.Event</a>, segment: <a title="Gst.Segment" href="libgstreamer-1.0/javascript/gstsegment.html#GstSegment">Gst.Segment</a>): {
+    // javascript implementation of the 'GstBaseSrc.prepare_seek_segment()' virtual method
 }</pre>
 
 
@@ -2818,13 +2586,13 @@ function GstBaseSrc::prepare_seek_segment(src: <a title="GstBase.BaseSrc" href="
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::query-wpr">
 		
-<h4 id="gstbasesrcquery">
-	<span><code>GstBaseSrc::query</code></span>
+<h4 id="gstbasesrcgstbasesrcquery">
+	<span><code>GstBaseSrc::GstBaseSrc.query()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::query(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
-    // javascript implementation of the 'query' virtual method
+function GstBaseSrc::GstBaseSrc.query()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, query: <a title="Gst.Query" href="libgstreamer-1.0/javascript/gstquery.html#GstQuery">Gst.Query</a>): {
+    // javascript implementation of the 'GstBaseSrc.query()' virtual method
 }</pre>
 
 
@@ -2880,13 +2648,13 @@ function GstBaseSrc::query(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::set_caps-wpr">
 		
-<h4 id="gstbasesrcset_caps">
-	<span><code>GstBaseSrc::set_caps</code></span>
+<h4 id="gstbasesrcgstbasesrcset_caps">
+	<span><code>GstBaseSrc::GstBaseSrc.set_caps()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::set_caps(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, caps: <a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
-    // javascript implementation of the 'set_caps' virtual method
+function GstBaseSrc::GstBaseSrc.set_caps()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>, caps: <a title="Gst.Caps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">Gst.Caps</a>): {
+    // javascript implementation of the 'GstBaseSrc.set_caps()' virtual method
 }</pre>
 
 
@@ -2942,13 +2710,13 @@ function GstBaseSrc::set_caps(src: <a title="GstBase.BaseSrc" href="libgstbase-1
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::start-wpr">
 		
-<h4 id="gstbasesrcstart">
-	<span><code>GstBaseSrc::start</code></span>
+<h4 id="gstbasesrcgstbasesrcstart">
+	<span><code>GstBaseSrc::GstBaseSrc.start()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::start(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
-    // javascript implementation of the 'start' virtual method
+function GstBaseSrc::GstBaseSrc.start()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrc.start()' virtual method
 }</pre>
 
 
@@ -2992,13 +2760,13 @@ function GstBaseSrc::start(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::stop-wpr">
 		
-<h4 id="gstbasesrcstop">
-	<span><code>GstBaseSrc::stop</code></span>
+<h4 id="gstbasesrcgstbasesrcstop">
+	<span><code>GstBaseSrc::GstBaseSrc.stop()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::stop(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
-    // javascript implementation of the 'stop' virtual method
+function GstBaseSrc::GstBaseSrc.stop()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrc.stop()' virtual method
 }</pre>
 
 
@@ -3042,13 +2810,13 @@ function GstBaseSrc::stop(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/j
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::unlock-wpr">
 		
-<h4 id="gstbasesrcunlock">
-	<span><code>GstBaseSrc::unlock</code></span>
+<h4 id="gstbasesrcgstbasesrcunlock">
+	<span><code>GstBaseSrc::GstBaseSrc.unlock()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::unlock(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
-    // javascript implementation of the 'unlock' virtual method
+function GstBaseSrc::GstBaseSrc.unlock()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrc.unlock()' virtual method
 }</pre>
 
 
@@ -3092,13 +2860,13 @@ function GstBaseSrc::unlock(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::unlock_stop-wpr">
 		
-<h4 id="gstbasesrcunlock_stop">
-	<span><code>GstBaseSrc::unlock_stop</code></span>
+<h4 id="gstbasesrcgstbasesrcunlock_stop">
+	<span><code>GstBaseSrc::GstBaseSrc.unlock_stop()</code></span>
 </h4>
 
 		<pre class="programlisting">
-function GstBaseSrc::unlock_stop(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
-    // javascript implementation of the 'unlock_stop' virtual method
+function GstBaseSrc::GstBaseSrc.unlock_stop()(src: <a title="GstBase.BaseSrc" href="libgstbase-1.0/javascript/gstbasesrc.html#GstBaseSrc">GstBase.BaseSrc</a>): {
+    // javascript implementation of the 'GstBaseSrc.unlock_stop()' virtual method
 }</pre>
 
 
@@ -3156,8 +2924,10 @@ function GstBaseSrc::unlock_stop(src: <a title="GstBase.BaseSrc" href="libgstbas
 		<p>The <a href="libgstreamer-1.0/javascript/gstelement-h.html#GstElement">Gst.Element</a> flags that a basesrc element may have.</p>
 
 
+
+
 	<div class="members-container">
-		<p><b>Members</b></p>
+		<h4 id="members1">Members</h4>
 					
 <div class="symbol-detail">
 	<div>

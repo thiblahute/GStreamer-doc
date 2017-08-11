@@ -146,7 +146,7 @@ conditions are met, it also supports pull mode scheduling:</p>
 <ul>
 <li>The format is set to <a href="libgstreamer-1.0/c/gstformat.html#GST_FORMAT_BYTES">GST_FORMAT_BYTES</a> (default).</li>
 <li>
-<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::is_seekable">is_seekable</a>() returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>.</li>
+<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrc.is_seekable()</a>() returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>.</li>
 </ul>
 <p>If all the conditions are met for operating in pull mode, <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> is
 automatically seekable in push mode as well. The following conditions must
@@ -154,27 +154,27 @@ be met to make the element seekable in push mode when the format is not
 <a href="libgstreamer-1.0/c/gstformat.html#GST_FORMAT_BYTES">GST_FORMAT_BYTES</a>:</p>
 <ul>
 <li>
-<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::is_seekable">is_seekable</a>() returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>.</li>
+<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrc.is_seekable()</a>() returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>.</li>
 <li>
-<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::query">query</a>() can convert all supported seek formats to the
+<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::query">GstBaseSrc.query()</a>() can convert all supported seek formats to the
 internal format as set with <a href="libgstbase-1.0/c/gstbasesrc.html#gst_base_src_set_format">gst_base_src_set_format</a>.</li>
 <li>
-<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::do_seek">do_seek</a>() is implemented, performs the seek and returns
+<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::do_seek">GstBaseSrc.do_seek()</a>() is implemented, performs the seek and returns
 <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>.</li>
 </ul>
 <p>When the element does not meet the requirements to operate in pull mode, the
-offset and length in the <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::create">create</a>() method should be ignored.
+offset and length in the <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrc.create()</a>() method should be ignored.
 It is recommended to subclass <a href="libgstbase-1.0/c/gstpushsrc.html#GstPushSrc">GstPushSrc</a> instead, in this situation. If the
 element can operate in pull mode but only with specific offsets and
 lengths, it is allowed to generate an error when the wrong values are passed
-to the <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::create">create</a>() function.</p>
+to the <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrc.create()</a>() function.</p>
 <p><a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> has support for live sources. Live sources are sources that when
 paused discard data, such as audio or video capture devices. A typical live
 source also produces data at a fixed rate and thus provides a clock to publish
 this rate.
 Use <a href="libgstbase-1.0/c/gstbasesrc.html#gst_base_src_set_live">gst_base_src_set_live</a> to activate the live source mode.</p>
 <p>A live source does not produce data in the PAUSED state. This means that the
-<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::create">create</a>() method will not be called in PAUSED but only in
+<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrc.create()</a>() method will not be called in PAUSED but only in
 PLAYING. To signal the pipeline that the element will not produce data, the
 return value from the READY to PAUSED state will be
 <a href="libgstreamer-1.0/c/gstelement-h.html#GST_STATE_CHANGE_NO_PREROLL">GST_STATE_CHANGE_NO_PREROLL</a>.</p>
@@ -184,11 +184,11 @@ can only produce data in the PLAYING state, when the clock is actually
 distributed and running.</p>
 <p>Live sources that synchronize and block on the clock (an audio source, for
 example) can use <a href="libgstbase-1.0/c/gstbasesrc.html#gst_base_src_wait_playing">gst_base_src_wait_playing</a> when the
-<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::create">create</a>() function was interrupted by a state change to
+<a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrc.create()</a>() function was interrupted by a state change to
 PAUSED.</p>
-<p>The <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::get_times">get_times</a>() method can be used to implement pseudo-live
-sources. It only makes sense to implement the <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::get_times">get_times</a>()
-function if the source is a live source. The <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::get_times">get_times</a>()
+<p>The <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrc.get_times()</a>() method can be used to implement pseudo-live
+sources. It only makes sense to implement the <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrc.get_times()</a>()
+function if the source is a live source. The <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::get_times">GstBaseSrc.get_times()</a>()
 function should return timestamps starting from 0, as if it were a non-live
 source. The base class will make sure that the timestamps are transformed
 into the current running_time. The base source will then wait for the
@@ -288,8 +288,10 @@ struct GstBaseSrc {
 </pre>
 
 
+
+
 	<div class="members-container">
-		<p><b>Members</b></p>
+		<h3 id="members">Members</h3>
 					
 <div class="symbol-detail" id="GstBaseSrc.element">
 	<div>
@@ -474,6 +476,259 @@ struct GstBaseSrc {
 <div class="symbol-detail" id="GstBaseSrc._gst_reserved">
 	<div>
 		<i><em><code>GstBaseSrc._gst_reserved</code></em></i>
+		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+</div>
+
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass-wpr">
+		
+<h4 id="struct-gstbasesrcclass">
+		struct GstBaseSrcClass
+	</h4>
+
+		<pre class="raw_code">
+struct GstBaseSrcClass {
+    GstElementClass parent_class;
+    GstCaps* get_caps (GstBaseSrc* src, GstCaps* filter);
+    gboolean negotiate (GstBaseSrc* src);
+    GstCaps* fixate (GstBaseSrc* src, GstCaps* caps);
+    gboolean set_caps (GstBaseSrc* src, GstCaps* caps);
+    gboolean decide_allocation (GstBaseSrc* src, GstQuery* query);
+    gboolean start (GstBaseSrc* src);
+    gboolean stop (GstBaseSrc* src);
+    void get_times (GstBaseSrc* src, GstBuffer* buffer, GstClockTime* start, GstClockTime* end);
+    gboolean get_size (GstBaseSrc* src, guint64* size);
+    gboolean is_seekable (GstBaseSrc* src);
+    gboolean prepare_seek_segment (GstBaseSrc* src, GstEvent* seek, GstSegment* segment);
+    gboolean do_seek (GstBaseSrc* src, GstSegment* segment);
+    gboolean unlock (GstBaseSrc* src);
+    gboolean unlock_stop (GstBaseSrc* src);
+    gboolean query (GstBaseSrc* src, GstQuery* query);
+    gboolean event (GstBaseSrc* src, GstEvent* event);
+    GstFlowReturn create (GstBaseSrc* src, guint64 offset, guint size, GstBuffer** buf);
+    GstFlowReturn alloc (GstBaseSrc* src, guint64 offset, guint size, GstBuffer** buf);
+    GstFlowReturn fill (GstBaseSrc* src, guint64 offset, guint size, GstBuffer* buf);
+    gpointer _gst_reserved; /* &lt; private &gt; */
+};
+</pre>
+
+
+
+
+	<div class="members-container">
+		<h5 id="fields">Fields</h5>
+					
+<div class="symbol-detail" id="GstBaseSrcClass.parent_class">
+	<div>
+		<i><em><code>GstBaseSrcClass.parent_class</code></em></i>
+		(<a title="GstElementClass" href="GstElementClass">GstElementClass</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.get_caps()">
+	<div>
+		<i><em><code>GstBaseSrcClass.get_caps()</code></em></i>
+		(<a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> *)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.negotiate()">
+	<div>
+		<i><em><code>GstBaseSrcClass.negotiate()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.fixate()">
+	<div>
+		<i><em><code>GstBaseSrcClass.fixate()</code></em></i>
+		(<a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> *)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.set_caps()">
+	<div>
+		<i><em><code>GstBaseSrcClass.set_caps()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.decide_allocation()">
+	<div>
+		<i><em><code>GstBaseSrcClass.decide_allocation()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.start()">
+	<div>
+		<i><em><code>GstBaseSrcClass.start()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.stop()">
+	<div>
+		<i><em><code>GstBaseSrcClass.stop()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.get_times()">
+	<div>
+		<i><em><code>GstBaseSrcClass.get_times()</code></em></i>
+		(void)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.get_size()">
+	<div>
+		<i><em><code>GstBaseSrcClass.get_size()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.is_seekable()">
+	<div>
+		<i><em><code>GstBaseSrcClass.is_seekable()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.prepare_seek_segment()">
+	<div>
+		<i><em><code>GstBaseSrcClass.prepare_seek_segment()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.do_seek()">
+	<div>
+		<i><em><code>GstBaseSrcClass.do_seek()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.unlock()">
+	<div>
+		<i><em><code>GstBaseSrcClass.unlock()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.unlock_stop()">
+	<div>
+		<i><em><code>GstBaseSrcClass.unlock_stop()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.query()">
+	<div>
+		<i><em><code>GstBaseSrcClass.query()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.event()">
+	<div>
+		<i><em><code>GstBaseSrcClass.event()</code></em></i>
+		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.create()">
+	<div>
+		<i><em><code>GstBaseSrcClass.create()</code></em></i>
+		(<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.alloc()">
+	<div>
+		<i><em><code>GstBaseSrcClass.alloc()</code></em></i>
+		(<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass.fill()">
+	<div>
+		<i><em><code>GstBaseSrcClass.fill()</code></em></i>
+		(<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstBaseSrcClass._gst_reserved">
+	<div>
+		<i><em><code>GstBaseSrcClass._gst_reserved</code></em></i>
 		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
 		–
 	</div>
@@ -1329,7 +1584,7 @@ gst_base_src_set_format (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc
 <p>Sets the default format of the source. This will be the format used
 for sending SEGMENT events and for performing seeks.</p>
 <p>If a format of GST_FORMAT_BYTES is set, the element will be able to
-operate in pull mode if the <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::is_seekable">is_seekable</a>() returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>.</p>
+operate in pull mode if the <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::is_seekable">GstBaseSrc.is_seekable()</a>() returns <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a>.</p>
 <p>This function must only be called in states &lt; <a href="libgstreamer-1.0/c/gstelement-h.html#GST_STATE_PAUSED">GST_STATE_PAUSED</a>.</p>
 
 
@@ -1528,7 +1783,7 @@ gst_base_src_start_wait (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc
 <a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 gst_base_src_wait_playing (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
 
-<p>If the <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::create">create</a>() method performs its own synchronisation
+<p>If the <a href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrcClass::create">GstBaseSrc.create()</a>() method performs its own synchronisation
 against the clock it must unblock when going from PLAYING to the PAUSED state
 and call this method before continuing to produce the remaining data.</p>
 <p>This function will block until a state change to PLAYING happens (in which
@@ -1684,284 +1939,23 @@ continue. Any other return value should be returned from the create vmethod.</p>
 
 
 
-            <h3 class="symbol_section" id="GstBaseSrcStructures">Structures</h3>
-                    
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass-wpr">
-		
-<h4 id="struct-gstbasesrcclass">
-		struct GstBaseSrcClass
-	</h4>
-
-		<pre class="raw_code">
-struct GstBaseSrcClass {
-    GstElementClass parent_class;
-    GstCaps* get_caps (GstBaseSrc* src, GstCaps* filter);
-    gboolean negotiate (GstBaseSrc* src);
-    GstCaps* fixate (GstBaseSrc* src, GstCaps* caps);
-    gboolean set_caps (GstBaseSrc* src, GstCaps* caps);
-    gboolean decide_allocation (GstBaseSrc* src, GstQuery* query);
-    gboolean start (GstBaseSrc* src);
-    gboolean stop (GstBaseSrc* src);
-    void get_times (GstBaseSrc* src, GstBuffer* buffer, GstClockTime* start, GstClockTime* end);
-    gboolean get_size (GstBaseSrc* src, guint64* size);
-    gboolean is_seekable (GstBaseSrc* src);
-    gboolean prepare_seek_segment (GstBaseSrc* src, GstEvent* seek, GstSegment* segment);
-    gboolean do_seek (GstBaseSrc* src, GstSegment* segment);
-    gboolean unlock (GstBaseSrc* src);
-    gboolean unlock_stop (GstBaseSrc* src);
-    gboolean query (GstBaseSrc* src, GstQuery* query);
-    gboolean event (GstBaseSrc* src, GstEvent* event);
-    GstFlowReturn create (GstBaseSrc* src, guint64 offset, guint size, GstBuffer** buf);
-    GstFlowReturn alloc (GstBaseSrc* src, guint64 offset, guint size, GstBuffer** buf);
-    GstFlowReturn fill (GstBaseSrc* src, guint64 offset, guint size, GstBuffer* buf);
-    gpointer _gst_reserved; /* &lt; private &gt; */
-};
-</pre>
-
-<p>Subclasses can override any of the available virtual methods or not, as
-needed. At the minimum, the <em>create</em> method should be overridden to produce
-buffers.</p>
-
-
-	<div class="members-container">
-		<p><b>Fields</b></p>
-					
-<div class="symbol-detail" id="GstBaseSrcClass.parent_class">
-	<div>
-		<i><em><code>GstBaseSrcClass.parent_class</code></em></i>
-		(<a title="GstElementClass" href="libgstreamer-1.0/c/gstelement-h.html#GstElementClass">GstElementClass</a>)
-		–
-	</div>
-			<p>Element parent class</p>
-
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.get_caps()">
-	<div>
-		<i><em><code>GstBaseSrcClass.get_caps()</code></em></i>
-		(<a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> *)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.negotiate()">
-	<div>
-		<i><em><code>GstBaseSrcClass.negotiate()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.fixate()">
-	<div>
-		<i><em><code>GstBaseSrcClass.fixate()</code></em></i>
-		(<a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> *)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.set_caps()">
-	<div>
-		<i><em><code>GstBaseSrcClass.set_caps()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.decide_allocation()">
-	<div>
-		<i><em><code>GstBaseSrcClass.decide_allocation()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.start()">
-	<div>
-		<i><em><code>GstBaseSrcClass.start()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.stop()">
-	<div>
-		<i><em><code>GstBaseSrcClass.stop()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.get_times()">
-	<div>
-		<i><em><code>GstBaseSrcClass.get_times()</code></em></i>
-		(void)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.get_size()">
-	<div>
-		<i><em><code>GstBaseSrcClass.get_size()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.is_seekable()">
-	<div>
-		<i><em><code>GstBaseSrcClass.is_seekable()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.prepare_seek_segment()">
-	<div>
-		<i><em><code>GstBaseSrcClass.prepare_seek_segment()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.do_seek()">
-	<div>
-		<i><em><code>GstBaseSrcClass.do_seek()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.unlock()">
-	<div>
-		<i><em><code>GstBaseSrcClass.unlock()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.unlock_stop()">
-	<div>
-		<i><em><code>GstBaseSrcClass.unlock_stop()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.query()">
-	<div>
-		<i><em><code>GstBaseSrcClass.query()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.event()">
-	<div>
-		<i><em><code>GstBaseSrcClass.event()</code></em></i>
-		(<a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.create()">
-	<div>
-		<i><em><code>GstBaseSrcClass.create()</code></em></i>
-		(<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.alloc()">
-	<div>
-		<i><em><code>GstBaseSrcClass.alloc()</code></em></i>
-		(<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass.fill()">
-	<div>
-		<i><em><code>GstBaseSrcClass.fill()</code></em></i>
-		(<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstBaseSrcClass._gst_reserved">
-	<div>
-		<i><em><code>GstBaseSrcClass._gst_reserved</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-			</div>
-
-
-</div>
-
-
-
-
             <h3 class="symbol_section" id="GstBaseSrcVirtual_Methods">Virtual Methods</h3>
                     
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::alloc-wpr">
 		
-<h4 id="alloc">
-	<span><code>alloc</code></span>
+<h4 id="gstbasesrcalloc">
+	<span><code>GstBaseSrc.alloc()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
-alloc (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-       <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset,
-       <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> size,
-       <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> ** buf)</pre>
+GstBaseSrc.alloc() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                    <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset,
+                    <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> size,
+                    <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> ** buf)</pre>
 
 
 
@@ -2025,18 +2019,18 @@ alloc (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::create-wpr">
 		
-<h4 id="create">
-	<span><code>create</code></span>
+<h4 id="gstbasesrccreate">
+	<span><code>GstBaseSrc.create()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
-create (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-        <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset,
-        <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> size,
-        <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> ** buf)</pre>
+GstBaseSrc.create() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                     <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset,
+                     <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> size,
+                     <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> ** buf)</pre>
 
 
 
@@ -2100,16 +2094,16 @@ create (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc"
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::decide_allocation-wpr">
 		
-<h4 id="decide_allocation">
-	<span><code>decide_allocation</code></span>
+<h4 id="gstbasesrcdecide_allocation">
+	<span><code>GstBaseSrc.decide_allocation()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-decide_allocation (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-                   <a title="GstQuery" href="libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
+GstBaseSrc.decide_allocation() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                                <a title="GstQuery" href="libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
 
 
 
@@ -2155,16 +2149,16 @@ decide_allocation (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::do_seek-wpr">
 		
-<h4 id="do_seek">
-	<span><code>do_seek</code></span>
+<h4 id="gstbasesrcdo_seek">
+	<span><code>GstBaseSrc.do_seek()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-do_seek (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-         <a title="GstSegment" href="libgstreamer-1.0/c/gstsegment.html#GstSegment">GstSegment</a> * segment)</pre>
+GstBaseSrc.do_seek() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                      <a title="GstSegment" href="libgstreamer-1.0/c/gstsegment.html#GstSegment">GstSegment</a> * segment)</pre>
 
 
 
@@ -2210,16 +2204,16 @@ do_seek (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::event-wpr">
 		
-<h4 id="event">
-	<span><code>event</code></span>
+<h4 id="gstbasesrcevent">
+	<span><code>GstBaseSrc.event()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-event (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-       <a title="GstEvent" href="libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
+GstBaseSrc.event() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                    <a title="GstEvent" href="libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
 
 
 
@@ -2265,18 +2259,18 @@ event (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::fill-wpr">
 		
-<h4 id="fill">
-	<span><code>fill</code></span>
+<h4 id="gstbasesrcfill">
+	<span><code>GstBaseSrc.fill()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
-fill (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-      <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset,
-      <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> size,
-      <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buf)</pre>
+GstBaseSrc.fill() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                   <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset,
+                   <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> size,
+                   <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buf)</pre>
 
 
 
@@ -2340,16 +2334,16 @@ fill (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">G
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::fixate-wpr">
 		
-<h4 id="fixate">
-	<span><code>fixate</code></span>
+<h4 id="gstbasesrcfixate">
+	<span><code>GstBaseSrc.fixate()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> *
-fixate (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-        <a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> * caps)</pre>
+GstBaseSrc.fixate() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                     <a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> * caps)</pre>
 
 
 
@@ -2395,16 +2389,16 @@ fixate (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc"
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_caps-wpr">
 		
-<h4 id="get_caps">
-	<span><code>get_caps</code></span>
+<h4 id="gstbasesrcget_caps">
+	<span><code>GstBaseSrc.get_caps()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> *
-get_caps (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-          <a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> * filter)</pre>
+GstBaseSrc.get_caps() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                       <a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> * filter)</pre>
 
 
 
@@ -2450,16 +2444,16 @@ get_caps (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSr
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_size-wpr">
 		
-<h4 id="get_size">
-	<span><code>get_size</code></span>
+<h4 id="gstbasesrcget_size">
+	<span><code>GstBaseSrc.get_size()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-get_size (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-          <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> * size)</pre>
+GstBaseSrc.get_size() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                       <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> * size)</pre>
 
 
 
@@ -2505,17 +2499,17 @@ get_size (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSr
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::get_times-wpr">
 		
-<h4 id="get_times">
-	<span><code>get_times</code></span>
+<h4 id="gstbasesrcget_times">
+	<span><code>GstBaseSrc.get_times()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
-get_times (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-           <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer,
-           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * start,
-           <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * end)</pre>
+GstBaseSrc.get_times() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                        <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer,
+                        <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * start,
+                        <a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a> * end)</pre>
 
 
 
@@ -2569,15 +2563,15 @@ get_times (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseS
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::is_seekable-wpr">
 		
-<h4 id="is_seekable">
-	<span><code>is_seekable</code></span>
+<h4 id="gstbasesrcis_seekable">
+	<span><code>GstBaseSrc.is_seekable()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-is_seekable (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
+GstBaseSrc.is_seekable() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
 
 
 
@@ -2614,15 +2608,15 @@ is_seekable (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBas
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::negotiate-wpr">
 		
-<h4 id="negotiate">
-	<span><code>negotiate</code></span>
+<h4 id="gstbasesrcnegotiate">
+	<span><code>GstBaseSrc.negotiate()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-negotiate (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
+GstBaseSrc.negotiate() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
 
 
 
@@ -2659,17 +2653,17 @@ negotiate (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseS
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::prepare_seek_segment-wpr">
 		
-<h4 id="prepare_seek_segment">
-	<span><code>prepare_seek_segment</code></span>
+<h4 id="gstbasesrcprepare_seek_segment">
+	<span><code>GstBaseSrc.prepare_seek_segment()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-prepare_seek_segment (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-                      <a title="GstEvent" href="libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * seek,
-                      <a title="GstSegment" href="libgstreamer-1.0/c/gstsegment.html#GstSegment">GstSegment</a> * segment)</pre>
+GstBaseSrc.prepare_seek_segment() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                                   <a title="GstEvent" href="libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * seek,
+                                   <a title="GstSegment" href="libgstreamer-1.0/c/gstsegment.html#GstSegment">GstSegment</a> * segment)</pre>
 
 
 
@@ -2724,16 +2718,16 @@ prepare_seek_segment (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.ht
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::query-wpr">
 		
-<h4 id="query">
-	<span><code>query</code></span>
+<h4 id="gstbasesrcquery">
+	<span><code>GstBaseSrc.query()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-query (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-       <a title="GstQuery" href="libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
+GstBaseSrc.query() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                    <a title="GstQuery" href="libgstreamer-1.0/c/gstquery.html#GstQuery">GstQuery</a> * query)</pre>
 
 
 
@@ -2779,16 +2773,16 @@ query (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::set_caps-wpr">
 		
-<h4 id="set_caps">
-	<span><code>set_caps</code></span>
+<h4 id="gstbasesrcset_caps">
+	<span><code>GstBaseSrc.set_caps()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-set_caps (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
-          <a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> * caps)</pre>
+GstBaseSrc.set_caps() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src,
+                       <a title="GstCaps" href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> * caps)</pre>
 
 
 
@@ -2834,15 +2828,15 @@ set_caps (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSr
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::start-wpr">
 		
-<h4 id="start">
-	<span><code>start</code></span>
+<h4 id="gstbasesrcstart">
+	<span><code>GstBaseSrc.start()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-start (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
+GstBaseSrc.start() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
 
 
 
@@ -2879,15 +2873,15 @@ start (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::stop-wpr">
 		
-<h4 id="stop">
-	<span><code>stop</code></span>
+<h4 id="gstbasesrcstop">
+	<span><code>GstBaseSrc.stop()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-stop (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
+GstBaseSrc.stop() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
 
 
 
@@ -2924,15 +2918,15 @@ stop (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">G
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::unlock-wpr">
 		
-<h4 id="unlock">
-	<span><code>unlock</code></span>
+<h4 id="gstbasesrcunlock">
+	<span><code>GstBaseSrc.unlock()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-unlock (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
+GstBaseSrc.unlock() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
 
 
 
@@ -2969,15 +2963,15 @@ unlock (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc"
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstBaseSrcClass::unlock_stop-wpr">
 		
-<h4 id="unlock_stop">
-	<span><code>unlock_stop</code></span>
+<h4 id="gstbasesrcunlock_stop">
+	<span><code>GstBaseSrc.unlock_stop()</code></span>
 </h4>
 
 		
 
 <pre class="prototype">
 <a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a>
-unlock_stop (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
+GstBaseSrc.unlock_stop() (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBaseSrc">GstBaseSrc</a> * src)</pre>
 
 
 
@@ -3130,8 +3124,10 @@ unlock_stop (<a title="GstBaseSrc" href="libgstbase-1.0/c/gstbasesrc.html#GstBas
 		<p>The <a href="libgstreamer-1.0/c/gstelement-h.html#GstElement">GstElement</a> flags that a basesrc element may have.</p>
 
 
+
+
 	<div class="members-container">
-		<p><b>Members</b></p>
+		<h4 id="members1">Members</h4>
 					
 <div class="symbol-detail">
 	<div>

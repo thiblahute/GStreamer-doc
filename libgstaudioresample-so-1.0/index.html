@@ -155,6 +155,23 @@ $('body').removeClass('no-script');
 
 
                     
+        <p>audioresample resamples raw audio buffers to different sample rates using
+a configurable windowing function to enhance quality.</p>
+<p>By default, the resampler uses a reduced sinc table, with cubic interpolation filling in
+the gaps. This ensures that the table does not become too big. However, the interpolation
+increases the CPU usage considerably. As an alternative, a full sinc table can be used.
+Doing so can drastically reduce CPU usage (4x faster with 44.1 -&gt; 48 kHz conversions for
+example), at the cost of increased memory consumption, plus the sinc table takes longer
+to initialize when the element is created. A third mode exists, which uses the full table
+unless said table would become too large, in which case the interpolated one is used instead.</p>
+<h2 id="example-launch-line">Example launch line</h2>
+<pre><code class="language-["> gst-launch-1.0 -v uridecodebin uri=file:///path/to/audio.ogg ! audioconvert ! audioresample ! audio/x-raw, rate=8000 ! autoaudiosink
+</code></pre>
+<p>Decode an audio file and downsample it to 8Khz and play sound.
+To create the Ogg/Vorbis file refer to the documentation of vorbisenc.
+This assumes there is an audio sink that will accept/handle 8kHz audio.</p>
+
+
         <h2 id="hierarchy">Hierarchy</h2>
         <div class="hierarchy_container">
             <div class="hierarchy_details">
@@ -505,37 +522,6 @@ $('body').removeClass('no-script');
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioResample:sinc-filter-mode-wpr">
-		
-<h3 class="method" id="sincfiltermode">
-	<span><code>sinc-filter-mode</code></span>
-</h3>
-
-		<pre class="property_signature">
-“sinc-filter-mode” <span class="type"><a title="GstAudioResamplerFilterMode" href="libgstaudioresample-so-1.0/index.html#GstAudioResamplerFilterMode">GstAudioResamplerFilterMode</a></span>
-</pre>
-
-<p>What sinc filter table mode to use</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	auto (2)
-</p>
-
-</div>
-
-            
-
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioResample:sinc-filter-auto-threshold-wpr">
 		
 <h3 class="method" id="sincfilterautothreshold">
@@ -596,6 +582,37 @@ $('body').removeClass('no-script');
 
 </div>
 
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioResample:sinc-filter-mode-wpr">
+		
+<h3 class="method" id="sincfiltermode">
+	<span><code>sinc-filter-mode</code></span>
+</h3>
+
+		<pre class="property_signature">
+“sinc-filter-mode” <span class="type"><a title="GstAudioResamplerFilterMode" href="libgstaudioresample-so-1.0/index.html#GstAudioResamplerFilterMode">GstAudioResamplerFilterMode</a></span>
+</pre>
+
+<p>What sinc filter table mode to use</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	auto (2)
+</p>
+
+</div>
+
 
 
 
@@ -647,44 +664,6 @@ $('body').removeClass('no-script');
 
 
 
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioResamplerFilterMode-wpr">
-		
-<h3 id="enum-gstaudioresamplerfiltermode">
-		enum GstAudioResamplerFilterMode
-	</h3>
-
-		
-<table class="table table-striped">
-    <tbody>
-        <tr>
-            <td><b>Name</b></td>
-            <td><b>Description</b></td>
-            <td><b>Value</b></td>
-        </tr>
-        <tr>
-            <td>interpolated</td>
-            <td>GST_AUDIO_RESAMPLER_FILTER_MODE_INTERPOLATED</td>
-            <td>0x00000000</td>
-        </tr>
-        <tr>
-            <td>full</td>
-            <td>GST_AUDIO_RESAMPLER_FILTER_MODE_FULL</td>
-            <td>0x00000001</td>
-        </tr>
-        <tr>
-            <td>auto</td>
-            <td>GST_AUDIO_RESAMPLER_FILTER_MODE_AUTO</td>
-            <td>0x00000002</td>
-        </tr>
-    </tbody>
-</table>
-
-
-
 
 </div>
 
@@ -721,6 +700,47 @@ $('body').removeClass('no-script');
         </tr>
     </tbody>
 </table>
+
+
+
+
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioResamplerFilterMode-wpr">
+		
+<h3 id="enum-gstaudioresamplerfiltermode">
+		enum GstAudioResamplerFilterMode
+	</h3>
+
+		
+<table class="table table-striped">
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Value</b></td>
+        </tr>
+        <tr>
+            <td>interpolated</td>
+            <td>GST_AUDIO_RESAMPLER_FILTER_MODE_INTERPOLATED</td>
+            <td>0x00000000</td>
+        </tr>
+        <tr>
+            <td>full</td>
+            <td>GST_AUDIO_RESAMPLER_FILTER_MODE_FULL</td>
+            <td>0x00000001</td>
+        </tr>
+        <tr>
+            <td>auto</td>
+            <td>GST_AUDIO_RESAMPLER_FILTER_MODE_AUTO</td>
+            <td>0x00000002</td>
+        </tr>
+    </tbody>
+</table>
+
 
 
 

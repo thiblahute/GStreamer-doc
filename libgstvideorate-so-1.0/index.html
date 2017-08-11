@@ -155,6 +155,47 @@ $('body').removeClass('no-script');
 
 
                     
+        <p>This element takes an incoming stream of timestamped video frames.
+It will produce a perfect stream that matches the source pad's framerate.</p>
+<p>The correction is performed by dropping and duplicating frames, no fancy
+algorithm is used to interpolate frames (yet).</p>
+<p>By default the element will simply negotiate the same framerate on its
+source and sink pad.</p>
+<p>This operation is useful to link to elements that require a perfect stream.
+Typical examples are formats that do not store timestamps for video frames,
+but only store a framerate, like Ogg and AVI.</p>
+<p>A conversion to a specific framerate can be forced by using filtered caps on
+the source pad.</p>
+<p>The properties <a href="libgstvideorate-so-1.0/index.html#GstVideoRate:in">in</a>, <a href="libgstvideorate-so-1.0/index.html#GstVideoRate:out">out</a>, <a href="libgstvideorate-so-1.0/index.html#GstVideoRate:duplicate">duplicate</a>
+and <a href="libgstvideorate-so-1.0/index.html#GstVideoRate:drop">drop</a> can be read to obtain information about number of
+input frames, output frames, dropped frames (i.e. the number of unused input
+frames) and duplicated frames (i.e. the number of times an input frame was
+duplicated, beside being used normally).</p>
+<p>An input stream that needs no adjustments will thus never have dropped or
+duplicated frames.</p>
+<p>When the <a href="libgstvideorate-so-1.0/index.html#GstVideoRate:silent">silent</a> property is set to FALSE, a GObject property
+notification will be emitted whenever one of the <a href="libgstvideorate-so-1.0/index.html#GstVideoRate:duplicate">duplicate</a> or
+<a href="libgstvideorate-so-1.0/index.html#GstVideoRate:drop">drop</a> values changes.
+This can potentially cause performance degradation.
+Note that property notification will happen from the streaming thread, so
+applications should be prepared for this.</p>
+<p>The property <a href="libgstvideorate-so-1.0/index.html#GstVideoRate:rate">rate</a> allows the modification of video speed by a
+certain factor. It must not be confused with framerate. Think of rate as
+speed and framerate as flow.</p>
+<h2 id="example-pipelines">Example pipelines</h2>
+<pre><code class="language-["> gst-launch-1.0 -v uridecodebin uri=file:///path/to/video.ogg ! videoconvert ! videoscale ! videorate ! video/x-raw,framerate=15/1 ! autovideosink
+</code></pre>
+<p>Decode a video file and adjust the framerate to 15 fps before playing.
+To create a test Ogg/Theora file refer to the documentation of theoraenc.</p>
+<pre><code class="language-["> gst-launch-1.0 -v v4l2src ! videorate ! video/x-raw,framerate=25/2 ! theoraenc ! oggmux ! filesink location=recording.ogg
+</code></pre>
+<p>Capture video from a V4L device, and adjust the stream to 12.5 fps before
+encoding to Ogg/Theora.</p>
+<pre><code class="language-["> gst-launch-1.0 -v uridecodebin uri=file:///path/to/video.ogg ! videoconvert ! videoscale ! videorate ! video/x-raw,framerate=1/5 ! jpegenc ! multifilesink location=snapshot-%05d.jpg
+</code></pre>
+<p>Decode a video file and save a snapshot every 5 seconds as consecutively numbered jpeg file.</p>
+
+
         <h2 id="hierarchy">Hierarchy</h2>
         <div class="hierarchy_container">
             <div class="hierarchy_details">
@@ -201,39 +242,6 @@ $('body').removeClass('no-script');
             <h2 class="symbol_section" id="Pad_Templates">Pad Templates</h2>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate-&gt;src-wpr">
-		        <h4 id="src">
-            src
-        </h4>
-
-		        <table class="table table-striped">
-            <tbody>
-                <tr>
-<td><b>Presence:</b></td>
-<td>always</td>
-</tr>
-                <tr>
-<td><b>Direction:</b></td>
-<td>src</td>
-</tr>
-                <tr>
-<td><b>Capabilities:</b></td>
-<td><pre><code>video/x-raw(ANY)
-
-video/x-bayer(ANY)
-
-image/jpeg(ANY)
-
-image/png(ANY)
-</code></pre></td>
-</tr>
-            </tbody>
-        </table>
-
-</div>
-
-            
-
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate-&gt;sink-wpr">
 		        <h4 id="sink">
             sink
@@ -265,11 +273,226 @@ image/png(ANY)
 
 </div>
 
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate-&gt;src-wpr">
+		        <h4 id="src">
+            src
+        </h4>
+
+		        <table class="table table-striped">
+            <tbody>
+                <tr>
+<td><b>Presence:</b></td>
+<td>always</td>
+</tr>
+                <tr>
+<td><b>Direction:</b></td>
+<td>src</td>
+</tr>
+                <tr>
+<td><b>Capabilities:</b></td>
+<td><pre><code>video/x-raw(ANY)
+
+video/x-bayer(ANY)
+
+image/jpeg(ANY)
+
+image/png(ANY)
+</code></pre></td>
+</tr>
+            </tbody>
+        </table>
+
+</div>
+
 
 
 
             <h2 class="symbol_section" id="Properties">Properties</h2>
                     
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:average-period-wpr">
+		
+<h3 class="method" id="averageperiod">
+	<span><code>average-period</code></span>
+</h3>
+
+		<pre class="property_signature">
+“average-period” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Arrange for maximum framerate by dropping frames beyond a certain framerate,
+where the framerate is calculated using a moving average over the
+configured.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:drop-wpr">
+		
+<h3 class="method" id="drop">
+	<span><code>drop</code></span>
+</h3>
+
+		<pre class="property_signature">
+“drop” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Number of dropped frames</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:drop-only-wpr">
+		
+<h3 class="method" id="droponly">
+	<span><code>drop-only</code></span>
+</h3>
+
+		<pre class="property_signature">
+“drop-only” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
+</pre>
+
+<p>Only drop frames, no duplicates are produced.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	false
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:duplicate-wpr">
+		
+<h3 class="method" id="duplicate">
+	<span><code>duplicate</code></span>
+</h3>
+
+		<pre class="property_signature">
+“duplicate” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Number of duplicated frames</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:in-wpr">
+		
+<h3 class="method" id="in">
+	<span><code>in</code></span>
+</h3>
+
+		<pre class="property_signature">
+“in” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Number of input frames</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:max-rate-wpr">
+		
+<h3 class="method" id="maxrate">
+	<span><code>max-rate</code></span>
+</h3>
+
+		<pre class="property_signature">
+“max-rate” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+</pre>
+
+<p>maximum framerate to pass through</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+				/		
+				Construct
+			
+</p>
+<p>
+	Default value :	2147483647
+</p>
+
+</div>
+
+            
 
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:name-wpr">
 		
@@ -299,6 +522,65 @@ image/png(ANY)
 </p>
 <p>
 	Default value :	videorate0
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:new-pref-wpr">
+		
+<h3 class="method" id="newpref">
+	<span><code>new-pref</code></span>
+</h3>
+
+		<pre class="property_signature">
+“new-pref” <span class="type"><a title="gdouble" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a></span>
+</pre>
+
+<p>Value indicating how much to prefer new frames (unused)</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	1
+</p>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:out-wpr">
+		
+<h3 class="method" id="out">
+	<span><code>out</code></span>
+</h3>
+
+		<pre class="property_signature">
+“out” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+</pre>
+
+<p>Number of output frames</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+</p>
+<p>
+	Default value :	0
 </p>
 
 </div>
@@ -364,17 +646,17 @@ image/png(ANY)
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:in-wpr">
+<div class="base_symbol_container" data-hotdoc-tags="since:1.12;" id="GstVideoRate:rate-wpr">
 		
-<h3 class="method" id="in">
-	<span><code>in</code></span>
+<h3 class="method" id="rate">
+	<span><code>rate</code></span>
 </h3>
 
 		<pre class="property_signature">
-“in” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
+“rate” <span class="type"><a title="gdouble" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a></span>
 </pre>
 
-<p>Number of input frames</p>
+<p>Factor of speed for frame displaying</p>
 
 
 <p>
@@ -383,93 +665,12 @@ image/png(ANY)
 		
 				Read
 			
-</p>
-<p>
-	Default value :	0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:out-wpr">
-		
-<h3 class="method" id="out">
-	<span><code>out</code></span>
-</h3>
-
-		<pre class="property_signature">
-“out” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
-</pre>
-
-<p>Number of output frames</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
+				/		
+				Write
 			
 </p>
 <p>
-	Default value :	0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:duplicate-wpr">
-		
-<h3 class="method" id="duplicate">
-	<span><code>duplicate</code></span>
-</h3>
-
-		<pre class="property_signature">
-“duplicate” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
-</pre>
-
-<p>Number of duplicated frames</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-</p>
-<p>
-	Default value :	0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:drop-wpr">
-		
-<h3 class="method" id="drop">
-	<span><code>drop</code></span>
-</h3>
-
-		<pre class="property_signature">
-“drop” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
-</pre>
-
-<p>Number of dropped frames</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-</p>
-<p>
-	Default value :	0
+	Default value :	1
 </p>
 
 </div>
@@ -507,37 +708,6 @@ image/png(ANY)
 
             
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:new-pref-wpr">
-		
-<h3 class="method" id="newpref">
-	<span><code>new-pref</code></span>
-</h3>
-
-		<pre class="property_signature">
-“new-pref” <span class="type"><a title="gdouble" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a></span>
-</pre>
-
-<p>Value indicating how much to prefer new frames (unused)</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	1
-</p>
-
-</div>
-
-            
-
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:skip-to-first-wpr">
 		
 <h3 class="method" id="skiptofirst">
@@ -563,135 +733,6 @@ image/png(ANY)
 </p>
 <p>
 	Default value :	false
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:drop-only-wpr">
-		
-<h3 class="method" id="droponly">
-	<span><code>drop-only</code></span>
-</h3>
-
-		<pre class="property_signature">
-“drop-only” <span class="type"><a title="gboolean" href="gst-plugins-base-riff-1.0/riff-read.html#gboolean">gboolean</a></span>
-</pre>
-
-<p>Only drop frames, no duplicates are produced.</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	false
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:average-period-wpr">
-		
-<h3 class="method" id="averageperiod">
-	<span><code>average-period</code></span>
-</h3>
-
-		<pre class="property_signature">
-“average-period” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a></span>
-</pre>
-
-<p>Arrange for maximum framerate by dropping frames beyond a certain framerate,
-where the framerate is calculated using a moving average over the
-configured.</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	0
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="GstVideoRate:max-rate-wpr">
-		
-<h3 class="method" id="maxrate">
-	<span><code>max-rate</code></span>
-</h3>
-
-		<pre class="property_signature">
-“max-rate” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
-</pre>
-
-<p>maximum framerate to pass through</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-				/		
-				Construct
-			
-</p>
-<p>
-	Default value :	2147483647
-</p>
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="since:1.12;" id="GstVideoRate:rate-wpr">
-		
-<h3 class="method" id="rate">
-	<span><code>rate</code></span>
-</h3>
-
-		<pre class="property_signature">
-“rate” <span class="type"><a title="gdouble" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a></span>
-</pre>
-
-<p>Factor of speed for frame displaying</p>
-
-
-<p>
-	Flags :	
-	
-		
-				Read
-			
-				/		
-				Write
-			
-</p>
-<p>
-	Default value :	1
 </p>
 
 </div>
