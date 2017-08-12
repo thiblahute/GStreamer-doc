@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "www.joedoe.com", "urls": ["libgstplayback-so-1.0/playbin.html#usage", "libgstplayback-so-1.0/playbin3.html#usage"]});
+urls_downloaded_cb({"token": "www.joedoe.com", "urls": ["playback-1.0/playbin.html#usage", "playback-1.0/playbin3.html#usage"]});

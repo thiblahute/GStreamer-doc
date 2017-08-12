@@ -211,47 +211,14 @@ struct GstPad {
     gpointer element_private;
     GstPadTemplate* padtemplate;
     GstPadDirection direction;
-    GRecMutex stream_rec_lock; /* &lt; private &gt; */
-    GstTask* task; /* &lt; private &gt; */
-    GCond block_cond; /* &lt; private &gt; */
-    GHookList probes; /* &lt; private &gt; */
-    GstPadMode mode; /* &lt; private &gt; */
-    GstPadActivateFunction activatefunc; /* &lt; private &gt; */
-    gpointer activatedata; /* &lt; private &gt; */
-    GDestroyNotify activatenotify; /* &lt; private &gt; */
-    GstPadActivateModeFunction activatemodefunc; /* &lt; private &gt; */
-    gpointer activatemodedata; /* &lt; private &gt; */
-    GDestroyNotify activatemodenotify; /* &lt; private &gt; */
-    GstPad* peer; /* &lt; private &gt; */
-    GstPadLinkFunction linkfunc; /* &lt; private &gt; */
-    gpointer linkdata; /* &lt; private &gt; */
-    GDestroyNotify linknotify; /* &lt; private &gt; */
-    GstPadUnlinkFunction unlinkfunc; /* &lt; private &gt; */
-    gpointer unlinkdata; /* &lt; private &gt; */
-    GDestroyNotify unlinknotify; /* &lt; private &gt; */
-    GstPadChainFunction chainfunc; /* &lt; private &gt; */
-    gpointer chaindata; /* &lt; private &gt; */
-    GDestroyNotify chainnotify; /* &lt; private &gt; */
-    GstPadChainListFunction chainlistfunc; /* &lt; private &gt; */
-    gpointer chainlistdata; /* &lt; private &gt; */
-    GDestroyNotify chainlistnotify; /* &lt; private &gt; */
-    GstPadGetRangeFunction getrangefunc; /* &lt; private &gt; */
-    gpointer getrangedata; /* &lt; private &gt; */
-    GDestroyNotify getrangenotify; /* &lt; private &gt; */
-    GstPadEventFunction eventfunc; /* &lt; private &gt; */
-    gpointer eventdata; /* &lt; private &gt; */
-    GDestroyNotify eventnotify; /* &lt; private &gt; */
-    gint64 offset; /* &lt; private &gt; */
-    GstPadQueryFunction queryfunc; /* &lt; private &gt; */
-    gpointer querydata; /* &lt; private &gt; */
-    GDestroyNotify querynotify; /* &lt; private &gt; */
-    GstPadIterIntLinkFunction iterintlinkfunc; /* &lt; private &gt; */
-    gpointer iterintlinkdata; /* &lt; private &gt; */
-    GDestroyNotify iterintlinknotify; /* &lt; private &gt; */
-    gint num_probes; /* &lt; private &gt; */
-    gint num_blocked; /* &lt; private &gt; */
-    GstPadPrivate* priv; /* &lt; private &gt; */
-};
+    union {
+        gpointer _gst_reserved;
+        struct abi {
+            GstFlowReturn last_flowret;
+            GstPadEventFullFunction eventfullfunc;
+         };
+     } ABI;
+ };
 </pre>
 
 
@@ -304,69 +271,9 @@ the pad.</p>
 	</div>
 
 					
-<div class="symbol-detail" id="GstPad.stream_rec_lock">
+<div class="symbol-detail" id="GstPad._gst_reserved">
 	<div>
-		<i><em><code>GstPad.stream_rec_lock</code></em></i>
-		(<a title="GRecMutex" href="https://developer.gnome.org/glib/unstable/glib-Threads.html#GRecMutex">GRecMutex</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.task">
-	<div>
-		<i><em><code>GstPad.task</code></em></i>
-		(<a title="GstTask" href="libgstreamer-1.0/c/gsttask.html#GstTask">GstTask</a> *)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.block_cond">
-	<div>
-		<i><em><code>GstPad.block_cond</code></em></i>
-		(<a title="GCond" href="https://developer.gnome.org/glib/unstable/glib-Threads.html#GCond">GCond</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.probes">
-	<div>
-		<i><em><code>GstPad.probes</code></em></i>
-		(<a title="GHookList" href="https://developer.gnome.org/glib/unstable/glib-Hook-Functions.html#GHookList">GHookList</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.mode">
-	<div>
-		<i><em><code>GstPad.mode</code></em></i>
-		(<a title="GstPadMode" href="libgstreamer-1.0/c/gstpad.html#GstPadMode">GstPadMode</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.activatefunc">
-	<div>
-		<i><em><code>GstPad.activatefunc</code></em></i>
-		(<a title="GstPadActivateFunction" href="libgstreamer-1.0/c/gstpad.html#GstPadActivateFunction">GstPadActivateFunction</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.activatedata">
-	<div>
-		<i><em><code>GstPad.activatedata</code></em></i>
+		<i><em><code>GstPad._gst_reserved</code></em></i>
 		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
 		–
 	</div>
@@ -374,330 +281,20 @@ the pad.</p>
 	</div>
 
 					
-<div class="symbol-detail" id="GstPad.activatenotify">
+<div class="symbol-detail" id="GstPad.ABI.last_flowret">
 	<div>
-		<i><em><code>GstPad.activatenotify</code></em></i>
-		(<a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a>)
+		<i><em><code>GstPad.ABI.last_flowret</code></em></i>
+		(<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>)
 		–
 	</div>
 			<i>No description available</i>
 	</div>
 
 					
-<div class="symbol-detail" id="GstPad.activatemodefunc">
+<div class="symbol-detail" id="GstPad.ABI.eventfullfunc">
 	<div>
-		<i><em><code>GstPad.activatemodefunc</code></em></i>
-		(<a title="GstPadActivateModeFunction" href="libgstreamer-1.0/c/gstpad.html#GstPadActivateModeFunction">GstPadActivateModeFunction</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.activatemodedata">
-	<div>
-		<i><em><code>GstPad.activatemodedata</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.activatemodenotify">
-	<div>
-		<i><em><code>GstPad.activatemodenotify</code></em></i>
-		(<a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.peer">
-	<div>
-		<i><em><code>GstPad.peer</code></em></i>
-		(<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> *)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.linkfunc">
-	<div>
-		<i><em><code>GstPad.linkfunc</code></em></i>
-		(<a title="GstPadLinkFunction" href="libgstreamer-1.0/c/gstpad.html#GstPadLinkFunction">GstPadLinkFunction</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.linkdata">
-	<div>
-		<i><em><code>GstPad.linkdata</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.linknotify">
-	<div>
-		<i><em><code>GstPad.linknotify</code></em></i>
-		(<a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.unlinkfunc">
-	<div>
-		<i><em><code>GstPad.unlinkfunc</code></em></i>
-		(<a title="GstPadUnlinkFunction" href="libgstreamer-1.0/c/gstpad.html#GstPadUnlinkFunction">GstPadUnlinkFunction</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.unlinkdata">
-	<div>
-		<i><em><code>GstPad.unlinkdata</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.unlinknotify">
-	<div>
-		<i><em><code>GstPad.unlinknotify</code></em></i>
-		(<a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.chainfunc">
-	<div>
-		<i><em><code>GstPad.chainfunc</code></em></i>
-		(<a title="GstPadChainFunction" href="libgstreamer-1.0/c/gstpad.html#GstPadChainFunction">GstPadChainFunction</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.chaindata">
-	<div>
-		<i><em><code>GstPad.chaindata</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.chainnotify">
-	<div>
-		<i><em><code>GstPad.chainnotify</code></em></i>
-		(<a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.chainlistfunc">
-	<div>
-		<i><em><code>GstPad.chainlistfunc</code></em></i>
-		(<a title="GstPadChainListFunction" href="libgstreamer-1.0/c/gstpad.html#GstPadChainListFunction">GstPadChainListFunction</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.chainlistdata">
-	<div>
-		<i><em><code>GstPad.chainlistdata</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.chainlistnotify">
-	<div>
-		<i><em><code>GstPad.chainlistnotify</code></em></i>
-		(<a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.getrangefunc">
-	<div>
-		<i><em><code>GstPad.getrangefunc</code></em></i>
-		(<a title="GstPadGetRangeFunction" href="libgstreamer-1.0/c/gstpad.html#GstPadGetRangeFunction">GstPadGetRangeFunction</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.getrangedata">
-	<div>
-		<i><em><code>GstPad.getrangedata</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.getrangenotify">
-	<div>
-		<i><em><code>GstPad.getrangenotify</code></em></i>
-		(<a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.eventfunc">
-	<div>
-		<i><em><code>GstPad.eventfunc</code></em></i>
-		(<a title="GstPadEventFunction" href="libgstreamer-1.0/c/gstpad.html#GstPadEventFunction">GstPadEventFunction</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.eventdata">
-	<div>
-		<i><em><code>GstPad.eventdata</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.eventnotify">
-	<div>
-		<i><em><code>GstPad.eventnotify</code></em></i>
-		(<a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.offset">
-	<div>
-		<i><em><code>GstPad.offset</code></em></i>
-		(<a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.queryfunc">
-	<div>
-		<i><em><code>GstPad.queryfunc</code></em></i>
-		(<a title="GstPadQueryFunction" href="libgstreamer-1.0/c/gstpad.html#GstPadQueryFunction">GstPadQueryFunction</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.querydata">
-	<div>
-		<i><em><code>GstPad.querydata</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.querynotify">
-	<div>
-		<i><em><code>GstPad.querynotify</code></em></i>
-		(<a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.iterintlinkfunc">
-	<div>
-		<i><em><code>GstPad.iterintlinkfunc</code></em></i>
-		(<a title="GstPadIterIntLinkFunction" href="libgstreamer-1.0/c/gstpad.html#GstPadIterIntLinkFunction">GstPadIterIntLinkFunction</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.iterintlinkdata">
-	<div>
-		<i><em><code>GstPad.iterintlinkdata</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.iterintlinknotify">
-	<div>
-		<i><em><code>GstPad.iterintlinknotify</code></em></i>
-		(<a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.num_probes">
-	<div>
-		<i><em><code>GstPad.num_probes</code></em></i>
-		(<a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.num_blocked">
-	<div>
-		<i><em><code>GstPad.num_blocked</code></em></i>
-		(<a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPad.priv">
-	<div>
-		<i><em><code>GstPad.priv</code></em></i>
-		(GstPadPrivate*)
+		<i><em><code>GstPad.ABI.eventfullfunc</code></em></i>
+		(<a title="GstPadEventFullFunction" href="libgstreamer-1.0/c/gstpad.html#GstPadEventFullFunction">GstPadEventFullFunction</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -720,8 +317,7 @@ struct GstPadClass {
     GstObjectClass parent_class;
     void linked (GstPad* pad, GstPad* peer);
     void unlinked (GstPad* pad, GstPad* peer);
-    gpointer _gst_reserved; /* &lt; private &gt; */
-};
+ };
 </pre>
 
 
@@ -734,36 +330,6 @@ struct GstPadClass {
 	<div>
 		<i><em><code>GstPadClass.parent_class</code></em></i>
 		(<a title="GstObjectClass" href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstObject.html#GstObjectClass">GstObjectClass</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPadClass.linked()">
-	<div>
-		<i><em><code>GstPadClass.linked()</code></em></i>
-		(void)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPadClass.unlinked()">
-	<div>
-		<i><em><code>GstPadClass.unlinked()</code></em></i>
-		(void)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstPadClass._gst_reserved">
-	<div>
-		<i><em><code>GstPadClass._gst_reserved</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -1256,7 +822,7 @@ linked.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 gst_pad_chain (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad,
                <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer)</pre>
 
@@ -1310,7 +876,7 @@ if not.</p>
 				<b>Returns</b>
 								–
 			</div>
-							<p>a <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the pad.</p>
+							<p>a <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the pad.</p>
 <p>MT safe.</p>
 
 					</div>
@@ -1332,7 +898,7 @@ if not.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 gst_pad_chain_list (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad,
                     <a title="GstBufferList" href="libgstreamer-1.0/c/gstbufferlist.html#GstBufferList">GstBufferList</a> * list)</pre>
 
@@ -1386,7 +952,7 @@ if not.</p>
 				<b>Returns</b>
 								–
 			</div>
-							<p>a <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the pad.</p>
+							<p>a <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the pad.</p>
 
 					</div>
 	</div>
@@ -2126,10 +1692,10 @@ No locking is performed in this function.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 gst_pad_get_last_flow_return (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad)</pre>
 
-<p>Gets the <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> return from the last data passed by this pad.</p>
+<p>Gets the <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> return from the last data passed by this pad.</p>
 
 
 
@@ -2452,7 +2018,7 @@ you need to unref it after use.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 gst_pad_get_range (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad,
                    <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset,
                    <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> size,
@@ -2537,7 +2103,7 @@ returns <a href="libgstreamer-1.0/c/gstpad.html#GST_FLOW_ERROR">GST_FLOW_ERROR</
 				<b>Returns</b>
 								–
 			</div>
-							<p>a <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the pad.</p>
+							<p>a <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the pad.</p>
 <p>MT safe.</p>
 
 					</div>
@@ -4207,7 +3773,7 @@ the same caps.  Two such elements are tee and adder.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 gst_pad_pull_range (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad,
                     <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset,
                     <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> size,
@@ -4292,7 +3858,7 @@ GST_FLOW_ERROR if <a href="https://developer.gnome.org/glib/unstable/glib-Standa
 				<b>Returns</b>
 								–
 			</div>
-							<p>a <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the peer pad.</p>
+							<p>a <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the peer pad.</p>
 <p>MT safe.</p>
 
 					</div>
@@ -4314,7 +3880,7 @@ GST_FLOW_ERROR if <a href="https://developer.gnome.org/glib/unstable/glib-Standa
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 gst_pad_push (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad,
               <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer)</pre>
 
@@ -4365,7 +3931,7 @@ if not.</p>
 				<b>Returns</b>
 								–
 			</div>
-							<p>a <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the peer pad.</p>
+							<p>a <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the peer pad.</p>
 <p>MT safe.</p>
 
 					</div>
@@ -4456,7 +4022,7 @@ elements.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 gst_pad_push_list (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad,
                    <a title="GstBufferList" href="libgstreamer-1.0/c/gstbufferlist.html#GstBufferList">GstBufferList</a> * list)</pre>
 
@@ -4509,7 +4075,7 @@ if not.</p>
 				<b>Returns</b>
 								–
 			</div>
-							<p>a <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the peer pad.</p>
+							<p>a <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> from the peer pad.</p>
 <p>MT safe.</p>
 
 					</div>
@@ -6354,7 +5920,7 @@ released so as to ensure that streaming through this pad has finished.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 gst_pad_store_sticky_event (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad,
                             <a title="GstEvent" href="libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
 
@@ -7139,7 +6705,7 @@ gst_pad_link_get_name (<a title="GstPadLinkReturn" href="libgstreamer-1.0/c/gstp
 
 <pre class="prototype">
 const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
-gst_flow_get_name (<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> ret)</pre>
+gst_flow_get_name (<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> ret)</pre>
 
 <p>Gets a string representing the given flow return.</p>
 
@@ -7153,7 +6719,7 @@ gst_flow_get_name (<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/err
 		<i><em><code>ret</code></em></i>
 				–
 	</div>
-			<p>a <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> to get the name of.</p>
+			<p>a <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> to get the name of.</p>
 
 	</div>
 
@@ -7187,7 +6753,7 @@ gst_flow_get_name (<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/err
 
 <pre class="prototype">
 <a title="GQuark" href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#GQuark">GQuark</a>
-gst_flow_to_quark (<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> ret)</pre>
+gst_flow_to_quark (<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> ret)</pre>
 
 <p>Get the unique quark for the given GstFlowReturn.</p>
 
@@ -7201,7 +6767,7 @@ gst_flow_to_quark (<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/err
 		<i><em><code>ret</code></em></i>
 				–
 	</div>
-			<p>a <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> to get the quark of.</p>
+			<p>a <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> to get the quark of.</p>
 
 	</div>
 
@@ -10182,40 +9748,6 @@ notify.</p>
             <h2 class="symbol_section" id="Structures">Structures</h2>
                     
 
-<div class="base_symbol_container" data-hotdoc-tags="" id="abi">
-		
-<h3 id="struct-abi">
-		struct abi
-	</h3>
-
-		<pre class="raw_code">
-struct abi {
-    GstFlowReturn flow_ret;
-};
-</pre>
-
-
-
-
-	<div class="members-container">
-		<h4 id="fields1">Fields</h4>
-					
-<div class="symbol-detail" id="abi.flow_ret">
-	<div>
-		<i><em><code>abi.flow_ret</code></em></i>
-		(<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-			</div>
-
-
-</div>
-
-            
-
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstPadProbeInfo">
 		
 <h3 id="struct-gstpadprobeinfo">
@@ -10229,7 +9761,13 @@ struct GstPadProbeInfo {
     gpointer data;
     guint64 offset;
     guint size;
-};
+    union {
+        gpointer _gst_reserved;
+        struct abi {
+            GstFlowReturn flow_ret;
+         };
+     } ABI;
+ };
 </pre>
 
 <p>Info passed in the <a href="libgstreamer-1.0/c/gstpad.html#GstPadProbeCallback">GstPadProbeCallback</a>.</p>
@@ -10238,7 +9776,7 @@ struct GstPadProbeInfo {
 
 
 	<div class="members-container">
-		<h4 id="fields2">Fields</h4>
+		<h4 id="fields1">Fields</h4>
 					
 <div class="symbol-detail" id="GstPadProbeInfo.type">
 	<div>
@@ -10295,6 +9833,26 @@ datatype.  This field can be <a href="https://developer.gnome.org/glib/unstable/
 			<p>size of pull probe, this field is valid when <em>type</em> contains
 <a href="libgstreamer-1.0/c/gstpad.html#GST_PAD_PROBE_TYPE_PULL">GST_PAD_PROBE_TYPE_PULL</a></p>
 
+	</div>
+
+					
+<div class="symbol-detail" id="GstPadProbeInfo._gst_reserved">
+	<div>
+		<i><em><code>GstPadProbeInfo._gst_reserved</code></em></i>
+		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstPadProbeInfo.ABI.flow_ret">
+	<div>
+		<i><em><code>GstPadProbeInfo.ABI.flow_ret</code></em></i>
+		(<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>)
+		–
+	</div>
+			<i>No description available</i>
 	</div>
 
 			</div>
@@ -11107,7 +10665,7 @@ next item.</p>
 forwarded further. For events and buffers this is the same behaviour as
 <a href="libgstreamer-1.0/c/gstpad.html#GST_PAD_PROBE_DROP">GST_PAD_PROBE_DROP</a> (except that in this case you need to unref the buffer
 or event yourself). For queries it will also return <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS">TRUE</a> to the caller.
-The probe can also modify the <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> value by using the
+The probe can also modify the <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> value by using the
 <a href="libgstreamer-1.0/c/gstpad.html#GST_PAD_PROBE_INFO_FLOW_RETURN">GST_PAD_PROBE_INFO_FLOW_RETURN</a>() accessor.
 Note that the resulting query must contain valid entries.
 Since: 1.6</p>
@@ -11586,7 +11144,7 @@ override this function to activate the pad in pull mode if they wish.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 (*GstPadChainFunction) (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad,
                         <a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> * parent,
                         <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer)</pre>
@@ -11597,7 +11155,7 @@ either consumes the data or passes it on to the internally linked pad(s).</p>
 <p>The implementer of this function receives a refcount to <em>buffer</em> and should
 <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBuffer.html#gst-buffer-unref">gst_buffer_unref</a> when the buffer is no longer needed.</p>
 <p>When a chain function detects an error in the data stream, it must post an
-error on the bus and return an appropriate <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> value.</p>
+error on the bus and return an appropriate <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> value.</p>
 
 
 
@@ -11674,7 +11232,7 @@ during the execution of this function.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 (*GstPadChainListFunction) (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad,
                             <a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> * parent,
                             <a title="GstBufferList" href="libgstreamer-1.0/c/gstbufferlist.html#GstBufferList">GstBufferList</a> * list)</pre>
@@ -11685,7 +11243,7 @@ either consumes the data or passes it on to the internally linked pad(s).</p>
 <p>The implementer of this function receives a refcount to <em>list</em> and
 should <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBufferList.html#gst-buffer-list-unref">gst_buffer_list_unref</a> when the list is no longer needed.</p>
 <p>When a chainlist function detects an error in the data stream, it must
-post an error on the bus and return an appropriate <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> value.</p>
+post an error on the bus and return an appropriate <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> value.</p>
 
 
 
@@ -11762,7 +11320,7 @@ during the execution of this function.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 (*GstPadEventFullFunction) (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad,
                             <a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> * parent,
                             <a title="GstEvent" href="libgstreamer-1.0/c/gstevent.html#GstEvent">GstEvent</a> * event)</pre>
@@ -11827,7 +11385,7 @@ during the execution of this function.</p>
 								–
 			</div>
 							<p><a href="libgstreamer-1.0/c/gstpad.html#GST_FLOW_OK">GST_FLOW_OK</a> if the event was handled properly, or any other
-<a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> dependent on downstream state.</p>
+<a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> dependent on downstream state.</p>
 
 					</div>
 	</div>
@@ -11993,7 +11551,7 @@ during the execution of this function.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 (*GstPadGetRangeFunction) (<a title="GstPad" href="libgstreamer-1.0/c/gstpad.html#GstPad">GstPad</a> * pad,
                            <a title="GstObject" href="libgstreamer-1.0/c/gstobject.html#GstObject">GstObject</a> * parent,
                            <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> offset,

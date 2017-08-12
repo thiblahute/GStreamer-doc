@@ -208,10 +208,7 @@ All pads are in waiting mode by default.</p>
 struct GstCollectPads {
     GstObject object;
     GSList* data;
-    GRecMutex stream_lock; /* &lt; private &gt; */
-    GstCollectPadsPrivate* priv; /* &lt; private &gt; */
-    gpointer _gst_reserved; /* &lt; private &gt; */
-};
+ };
 </pre>
 
 
@@ -241,36 +238,6 @@ by this <a href="libgstbase-1.0/c/gstcollectpads.html#GstCollectPads">GstCollect
 
 	</div>
 
-					
-<div class="symbol-detail" id="GstCollectPads.stream_lock">
-	<div>
-		<i><em><code>GstCollectPads.stream_lock</code></em></i>
-		(<a title="GRecMutex" href="https://developer.gnome.org/glib/unstable/glib-Threads.html#GRecMutex">GRecMutex</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstCollectPads.priv">
-	<div>
-		<i><em><code>GstCollectPads.priv</code></em></i>
-		(GstCollectPadsPrivate*)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstCollectPads._gst_reserved">
-	<div>
-		<i><em><code>GstCollectPads._gst_reserved</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
 			</div>
 
 
@@ -286,8 +253,7 @@ by this <a href="libgstbase-1.0/c/gstcollectpads.html#GstCollectPads">GstCollect
 		<pre class="raw_code">
 struct GstCollectPadsClass {
     GstObjectClass parent_class;
-    gpointer _gst_reserved; /* &lt; private &gt; */
-};
+ };
 </pre>
 
 
@@ -300,16 +266,6 @@ struct GstCollectPadsClass {
 	<div>
 		<i><em><code>GstCollectPadsClass.parent_class</code></em></i>
 		(<a title="GstObjectClass" href="GstObjectClass">GstObjectClass</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstCollectPadsClass._gst_reserved">
-	<div>
-		<i><em><code>GstCollectPadsClass._gst_reserved</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
 		–
 	</div>
 			<i>No description available</i>
@@ -565,7 +521,7 @@ returns 0 if a pad has no queued buffer.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 gst_collect_pads_clip_running_time (<a title="GstCollectPads" href="libgstbase-1.0/c/gstcollectpads.html#GstCollectPads">GstCollectPads</a> * pads,
                                     <a title="GstCollectData" href="libgstbase-1.0/c/gstcollectpads.html#GstCollectData">GstCollectData</a> * cdata,
                                     <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buf,
@@ -2392,9 +2348,12 @@ struct GstCollectData {
     GstBuffer* buffer;
     guint pos;
     GstSegment segment;
-    GstCollectPadsStateFlags state; /* &lt; private &gt; */
-    GstCollectDataPrivate* priv; /* &lt; private &gt; */
-};
+    union {
+        struct abi {
+            gint64 dts;
+         };
+     } ABI;
+ };
 </pre>
 
 <p>Structure used by the collect_pads.</p>
@@ -2460,57 +2419,15 @@ struct GstCollectData {
 	</div>
 
 					
-<div class="symbol-detail" id="GstCollectData.state">
+<div class="symbol-detail" id="GstCollectData.ABI.dts">
 	<div>
-		<i><em><code>GstCollectData.state</code></em></i>
-		(<a title="GstCollectPadsStateFlags" href="libgstbase-1.0/c/gstcollectpads.html#GstCollectPadsStateFlags">GstCollectPadsStateFlags</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstCollectData.priv">
-	<div>
-		<i><em><code>GstCollectData.priv</code></em></i>
-		(GstCollectDataPrivate*)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-			</div>
-
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="abi">
-		
-<h3 id="struct-abi">
-		struct abi
-	</h3>
-
-		<pre class="raw_code">
-struct abi {
-    gint64 dts;
-};
-</pre>
-
-
-
-
-	<div class="members-container">
-		<h4 id="fields2">Fields</h4>
-					
-<div class="symbol-detail" id="abi.dts">
-	<div>
-		<i><em><code>abi.dts</code></em></i>
+		<i><em><code>GstCollectData.ABI.dts</code></em></i>
 		(<a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a>)
 		–
 	</div>
-			<i>No description available</i>
+			<p>the signed version of the DTS converted to running time. To access
+this memeber, use <a href="libgstbase-1.0/c/gstcollectpads.html#GST_COLLECT_PADS_DTS">GST_COLLECT_PADS_DTS</a> macro. (Since 1.6)</p>
+
 	</div>
 
 			</div>
@@ -2688,7 +2605,7 @@ memory and resources allocated for it.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 (*GstCollectPadsBufferFunction) (<a title="GstCollectPads" href="libgstbase-1.0/c/gstcollectpads.html#GstCollectPads">GstCollectPads</a> * pads,
                                  <a title="GstCollectData" href="libgstbase-1.0/c/gstcollectpads.html#GstCollectData">GstCollectData</a> * data,
                                  <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * buffer,
@@ -2776,7 +2693,7 @@ and <a href="https://developer.gnome.org/glib/unstable/glib-Standard-Macros.html
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 (*GstCollectPadsClipFunction) (<a title="GstCollectPads" href="libgstbase-1.0/c/gstcollectpads.html#GstCollectPads">GstCollectPads</a> * pads,
                                <a title="GstCollectData" href="libgstbase-1.0/c/gstcollectpads.html#GstCollectData">GstCollectData</a> * data,
                                <a title="GstBuffer" href="libgstreamer-1.0/c/gstbuffer.html#GstBuffer">GstBuffer</a> * inbuffer,
@@ -2857,7 +2774,7 @@ the pad to perform clipping of <em>inbuffer</em>.</p>
 				<b>Returns</b>
 								–
 			</div>
-							<p>a <a href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> that corresponds to the result of clipping.</p>
+							<p>a <a href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a> that corresponds to the result of clipping.</p>
 
 					</div>
 	</div>
@@ -3132,7 +3049,7 @@ gst_collect_pads_set_flushing nor gst_collect_pads_clear from this function.</p>
 		
 
 <pre class="prototype">
-<a title="GstFlowReturn" href="libgstdebugutilsbad-so-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
+<a title="GstFlowReturn" href="debugutilsbad-1.0/errorignore.html#GstFlowReturn">GstFlowReturn</a>
 (*GstCollectPadsFunction) (<a title="GstCollectPads" href="libgstbase-1.0/c/gstcollectpads.html#GstCollectPads">GstCollectPads</a> * pads,
                            <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> user_data)</pre>
 

@@ -2343,11 +2343,22 @@ gst_rtsp_auth_credentials_free (<a title="GstRTSPAuthCredential" href="gst-plugi
 		<pre class="raw_code">
 struct GstRTSPMessage {
     GstRTSPMsgType type;
-    GArray* hdr_fields; /* &lt; private &gt; */
-    guint8* body; /* &lt; private &gt; */
-    guint body_size; /* &lt; private &gt; */
-    gpointer _gst_reserved; /* &lt; private &gt; */
-};
+    union {
+        struct request {
+            GstRTSPMethod method;
+            gchar* uri;
+            GstRTSPVersion version;
+         };
+        struct response {
+            GstRTSPStatusCode code;
+            gchar* reason;
+            GstRTSPVersion version;
+         };
+        struct data {
+            guint8 channel;
+         };
+     } type_data;
+ };
 </pre>
 
 <p>An RTSP message containing request, response or data messages. Depending on
@@ -2370,75 +2381,9 @@ the <em>type</em>, the appropriate structure may be accessed.</p>
 	</div>
 
 					
-<div class="symbol-detail" id="GstRTSPMessage.hdr_fields">
+<div class="symbol-detail" id="GstRTSPMessage.type_data.method">
 	<div>
-		<i><em><code>GstRTSPMessage.hdr_fields</code></em></i>
-		(<a title="GArray" href="https://developer.gnome.org/glib/unstable/glib-Arrays.html#GArray">GArray</a> *)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstRTSPMessage.body">
-	<div>
-		<i><em><code>GstRTSPMessage.body</code></em></i>
-		(<a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a> *)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstRTSPMessage.body_size">
-	<div>
-		<i><em><code>GstRTSPMessage.body_size</code></em></i>
-		(<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstRTSPMessage._gst_reserved">
-	<div>
-		<i><em><code>GstRTSPMessage._gst_reserved</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-			</div>
-
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="request">
-		
-<h3 id="struct-request">
-		struct request
-	</h3>
-
-		<pre class="raw_code">
-struct request {
-    GstRTSPMethod method;
-    gchar* uri;
-    GstRTSPVersion version;
-};
-</pre>
-
-
-
-
-	<div class="members-container">
-		<h4 id="fields1">Fields</h4>
-					
-<div class="symbol-detail" id="request.method">
-	<div>
-		<i><em><code>request.method</code></em></i>
+		<i><em><code>GstRTSPMessage.type_data.method</code></em></i>
 		(<a title="GstRTSPMethod" href="gst-plugins-base-rtsp-1.0/c/gstrtspdefs.html#GstRTSPMethod">GstRTSPMethod</a>)
 		–
 	</div>
@@ -2446,9 +2391,9 @@ struct request {
 	</div>
 
 					
-<div class="symbol-detail" id="request.uri">
+<div class="symbol-detail" id="GstRTSPMessage.type_data.uri">
 	<div>
-		<i><em><code>request.uri</code></em></i>
+		<i><em><code>GstRTSPMessage.type_data.uri</code></em></i>
 		(<a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *)
 		–
 	</div>
@@ -2456,10 +2401,50 @@ struct request {
 	</div>
 
 					
-<div class="symbol-detail" id="request.version">
+<div class="symbol-detail" id="GstRTSPMessage.type_data.version">
 	<div>
-		<i><em><code>request.version</code></em></i>
+		<i><em><code>GstRTSPMessage.type_data.version</code></em></i>
 		(<a title="GstRTSPVersion" href="gst-plugins-base-rtsp-1.0/c/gstrtspdefs.html#GstRTSPVersion">GstRTSPVersion</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstRTSPMessage.type_data.type_data.code">
+	<div>
+		<i><em><code>GstRTSPMessage.type_data.type_data.code</code></em></i>
+		(<a title="GstRTSPStatusCode" href="gst-plugins-base-rtsp-1.0/c/gstrtspdefs.html#GstRTSPStatusCode">GstRTSPStatusCode</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstRTSPMessage.type_data.type_data.reason">
+	<div>
+		<i><em><code>GstRTSPMessage.type_data.type_data.reason</code></em></i>
+		(<a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstRTSPMessage.type_data.type_data.version">
+	<div>
+		<i><em><code>GstRTSPMessage.type_data.type_data.version</code></em></i>
+		(<a title="GstRTSPVersion" href="gst-plugins-base-rtsp-1.0/c/gstrtspdefs.html#GstRTSPVersion">GstRTSPVersion</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstRTSPMessage.type_data.type_data.type_data.channel">
+	<div>
+		<i><em><code>GstRTSPMessage.type_data.type_data.type_data.channel</code></em></i>
+		(<a title="guint8" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint8">guint8</a>)
 		–
 	</div>
 			<i>No description available</i>

@@ -1,1 +1,0 @@
-urls_downloaded_cb({"token": "gst.registry.feature", "urls": ["libgstreamer-1.0/javascript/gstregistry.html#gstregistryfeatureadded", "libgstreamer-1.0/python/gstregistry.html#gstregistryfeatureadded"]});

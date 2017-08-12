@@ -955,8 +955,6 @@ ignore this field.</p>
 
 		<pre class="raw_code">
 struct GstVideoCodecFrame {
-    gint ref_count; /* &lt; private &gt; */
-    guint32 flags; /* &lt; private &gt; */
     guint32 system_frame_number;
     guint32 decode_frame_number;
     guint32 presentation_frame_number;
@@ -967,10 +965,14 @@ struct GstVideoCodecFrame {
     GstBuffer* input_buffer;
     GstBuffer* output_buffer;
     GstClockTime deadline;
-    GList* events; /* &lt; private &gt; */
-    gpointer user_data; /* &lt; private &gt; */
-    GDestroyNotify user_data_destroy_notify; /* &lt; private &gt; */
-};
+    union {
+        struct ABI {
+            GstClockTime ts;
+            GstClockTime ts2;
+         };
+        void padding;
+     } abidata;
+ };
 </pre>
 
 <p>A <a href="gst-plugins-base-video-1.0/c/gstvideoutils.html#GstVideoCodecFrame">GstVideoCodecFrame</a> represents a video frame both in raw and
@@ -981,26 +983,6 @@ encoded form.</p>
 
 	<div class="members-container">
 		<h4 id="fields">Fields</h4>
-					
-<div class="symbol-detail" id="GstVideoCodecFrame.ref_count">
-	<div>
-		<i><em><code>GstVideoCodecFrame.ref_count</code></em></i>
-		(<a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstVideoCodecFrame.flags">
-	<div>
-		<i><em><code>GstVideoCodecFrame.flags</code></em></i>
-		(<a title="guint32" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint32">guint32</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
 					
 <div class="symbol-detail" id="GstVideoCodecFrame.system_frame_number">
 	<div>
@@ -1120,64 +1102,9 @@ buffer should be kept.</p>
 	</div>
 
 					
-<div class="symbol-detail" id="GstVideoCodecFrame.events">
+<div class="symbol-detail" id="GstVideoCodecFrame.abidata.ts">
 	<div>
-		<i><em><code>GstVideoCodecFrame.events</code></em></i>
-		(<a title="GList" href="https://developer.gnome.org/glib/unstable/glib-Doubly-Linked-Lists.html#GList">GList</a> *)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstVideoCodecFrame.user_data">
-	<div>
-		<i><em><code>GstVideoCodecFrame.user_data</code></em></i>
-		(<a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-					
-<div class="symbol-detail" id="GstVideoCodecFrame.user_data_destroy_notify">
-	<div>
-		<i><em><code>GstVideoCodecFrame.user_data_destroy_notify</code></em></i>
-		(<a title="GDestroyNotify" href="https://developer.gnome.org/glib/unstable/glib-Datasets.html#GDestroyNotify">GDestroyNotify</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
-			</div>
-
-
-</div>
-
-            
-
-<div class="base_symbol_container" data-hotdoc-tags="" id="ABI">
-		
-<h3 id="struct-abi">
-		struct ABI
-	</h3>
-
-		<pre class="raw_code">
-struct ABI {
-    GstClockTime ts;
-    GstClockTime ts2;
-};
-</pre>
-
-
-
-
-	<div class="members-container">
-		<h4 id="fields1">Fields</h4>
-					
-<div class="symbol-detail" id="ABI.ts">
-	<div>
-		<i><em><code>ABI.ts</code></em></i>
+		<i><em><code>GstVideoCodecFrame.abidata.ts</code></em></i>
 		(<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>)
 		–
 	</div>
@@ -1185,10 +1112,20 @@ struct ABI {
 	</div>
 
 					
-<div class="symbol-detail" id="ABI.ts2">
+<div class="symbol-detail" id="GstVideoCodecFrame.abidata.ts2">
 	<div>
-		<i><em><code>ABI.ts2</code></em></i>
+		<i><em><code>GstVideoCodecFrame.abidata.ts2</code></em></i>
 		(<a title="GstClockTime" href="libgstreamer-1.0/c/gstclock.html#GstClockTime">GstClockTime</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" id="GstVideoCodecFrame.abidata.padding">
+	<div>
+		<i><em><code>GstVideoCodecFrame.abidata.padding</code></em></i>
+		(void)
 		–
 	</div>
 			<i>No description available</i>
@@ -1209,13 +1146,11 @@ struct ABI {
 
 		<pre class="raw_code">
 struct GstVideoCodecState {
-    gint ref_count; /* &lt; private &gt; */
     GstVideoInfo info;
     GstCaps* caps;
     GstBuffer* codec_data;
     GstCaps* allocation_caps;
-    void padding; /* &lt; private &gt; */
-};
+ };
 </pre>
 
 <p>Structure representing the state of an incoming or outgoing video
@@ -1230,17 +1165,7 @@ respective <em>set_format</em> vmethods.</p>
 
 
 	<div class="members-container">
-		<h4 id="fields2">Fields</h4>
-					
-<div class="symbol-detail" id="GstVideoCodecState.ref_count">
-	<div>
-		<i><em><code>GstVideoCodecState.ref_count</code></em></i>
-		(<a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a>)
-		–
-	</div>
-			<i>No description available</i>
-	</div>
-
+		<h4 id="fields1">Fields</h4>
 					
 <div class="symbol-detail" id="GstVideoCodecState.info">
 	<div>
@@ -1285,16 +1210,6 @@ respective <em>set_format</em> vmethods.</p>
 			<p>The <a href="gst-plugins-base-riff-1.0/riff-media.html#GstCaps">GstCaps</a> for allocation query and pool
 negotiation. Since: 1.10</p>
 
-	</div>
-
-					
-<div class="symbol-detail" id="GstVideoCodecState.padding">
-	<div>
-		<i><em><code>GstVideoCodecState.padding</code></em></i>
-		(void)
-		–
-	</div>
-			<i>No description available</i>
 	</div>
 
 			</div>
