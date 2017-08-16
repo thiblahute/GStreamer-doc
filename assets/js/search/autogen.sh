@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "autogen.sh", "urls": ["frequently-asked-questions/git.html#page-description", "plugin-development/basics/boiler.html#using-the-project-stamp"]});
+urls_downloaded_cb({"token": "autogen.sh", "urls": ["frequently-asked-questions/git.html#i-ran-autogensh-but-it-fails-with-aclocal-errors-whats-wrong", "frequently-asked-questions/git.html#how-do-i-check-out-gstreamer-from-git", "plugin-development/basics/boiler.html#using-the-project-stamp"]});

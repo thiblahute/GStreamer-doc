@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "tutorial2.java", "urls": ["tutorials/android/a-running-pipeline.html#page-description"]});
+urls_downloaded_cb({"token": "tutorial2.java", "urls": ["tutorials/android/a-running-pipeline.html#a-pipeline-on-android-java-code"]});

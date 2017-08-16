@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "self.props.shader", "urls": ["gst-plugins-base-pbutils-1.0/javascript/Miscellaneous.html#selfpropsshader", "gst-plugins-base-pbutils-1.0/python/Miscellaneous.html#selfpropsshader"]});
+urls_downloaded_cb({"token": "self.props.shader", "urls": ["gst-plugins-base-pbutils-1.0/javascript/Miscellaneous.html#GstAudioVisualizer:shader", "gst-plugins-base-pbutils-1.0/python/Miscellaneous.html#GstAudioVisualizer:shader"]});

@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "native_window.h", "urls": ["tutorials/android/video.html#page-description"]});
+urls_downloaded_cb({"token": "native_window.h", "urls": ["tutorials/android/video.html#a-video-surface-on-android-c-code"]});

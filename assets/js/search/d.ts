@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "d.ts", "urls": ["hls-1.0/hlssink.html#location", "hls-1.0/hlssink2.html#location"]});
+urls_downloaded_cb({"token": "d.ts", "urls": ["hls-1.0/hlssink.html#GstHlsSink:location", "hls-1.0/hlssink2.html#GstHlsSink2:location"]});

@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "Tutorial3.java", "urls": ["tutorials/android/video.html#page-description"]});
+urls_downloaded_cb({"token": "Tutorial3.java", "urls": ["tutorials/android/video.html#a-video-surface-on-android-java-code"]});

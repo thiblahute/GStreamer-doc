@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "Makefile.am", "urls": ["contribute/index.html#page-description", "plugin-development/basics/boiler.html#using-the-project-stamp", "design/orc-integration.html#normal-usage", "design/orc-integration.html#testing"]});
+urls_downloaded_cb({"token": "Makefile.am", "urls": ["contribute/index.html#how-to-prepare-a-patch-for-submission", "plugin-development/basics/boiler.html#using-the-project-stamp", "design/orc-integration.html#normal-usage", "design/orc-integration.html#testing"]});

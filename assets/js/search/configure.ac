@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "configure.ac", "urls": ["contribute/index.html#page-description"]});
+urls_downloaded_cb({"token": "configure.ac", "urls": ["contribute/index.html#how-to-prepare-a-patch-for-submission"]});

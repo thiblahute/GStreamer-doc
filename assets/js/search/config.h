@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "config.h", "urls": ["design/orc-integration.html#build-process"]});
+urls_downloaded_cb({"token": "config.h", "urls": ["design/orc-integration.html#build-process", "libgstreamer-1.0/c/gstplugin.html#GST_PLUGIN_DEFINE"]});
