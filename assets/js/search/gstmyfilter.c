@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gstmyfilter.c", "urls": ["plugin-development/basics/boiler.html#using-the-project-stamp"]});
+urls_downloaded_cb({"token": "gstmyfilter.c", "urls": [{"url": "plugin-development/basics/boiler.html#page-description", "context": {"gi-language": ["default"]}}]});

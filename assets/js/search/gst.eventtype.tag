@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gst.eventtype.tag", "urls": ["libgstreamer-1.0/python/gsttaglist.html#GstTagMergeMode"]});
+urls_downloaded_cb({"token": "gst.eventtype.tag", "urls": [{"url": "libgstreamer-1.0/gsttaglist.html#GstTagMergeMode", "context": {"gi-language": ["javascript", "python"]}}]});

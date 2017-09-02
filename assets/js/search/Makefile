@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "Makefile", "urls": ["frequently-asked-questions/developing.html#how-do-i-compile-programs-that-use-gstreamer", "application-development/appendix/integration.html#building-gstreamer-under-win32"]});
+urls_downloaded_cb({"token": "Makefile", "urls": [{"url": "frequently-asked-questions/developing.html#page-description", "context": {"gi-language": ["default"]}}, {"url": "application-development/appendix/integration.html#page-description", "context": {"gi-language": ["default"]}}]});

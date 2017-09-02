@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "buglist.cgi", "urls": ["design/draft-metadata.html#open-bugs"]});
+urls_downloaded_cb({"token": "buglist.cgi", "urls": [{"url": "design/draft-metadata.html#page-description", "context": {"gi-language": ["default"]}}]});

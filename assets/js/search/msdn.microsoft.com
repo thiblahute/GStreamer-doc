@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "msdn.microsoft.com", "urls": ["application-development/appendix/integration.html#building-gstreamer-under-win32"]});
+urls_downloaded_cb({"token": "msdn.microsoft.com", "urls": [{"url": "application-development/appendix/integration.html#page-description", "context": {"gi-language": ["default"]}}]});

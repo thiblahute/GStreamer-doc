@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "config.h", "urls": ["design/orc-integration.html#build-process", "libgstreamer-1.0/c/gstplugin.html#GST_PLUGIN_DEFINE"]});
+urls_downloaded_cb({"token": "config.h", "urls": [{"url": "design/orc-integration.html#page-description", "context": {"gi-language": ["default"]}}, {"url": "libgstreamer-1.0/gstplugin.html#GST_PLUGIN_DEFINE", "context": {"gi-language": ["c"]}}]});

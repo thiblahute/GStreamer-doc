@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "MyApp.app", "urls": ["deploying/mac-osx.html#location-of-dependent-dynamic-libraries"]});
+urls_downloaded_cb({"token": "MyApp.app", "urls": [{"url": "deploying/mac-osx.html#page-description", "context": {"gi-language": ["default"]}}]});

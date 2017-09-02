@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<base href="..">
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>GstAudioCdSrc</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/bootstrap-toc.min.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/scrollspy.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/bootstrap-toc.min.js"></script>
+<script src="assets/js/jquery.touchSwipe.min.js"></script>
+<script src="assets/js/anchor.min.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body class="no-script
+" data-spy="scroll" data-target="#toc" data-offset="70">
+
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
+	<div class="container-fluid">
+		<div class="navbar-right">
+			<a id="toc-toggle">
+				<span class="glyphicon glyphicon-menu-right"></span>
+				<span class="glyphicon glyphicon-menu-left"></span>
+			</a>
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<form action="" class="navbar-form pull-right" id="navbar-search-form">
+                               <div class="form-group has-feedback">
+                                       <input type="text" class="form-control input-sm" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+				       <span class="glyphicon glyphicon-search form-control-feedback" id="search-mgn-glass"></span>
+                               </div>
+                        </form>
+		</div>
+		<div class="navbar-header">
+			<a id="sidenav-toggle">
+				<span class="glyphicon glyphicon-menu-right"></span>
+				<span class="glyphicon glyphicon-menu-left"></span>
+			</a>
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+				
+<li class="dropdown">
+    <a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        API References<span class="caret"></span>
+    </a>
+	<ul class="dropdown-menu" id="modules-menu">
+					<li>
+				<a href="libgstreamer-1.0/c/index.html">GStreamer core</a>
+			</li>
+					<li>
+				<a href="libs.html">GStreamer Libraries</a>
+			</li>
+					<li>
+				<a href="plugins_doc.html">GStreamer Plugins</a>
+			</li>
+		</ul>
+</li>
+
+<li>
+    <a href="application-development/index.html">Application manual</a>
+</li>
+
+
+<li>
+    <a href="tutorials/index.html">Tutorials</a>
+</li>
+
+			</ul>
+			<div class="hidden-xs hidden-sm navbar-text navbar-center">
+							</div>
+		</div>
+	</div>
+</nav>
+
+<main>
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-base-audio-1.0" data-hotdoc-ref="gstaudiocdsrc.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']" data-hotdoc-meta-gi-language="c">
+<script src="assets/js/utils.js"></script>
+
+<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
+	<script src="assets/js/navigation.js"></script>
+	<script src="assets/js/sitemap.js"></script>
+</div>
+
+<div id="body">
+	<div id="main">
+				    <div id="page-description" data-hotdoc-source="gstaudiocdsrc.h" data-hotdoc-role="main">
+        <h1 id="gstaudiocdsrc-page">GstAudioCdSrc</h1>
+<p>Provides a base class for CD digital audio (CDDA) sources, which handles
+things like seeking, querying, discid calculation, tags, and buffer
+timestamping.</p>
+<h2 id="using-gstaudiocdsrcbased-elements-in-applications">Using GstAudioCdSrc-based elements in applications</h2>
+<p>GstAudioCdSrc registers two <a href="GstFormat">GstFormat</a><!-- -->s of its own, namely
+the "track" format and the "sector" format. Applications will usually
+only find the "track" format interesting. You can retrieve that <a href="GstFormat">GstFormat</a>
+for use in seek events or queries with gst_format_get_by_nick("track").</p>
+<p>In order to query the number of tracks, for example, an application would
+set the CDDA source element to READY or PAUSED state and then query the
+the number of tracks via <a href="libgstreamer-1.0/gstelement-h.html#gst_element_query_duration" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#gst_element_query_duration" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#gst_element_query_duration" data-gi-title-python="Gst.Element.query_duration" data-gi-title-javascript="Gst.Element.prototype.query_duration">gst_element_query_duration</a> using the track
+format acquired above. Applications can query the currently playing track
+in the same way.</p>
+<p>Alternatively, applications may retrieve the currently playing track and
+the total number of tracks from the taglist that will posted on the bus
+whenever the CD is opened or the currently playing track changes. The
+taglist will contain GST_TAG_TRACK_NUMBER and GST_TAG_TRACK_COUNT tags.</p>
+<p>Applications playing back CD audio using playbin and cdda://n URIs should
+issue a seek command in track format to change between tracks, rather than
+setting a new cdda://n+1 URI on playbin (as setting a new URI on playbin
+involves closing and re-opening the CD device, which is much much slower).</p>
+<h2 id="tags-and-metainformation">Tags and meta-information</h2>
+<p>CDDA sources will automatically emit a number of tags, details about which
+can be found in the libgsttag documentation. Those tags are:
+<a href="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_CDDB_DISCID" data-gi-href-python="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_CDDB_DISCID" data-gi-href-javascript="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_CDDB_DISCID" data-gi-title-python="GstTag.TAG_CDDA_CDDB_DISCID" data-gi-title-javascript="GstTag.TAG_CDDA_CDDB_DISCID">GST_TAG_CDDA_CDDB_DISCID</a>, <a href="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_CDDB_DISCID_FULL" data-gi-href-python="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_CDDB_DISCID_FULL" data-gi-href-javascript="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_CDDB_DISCID_FULL" data-gi-title-python="GstTag.TAG_CDDA_CDDB_DISCID_FULL" data-gi-title-javascript="GstTag.TAG_CDDA_CDDB_DISCID_FULL">GST_TAG_CDDA_CDDB_DISCID_FULL</a>,
+<a href="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_MUSICBRAINZ_DISCID" data-gi-href-python="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_MUSICBRAINZ_DISCID" data-gi-href-javascript="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_MUSICBRAINZ_DISCID" data-gi-title-python="GstTag.TAG_CDDA_MUSICBRAINZ_DISCID" data-gi-title-javascript="GstTag.TAG_CDDA_MUSICBRAINZ_DISCID">GST_TAG_CDDA_MUSICBRAINZ_DISCID</a>, <a href="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_MUSICBRAINZ_DISCID_FULL" data-gi-href-python="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_MUSICBRAINZ_DISCID_FULL" data-gi-href-javascript="gst-plugins-base-tag-1.0/tag.html#GST_TAG_CDDA_MUSICBRAINZ_DISCID_FULL" data-gi-title-python="GstTag.TAG_CDDA_MUSICBRAINZ_DISCID_FULL" data-gi-title-javascript="GstTag.TAG_CDDA_MUSICBRAINZ_DISCID_FULL">GST_TAG_CDDA_MUSICBRAINZ_DISCID_FULL</a>,
+among others.</p>
+<h2 id="tracks-and-table-of-contents-toc">Tracks and Table of Contents (TOC)</h2>
+<p>Applications will be informed of the available tracks via a TOC message
+on the pipeline's <a href="libgstreamer-1.0/gstbus.html#GstBus" data-gi-href-python="libgstreamer-1.0/gstbus.html#GstBus" data-gi-href-javascript="libgstreamer-1.0/gstbus.html#GstBus" data-gi-title-python="Gst.Bus" data-gi-title-javascript="Gst.Bus">GstBus</a>. The <a href="libgstreamer-1.0/gsttoc.html#GstToc" data-gi-href-python="libgstreamer-1.0/gsttoc.html#GstToc" data-gi-href-javascript="libgstreamer-1.0/gsttoc.html#GstToc" data-gi-title-python="Gst.Toc" data-gi-title-javascript="Gst.Toc">GstToc</a> will contain a <a href="libgstreamer-1.0/gsttoc.html#GstTocEntry" data-gi-href-python="libgstreamer-1.0/gsttoc.html#GstTocEntry" data-gi-href-javascript="libgstreamer-1.0/gsttoc.html#GstTocEntry" data-gi-title-python="Gst.TocEntry" data-gi-title-javascript="Gst.TocEntry">GstTocEntry</a> for
+each track, with information about each track. The duration for each
+track can be retrieved via the <a href="libgstreamer-1.0/gsttaglist.html#GST_TAG_DURATION" data-gi-href-python="libgstreamer-1.0/gsttaglist.html#GST_TAG_DURATION" data-gi-href-javascript="libgstreamer-1.0/gsttaglist.html#GST_TAG_DURATION" data-gi-title-python="Gst.TAG_DURATION" data-gi-title-javascript="Gst.TAG_DURATION">GST_TAG_DURATION</a> tag from each entry's
+tag list, or calculated via <a href="libgstreamer-1.0/gsttoc.html#gst_toc_entry_get_start_stop_times" data-gi-href-python="libgstreamer-1.0/gsttoc.html#gst_toc_entry_get_start_stop_times" data-gi-href-javascript="libgstreamer-1.0/gsttoc.html#gst_toc_entry_get_start_stop_times" data-gi-title-python="Gst.TocEntry.get_start_stop_times" data-gi-title-javascript="Gst.TocEntry.prototype.get_start_stop_times">gst_toc_entry_get_start_stop_times</a>.
+The track entries in the TOC will be sorted by track number.</p>
+
+    </div>
+        
+        
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioCdSrc">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h2 data-hotdoc-id="GstAudioCdSrc">
+	<span><code>GstAudioCdSrc</code></span>
+</h2>
+
+
+<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-href-python="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-href-javascript="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-title-python="GObject.Object" data-gi-title-javascript="GObject.Object">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-href-python="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-href-javascript="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-title-python="GObject.InitiallyUnowned" data-gi-title-javascript="GObject.InitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="libgstreamer-1.0/gstobject.html#GstObject" data-gi-href-python="libgstreamer-1.0/gstobject.html#GstObject" data-gi-href-javascript="libgstreamer-1.0/gstobject.html#GstObject" data-gi-title-python="Gst.Object" data-gi-title-javascript="Gst.Object">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element" data-gi-title-javascript="Gst.Element">GstElement</a>
+                <span class="lineart">╰──</span>GstAudioCdSrc
+</pre>
+
+</div>
+
+</div>
+
+
+
+
+	<div class="members-container">
+		<h3>Members</h3>
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrc.pushsrc">
+	<div>
+		<i><em><code>pushsrc</code></em></i>
+		(<a title="GstPushSrc" href="libgstbase-1.0/gstpushsrc.html#GstPushSrc" data-gi-href-python="libgstbase-1.0/gstpushsrc.html#GstPushSrc" data-gi-href-javascript="libgstbase-1.0/gstpushsrc.html#GstPushSrc" data-gi-title-python="GstBase.PushSrc" data-gi-title-javascript="GstBase.PushSrc">GstPushSrc</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrc.tags">
+	<div>
+		<i><em><code>tags</code></em></i>
+		(<a title="GstTagList" href="libgstreamer-1.0/gsttaglist.html#GstTagList" data-gi-href-python="libgstreamer-1.0/gsttaglist.html#GstTagList" data-gi-href-javascript="libgstreamer-1.0/gsttaglist.html#GstTagList" data-gi-title-python="Gst.TagList" data-gi-title-javascript="Gst.TagList">GstTagList</a> *)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+<h3>Class structure</h3>
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrcClass">
+	<span><code>GstAudioCdSrcClass</code></span>
+</h4>
+
+
+
+
+
+	<div class="members-container">
+		<h5>Fields</h5>
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcClass.pushsrc_class">
+	<div>
+		<i><em><code>pushsrc_class</code></em></i>
+		(<a title="GstPushSrcClass" href="GstPushSrcClass">GstPushSrcClass</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h3>
+	GstAudio.AudioCdSrcClass
+</h3>
+
+
+
+
+
+	<div class="members-container">
+		<h5>Attributes</h5>
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcClass.pushsrc_class">
+	<div>
+		<i><em><code>pushsrc_class (not introspectable)</code></em></i>
+		(object)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h3>
+	GstAudio.AudioCdSrcClass
+</h3>
+
+
+
+
+
+	<div class="members-container">
+		<h5>Attributes</h5>
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcClass.pushsrc_class">
+	<div>
+		<i><em><code>pushsrc_class (not introspectable)</code></em></i>
+		(object)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+</div>
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h2 data-hotdoc-id="GstAudioCdSrc">
+	<span><code>GstAudioCdSrc</code></span>
+</h2>
+
+
+<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-href-python="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-href-javascript="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-title-python="GObject.Object" data-gi-title-javascript="GObject.Object">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-href-python="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-href-javascript="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-title-python="GObject.InitiallyUnowned" data-gi-title-javascript="GObject.InitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="libgstreamer-1.0/gstobject.html#GstObject" data-gi-href-python="libgstreamer-1.0/gstobject.html#GstObject" data-gi-href-javascript="libgstreamer-1.0/gstobject.html#GstObject" data-gi-title-python="Gst.Object" data-gi-title-javascript="Gst.Object">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element" data-gi-title-javascript="Gst.Element">GstElement</a>
+                <span class="lineart">╰──</span>GstAudioCdSrc
+</pre>
+
+</div>
+
+</div>
+
+
+
+
+	<div class="members-container">
+		<h3>Members</h3>
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrc.pushsrc">
+	<div>
+		<i><em><code>pushsrc</code></em></i>
+		(object)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrc.tags">
+	<div>
+		<i><em><code>tags</code></em></i>
+		(<a title="GstTagList" href="libgstreamer-1.0/gsttaglist.html#GstTagList" data-gi-href-python="libgstreamer-1.0/gsttaglist.html#GstTagList" data-gi-href-javascript="libgstreamer-1.0/gsttaglist.html#GstTagList" data-gi-title-python="Gst.TagList" data-gi-title-javascript="Gst.TagList">GstTagList</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h2 data-hotdoc-id="GstAudioCdSrc">
+	<span><code>GstAudioCdSrc</code></span>
+</h2>
+
+
+<div class="hierarchy_container">
+	<div class="hierarchy_details">
+<pre>
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-href-python="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-href-javascript="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-title-python="GObject.Object" data-gi-title-javascript="GObject.Object">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-href-python="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-href-javascript="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-title-python="GObject.InitiallyUnowned" data-gi-title-javascript="GObject.InitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="libgstreamer-1.0/gstobject.html#GstObject" data-gi-href-python="libgstreamer-1.0/gstobject.html#GstObject" data-gi-href-javascript="libgstreamer-1.0/gstobject.html#GstObject" data-gi-title-python="Gst.Object" data-gi-title-javascript="Gst.Object">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element" data-gi-title-javascript="Gst.Element">GstElement</a>
+                <span class="lineart">╰──</span>GstAudioCdSrc
+</pre>
+
+</div>
+
+</div>
+
+
+
+
+	<div class="members-container">
+		<h3>Members</h3>
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrc.pushsrc">
+	<div>
+		<i><em><code>pushsrc</code></em></i>
+		(object)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrc.tags">
+	<div>
+		<i><em><code>tags</code></em></i>
+		(<a title="GstTagList" href="libgstreamer-1.0/gsttaglist.html#GstTagList" data-gi-href-python="libgstreamer-1.0/gsttaglist.html#GstTagList" data-gi-href-javascript="libgstreamer-1.0/gsttaglist.html#GstTagList" data-gi-title-python="Gst.TagList" data-gi-title-javascript="Gst.TagList">GstTagList</a>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+</div>
+
+</div>
+
+
+            <h3 class="symbol_section">Methods</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_audio_cd_src_add_track">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="gst_audio_cd_src_add_track">
+	<span><code>gst_audio_cd_src_add_track</code></span>
+</h4>
+
+
+
+
+<pre class="c-prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+gst_audio_cd_src_add_track (<a title="GstAudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudioCdSrc</a> * src,
+                            <a title="GstAudioCdSrcTrack" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrcTrack">GstAudioCdSrcTrack</a> * track)</pre>
+
+<p>CDDA sources use this function from their start vfunc to announce the
+available data and audio tracks to the base source class. The caller
+should allocate <em>track</em> on the stack, the base source will do a shallow
+copy of the structure (and take ownership of the taglist if there is one).</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudioCdSrc</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>track</code></em></i>
+				–
+	</div>
+			<p>address of <a href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrcTrack">GstAudioCdSrcTrack</a> to add</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+								–
+			</div>
+							<p>FALSE on error, otherwise TRUE.</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="gst_audio_cd_src_add_track">
+	<span><code>GstAudio.AudioCdSrc.add_track</code></span>
+</h4>
+
+
+<pre class="python-prototype">
+def GstAudio.AudioCdSrc.add_track (self, track):
+    #python wrapper for 'gst_audio_cd_src_add_track'</pre>
+
+<p>CDDA sources use this function from their start vfunc to announce the
+available data and audio tracks to the base source class. The caller
+should allocate <em>track</em> on the stack, the base source will do a shallow
+copy of the structure (and take ownership of the taglist if there is one).</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstAudio.AudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>track</code></em></i>
+					(
+						<a title="GstAudio.AudioCdSrcTrack" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrcTrack">GstAudio.AudioCdSrcTrack</a>
+						)
+				–
+	</div>
+			<p>address of <a href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrcTrack">GstAudio.AudioCdSrcTrack</a> to add</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>
+										)
+								–
+			</div>
+							<p>FALSE on error, otherwise TRUE.</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="gst_audio_cd_src_add_track">
+	<span><code>GstAudio.AudioCdSrc.prototype.add_track</code></span>
+</h4>
+
+
+<pre class="javascript-prototype">
+function GstAudio.AudioCdSrc.prototype.add_track(track: <a title="GstAudio.AudioCdSrcTrack" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrcTrack">GstAudio.AudioCdSrcTrack</a>): {
+    // javascript wrapper for 'gst_audio_cd_src_add_track'
+}</pre>
+
+<p>CDDA sources use this function from their start vfunc to announce the
+available data and audio tracks to the base source class. The caller
+should allocate <em>track</em> on the stack, the base source will do a shallow
+copy of the structure (and take ownership of the taglist if there is one).</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstAudio.AudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>track</code></em></i>
+					(
+						<a title="GstAudio.AudioCdSrcTrack" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrcTrack">GstAudio.AudioCdSrcTrack</a>
+						)
+				–
+	</div>
+			<p>address of <a href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrcTrack">GstAudio.AudioCdSrcTrack</a> to add</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+										)
+								–
+			</div>
+							<p>FALSE on error, otherwise TRUE.</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+
+</div>
+
+
+            <h3 class="symbol_section">Properties</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioCdSrc:device">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrc:device">
+	<span><code>device</code></span>
+</h4>
+
+
+<pre class="property_signature">
+“device” <span class="type"><a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrc:device">
+	<span><code>device</code></span>
+</h4>
+
+
+<pre class="property_signature">
+“device” <span class="type"><a title="str" href="https://docs.python.org/3/library/functions.html#func-str">str</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrc:device">
+	<span><code>device</code></span>
+</h4>
+
+
+<pre class="property_signature">
+“device” <span class="type"><a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioCdSrc:mode">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrc:mode">
+	<span><code>mode</code></span>
+</h4>
+
+
+<pre class="property_signature">
+“mode” <span class="type"><a title="GstAudioCdSrcMode" href="cdparanoia-1.0/index.html#GstAudioCdSrcMode">GstAudioCdSrcMode</a> *</span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrc:mode">
+	<span><code>mode</code></span>
+</h4>
+
+
+<pre class="property_signature">
+“mode” <span class="type"><a title="GstAudio.AudioCdSrcMode" href="cdparanoia-1.0/index.html#GstAudioCdSrcMode">GstAudio.AudioCdSrcMode</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrc:mode">
+	<span><code>mode</code></span>
+</h4>
+
+
+<pre class="property_signature">
+“mode” <span class="type"><a title="GstAudio.AudioCdSrcMode" href="cdparanoia-1.0/index.html#GstAudioCdSrcMode">GstAudio.AudioCdSrcMode</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioCdSrc:track">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrc:track">
+	<span><code>track</code></span>
+</h4>
+
+
+<pre class="property_signature">
+“track” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrc:track">
+	<span><code>track</code></span>
+</h4>
+
+
+<pre class="property_signature">
+“track” <span class="type"><a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrc:track">
+	<span><code>track</code></span>
+</h4>
+
+
+<pre class="property_signature">
+“track” <span class="type"><a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a></span>
+</pre>
+
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+
+
+</div>
+
+</div>
+
+
+            <h3 class="symbol_section">Virtual Methods</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioCdSrcClass::close">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrcClass::close">
+	<span><code>close</code></span>
+</h4>
+
+
+
+
+<pre class="c-prototype">
+close (<a title="GstAudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudioCdSrc</a> * src)</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrcClass::close">
+	<span><code>close</code></span>
+</h4>
+
+
+<pre class="python-prototype">
+def close (src):
+    #python implementation of the 'close' virtual method</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstAudio.AudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrcClass::close">
+	<span><code>close</code></span>
+</h4>
+
+
+<pre class="javascript-prototype">
+function close(src: <a title="GstAudio.AudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a>): {
+    // javascript implementation of the 'close' virtual method
+}</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstAudio.AudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioCdSrcClass::open">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrcClass::open">
+	<span><code>open</code></span>
+</h4>
+
+
+
+
+<pre class="c-prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+open (<a title="GstAudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudioCdSrc</a> * src,
+      const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * device)</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>device</code></em></i>
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrcClass::open">
+	<span><code>open</code></span>
+</h4>
+
+
+<pre class="python-prototype">
+def open (src, device):
+    #python implementation of the 'open' virtual method</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstAudio.AudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>device</code></em></i>
+					(
+						<a title="str" href="https://docs.python.org/3/library/functions.html#func-str">str</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrcClass::open">
+	<span><code>open</code></span>
+</h4>
+
+
+<pre class="javascript-prototype">
+function open(src: <a title="GstAudio.AudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a>, device: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): {
+    // javascript implementation of the 'open' virtual method
+}</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstAudio.AudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>device</code></em></i>
+					(
+						<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioCdSrcClass::read_sector">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrcClass::read_sector">
+	<span><code>read_sector</code></span>
+</h4>
+
+
+
+
+<pre class="c-prototype">
+<a title="GstBuffer" href="libgstreamer-1.0/gstbuffer.html#GstBuffer">GstBuffer</a> *
+read_sector (<a title="GstAudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudioCdSrc</a> * src,
+             <a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a> sector)</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>sector</code></em></i>
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrcClass::read_sector">
+	<span><code>read_sector</code></span>
+</h4>
+
+
+<pre class="python-prototype">
+def read_sector (src, sector):
+    #python implementation of the 'read_sector' virtual method</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstAudio.AudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>sector</code></em></i>
+					(
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Gst.Buffer" href="libgstreamer-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="GstAudioCdSrcClass::read_sector">
+	<span><code>read_sector</code></span>
+</h4>
+
+
+<pre class="javascript-prototype">
+function read_sector(src: <a title="GstAudio.AudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a>, sector: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript implementation of the 'read_sector' virtual method
+}</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>src</code></em></i>
+					(
+						<a title="GstAudio.AudioCdSrc" href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#GstAudioCdSrc">GstAudio.AudioCdSrc</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>sector</code></em></i>
+					(
+						<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Gst.Buffer" href="libgstreamer-1.0/gstbuffer.html#GstBuffer">Gst.Buffer</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+
+</div>
+
+</div>
+
+
+        
+
+            <h2 class="symbol_section">Structures</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioCdSrcTrack">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="GstAudioCdSrcTrack">
+	<span><code>GstAudioCdSrcTrack</code></span>
+</h3>
+
+
+<p>CD track abstraction to communicate TOC entries to the base class.</p>
+<p>This structure is only for use by sub-classed in connection with
+<a href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#gst_audio_cd_src_add_track">gst_audio_cd_src_add_track</a>.</p>
+<p>Applications will be informed of the available tracks via a TOC message
+on the pipeline's <a href="libgstreamer-1.0/gstbus.html#GstBus">GstBus</a> instead.</p>
+
+
+
+
+	<div class="members-container">
+		<h4>Fields</h4>
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.is_audio">
+	<div>
+		<i><em><code>is_audio</code></em></i>
+		(<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>)
+		–
+	</div>
+			<p>Whether this is an audio track</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.num">
+	<div>
+		<i><em><code>num</code></em></i>
+		(<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>)
+		–
+	</div>
+			<p>Track number in TOC (usually starts from 1, but not always)</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.start">
+	<div>
+		<i><em><code>start</code></em></i>
+		(<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>)
+		–
+	</div>
+			<p>The first sector of this track (LBA)</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.end">
+	<div>
+		<i><em><code>end</code></em></i>
+		(<a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a>)
+		–
+	</div>
+			<p>The last sector of this track (LBA)</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.tags">
+	<div>
+		<i><em><code>tags</code></em></i>
+		(<a title="GstTagList" href="libgstreamer-1.0/gsttaglist.html#GstTagList">GstTagList</a> *)
+		–
+	</div>
+			<p>Track-specific tags (e.g. from cd-text information), or NULL</p>
+
+	</div>
+
+			</div>
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h3>
+	GstAudio.AudioCdSrcTrack
+</h3>
+
+
+<p>CD track abstraction to communicate TOC entries to the base class.</p>
+<p>This structure is only for use by sub-classed in connection with
+<a href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#gst_audio_cd_src_add_track">GstAudio.AudioCdSrc.add_track</a>.</p>
+<p>Applications will be informed of the available tracks via a TOC message
+on the pipeline's <a href="libgstreamer-1.0/gstbus.html#GstBus">Gst.Bus</a> instead.</p>
+
+
+
+
+	<div class="members-container">
+		<h4>Attributes</h4>
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.is_audio">
+	<div>
+		<i><em><code>is_audio</code></em></i>
+		(<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>)
+		–
+	</div>
+			<p>Whether this is an audio track</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.num">
+	<div>
+		<i><em><code>num</code></em></i>
+		(<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>)
+		–
+	</div>
+			<p>Track number in TOC (usually starts from 1, but not always)</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.start">
+	<div>
+		<i><em><code>start</code></em></i>
+		(<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>)
+		–
+	</div>
+			<p>The first sector of this track (LBA)</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.end">
+	<div>
+		<i><em><code>end</code></em></i>
+		(<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>)
+		–
+	</div>
+			<p>The last sector of this track (LBA)</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.tags">
+	<div>
+		<i><em><code>tags</code></em></i>
+		(<a title="Gst.TagList" href="libgstreamer-1.0/gsttaglist.html#GstTagList">Gst.TagList</a>)
+		–
+	</div>
+			<p>Track-specific tags (e.g. from cd-text information), or NULL</p>
+
+	</div>
+
+			</div>
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h3>
+	GstAudio.AudioCdSrcTrack
+</h3>
+
+
+<p>CD track abstraction to communicate TOC entries to the base class.</p>
+<p>This structure is only for use by sub-classed in connection with
+<a href="gst-plugins-base-audio-1.0/gstaudiocdsrc.html#gst_audio_cd_src_add_track">GstAudio.AudioCdSrc.prototype.add_track</a>.</p>
+<p>Applications will be informed of the available tracks via a TOC message
+on the pipeline's <a href="libgstreamer-1.0/gstbus.html#GstBus">Gst.Bus</a> instead.</p>
+
+
+
+
+	<div class="members-container">
+		<h4>Attributes</h4>
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.is_audio">
+	<div>
+		<i><em><code>is_audio</code></em></i>
+		(<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>)
+		–
+	</div>
+			<p>Whether this is an audio track</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.num">
+	<div>
+		<i><em><code>num</code></em></i>
+		(<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>)
+		–
+	</div>
+			<p>Track number in TOC (usually starts from 1, but not always)</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.start">
+	<div>
+		<i><em><code>start</code></em></i>
+		(<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>)
+		–
+	</div>
+			<p>The first sector of this track (LBA)</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.end">
+	<div>
+		<i><em><code>end</code></em></i>
+		(<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>)
+		–
+	</div>
+			<p>The last sector of this track (LBA)</p>
+
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GstAudioCdSrcTrack.tags">
+	<div>
+		<i><em><code>tags</code></em></i>
+		(<a title="Gst.TagList" href="libgstreamer-1.0/gsttaglist.html#GstTagList">Gst.TagList</a>)
+		–
+	</div>
+			<p>Track-specific tags (e.g. from cd-text information), or NULL</p>
+
+	</div>
+
+			</div>
+
+
+
+</div>
+
+</div>
+
+
+            <h2 class="symbol_section">Enumerations</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstAudioCdSrcMode">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="GstAudioCdSrcMode">
+	<span><code>GstAudioCdSrcMode</code></span>
+</h3>
+
+
+<p>Mode in which the CD audio source operates. Influences timestamping,
+EOS handling and seeking.</p>
+
+
+
+
+	<div class="members-container">
+		<h4>Members</h4>
+					
+<div class="symbol-detail" data-hotdoc-id="GST_AUDIO_CD_SRC_MODE_NORMAL">
+	<div>
+		<i><em><code>GST_AUDIO_CD_SRC_MODE_NORMAL</code></em></i>
+		(<span class="value">0</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_AUDIO_CD_SRC_MODE_CONTINUOUS">
+	<div>
+		<i><em><code>GST_AUDIO_CD_SRC_MODE_CONTINUOUS</code></em></i>
+		(<span class="value">1</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h3 data-hotdoc-id="GstAudioCdSrcMode">
+	<span><code>GstAudio.AudioCdSrcMode</code></span>
+</h3>
+
+
+<p>Mode in which the CD audio source operates. Influences timestamping,
+EOS handling and seeking.</p>
+
+
+
+
+	<div class="members-container">
+		<h4>Members</h4>
+					
+<div class="symbol-detail" data-hotdoc-id="GST_AUDIO_CD_SRC_MODE_NORMAL">
+	<div>
+		<i><em><code>GstAudio.AudioCdSrcMode.NORMAL</code></em></i>
+		(<span class="value">0</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_AUDIO_CD_SRC_MODE_CONTINUOUS">
+	<div>
+		<i><em><code>GstAudio.AudioCdSrcMode.CONTINUOUS</code></em></i>
+		(<span class="value">1</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h3 data-hotdoc-id="GstAudioCdSrcMode">
+	<span><code>GstAudio.AudioCdSrcMode</code></span>
+</h3>
+
+
+<p>Mode in which the CD audio source operates. Influences timestamping,
+EOS handling and seeking.</p>
+
+
+
+
+	<div class="members-container">
+		<h4>Members</h4>
+					
+<div class="symbol-detail" data-hotdoc-id="GST_AUDIO_CD_SRC_MODE_NORMAL">
+	<div>
+		<i><em><code>GstAudio.AudioCdSrcMode.NORMAL</code></em></i>
+		(<span class="value">0</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_AUDIO_CD_SRC_MODE_CONTINUOUS">
+	<div>
+		<i><em><code>GstAudio.AudioCdSrcMode.CONTINUOUS</code></em></i>
+		(<span class="value">1</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+</div>
+
+</div>
+
+
+            <h2 class="symbol_section">Constants</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TYPE_AUDIO_CD_SRC">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="GST_TYPE_AUDIO_CD_SRC">
+	<span><code>GST_TYPE_AUDIO_CD_SRC</code></span>
+</h3>
+
+
+<pre class="raw_code">
+#define GST_TYPE_AUDIO_CD_SRC            (gst_audio_cd_src_get_type())
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+	<hr>
+	<div id="footer">
+		    
+
+	</div>
+</div>
+
+<div id="toc-column">
+	
+		<div class="edit-button">
+		
+
+	</div>
+		<div id="toc-wrapper">
+		<nav id="toc"></nav>
+	</div>
+</div>
+</div>
+</main>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "frame.h", "urls": ["design/stereo-multiview-video.html#proposed-new-buffer-flags"]});
+urls_downloaded_cb({"token": "frame.h", "urls": [{"url": "design/stereo-multiview-video.html#page-description", "context": {"gi-language": ["default"]}}]});

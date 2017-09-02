@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "www.sonicspot.com", "urls": ["design/toc.html#wav-readwrite-httpwwwsonicspotcomguidewavefileshtml-cue"]});
+urls_downloaded_cb({"token": "www.sonicspot.com", "urls": [{"url": "design/toc.html#wav-readwrite-httpwwwsonicspotcomguidewavefileshtml-cue", "context": {"gi-language": ["default"]}}]});

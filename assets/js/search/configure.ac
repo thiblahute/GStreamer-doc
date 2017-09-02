@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "configure.ac", "urls": ["contribute/index.html#how-to-prepare-a-patch-for-submission"]});
+urls_downloaded_cb({"token": "configure.ac", "urls": [{"url": "contribute/index.html#page-description", "context": {"gi-language": ["default"]}}]});

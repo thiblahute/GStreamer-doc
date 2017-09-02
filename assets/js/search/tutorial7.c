@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "tutorial7.c", "urls": ["tutorials/playback/custom-playbin-sinks.html#an-equalized-player"]});
+urls_downloaded_cb({"token": "tutorial7.c", "urls": [{"url": "tutorials/playback/custom-playbin-sinks.html#page-description", "context": {"gi-language": ["default"]}}]});

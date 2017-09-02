@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "tutorial1.java", "urls": ["tutorials/android/link-against-gstreamer.html#hello-gstreamer-java-code"]});
+urls_downloaded_cb({"token": "tutorial1.java", "urls": [{"url": "tutorials/android/link-against-gstreamer.html#page-description", "context": {"gi-language": ["default"]}}]});

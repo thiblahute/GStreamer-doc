@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "testsuite.py", "urls": ["gst-devtools-1.0/gst-validate-launcher.html#example-of-a-testsuite-implementation"]});
+urls_downloaded_cb({"token": "testsuite.py", "urls": [{"url": "gst-devtools-1.0/gst-validate-launcher.html#page-description", "context": {"gi-language": ["default"]}}]});

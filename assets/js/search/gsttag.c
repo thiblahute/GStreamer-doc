@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gsttag.c", "urls": ["plugin-development/advanced/tagging.html#reading-tags-from-streams"]});
+urls_downloaded_cb({"token": "gsttag.c", "urls": [{"url": "plugin-development/advanced/tagging.html#page-description", "context": {"gi-language": ["default"]}}]});

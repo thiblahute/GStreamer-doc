@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "show_bug.cgi", "urls": ["design/draft-metadata.html#unknownunmapped-metadata", "design/stream-selection.html#example-use-cases", "design/tracing.html#design"]});
+urls_downloaded_cb({"token": "show_bug.cgi", "urls": [{"url": "design/draft-metadata.html#page-description", "context": {"gi-language": ["default"]}}, {"url": "design/stream-selection.html#page-description", "context": {"gi-language": ["default"]}}, {"url": "design/tracing.html#page-description", "context": {"gi-language": ["default"]}}]});

@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "domain.com", "urls": ["tools/gst-launch.html#pipeline-examples"]});
+urls_downloaded_cb({"token": "domain.com", "urls": [{"url": "tools/gst-launch.html#page-description", "context": {"gi-language": ["default"]}}]});

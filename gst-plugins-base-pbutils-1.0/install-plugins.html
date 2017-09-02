@@ -1,0 +1,3281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<base href="..">
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>Install-plugins</title>
+
+<link rel="stylesheet" href="assets/css/custom_bootstrap.css" type="text/css">
+<link rel="stylesheet" href="assets/css/bootstrap-toc.min.css" type="text/css">
+<link rel="stylesheet" href="assets/css/frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.min.css">
+
+<link rel="stylesheet" href="assets/css/extra_frontend.css" type="text/css">
+<link rel="stylesheet" href="assets/css/prism.css" type="text/css">
+
+<script src="assets/js/mustache.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/scrollspy.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/typeahead.jquery.min.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/isotope.pkgd.min.js"></script>
+<script src="assets/js/compare-versions.js"></script>
+<script src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/bootstrap-toc.min.js"></script>
+<script src="assets/js/jquery.touchSwipe.min.js"></script>
+<script src="assets/js/anchor.min.js"></script>
+<script src="assets/js/tag_filtering.js"></script>
+<script src="assets/js/language_switching.js"></script>
+
+<script src="assets/js/lines_around_headings.js"></script>
+
+<script src="assets/js/trie.js"></script>
+<script src="assets/js/prism-core.js"></script>
+<script src="assets/js/prism-autoloader.js"></script>
+<script src="assets/js/prism_autoloader_path_override.js"></script>
+
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+
+</head>
+
+<body class="no-script
+" data-spy="scroll" data-target="#toc" data-offset="70">
+
+<script>
+$('body').removeClass('no-script');
+</script>
+
+<nav class="navbar navbar-fixed-top navbar-default" id="topnav">
+	<div class="container-fluid">
+		<div class="navbar-right">
+			<a id="toc-toggle">
+				<span class="glyphicon glyphicon-menu-right"></span>
+				<span class="glyphicon glyphicon-menu-left"></span>
+			</a>
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-wrapper" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<form action="" class="navbar-form pull-right" id="navbar-search-form">
+                               <div class="form-group has-feedback">
+                                       <input type="text" class="form-control input-sm" name="search" id="sidenav-lookup-field" placeholder="search" disabled>
+				       <span class="glyphicon glyphicon-search form-control-feedback" id="search-mgn-glass"></span>
+                               </div>
+                        </form>
+		</div>
+		<div class="navbar-header">
+			<a id="sidenav-toggle">
+				<span class="glyphicon glyphicon-menu-right"></span>
+				<span class="glyphicon glyphicon-menu-left"></span>
+			</a>
+			<a id="home-link" href="index.html" class="hotdoc-navbar-brand">
+				<img src="assets/images/gstreamer-logo.svg" alt="Home">
+			</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-wrapper">
+			<ul class="nav navbar-nav" id="menu">
+				
+<li class="dropdown">
+    <a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        API References<span class="caret"></span>
+    </a>
+	<ul class="dropdown-menu" id="modules-menu">
+					<li>
+				<a href="libgstreamer-1.0/c/index.html">GStreamer core</a>
+			</li>
+					<li>
+				<a href="libs.html">GStreamer Libraries</a>
+			</li>
+					<li>
+				<a href="plugins_doc.html">GStreamer Plugins</a>
+			</li>
+		</ul>
+</li>
+
+<li>
+    <a href="application-development/index.html">Application manual</a>
+</li>
+
+
+<li>
+    <a href="tutorials/index.html">Tutorials</a>
+</li>
+
+			</ul>
+			<div class="hidden-xs hidden-sm navbar-text navbar-center">
+							</div>
+		</div>
+	</div>
+</nav>
+
+<main>
+<div data-extension="gi-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="gst-plugins-base-pbutils-1.0" data-hotdoc-ref="install-plugins.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']" data-hotdoc-meta-gi-language="c">
+<script src="assets/js/utils.js"></script>
+
+<div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
+	<script src="assets/js/navigation.js"></script>
+	<script src="assets/js/sitemap.js"></script>
+</div>
+
+<div id="body">
+	<div id="main">
+				    <div id="page-description" data-hotdoc-source="install-plugins.h" data-hotdoc-role="main">
+        <h1 id="installplugins-page">Install-plugins</h1>
+<h2 id="overview">Overview</h2>
+<p>Using this API, applications can request the installation of missing
+GStreamer plugins. These may be missing decoders/demuxers or
+encoders/muxers for a certain format, sources or sinks for a certain URI
+protocol (e.g. 'http'), or certain elements known by their element
+factory name ('audioresample').</p>
+<p>Whether plugin installation is supported or not depends on the operating
+system and/or distribution in question. The vendor of the operating
+system needs to make sure the necessary hooks and mechanisms are in
+place for plugin installation to work. See below for more detailed
+information.</p>
+<p>From the application perspective, plugin installation is usually
+triggered either</p>
+<ul>
+<li>when the application itself has found that it wants or needs to
+install a certain element</li>
+<li>when the application has been notified by an element (such as
+playbin or decodebin) that one or more plugins are missing <em>and</em> the
+application has decided that it wants to install one or more of
+those missing plugins</li>
+</ul>
+<p>The install functions in this section all take one or more 'detail
+strings'. These detail strings contain information about the type of
+plugin that needs to be installed (decoder, encoder, source, sink, or
+named element), and some additional information such GStreamer version
+used and a human-readable description of the component to install for
+user dialogs.</p>
+<p>Applications should not concern themselves with the composition of the
+string itself. They should regard the string as if it was a shared
+secret between GStreamer and the plugin installer application.</p>
+<p>Detail strings can be obtained using the function
+<a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_plugin_message_get_installer_detail" data-gi-href-python="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_plugin_message_get_installer_detail" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_plugin_message_get_installer_detail" data-gi-title-python="GstPbutils.missing_plugin_message_get_installer_detail" data-gi-title-javascript="GstPbutils.prototype.missing_plugin_message_get_installer_detail">gst_missing_plugin_message_get_installer_detail</a> on a
+missing-plugin message. Such a message will either have been found by
+the application on a pipeline's <a href="libgstreamer-1.0/gstbus.html#GstBus" data-gi-href-python="libgstreamer-1.0/gstbus.html#GstBus" data-gi-href-javascript="libgstreamer-1.0/gstbus.html#GstBus" data-gi-title-python="Gst.Bus" data-gi-title-javascript="Gst.Bus">GstBus</a>, or the application will have
+created it itself using <a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_element_message_new" data-gi-href-python="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_element_message_new" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_element_message_new" data-gi-title-python="GstPbutils.missing_element_message_new" data-gi-title-javascript="GstPbutils.prototype.missing_element_message_new">gst_missing_element_message_new</a>,
+<a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_decoder_message_new" data-gi-href-python="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_decoder_message_new" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_decoder_message_new" data-gi-title-python="GstPbutils.missing_decoder_message_new" data-gi-title-javascript="GstPbutils.prototype.missing_decoder_message_new">gst_missing_decoder_message_new</a>,
+<a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_encoder_message_new" data-gi-href-python="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_encoder_message_new" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_encoder_message_new" data-gi-title-python="GstPbutils.missing_encoder_message_new" data-gi-title-javascript="GstPbutils.prototype.missing_encoder_message_new">gst_missing_encoder_message_new</a>,
+<a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_uri_sink_message_new" data-gi-href-python="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_uri_sink_message_new" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_uri_sink_message_new" data-gi-title-python="GstPbutils.missing_uri_sink_message_new" data-gi-title-javascript="GstPbutils.prototype.missing_uri_sink_message_new">gst_missing_uri_sink_message_new</a>, or
+<a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_uri_source_message_new" data-gi-href-python="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_uri_source_message_new" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_uri_source_message_new" data-gi-title-python="GstPbutils.missing_uri_source_message_new" data-gi-title-javascript="GstPbutils.prototype.missing_uri_source_message_new">gst_missing_uri_source_message_new</a>.</p>
+<p>For each GStreamer element/plugin/component that should be installed,
+the application needs one of those 'installer detail' string mentioned
+in the previous section. This string can be obtained, as already
+mentioned above, from a missing-plugin message using the function
+<a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_plugin_message_get_installer_detail" data-gi-href-python="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_plugin_message_get_installer_detail" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_plugin_message_get_installer_detail" data-gi-title-python="GstPbutils.missing_plugin_message_get_installer_detail" data-gi-title-javascript="GstPbutils.prototype.missing_plugin_message_get_installer_detail">gst_missing_plugin_message_get_installer_detail</a>. The
+missing-plugin message is either posted by another element and then
+found on the bus by the application, or the application has created it
+itself as described above.</p>
+<p>The application will then call <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async" data-gi-href-python="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async" data-gi-title-python="GstPbutils.install_plugins_async" data-gi-title-javascript="GstPbutils.prototype.install_plugins_async">gst_install_plugins_async</a>, passing a
+NULL-terminated array of installer detail strings, and a function that
+should be called when the installation of the plugins has finished
+(successfully or not). Optionally, a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext" data-gi-href-python="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext" data-gi-title-python="GstPbutils.InstallPluginsContext" data-gi-title-javascript="GstPbutils.InstallPluginsContext">GstInstallPluginsContext</a> created
+with <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_context_new" data-gi-href-python="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_context_new" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_context_new" data-gi-title-python="GstPbutils.InstallPluginsContext.new" data-gi-title-javascript="GstPbutils.InstallPluginsContext.prototype.new">gst_install_plugins_context_new</a> may be passed as well. This
+way additional optional arguments like the application window's XID can
+be passed to the external installer application.</p>
+<p><a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async" data-gi-href-python="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async" data-gi-title-python="GstPbutils.install_plugins_async" data-gi-title-javascript="GstPbutils.prototype.install_plugins_async">gst_install_plugins_async</a> will return almost immediately, with the
+return code indicating whether plugin installation was started or not.
+If the necessary hooks for plugin installation are in place and an
+external installer application has in fact been called, the passed in
+function will be called with a result code as soon as the external
+installer has finished. If the result code indicates that new plugins
+have been installed, the application will want to call
+<a href="libgstreamer-1.0/gstregistry.html#gst_update_registry" data-gi-href-python="libgstreamer-1.0/gstregistry.html#gst_update_registry" data-gi-href-javascript="libgstreamer-1.0/gstregistry.html#gst_update_registry" data-gi-title-python="Gst.update_registry" data-gi-title-javascript="Gst.prototype.update_registry">gst_update_registry</a> so the run-time plugin registry is updated and
+the new plugins are made available to the application.</p>
+<blockquote>
+<p>A Gtk/GLib main loop must be running in order for the result function
+to be called when the external installer has finished. If this is not
+the case, make sure to regularly call in your code:</p>
+<p>g_main_context_iteration (NULL,FALSE);</p>
+</blockquote>
+<h2 id="1-installer-hook">1. Installer hook</h2>
+<p>When GStreamer applications initiate plugin installation via
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async" data-gi-href-python="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async" data-gi-title-python="GstPbutils.install_plugins_async" data-gi-title-javascript="GstPbutils.prototype.install_plugins_async">gst_install_plugins_async</a> or <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_sync" data-gi-href-python="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_sync" data-gi-href-javascript="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_sync" data-gi-title-python="GstPbutils.install_plugins_sync" data-gi-title-javascript="GstPbutils.prototype.install_plugins_sync">gst_install_plugins_sync</a>, a
+pre-defined helper application will be called.</p>
+<p>The exact path of the helper application to be called is set at compile
+time, usually by the <code>./configure</code> script based on the install prefix.
+For a normal package build into the <code>/usr</code> prefix, this will usually
+default to <code>/usr/libexec/gst-install-plugins-helper</code> or
+<code>/usr/lib/gst-install-plugins-helper</code>.</p>
+<p>Vendors/distros who want to support GStreamer plugin installation should
+either provide such a helper script/application or use the <code>./configure</code>
+option <code>--with-install-plugins-helper=/path/to/installer</code> to make
+GStreamer call an installer of their own directly.</p>
+<p>It is strongly recommended that vendors provide a small helper
+application as interlocutor to the real installer though, even more so
+if command line argument munging is required to transform the command
+line arguments passed by GStreamer to the helper application into
+arguments that are understood by the real installer.</p>
+<p>The helper application path defined at compile time can be overriden at
+runtime by setting the GST_INSTALL_PLUGINS_HELPER environment
+variable. This can be useful for testing/debugging purposes.</p>
+<h2 id="2-arguments-passed-to-the-install-helper">2. Arguments passed to the install helper</h2>
+<p>GStreamer will pass the following arguments to the install helper (this
+is in addition to the path of the executable itself, which is by
+convention argv[0]):</p>
+<ul>
+<li>
+<p>none to many optional arguments in the form of <code>--foo-bar=val</code>.
+Example: <code>--transient-for=XID</code> where XID is the X Window ID of the
+main window of the calling application (so the installer can make
+itself transient to that window). Unknown optional arguments should
+be ignored by the installer.</p>
+</li>
+<li>
+<p>one 'installer detail string' argument for each plugin to be
+installed; these strings will have a <code>gstreamer</code> prefix; the exact
+format of the detail string is explained below</p>
+</li>
+</ul>
+<h2 id="3-detail-string-describing-the-missing-plugin">3. Detail string describing the missing plugin</h2>
+<p>The string is in UTF-8 encoding and is made up of several fields,
+separated by '|' characters (but neither the first nor the last
+character is a '|'). The fields are:</p>
+<ul>
+<li>plugin system identifier, ie. "gstreamer"
+This identifier determines the format of the rest of the detail
+string. Automatic plugin installers should not process detail
+strings with unknown identifiers. This allows other plugin-based
+libraries to use the same mechanism for their automatic plugin
+installation needs, or for the format to be changed should it turn
+out to be insufficient.</li>
+<li>plugin system version, e.g. "0.10"
+This is required so that when there is a GStreamer-0.12 or
+GStreamer-1.0 at some point in future, the different major versions
+can still co-exist and use the same plugin install mechanism in the
+same way.</li>
+<li>application identifier, e.g. "totem"
+This may also be in the form of "pid/12345" if the program name
+can't be obtained for some reason.</li>
+<li>human-readable localised description of the required component, e.g.
+"Vorbis audio decoder"</li>
+<li>identifier string for the required component (see below for details
+about how to map this to the package/plugin that needs installing),
+e.g.
+<ul>
+<li>urisource-$(PROTOCOL_REQUIRED), e.g. urisource-http or
+urisource-mms</li>
+<li>element-$(ELEMENT_REQUIRED), e.g. element-videoconvert</li>
+<li>decoder-$(CAPS_REQUIRED), e.g. (do read below for more
+details!):
+<ul>
+<li>decoder-audio/x-vorbis</li>
+<li>decoder-application/ogg</li>
+<li>decoder-audio/mpeg, mpegversion=(int)4</li>
+<li>decoder-video/mpeg, systemstream=(boolean)true,
+mpegversion=(int)2</li>
+</ul>
+</li>
+<li>encoder-$(CAPS_REQUIRED), e.g. encoder-audio/x-vorbis</li>
+</ul>
+</li>
+<li>optional further fields not yet specified</li>
+</ul>
+<p>An entire ID string might then look like this, for example: <code>gstreamer|0.10|totem|Vorbis audio decoder|decoder-audio/x-vorbis</code></p>
+<p>Plugin installers parsing this ID string should expect further fields
+also separated by '|' symbols and either ignore them, warn the user, or
+error out when encountering them.</p>
+<p>Those unfamiliar with the GStreamer 'caps' system should note a few
+things about the caps string used in the above decoder/encoder case:</p>
+<ul>
+<li>the first part ("video/mpeg") of the caps string is a GStreamer
+media type and <em>not</em> a MIME type. Wherever possible, the GStreamer
+media type will be the same as the corresponding MIME type, but
+often it is not.</li>
+<li>a caps string may or may not have additional comma-separated fields
+of various types (as seen in the examples above)</li>
+<li>the caps string of a 'required' component (as above) will always
+have fields with fixed values, whereas an introspected string (see
+below) may have fields with non-fixed values. Compare for example:
+<ul>
+<li>
+<code>audio/mpeg, mpegversion=(int)4</code> vs.
+<code>audio/mpeg, mpegversion=(int){2, 4}</code>
+</li>
+<li>
+<code>video/mpeg, mpegversion=(int)2</code> vs.
+<code>video/mpeg, systemstream=(boolean){ true, false}, mpegversion=(int)[1, 2]</code>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-exit-codes-the-installer-should-return">4. Exit codes the installer should return</h2>
+<p>The installer should return one of the following exit codes when it
+exits:</p>
+<ul>
+<li>0 if all of the requested plugins could be installed
+(#GST_INSTALL_PLUGINS_SUCCESS)</li>
+<li>1 if no appropriate installation candidate for any of the requested
+plugins could be found. Only return this if nothing has been
+installed (#GST_INSTALL_PLUGINS_NOT_FOUND)</li>
+<li>2 if an error occured during the installation. The application will
+assume that the user will already have seen an error message by the
+installer in this case and will usually not show another one
+(#GST_INSTALL_PLUGINS_ERROR)</li>
+<li>3 if some of the requested plugins could be installed, but not all
+(#GST_INSTALL_PLUGINS_PARTIAL_SUCCESS)</li>
+<li>4 if the user aborted the installation
+(#GST_INSTALL_PLUGINS_USER_ABORT)</li>
+</ul>
+<h2 id="5-how-to-map-the-required-detail-string-to-packages">5. How to map the required detail string to packages</h2>
+<p>It is up to the vendor to find mechanism to map required components from
+the detail string to the actual packages/plugins to install. This could
+be a hardcoded list of mappings, for example, or be part of the
+packaging system metadata.</p>
+<p>GStreamer plugin files can be introspected for this information. The
+<code>gst-inspect</code> utility has a special command line option that will output
+information similar to what is required. For example <code>$ gst-inspect-1.0 --print-plugin-auto-install-info /path/to/libgstvorbis.so should output something along the lines of</code>decoder-audio/x-vorbis<code>,</code>element-vorbisdec<code></code>element-vorbisenc<code></code>element-vorbisparse<code>,</code>element-vorbistag<code>,</code>encoder-audio/x-vorbis`</p>
+<p>Note that in the encoder and decoder case the introspected caps can be
+more complex with additional fields, e.g.
+<code>audio/mpeg,mpegversion=(int){2,4}</code>, so they will not always exactly
+match the caps wanted by the application. It is up to the installer to
+deal with this (either by doing proper caps intersection using the
+GStreamer <a href="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-href-python="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-href-javascript="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-title-python="Gst.Caps" data-gi-title-javascript="Gst.Caps">GstCaps</a> API, or by only taking into account the media type).</p>
+<p>Another potential source of problems are plugins such as ladspa or
+libvisual where the list of elements depends on the installed
+ladspa/libvisual plugins at the time. This is also up to the
+distribution to handle (but usually not relevant for playback
+applications).</p>
+
+    </div>
+        
+        
+
+            <h3 class="symbol_section">Constructors</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_install_plugins_context_new">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_new">
+	<span><code>gst_install_plugins_context_new</code></span>
+</h4>
+
+
+
+
+<pre class="c-prototype">
+<a title="GstInstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a> *
+gst_install_plugins_context_new ()</pre>
+
+<p>Creates a new <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a>.</p>
+
+
+
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+								–
+			</div>
+							<p>a new <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a>. Free with
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_context_free">gst_install_plugins_context_free</a> when no longer needed</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_new">
+	<span><code>GstPbutils.InstallPluginsContext.new</code></span>
+</h4>
+
+
+<pre class="python-prototype">
+def GstPbutils.InstallPluginsContext.new ():
+    #python wrapper for 'gst_install_plugins_context_new'</pre>
+
+<p>Creates a new <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>.</p>
+
+
+
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+										)
+								–
+			</div>
+							<p>a new <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>. Free with
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_context_free">GstPbutils.InstallPluginsContext.free</a> when no longer needed</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_new">
+	<span><code>GstPbutils.InstallPluginsContext.prototype.new</code></span>
+</h4>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.InstallPluginsContext.prototype.new(): {
+    // javascript wrapper for 'gst_install_plugins_context_new'
+}</pre>
+
+<p>Creates a new <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>.</p>
+
+
+
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+										)
+								–
+			</div>
+							<p>a new <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>. Free with
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_context_free">GstPbutils.InstallPluginsContext.prototype.free</a> when no longer needed</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+
+</div>
+
+
+            <h3 class="symbol_section">Methods</h3>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_install_plugins_context_copy">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_copy">
+	<span><code>gst_install_plugins_context_copy</code></span>
+</h4>
+
+
+
+
+<pre class="c-prototype">
+<a title="GstInstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a> *
+gst_install_plugins_context_copy (<a title="GstInstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a> * ctx)</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_copy">
+	<span><code>GstPbutils.InstallPluginsContext.copy</code></span>
+</h4>
+
+
+<pre class="python-prototype">
+def GstPbutils.InstallPluginsContext.copy (self):
+    #python wrapper for 'gst_install_plugins_context_copy'</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_copy">
+	<span><code>GstPbutils.InstallPluginsContext.prototype.copy</code></span>
+</h4>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.InstallPluginsContext.prototype.copy(): {
+    // javascript wrapper for 'gst_install_plugins_context_copy'
+}</pre>
+
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+										)
+								–
+			</div>
+							<i>No description available</i>
+					</div>
+	</div>
+
+
+
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_install_plugins_context_free">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_free">
+	<span><code>gst_install_plugins_context_free</code></span>
+</h4>
+
+
+
+
+<pre class="c-prototype">
+gst_install_plugins_context_free (<a title="GstInstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a> * ctx)</pre>
+
+<p>Frees a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a>.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a></p>
+
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_free">
+	<span><code>GstPbutils.InstallPluginsContext.free</code></span>
+</h4>
+
+
+<pre class="python-prototype">
+def GstPbutils.InstallPluginsContext.free (self):
+    #python wrapper for 'gst_install_plugins_context_free'</pre>
+
+<p>Frees a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a></p>
+
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_free">
+	<span><code>GstPbutils.InstallPluginsContext.prototype.free</code></span>
+</h4>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.InstallPluginsContext.prototype.free(): {
+    // javascript wrapper for 'gst_install_plugins_context_free'
+}</pre>
+
+<p>Frees a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a></p>
+
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_install_plugins_context_set_confirm_search">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_confirm_search">
+	<span><code>gst_install_plugins_context_set_confirm_search</code></span>
+</h4>
+
+
+
+
+<pre class="c-prototype">
+gst_install_plugins_context_set_confirm_search (<a title="GstInstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a> * ctx,
+                                                <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a> confirm_search)</pre>
+
+<p>This function is used to tell the external installer process whether it
+should ask for confirmation or not before searching for missing plugins.</p>
+<p>If set, this option will be passed to the installer via a
+--interaction=[show-confirm-search|hide-confirm-search] command line option.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>confirm_search</code></em></i>
+				–
+	</div>
+			<p>whether to ask for confirmation before searching for plugins</p>
+
+	</div>
+
+			</div>
+
+
+
+	<p>
+	<b>Since</b>			: 1.6
+		</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_confirm_search">
+	<span><code>GstPbutils.InstallPluginsContext.set_confirm_search</code></span>
+</h4>
+
+
+<pre class="python-prototype">
+def GstPbutils.InstallPluginsContext.set_confirm_search (self, confirm_search):
+    #python wrapper for 'gst_install_plugins_context_set_confirm_search'</pre>
+
+<p>This function is used to tell the external installer process whether it
+should ask for confirmation or not before searching for missing plugins.</p>
+<p>If set, this option will be passed to the installer via a
+--interaction=[show-confirm-search|hide-confirm-search] command line option.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>confirm_search</code></em></i>
+					(
+						<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>
+						)
+				–
+	</div>
+			<p>whether to ask for confirmation before searching for plugins</p>
+
+	</div>
+
+			</div>
+
+
+
+	<p>
+	<b>Since</b>			: 1.6
+		</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_confirm_search">
+	<span><code>GstPbutils.InstallPluginsContext.prototype.set_confirm_search</code></span>
+</h4>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.InstallPluginsContext.prototype.set_confirm_search(confirm_search: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_install_plugins_context_set_confirm_search'
+}</pre>
+
+<p>This function is used to tell the external installer process whether it
+should ask for confirmation or not before searching for missing plugins.</p>
+<p>If set, this option will be passed to the installer via a
+--interaction=[show-confirm-search|hide-confirm-search] command line option.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>confirm_search</code></em></i>
+					(
+						<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+						)
+				–
+	</div>
+			<p>whether to ask for confirmation before searching for plugins</p>
+
+	</div>
+
+			</div>
+
+
+
+	<p>
+	<b>Since</b>			: 1.6
+		</p>
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_install_plugins_context_set_desktop_id">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_desktop_id">
+	<span><code>gst_install_plugins_context_set_desktop_id</code></span>
+</h4>
+
+
+
+
+<pre class="c-prototype">
+gst_install_plugins_context_set_desktop_id (<a title="GstInstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a> * ctx,
+                                            const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * desktop_id)</pre>
+
+<p>This function is used to pass the calling application's desktop file ID to
+the external installer process.</p>
+<p>A desktop file ID is the basename of the desktop file, including the
+.desktop extension.</p>
+<p>If set, the desktop file ID will be passed to the installer via a
+--desktop-id= command line option.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>desktop_id</code></em></i>
+				–
+	</div>
+			<p>the desktop file ID of the calling application</p>
+
+	</div>
+
+			</div>
+
+
+
+	<p>
+	<b>Since</b>			: 1.6
+		</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_desktop_id">
+	<span><code>GstPbutils.InstallPluginsContext.set_desktop_id</code></span>
+</h4>
+
+
+<pre class="python-prototype">
+def GstPbutils.InstallPluginsContext.set_desktop_id (self, desktop_id):
+    #python wrapper for 'gst_install_plugins_context_set_desktop_id'</pre>
+
+<p>This function is used to pass the calling application's desktop file ID to
+the external installer process.</p>
+<p>A desktop file ID is the basename of the desktop file, including the
+.desktop extension.</p>
+<p>If set, the desktop file ID will be passed to the installer via a
+--desktop-id= command line option.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>desktop_id</code></em></i>
+					(
+						<a title="str" href="https://docs.python.org/3/library/functions.html#func-str">str</a>
+						)
+				–
+	</div>
+			<p>the desktop file ID of the calling application</p>
+
+	</div>
+
+			</div>
+
+
+
+	<p>
+	<b>Since</b>			: 1.6
+		</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_desktop_id">
+	<span><code>GstPbutils.InstallPluginsContext.prototype.set_desktop_id</code></span>
+</h4>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.InstallPluginsContext.prototype.set_desktop_id(desktop_id: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): {
+    // javascript wrapper for 'gst_install_plugins_context_set_desktop_id'
+}</pre>
+
+<p>This function is used to pass the calling application's desktop file ID to
+the external installer process.</p>
+<p>A desktop file ID is the basename of the desktop file, including the
+.desktop extension.</p>
+<p>If set, the desktop file ID will be passed to the installer via a
+--desktop-id= command line option.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>desktop_id</code></em></i>
+					(
+						<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+						)
+				–
+	</div>
+			<p>the desktop file ID of the calling application</p>
+
+	</div>
+
+			</div>
+
+
+
+	<p>
+	<b>Since</b>			: 1.6
+		</p>
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="since:1.6;" id="gst_install_plugins_context_set_startup_notification_id">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_startup_notification_id">
+	<span><code>gst_install_plugins_context_set_startup_notification_id</code></span>
+</h4>
+
+
+
+
+<pre class="c-prototype">
+gst_install_plugins_context_set_startup_notification_id (<a title="GstInstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a> * ctx,
+                                                         const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> * startup_id)</pre>
+
+<p>Sets the startup notification ID for the launched process.</p>
+<p>This is typically used to to pass the current X11 event timestamp to the
+external installer process.</p>
+<p>Startup notification IDs are defined in the
+<a href="http://standards.freedesktop.org/startup-notification-spec/startup-notification-latest.txt">FreeDesktop.Org Startup Notifications standard</a>.</p>
+<p>If set, the ID will be passed to the installer via a
+--startup-notification-id= command line option.</p>
+<p>GTK+/GNOME applications should be able to create a startup notification ID
+like this:</p>
+<pre><code class="language-[">   timestamp = gtk_get_current_event_time ();
+   startup_id = g_strdup_printf ("_TIME%u", timestamp);
+ ...
+</code></pre>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>startup_id</code></em></i>
+				–
+	</div>
+			<p>the startup notification ID</p>
+
+	</div>
+
+			</div>
+
+
+
+	<p>
+	<b>Since</b>			: 1.6
+		</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_startup_notification_id">
+	<span><code>GstPbutils.InstallPluginsContext.set_startup_notification_id</code></span>
+</h4>
+
+
+<pre class="python-prototype">
+def GstPbutils.InstallPluginsContext.set_startup_notification_id (self, startup_id):
+    #python wrapper for 'gst_install_plugins_context_set_startup_notification_id'</pre>
+
+<p>Sets the startup notification ID for the launched process.</p>
+<p>This is typically used to to pass the current X11 event timestamp to the
+external installer process.</p>
+<p>Startup notification IDs are defined in the
+<a href="http://standards.freedesktop.org/startup-notification-spec/startup-notification-latest.txt">FreeDesktop.Org Startup Notifications standard</a>.</p>
+<p>If set, the ID will be passed to the installer via a
+--startup-notification-id= command line option.</p>
+<p>GTK+/GNOME applications should be able to create a startup notification ID
+like this:</p>
+<pre><code class="language-[">   timestamp = gtk_get_current_event_time ();
+   startup_id = g_strdup_printf ("_TIME%u", timestamp);
+ ...
+</code></pre>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>startup_id</code></em></i>
+					(
+						<a title="str" href="https://docs.python.org/3/library/functions.html#func-str">str</a>
+						)
+				–
+	</div>
+			<p>the startup notification ID</p>
+
+	</div>
+
+			</div>
+
+
+
+	<p>
+	<b>Since</b>			: 1.6
+		</p>
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_startup_notification_id">
+	<span><code>GstPbutils.InstallPluginsContext.prototype.set_startup_notification_id</code></span>
+</h4>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.InstallPluginsContext.prototype.set_startup_notification_id(startup_id: <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): {
+    // javascript wrapper for 'gst_install_plugins_context_set_startup_notification_id'
+}</pre>
+
+<p>Sets the startup notification ID for the launched process.</p>
+<p>This is typically used to to pass the current X11 event timestamp to the
+external installer process.</p>
+<p>Startup notification IDs are defined in the
+<a href="http://standards.freedesktop.org/startup-notification-spec/startup-notification-latest.txt">FreeDesktop.Org Startup Notifications standard</a>.</p>
+<p>If set, the ID will be passed to the installer via a
+--startup-notification-id= command line option.</p>
+<p>GTK+/GNOME applications should be able to create a startup notification ID
+like this:</p>
+<pre><code class="language-[">   timestamp = gtk_get_current_event_time ();
+   startup_id = g_strdup_printf ("_TIME%u", timestamp);
+ ...
+</code></pre>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>startup_id</code></em></i>
+					(
+						<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+						)
+				–
+	</div>
+			<p>the startup notification ID</p>
+
+	</div>
+
+			</div>
+
+
+
+	<p>
+	<b>Since</b>			: 1.6
+		</p>
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_install_plugins_context_set_xid">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_xid">
+	<span><code>gst_install_plugins_context_set_xid</code></span>
+</h4>
+
+
+
+
+<pre class="c-prototype">
+gst_install_plugins_context_set_xid (<a title="GstInstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a> * ctx,
+                                     <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> xid)</pre>
+
+<p>This function is for X11-based applications (such as most Gtk/Qt
+applications on linux/unix) only. You can use it to tell the external
+installer the XID of your main application window. That way the installer
+can make its own window transient to your application window during the
+installation.</p>
+<p>If set, the XID will be passed to the installer via a --transient-for=XID
+command line option.</p>
+<p>Gtk+/Gnome application should be able to obtain the XID of the top-level
+window like this:</p>
+<pre><code class="language-["> ##include &amp;lt;gtk/gtk.h&amp;gt;
+ ##ifdef GDK_WINDOWING_X11
+ ##include &amp;lt;gdk/gdkx.h&amp;gt;
+ ##endif
+ ...
+ ##ifdef GDK_WINDOWING_X11
+   xid = GDK_WINDOW_XWINDOW (GTK_WIDGET (application_window)-&amp;gt;window);
+ ##endif
+ ...
+</code></pre>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>xid</code></em></i>
+				–
+	</div>
+			<p>the XWindow ID (XID) of the top-level application</p>
+
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_xid">
+	<span><code>GstPbutils.InstallPluginsContext.set_xid</code></span>
+</h4>
+
+
+<pre class="python-prototype">
+def GstPbutils.InstallPluginsContext.set_xid (self, xid):
+    #python wrapper for 'gst_install_plugins_context_set_xid'</pre>
+
+<p>This function is for X11-based applications (such as most Gtk/Qt
+applications on linux/unix) only. You can use it to tell the external
+installer the XID of your main application window. That way the installer
+can make its own window transient to your application window during the
+installation.</p>
+<p>If set, the XID will be passed to the installer via a --transient-for=XID
+command line option.</p>
+<p>Gtk+/Gnome application should be able to obtain the XID of the top-level
+window like this:</p>
+<pre><code class="language-["> ##include &amp;lt;gtk/gtk.h&amp;gt;
+ ##ifdef GDK_WINDOWING_X11
+ ##include &amp;lt;gdk/gdkx.h&amp;gt;
+ ##endif
+ ...
+ ##ifdef GDK_WINDOWING_X11
+   xid = GDK_WINDOW_XWINDOW (GTK_WIDGET (application_window)-&amp;gt;window);
+ ##endif
+ ...
+</code></pre>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>xid</code></em></i>
+					(
+						<a title="int" href="https://docs.python.org/3/library/functions.html#int">int</a>
+						)
+				–
+	</div>
+			<p>the XWindow ID (XID) of the top-level application</p>
+
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h4 data-hotdoc-id="gst_install_plugins_context_set_xid">
+	<span><code>GstPbutils.InstallPluginsContext.prototype.set_xid</code></span>
+</h4>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.InstallPluginsContext.prototype.set_xid(xid: <a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>): {
+    // javascript wrapper for 'gst_install_plugins_context_set_xid'
+}</pre>
+
+<p>This function is for X11-based applications (such as most Gtk/Qt
+applications on linux/unix) only. You can use it to tell the external
+installer the XID of your main application window. That way the installer
+can make its own window transient to your application window during the
+installation.</p>
+<p>If set, the XID will be passed to the installer via a --transient-for=XID
+command line option.</p>
+<p>Gtk+/Gnome application should be able to obtain the XID of the top-level
+window like this:</p>
+<pre><code class="language-["> ##include &amp;lt;gtk/gtk.h&amp;gt;
+ ##ifdef GDK_WINDOWING_X11
+ ##include &amp;lt;gdk/gdkx.h&amp;gt;
+ ##endif
+ ...
+ ##ifdef GDK_WINDOWING_X11
+   xid = GDK_WINDOW_XWINDOW (GTK_WIDGET (application_window)-&amp;gt;window);
+ ##endif
+ ...
+</code></pre>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a></p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>xid</code></em></i>
+					(
+						<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+						)
+				–
+	</div>
+			<p>the XWindow ID (XID) of the top-level application</p>
+
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+
+</div>
+
+
+        
+
+            <h2 class="symbol_section">Functions</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_install_plugins_return_get_name">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_return_get_name">
+	<span><code>gst_install_plugins_return_get_name</code></span>
+</h3>
+
+
+
+
+<pre class="c-prototype">
+const <a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> *
+gst_install_plugins_return_get_name (<a title="GstInstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstInstallPluginsReturn</a> ret)</pre>
+
+<p>Convenience function to return the descriptive string associated
+with a status code.  This function returns English strings and
+should not be used for user messages. It is here only to assist
+in debugging.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ret</code></em></i>
+				–
+	</div>
+			<p>the return status code</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+								–
+			</div>
+							<p>a descriptive string for the status code in <em>ret</em></p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_return_get_name">
+	<span><code>GstPbutils.install_plugins_return_get_name</code></span>
+</h3>
+
+
+<pre class="python-prototype">
+def GstPbutils.install_plugins_return_get_name (ret):
+    #python wrapper for 'gst_install_plugins_return_get_name'</pre>
+
+<p>Convenience function to return the descriptive string associated
+with a status code.  This function returns English strings and
+should not be used for user messages. It is here only to assist
+in debugging.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ret</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstPbutils.InstallPluginsReturn</a>
+						)
+				–
+	</div>
+			<p>the return status code</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="str" href="https://docs.python.org/3/library/functions.html#func-str">str</a>
+										)
+								–
+			</div>
+							<p>a descriptive string for the status code in <em>ret</em></p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_return_get_name">
+	<span><code>GstPbutils.prototype.install_plugins_return_get_name</code></span>
+</h3>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.prototype.install_plugins_return_get_name(ret: <a title="GstPbutils.InstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstPbutils.InstallPluginsReturn</a>): {
+    // javascript wrapper for 'gst_install_plugins_return_get_name'
+}</pre>
+
+<p>Convenience function to return the descriptive string associated
+with a status code.  This function returns English strings and
+should not be used for user messages. It is here only to assist
+in debugging.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ret</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstPbutils.InstallPluginsReturn</a>
+						)
+				–
+	</div>
+			<p>the return status code</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+										)
+								–
+			</div>
+							<p>a descriptive string for the status code in <em>ret</em></p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_install_plugins_async">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_async">
+	<span><code>gst_install_plugins_async</code></span>
+</h3>
+
+
+
+
+<pre class="c-prototype">
+<a title="GstInstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstInstallPluginsReturn</a>
+gst_install_plugins_async (<a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> ** details,
+                           <a title="GstInstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a> * ctx,
+                           <a title="GstInstallPluginsResultFunc" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsResultFunc">GstInstallPluginsResultFunc</a> func,
+                           <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> user_data)</pre>
+
+<p>Requests plugin installation without blocking. Once the plugins have been
+installed or installation has failed, <em>func</em> will be called with the result
+of the installation and your provided <em>user_data</em> pointer.</p>
+<p>This function requires a running GLib/Gtk main loop. If you are not
+running a GLib/Gtk main loop, make sure to regularly call
+g_main_context_iteration(NULL,FALSE).</p>
+<p>The installer strings that make up <em>detail</em> are typically obtained by
+calling <a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_plugin_message_get_installer_detail">gst_missing_plugin_message_get_installer_detail</a> on missing-plugin
+messages that have been caught on a pipeline's bus or created by the
+application via the provided API, such as <a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_element_message_new">gst_missing_element_message_new</a>.</p>
+<p>It is possible to request the installation of multiple missing plugins in
+one go (as might be required if there is a demuxer for a certain format
+installed but no suitable video decoder and no suitable audio decoder).</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>details</code></em></i>
+					(
+						
+<span class="annotation">[<abbr title="Parameter points to an array of items"><span class="acronym">array</span></abbr> zero-terminated=1]</span>
+<span class="annotation">[<abbr title="Don't free data after the code is done"><span class="acronym">transfer: none</span></abbr>]</span>
+
+						)
+				–
+	</div>
+			<p>NULL-terminated array
+of installer string details (see below)</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						
+<span class="annotation">[<abbr title="NULL is OK, both for passing and returning"><span class="acronym">allow-none</span></abbr>]</span>
+
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a>, or NULL</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>func</code></em></i>
+					(
+						
+<span class="annotation">[<abbr title="The callback is valid until first called"><span class="acronym">scope async</span></abbr>]</span>
+
+						)
+				–
+	</div>
+			<p>the function to call when the installer program returns</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>user_data</code></em></i>
+					(
+						
+<span class="annotation">[<abbr title="This parameter is a closure for callbacks, many bindings can pass NULL here"><span class="acronym">closure</span></abbr>]</span>
+
+						)
+				–
+	</div>
+			<p>the user data to pass to <em>func</em> when called, or NULL</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+								–
+			</div>
+							<p>result code whether an external installer could be started</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_async">
+	<span><code>GstPbutils.install_plugins_async</code></span>
+</h3>
+
+
+<pre class="python-prototype">
+def GstPbutils.install_plugins_async (details, ctx, func, user_data):
+    #python wrapper for 'gst_install_plugins_async'</pre>
+
+<p>Requests plugin installation without blocking. Once the plugins have been
+installed or installation has failed, <em>func</em> will be called with the result
+of the installation and your provided <em>user_data</em> pointer.</p>
+<p>This function requires a running GLib/Gtk main loop. If you are not
+running a GLib/Gtk main loop, make sure to regularly call
+g_main_context_iteration(NULL,FALSE).</p>
+<p>The installer strings that make up <em>detail</em> are typically obtained by
+calling <a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_plugin_message_get_installer_detail">GstPbutils.missing_plugin_message_get_installer_detail</a> on missing-plugin
+messages that have been caught on a pipeline's bus or created by the
+application via the provided API, such as <a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_element_message_new">GstPbutils.missing_element_message_new</a>.</p>
+<p>It is possible to request the installation of multiple missing plugins in
+one go (as might be required if there is a demuxer for a certain format
+installed but no suitable video decoder and no suitable audio decoder).</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>details</code></em></i>
+					(
+						[ <a title="str" href="https://docs.python.org/3/library/functions.html#func-str">str</a> ]
+						)
+				–
+	</div>
+			<p>NULL-terminated array
+of installer string details (see below)</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>, or NULL</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>func</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsResultFunc" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsResultFunc">GstPbutils.InstallPluginsResultFunc</a>
+						)
+				–
+	</div>
+			<p>the function to call when the installer program returns</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>user_data</code></em></i>
+					(
+						<a title="object" href="https://docs.python.org/3/library/functions.html#object">object</a>
+						)
+				–
+	</div>
+			<p>the user data to pass to <em>func</em> when called, or NULL</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="GstPbutils.InstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstPbutils.InstallPluginsReturn</a>
+										)
+								–
+			</div>
+							<p>result code whether an external installer could be started</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_async">
+	<span><code>GstPbutils.prototype.install_plugins_async</code></span>
+</h3>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.prototype.install_plugins_async(details: [ <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a> ], ctx: <a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>, func: <a title="GstPbutils.InstallPluginsResultFunc" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsResultFunc">GstPbutils.InstallPluginsResultFunc</a>, user_data: <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): {
+    // javascript wrapper for 'gst_install_plugins_async'
+}</pre>
+
+<p>Requests plugin installation without blocking. Once the plugins have been
+installed or installation has failed, <em>func</em> will be called with the result
+of the installation and your provided <em>user_data</em> pointer.</p>
+<p>This function requires a running GLib/Gtk main loop. If you are not
+running a GLib/Gtk main loop, make sure to regularly call
+g_main_context_iteration(NULL,FALSE).</p>
+<p>The installer strings that make up <em>detail</em> are typically obtained by
+calling <a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_plugin_message_get_installer_detail">GstPbutils.prototype.missing_plugin_message_get_installer_detail</a> on missing-plugin
+messages that have been caught on a pipeline's bus or created by the
+application via the provided API, such as <a href="gst-plugins-base-pbutils-1.0/missing-plugins.html#gst_missing_element_message_new">GstPbutils.prototype.missing_element_message_new</a>.</p>
+<p>It is possible to request the installation of multiple missing plugins in
+one go (as might be required if there is a demuxer for a certain format
+installed but no suitable video decoder and no suitable audio decoder).</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>details</code></em></i>
+					(
+						[ <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a> ]
+						)
+				–
+	</div>
+			<p>NULL-terminated array
+of installer string details (see below)</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>, or NULL</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>func</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsResultFunc" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsResultFunc">GstPbutils.InstallPluginsResultFunc</a>
+						)
+				–
+	</div>
+			<p>the function to call when the installer program returns</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>user_data</code></em></i>
+					(
+						<a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+						)
+				–
+	</div>
+			<p>the user data to pass to <em>func</em> when called, or NULL</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="GstPbutils.InstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstPbutils.InstallPluginsReturn</a>
+										)
+								–
+			</div>
+							<p>result code whether an external installer could be started</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_install_plugins_installation_in_progress">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_installation_in_progress">
+	<span><code>gst_install_plugins_installation_in_progress</code></span>
+</h3>
+
+
+
+
+<pre class="c-prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+gst_install_plugins_installation_in_progress ()</pre>
+
+<p>Checks whether plugin installation (initiated by this application only)
+is currently in progress.</p>
+
+
+
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+								–
+			</div>
+							<p>TRUE if plugin installation is in progress, otherwise FALSE</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_installation_in_progress">
+	<span><code>GstPbutils.install_plugins_installation_in_progress</code></span>
+</h3>
+
+
+<pre class="python-prototype">
+def GstPbutils.install_plugins_installation_in_progress ():
+    #python wrapper for 'gst_install_plugins_installation_in_progress'</pre>
+
+<p>Checks whether plugin installation (initiated by this application only)
+is currently in progress.</p>
+
+
+
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>
+										)
+								–
+			</div>
+							<p>TRUE if plugin installation is in progress, otherwise FALSE</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_installation_in_progress">
+	<span><code>GstPbutils.prototype.install_plugins_installation_in_progress</code></span>
+</h3>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.prototype.install_plugins_installation_in_progress(): {
+    // javascript wrapper for 'gst_install_plugins_installation_in_progress'
+}</pre>
+
+<p>Checks whether plugin installation (initiated by this application only)
+is currently in progress.</p>
+
+
+
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+										)
+								–
+			</div>
+							<p>TRUE if plugin installation is in progress, otherwise FALSE</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_install_plugins_supported">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_supported">
+	<span><code>gst_install_plugins_supported</code></span>
+</h3>
+
+
+
+
+<pre class="c-prototype">
+<a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a>
+gst_install_plugins_supported ()</pre>
+
+<p>Checks whether plugin installation is likely to be supported by the
+current environment. This currently only checks whether the helper script
+that is to be provided by the distribution or operating system vendor
+exists.</p>
+
+
+
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+								–
+			</div>
+							<p>TRUE if plugin installation is likely to be supported.</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_supported">
+	<span><code>GstPbutils.install_plugins_supported</code></span>
+</h3>
+
+
+<pre class="python-prototype">
+def GstPbutils.install_plugins_supported ():
+    #python wrapper for 'gst_install_plugins_supported'</pre>
+
+<p>Checks whether plugin installation is likely to be supported by the
+current environment. This currently only checks whether the helper script
+that is to be provided by the distribution or operating system vendor
+exists.</p>
+
+
+
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="bool" href="https://docs.python.org/3/library/functions.html#bool">bool</a>
+										)
+								–
+			</div>
+							<p>TRUE if plugin installation is likely to be supported.</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_supported">
+	<span><code>GstPbutils.prototype.install_plugins_supported</code></span>
+</h3>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.prototype.install_plugins_supported(): {
+    // javascript wrapper for 'gst_install_plugins_supported'
+}</pre>
+
+<p>Checks whether plugin installation is likely to be supported by the
+current environment. This currently only checks whether the helper script
+that is to be provided by the distribution or operating system vendor
+exists.</p>
+
+
+
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="Number" href="https://developer.mozilla.org/en-US/docs/Glossary/Number">Number</a>
+										)
+								–
+			</div>
+							<p>TRUE if plugin installation is likely to be supported.</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+
+</div>
+
+            
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="gst_install_plugins_sync">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_sync">
+	<span><code>gst_install_plugins_sync</code></span>
+</h3>
+
+
+
+
+<pre class="c-prototype">
+<a title="GstInstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstInstallPluginsReturn</a>
+gst_install_plugins_sync (<a title="gchar" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gchar">gchar</a> ** details,
+                          <a title="GstInstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a> * ctx)</pre>
+
+<p>Requests plugin installation and block until the plugins have been
+installed or installation has failed.</p>
+<p>This function should almost never be used, it only exists for cases where
+a non-GLib main loop is running and the user wants to run it in a separate
+thread and marshal the result back asynchronously into the main thread
+using the other non-GLib main loop. You should almost always use
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">gst_install_plugins_async</a> instead of this function.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>details</code></em></i>
+					(
+						
+<span class="annotation">[<abbr title="Parameter points to an array of items"><span class="acronym">array</span></abbr> zero-terminated=1]</span>
+<span class="annotation">[<abbr title="Don't free data after the code is done"><span class="acronym">transfer: none</span></abbr>]</span>
+
+						)
+				–
+	</div>
+			<p>NULL-terminated array
+of installer string details</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						
+<span class="annotation">[<abbr title="NULL is OK, both for passing and returning"><span class="acronym">allow-none</span></abbr>]</span>
+
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstInstallPluginsContext</a>, or NULL</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+								–
+			</div>
+							<p>the result of the installation.</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_sync">
+	<span><code>GstPbutils.install_plugins_sync</code></span>
+</h3>
+
+
+<pre class="python-prototype">
+def GstPbutils.install_plugins_sync (details, ctx):
+    #python wrapper for 'gst_install_plugins_sync'</pre>
+
+<p>Requests plugin installation and block until the plugins have been
+installed or installation has failed.</p>
+<p>This function should almost never be used, it only exists for cases where
+a non-GLib main loop is running and the user wants to run it in a separate
+thread and marshal the result back asynchronously into the main thread
+using the other non-GLib main loop. You should almost always use
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">GstPbutils.install_plugins_async</a> instead of this function.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>details</code></em></i>
+					(
+						[ <a title="str" href="https://docs.python.org/3/library/functions.html#func-str">str</a> ]
+						)
+				–
+	</div>
+			<p>NULL-terminated array
+of installer string details</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>, or NULL</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="GstPbutils.InstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstPbutils.InstallPluginsReturn</a>
+										)
+								–
+			</div>
+							<p>the result of the installation.</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h3 data-hotdoc-id="gst_install_plugins_sync">
+	<span><code>GstPbutils.prototype.install_plugins_sync</code></span>
+</h3>
+
+
+<pre class="javascript-prototype">
+function GstPbutils.prototype.install_plugins_sync(details: [ <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a> ], ctx: <a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>): {
+    // javascript wrapper for 'gst_install_plugins_sync'
+}</pre>
+
+<p>Requests plugin installation and block until the plugins have been
+installed or installation has failed.</p>
+<p>This function should almost never be used, it only exists for cases where
+a non-GLib main loop is running and the user wants to run it in a separate
+thread and marshal the result back asynchronously into the main thread
+using the other non-GLib main loop. You should almost always use
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">GstPbutils.prototype.install_plugins_async</a> instead of this function.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>details</code></em></i>
+					(
+						[ <a title="String" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a> ]
+						)
+				–
+	</div>
+			<p>NULL-terminated array
+of installer string details</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>ctx</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsContext" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>
+						)
+				–
+	</div>
+			<p>a <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsContext">GstPbutils.InstallPluginsContext</a>, or NULL</p>
+
+	</div>
+
+			</div>
+
+		<div class="return-values-container">
+		<div class="symbol-detail">
+			<div>
+				<b>Returns</b>
+									(
+					<a title="GstPbutils.InstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstPbutils.InstallPluginsReturn</a>
+										)
+								–
+			</div>
+							<p>the result of the installation.</p>
+
+					</div>
+	</div>
+
+
+
+
+
+</div>
+
+</div>
+
+
+            <h2 class="symbol_section">Structures</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstInstallPluginsContext">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="GstInstallPluginsContext">
+	<span><code>GstInstallPluginsContext</code></span>
+</h3>
+
+
+<p>Opaque context structure for the plugin installation. Use the provided
+API to set details on it.</p>
+
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h3>
+	GstPbutils.InstallPluginsContext
+</h3>
+
+
+<p>Opaque context structure for the plugin installation. Use the provided
+API to set details on it.</p>
+
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h3>
+	GstPbutils.InstallPluginsContext
+</h3>
+
+
+<p>Opaque context structure for the plugin installation. Use the provided
+API to set details on it.</p>
+
+
+
+
+
+
+</div>
+
+</div>
+
+
+            <h2 class="symbol_section">Enumerations</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstInstallPluginsReturn">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="GstInstallPluginsReturn">
+	<span><code>GstInstallPluginsReturn</code></span>
+</h3>
+
+
+<p>Result codes returned by <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">gst_install_plugins_async</a> and
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_sync">gst_install_plugins_sync</a>, and also the result code passed to the
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsResultFunc">GstInstallPluginsResultFunc</a> specified with <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">gst_install_plugins_async</a>.</p>
+<p>These codes indicate success or failure of starting an external installer
+program and to what extent the requested plugins could be installed.</p>
+
+
+
+
+	<div class="members-container">
+		<h4>Members</h4>
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_SUCCESS">
+	<div>
+		<i><em><code>GST_INSTALL_PLUGINS_SUCCESS</code></em></i>
+		(<span class="value">0</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_NOT_FOUND">
+	<div>
+		<i><em><code>GST_INSTALL_PLUGINS_NOT_FOUND</code></em></i>
+		(<span class="value">1</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_ERROR">
+	<div>
+		<i><em><code>GST_INSTALL_PLUGINS_ERROR</code></em></i>
+		(<span class="value">2</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_PARTIAL_SUCCESS">
+	<div>
+		<i><em><code>GST_INSTALL_PLUGINS_PARTIAL_SUCCESS</code></em></i>
+		(<span class="value">3</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_USER_ABORT">
+	<div>
+		<i><em><code>GST_INSTALL_PLUGINS_USER_ABORT</code></em></i>
+		(<span class="value">4</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_CRASHED">
+	<div>
+		<i><em><code>GST_INSTALL_PLUGINS_CRASHED</code></em></i>
+		(<span class="value">100</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_INVALID">
+	<div>
+		<i><em><code>GST_INSTALL_PLUGINS_INVALID</code></em></i>
+		(<span class="value">101</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_STARTED_OK">
+	<div>
+		<i><em><code>GST_INSTALL_PLUGINS_STARTED_OK</code></em></i>
+		(<span class="value">200</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_INTERNAL_FAILURE">
+	<div>
+		<i><em><code>GST_INSTALL_PLUGINS_INTERNAL_FAILURE</code></em></i>
+		(<span class="value">201</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_HELPER_MISSING">
+	<div>
+		<i><em><code>GST_INSTALL_PLUGINS_HELPER_MISSING</code></em></i>
+		(<span class="value">202</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_INSTALL_IN_PROGRESS">
+	<div>
+		<i><em><code>GST_INSTALL_PLUGINS_INSTALL_IN_PROGRESS</code></em></i>
+		(<span class="value">203</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h3 data-hotdoc-id="GstInstallPluginsReturn">
+	<span><code>GstPbutils.InstallPluginsReturn</code></span>
+</h3>
+
+
+<p>Result codes returned by <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">GstPbutils.install_plugins_async</a> and
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_sync">GstPbutils.install_plugins_sync</a>, and also the result code passed to the
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsResultFunc">GstPbutils.InstallPluginsResultFunc</a> specified with <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">GstPbutils.install_plugins_async</a>.</p>
+<p>These codes indicate success or failure of starting an external installer
+program and to what extent the requested plugins could be installed.</p>
+
+
+
+
+	<div class="members-container">
+		<h4>Members</h4>
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_SUCCESS">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.SUCCESS</code></em></i>
+		(<span class="value">0</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_NOT_FOUND">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.NOT_FOUND</code></em></i>
+		(<span class="value">1</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_ERROR">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.ERROR</code></em></i>
+		(<span class="value">2</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_PARTIAL_SUCCESS">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.PARTIAL_SUCCESS</code></em></i>
+		(<span class="value">3</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_USER_ABORT">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.USER_ABORT</code></em></i>
+		(<span class="value">4</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_CRASHED">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.CRASHED</code></em></i>
+		(<span class="value">100</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_INVALID">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.INVALID</code></em></i>
+		(<span class="value">101</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_STARTED_OK">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.STARTED_OK</code></em></i>
+		(<span class="value">200</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_INTERNAL_FAILURE">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.INTERNAL_FAILURE</code></em></i>
+		(<span class="value">201</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_HELPER_MISSING">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.HELPER_MISSING</code></em></i>
+		(<span class="value">202</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_INSTALL_IN_PROGRESS">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.INSTALL_IN_PROGRESS</code></em></i>
+		(<span class="value">203</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h3 data-hotdoc-id="GstInstallPluginsReturn">
+	<span><code>GstPbutils.InstallPluginsReturn</code></span>
+</h3>
+
+
+<p>Result codes returned by <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">GstPbutils.prototype.install_plugins_async</a> and
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_sync">GstPbutils.prototype.install_plugins_sync</a>, and also the result code passed to the
+<a href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsResultFunc">GstPbutils.InstallPluginsResultFunc</a> specified with <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">GstPbutils.prototype.install_plugins_async</a>.</p>
+<p>These codes indicate success or failure of starting an external installer
+program and to what extent the requested plugins could be installed.</p>
+
+
+
+
+	<div class="members-container">
+		<h4>Members</h4>
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_SUCCESS">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.SUCCESS</code></em></i>
+		(<span class="value">0</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_NOT_FOUND">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.NOT_FOUND</code></em></i>
+		(<span class="value">1</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_ERROR">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.ERROR</code></em></i>
+		(<span class="value">2</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_PARTIAL_SUCCESS">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.PARTIAL_SUCCESS</code></em></i>
+		(<span class="value">3</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_USER_ABORT">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.USER_ABORT</code></em></i>
+		(<span class="value">4</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_CRASHED">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.CRASHED</code></em></i>
+		(<span class="value">100</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_INVALID">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.INVALID</code></em></i>
+		(<span class="value">101</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_STARTED_OK">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.STARTED_OK</code></em></i>
+		(<span class="value">200</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_INTERNAL_FAILURE">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.INTERNAL_FAILURE</code></em></i>
+		(<span class="value">201</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_HELPER_MISSING">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.HELPER_MISSING</code></em></i>
+		(<span class="value">202</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+					
+<div class="symbol-detail" data-hotdoc-id="GST_INSTALL_PLUGINS_INSTALL_IN_PROGRESS">
+	<div>
+		<i><em><code>GstPbutils.InstallPluginsReturn.INSTALL_IN_PROGRESS</code></em></i>
+		(<span class="value">203</span>)
+		–
+	</div>
+			<i>No description available</i>
+	</div>
+
+			</div>
+
+
+
+</div>
+
+</div>
+
+
+            <h2 class="symbol_section">Constants</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GST_TYPE_INSTALL_PLUGINS_CONTEXT">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="GST_TYPE_INSTALL_PLUGINS_CONTEXT">
+	<span><code>GST_TYPE_INSTALL_PLUGINS_CONTEXT</code></span>
+</h3>
+
+
+<pre class="raw_code">
+#define GST_TYPE_INSTALL_PLUGINS_CONTEXT	(gst_install_plugins_context_get_type())
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+
+            <h2 class="symbol_section">Callbacks</h2>
+                    
+
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstInstallPluginsResultFunc">
+	
+<div class="gi-symbol gi-symbol-c">
+	
+
+
+
+<h3 data-hotdoc-id="GstInstallPluginsResultFunc">
+	<span><code>GstInstallPluginsResultFunc</code></span>
+</h3>
+
+
+
+
+<pre class="c-prototype">
+(*GstInstallPluginsResultFunc) (<a title="GstInstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstInstallPluginsReturn</a> result,
+                                <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> user_data)</pre>
+
+<p>The prototype of the callback function that will be called once the
+external plugin installer program has returned. You only need to provide
+a callback function if you are using the asynchronous interface.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>result</code></em></i>
+				–
+	</div>
+			<p>whether the installation of the requested plugins succeeded or not</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>user_data</code></em></i>
+				–
+	</div>
+			<p>the user data passed to <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">gst_install_plugins_async</a></p>
+
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-python">
+	
+
+
+
+<h3 data-hotdoc-id="GstInstallPluginsResultFunc">
+	<span><code>GstPbutils.InstallPluginsResultFunc</code></span>
+</h3>
+
+
+
+
+<pre class="c-prototype">
+(*GstPbutils.InstallPluginsResultFunc) (<a title="GstPbutils.InstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstPbutils.InstallPluginsReturn</a>,
+                                        <a title="object" href="https://docs.python.org/3/library/functions.html#object">object</a>)</pre>
+
+<p>The prototype of the callback function that will be called once the
+external plugin installer program has returned. You only need to provide
+a callback function if you are using the asynchronous interface.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>result</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstPbutils.InstallPluginsReturn</a>
+						)
+				–
+	</div>
+			<p>whether the installation of the requested plugins succeeded or not</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>user_data</code></em></i>
+					(
+						<a title="object" href="https://docs.python.org/3/library/functions.html#object">object</a>
+						)
+				–
+	</div>
+			<p>the user data passed to <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">GstPbutils.install_plugins_async</a></p>
+
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+<div class="gi-symbol gi-symbol-javascript">
+	
+
+
+
+<h3 data-hotdoc-id="GstInstallPluginsResultFunc">
+	<span><code>GstPbutils.InstallPluginsResultFunc</code></span>
+</h3>
+
+
+
+
+<pre class="c-prototype">
+(*GstPbutils.InstallPluginsResultFunc) (<a title="GstPbutils.InstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstPbutils.InstallPluginsReturn</a>,
+                                        <a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</pre>
+
+<p>The prototype of the callback function that will be called once the
+external plugin installer program has returned. You only need to provide
+a callback function if you are using the asynchronous interface.</p>
+
+
+
+	<div class="parameters-container">
+		<p><b>Parameters:</b></p>
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>result</code></em></i>
+					(
+						<a title="GstPbutils.InstallPluginsReturn" href="gst-plugins-base-pbutils-1.0/install-plugins.html#GstInstallPluginsReturn">GstPbutils.InstallPluginsReturn</a>
+						)
+				–
+	</div>
+			<p>whether the installation of the requested plugins succeeded or not</p>
+
+	</div>
+
+					
+<div class="symbol-detail">
+	<div>
+		<i><em><code>user_data</code></em></i>
+					(
+						<a title="Object" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+						)
+				–
+	</div>
+			<p>the user data passed to <a href="gst-plugins-base-pbutils-1.0/install-plugins.html#gst_install_plugins_async">GstPbutils.prototype.install_plugins_async</a></p>
+
+	</div>
+
+			</div>
+
+
+
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+		
+	</div>
+	<div id="search_results">
+		<p>The results of the search are</p>
+	</div>
+	<hr>
+	<div id="footer">
+		    
+
+	</div>
+</div>
+
+<div id="toc-column">
+	
+		<div class="edit-button">
+		
+
+	</div>
+		<div id="toc-wrapper">
+		<nav id="toc"></nav>
+	</div>
+</div>
+</div>
+</main>
+
+</body>
+
+<script src="assets/js/navbar_offset_scroller.js"></script>
+</html>

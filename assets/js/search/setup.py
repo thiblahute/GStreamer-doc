@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "setup.py", "urls": ["frequently-asked-questions/developing.html#how-do-i-develop-against-an-uninstalled-gstreamer-copy"]});
+urls_downloaded_cb({"token": "setup.py", "urls": [{"url": "frequently-asked-questions/developing.html#page-description", "context": {"gi-language": ["default"]}}]});

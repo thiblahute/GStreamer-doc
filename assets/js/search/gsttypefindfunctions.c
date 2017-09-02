@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gsttypefindfunctions.c", "urls": ["plugin-development/advanced/media-types.html#typefind-functions-and-autoplugging"]});
+urls_downloaded_cb({"token": "gsttypefindfunctions.c", "urls": [{"url": "plugin-development/advanced/media-types.html#page-description", "context": {"gi-language": ["default"]}}]});

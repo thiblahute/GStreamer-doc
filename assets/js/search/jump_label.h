@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "jump_label.h", "urls": ["design/tracing.html#hook-api"]});
+urls_downloaded_cb({"token": "jump_label.h", "urls": [{"url": "design/tracing.html#page-description", "context": {"gi-language": ["default"]}}]});
