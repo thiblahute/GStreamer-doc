@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/probes.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/probes.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -198,13 +198,13 @@ blocking probe (see below). Otherwise the probe will be a DATA probe.</p>
 datatypes and scheduling modes should be allowed in the callback.</p>
 <p>The blocking flags must match the triggered probe exactly.</p>
 <p>The probe callback is defined as:</p>
-<pre><code class="language-c">    GstPadProbeReturn (*GstPadProbeCallback) (GstPad *pad, GstPadProbeInfo *info,
-                                           gpointer user_data);
+<pre><code class="language-c">GstPadProbeReturn (*GstPadProbeCallback) (GstPad *pad, GstPadProbeInfo *info,
+    gpointer user_data);
 </code></pre>
 <p>A probe info structure is passed as an argument and its type is guaranteed
 to match the mask that was used to register the callback. The data item in the
 info contains type specific data, which is usually the data item that is blocked
-or NULL when no data item is present.</p>
+or <code>NULL</code> when no data item is present.</p>
 <p>The probe can return any of the following return values:</p>
 <pre><code class="language-c">typedef enum
 {
@@ -212,26 +212,27 @@ or NULL when no data item is present.</p>
   GST_PAD_PROBE_OK,
   GST_PAD_PROBE_REMOVE,
   GST_PAD_PROBE_PASS,
+  GST_PAD_PROBE_HANDLED
 } GstPadProbeReturn;
 </code></pre>
-<p><code>GST_PAD_PROBE_OK</code> is the normal return value. DROP will drop the item that is
-currently being probed. <code>GST_PAD_PROBE_REMOVE</code> the currently executing probe from the
+<p><code>GST_PAD_PROBE_OK</code> is the normal return value. <code>_DROP</code> will drop the item that is
+currently being probed. <code>GST_PAD_PROBE_REMOVE</code>: remove the currently executing probe from the
 list of probes.</p>
 <p><code>GST_PAD_PROBE_PASS</code> is relevant for blocking probes and will temporarily unblock the
 pad and let the item trough, it will then block again on the next item.</p>
 <h2 id="blocking-probes">Blocking probes</h2>
-<p>Blocking probes are probes with BLOCK or IDLE flags set. They will always
+<p>Blocking probes are probes with <code>BLOCK</code> or <code>IDLE</code> flags set. They will always
 block the dataflow and trigger the callback according to the following rules:</p>
-<p>When the IDLE flag is set, the probe callback is called as soon as no data is
+<p>When the <code>IDLE</code> flag is set, the probe callback is called as soon as no data is
 flowing over the pad. If at the time of probe registration, the pad is idle,
 the callback will be called immediately from the current thread. Otherwise,
 the callback will be called as soon as the pad becomes idle in the streaming
 thread.</p>
-<p>The IDLE probe is useful to perform dynamic linking, it allows to wait for for
+<p>The <code>IDLE</code> probe is useful to perform dynamic linking, it allows to wait for for
 a safe moment when an unlink/link operation can be done. Since the probe is a
 blocking probe, it will also make sure that the pad stays idle until the probe
 is removed.</p>
-<p>When the BLOCK flag is set, the probe callback will be called when new data
+<p>When the <code>BLOCK</code> flag is set, the probe callback will be called when new data
 arrives on the pad and right before the pad goes into the blocking state. This
 callback is thus only called when there is new data on the pad.</p>
 <p>The blocking probe is removed with <code>gst_pad_remove_probe()</code> or when the probe
@@ -251,7 +252,7 @@ event function is called.</p>
 for linking the pad in either the BLOCK or DATA probes on the pad.</p>
 <p>Before the peerpad chain or event function is called, the peer pad block
 and data probes are called.</p>
-<p>Finally, the IDLE probe is called on the pad after the data was sent to
+<p>Finally, the <code>IDLE</code> probe is called on the pad after the data was sent to
 the peer pad.</p>
 <p>The push dataflow probe behavior is the same for buffers and
 bidirectional events.</p>
@@ -292,16 +293,16 @@ gst_pad_push_event() |                               |
 <h2 id="pull-dataflow">Pull dataflow</h2>
 <p>Pull probes have the <code>GST_PAD_PROBE_TYPE_PULL</code> flag set in the
 callbacks.</p>
-<p>The <code>gst_pad_pull_range()</code> call will first trigger the BLOCK probes
-without a DATA item. This allows the pad to be linked before the peer
+<p>The <code>gst_pad_pull_range()</code> call will first trigger the <code>BLOCK</code> probes
+without a <code>DATA</code> item. This allows the pad to be linked before the peer
 pad is resolved. It also allows the callback to set a data item in the
 probe info.</p>
 <p>After the blocking probe and the getrange function is called on the peer
 pad and there is a data item, the DATA probes are called.</p>
-<p>When control returns to the sinkpad, the IDLE callbacks are called. The
-IDLE callback is called without a data item so that it will also be
+<p>When control returns to the sinkpad, the <code>IDLE</code> callbacks are called. The
+<code>IDLE</code> callback is called without a data item so that it will also be
 called when there was an error.</p>
-<p>If there is a valid DATA item, the DATA probes are called for the item.</p>
+<p>If there is a valid <code>DATA</code> item, the <code>DATA</code> probes are called for the item.</p>
 <pre><code>                srcpad                          sinkpad
                   |                               |
                   |                               | gst_pad_pull_range()
@@ -369,8 +370,8 @@ gst_pad_peer_query() |                               |
        &lt; - - - - - - O                               |
                      |                               |
 </code></pre>
-<p>For queries, the PUSH ProbeType is set when the query is traveling to
-the object that will answer the query and the PULL type is set when the
+<p>For queries, the <code>PUSH</code> <code>ProbeType</code> is set when the query is traveling to
+the object that will answer the query and the <code>PULL</code> type is set when the
 query contains the answer.</p>
 <h2 id="usecases">Use-cases</h2>
 <h3 id="prerolling-a-partial-pipeline">Prerolling a partial pipeline</h3>
@@ -414,7 +415,7 @@ prerolled pipeline:</p>
                   sink       src
                    '----------'
 </code></pre>
-<p>The purpose is to replace element2 with element4 in the PLAYING
+<p>The purpose is to replace element2 with element4 in the <code>PLAYING</code>
 pipeline.</p>
 <ol>
 <li>block element1 src pad.</li>
@@ -423,19 +424,19 @@ element1 and element2 and nothing will flow until unblocked.</li>
 <li>unlink element1 and element2</li>
 <li>optional step: make sure data is flushed out of element2:
 4a) pad event probe on element2 src
-4b) send EOS to element2, this makes sure that element2 flushes out the last bits of data it holds.
-4c) wait for EOS to appear in the probe, drop the EOS.
-4d) remove the EOS pad event probe.</li>
+4b) send <code>EOS</code> to element2, this makes sure that element2 flushes out the last bits of data it holds.
+4c) wait for <code>EOS</code> to appear in the probe, drop the <code>EOS</code>.
+4d) remove the <code>EOS</code> pad event probe.</li>
 <li>unlink element2 and element3
-5a) optionally element2 can now be set to NULL and/or removed from the pipeline.</li>
+5a) optionally element2 can now be set to <code>NULL</code> and/or removed from the pipeline.</li>
 <li>link element4 and element3</li>
 <li>link element1 and element4</li>
 <li>make sure element4 is in the same state as the rest of the elements. The
-element should at least be PAUSED.</li>
+element should at least be <code>PAUSED</code>.</li>
 <li>unblock element1 src</li>
 </ol>
-<p>The same flow can be used to replace an element in a PAUSED pipeline. Of
-course in a PAUSED pipeline there might not be dataflow so the block
+<p>The same flow can be used to replace an element in a <code>PAUSED</code> pipeline. Of
+course in a <code>PAUSED</code> pipeline there might not be dataflow so the block
 might not immediately happen.</p>
 
     </div>

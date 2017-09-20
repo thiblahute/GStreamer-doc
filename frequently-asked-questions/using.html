@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="frequently-asked-questions/using.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="frequently-asked-questions/using.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -143,11 +143,10 @@ GStreamer</a> If this fails with any other message, we
 would appreciate a <a href="frequently-asked-questions/using.html#using-bugs-where">bug report</a>.</p>
 <p>It's time to try out a few things. Start with gst-launch and two
 plug-ins that you really should have : fakesrc and fakesink. They do
-nothing except pass empty buffers. Type this at the command-line
-:</p>
+nothing except pass empty buffers. Type this at the command-line:</p>
 <pre><code>$ gst-launch-1.0 -v fakesrc silent=false num-buffers=3 ! fakesink silent=false
 </code></pre>
-<p>This will print out output that looks similar to this :</p>
+<p>This will print out output that looks similar to this:</p>
 <pre><code>RUNNING pipeline ...
 fakesrc0: last-message = "get      ******* (fakesrc0:src)gt; (0 bytes, 0) 0x8057510"
 fakesink0: last-message = "chain   ******* (fakesink0:sink)lt; (0 bytes, 0) 0x8057510"
@@ -233,42 +232,42 @@ provide us with the necessary gdb output. See
 <a href="frequently-asked-questions/using.html#troubleshooting-segfault">???</a></p>
 <h2 id="how-do-i-use-the-gstreamer-command-line-interface">How do I use the GStreamer command line interface?</h2>
 <p>You access the GStreamer command line interface using the command
-<code>gst-launch-1.0</code>. To play a file you could just use</p>
-<pre><code>gst-play-1.0 song.mp3
-</code></pre>
-<p>or</p>
+<code>gst-launch-1.0</code>. For example, to play a file you could just use</p>
 <pre><code>gst-launch-1.0 playbin uri=file:///path/to/song.mp3
 </code></pre>
-<p>To decode an mp3 audio file and play it through Pulseaudio, you could also use</p>
-<pre><code>gst-launch-1.0 filesrc location=thesong.mp3 ! decodebin ! audioconvert ! pulsesink
+<p>You can also use <code>gst-play</code>:</p>
+<pre><code>gst-play-1.0 song.mp3
 </code></pre>
-<p>or</p>
+<p>To decode an mp3 audio file and play it through Pulseaudio, you could use:</p>
 <pre><code>gst-launch-1.0 filesrc location=thesong.mp3 ! mpegaudioparse ! mpg123audiodec ! audioconvert ! pulsesink
 </code></pre>
-<p>. More examples can be found in the gst-launch man page.</p>
-<p>To automatically detect the right codec in a pipeline,
-try</p>
-<pre><code>gst-launch-1.0 filesrc location=my-random-media-file.mpeg ! decodebin !
- pulsesink
+<p>To automatically detect and select the right decoder for a given encoded stream
+in a pipeline, try any of the following:</p>
+<pre><code>gst-launch-1.0 filesrc location=thesong.mp3 ! decodebin ! audioconvert ! pulsesink
 </code></pre>
-<p>.
-or</p>
-<pre><code>gst-launch-1.0 filesrc location=my-random-media-file.mpeg ! decodebin !
- videoconvert ! xvimagesink
+<pre><code>gst-launch-1.0 filesrc location=my-random-media-file.mpeg ! decodebin ! pulsesink
 </code></pre>
-<p>Something more
-complicated:</p>
-<pre><code>gst-launch-1.0 filesrc location=my-random-media-file.mpeg ! decodebin name=decoder
-   decoder. ! queue ! videoconvert ! xvimagesink
-   decoder. ! queue ! audioconvert ! pulsesink
+<pre><code>gst-launch-1.0 filesrc location=my-random-media-file.mpeg ! decodebin ! videoconvert ! xvimagesink
 </code></pre>
-<p>We also have a basic media playing plugin that will take care of most
-things for you. This plugin is called playbin. Try
-this:</p>
+<p>Or even something more complicated like:</p>
+<pre><code>gst-launch-1.0 filesrc location=my-random-media-file.mpeg !decodebin name=decoder \
+       decoder. ! queue ! videoconvert ! xvimagesink \
+       decoder. ! queue ! audioconvert ! pulsesink
+</code></pre>
+<p>Building from the previous example, you can let GStreamer select an appropriate
+set of default sinks by replacing the specific output elements with these automatic
+alternatives:</p>
+<pre><code>gst-launch-1.0 filesrc location=my-random-media-file.mpeg !decodebin name=decoder \
+       decoder. ! queue ! videoconvert ! autovideosink \
+       decoder. ! queue ! audioconvert ! autoaudiosink
+</code></pre>
+<p>GStreamer also provides <code>playbin</code>, a basic media-playback plugin that
+automatically takes care of most playback details. The following example shows
+how to play any file as long as its format is supported, ie. you have the
+necessary demuxing and decoding plugins installed:</p>
 <pre><code>gst-launch-1.0 playbin uri=file:///home/joe/my-random-media-file.mpeg
 </code></pre>
-<p>This should play the file if the format is supported, ie. you have all
-the necessary demuxing and decoding and some output plugins installed.</p>
+<p>Additional examples can be found in the <code>gst-launch</code> manual page.</p>
 
     </div>
         

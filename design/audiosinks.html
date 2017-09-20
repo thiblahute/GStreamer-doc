@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/audiosinks.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/audiosinks.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -178,8 +178,8 @@ ringbuffer of samples.</p>
 </code></pre>
 <p>The ringbuffer is a contiguous piece of memory divided into segtotal
 pieces of segments. Each segment has segsize bytes.</p>
-<pre><code>      play position 
-        v          
+<pre><code>      play position
+        v
 +---+---+---+-------------------------------------+----------+
 + 0 | 1 | 2 | ....                                | segtotal |
 +---+---+---+-------------------------------------+----------+
@@ -189,10 +189,10 @@ pieces of segments. Each segment has segsize bytes.</p>
 <p>The ringbuffer has a play position, which is expressed in segments. The
 play position is where the device is currently reading samples from the
 buffer.</p>
-<p>The ringbuffer can be put to the PLAYING or STOPPED state.</p>
-<p>In the STOPPED state no samples are played to the device and the play
+<p>The ringbuffer can be put to the <code>PLAYING</code> or <code>STOPPED</code> state.</p>
+<p>In the <code>STOPPED</code> state no samples are played to the device and the play
 pointer does not advance.</p>
-<p>In the PLAYING state samples are written to the device and the
+<p>In the <code>PLAYING</code> state samples are written to the device and the
 ringbuffer should call a configurable callback after each segment is
 written to the device. In this state the play pointer is advanced after
 each segment is written.</p>
@@ -207,7 +207,7 @@ possible.</p>
 <p>Whenever new samples are to be put into the ringbuffer, the position of
 the read pointer is taken. The required write position is taken and the
 diff is made between the required and actual position. If the difference
-is &lt;0, the sample is too late. If the difference is bigger than
+is <code>&lt; 0</code>, the sample is too late. If the difference is bigger than
 segtotal, the writing part has to wait for the play pointer to advance.</p>
 <h3 id="scheduling">Scheduling</h3>
 <h4 id="chain-based-mode">chain based mode</h4>
@@ -233,13 +233,13 @@ There is no context switch needed between the elements that create
 the samples and the actual writing of the samples to the device.</p>
 <h4 id="dma-mode">DMA mode</h4>
 <p>Elements that can do DMA based access to the audio device have to
-subclass from the GstAudioBaseSink class and wrap the DMA ringbuffer
-in a subclass of GstRingBuffer.</p>
+subclass from the <code>GstAudioBaseSink</code> class and wrap the DMA ringbuffer
+in a subclass of <code>GstRingBuffer</code>.</p>
 <p>The ringbuffer subclass should trigger a callback after writing or
 playing each sample to the device. This callback can be triggered
 from a thread or from a signal from the audio device.</p>
 <h3 id="clocks">Clocks</h3>
-<p>The GstAudioBaseSink class will use the ringbuffer to act as a clock
+<p>The <code>GstAudioBaseSink</code> class will use the ringbuffer to act as a clock
 provider. It can do this by using the play pointer and the delay to
 calculate the clock time.</p>
 

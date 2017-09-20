@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/dynamic-pipelines.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/dynamic-pipelines.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -425,8 +425,8 @@ for this purpose.</p>
 documentation or using the <code>gst-inspect-1.0</code> tool as described in <a href="tutorials/basic/gstreamer-tools.html">Basic
 tutorial 10: GStreamer
 tools</a>.</p>
-<p>We are now ready to go! Just set the pipeline to the PLAYING state and
-start listening to the bus for interesting messages (like ERROR or EOS),
+<p>We are now ready to go! Just set the pipeline to the <code>PLAYING</code> state and
+start listening to the bus for interesting messages (like <code>ERROR</code> or <code>EOS</code>),
 just like in the previous tutorials.</p>
 <h3 id="the-callback">The callback</h3>
 <p>When our source element finally has enough information to start
@@ -504,42 +504,19 @@ continue until ERROR or EOS. However, we will squeeze a bit more content
 from this tutorial by also introducing the concept of State.</p>
 <h3 id="gstreamer-states">GStreamer States</h3>
 <p>We already talked a bit about states when we said that playback does not
-start until you bring the pipeline to the PLAYING state. We will
+start until you bring the pipeline to the <code>PLAYING</code> state. We will
 introduce here the rest of states and their meaning. There are 4 states
 in GStreamer:</p>
-<table>
-<thead>
-<tr>
-<th> State</th>
-<th> Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td> <code>NULL</code>
-</td>
-<td> the NULL state or initial state of an element.</td>
-</tr>
-<tr>
-<td> <code>READY</code>
-</td>
-<td> the element is ready to go to PAUSED.</td>
-</tr>
-<tr>
-<td> <code>PAUSED</code>
-</td>
-<td> the element is PAUSED, it is ready to accept and process data. Sink elements however only accept one buffer and then block.</td>
-</tr>
-<tr>
-<td> <code>PLAYING</code>
-</td>
-<td> the element is PLAYING, the clock is running and the data is flowing.</td>
-</tr>
-</tbody>
-</table>
-<p>You can only move between adjacent ones, this is, you can't go from NULL
-to PLAYING, you have to go through the intermediate READY and PAUSED
-states. If you set the pipeline to PLAYING, though, GStreamer will make
+<pre><code>| State     | Description |
+|-----------|--------------------|
+| `NULL`    | the NULL state or initial state of an element. |
+| `READY`   | the element is ready to go to PAUSED. |
+| `PAUSED`  | the element is PAUSED, it is ready to accept and process data. Sink elements however only accept one buffer and then block. |
+| `PLAYING` | the element is PLAYING, the clock is running and the data is flowing. |
+</code></pre>
+<p>You can only move between adjacent ones, this is, you can't go from <code>NULL</code>
+to <code>PLAYING</code>, you have to go through the intermediate <code>READY</code> and <code>PAUSED</code>
+states. If you set the pipeline to <code>PLAYING</code>, though, GStreamer will make
 the intermediate transitions for you.</p>
 <pre><code class="language-c">case GST_MESSAGE_STATE_CHANGED:
   /* We are only interested in state-changed messages from the pipeline */
@@ -556,8 +533,8 @@ changes and prints them on screen to help you understand the
 transitions. Every element puts messages on the bus regarding its
 current state, so we filter them out and only listen to messages coming
 from the pipeline.</p>
-<p>Most applications only need to worry about going to PLAYING to start
-playback, then to PAUSE to perform a pause, and then back to NULL at
+<p>Most applications only need to worry about going to <code>PLAYING</code> to start
+playback, then to <code>PAUSED</code> to perform a pause, and then back to <code>NULL</code> at
 program exit to free all resources.</p>
 <h2 id="exercise">Exercise</h2>
 <p>Dynamic pad linking has traditionally been a difficult topic for a lot

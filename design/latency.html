@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/latency.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/latency.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -244,12 +244,12 @@ is not prerolled. The sink will commit state to <code>PLAYING</code> when it pre
 </ul>
 <ul>
 <li>
-<p>since the sink is still performing a state change from <code>READY→PAUSED</code>, it remains ASYNC. The pending state will be set to
-PLAYING.</p>
+<p>since the sink is still performing a state change from <code>READY→PAUSED</code>, it remains <code>ASYNC</code>. The pending state will be set to
+<code>PLAYING</code>.</p>
 </li>
 <li>
 <p>The clock starts running as soon as all the elements have been
-set to PLAYING.</p>
+set to <code>PLAYING</code>.</p>
 </li>
 <li>
 <p>the source is a live source with a latency. Since it is
@@ -259,14 +259,14 @@ able to produce the last sample of the buffer (with timestamp D)
 at time D. This latency depends on the size of the buffer.</p>
 </li>
 <li>
-<p>the sink will receive the buffer with timestamp 0 at time &gt;= D.
+<p>the sink will receive the buffer with timestamp 0 at time <code>&gt;= D</code>.
 At this point the buffer is too late already and might be
 dropped. This state of constantly dropping data will not change
 unless a constant latency correction is added to the incoming
 buffer timestamps.</p>
 </li>
 </ul>
-<p>The problem is due to the fact that the sink is set to (pending) PLAYING
+<p>The problem is due to the fact that the sink is set to (pending) <code>PLAYING</code>
 without being prerolled, which only happens in live pipelines.</p>
 <h3 id="example-2">Example 2</h3>
 <p>An audio/video capture/playback pipeline. We capture both audio and video and
@@ -290,13 +290,13 @@ have them played back synchronized again.</p>
 '--------------------------'
 </code></pre>
 <p>The state changes happen in the same way as example 1. Both sinks end up with
-pending state of <code>PLAYING</code> and a return value of ASYNC until they receive the
+pending state of <code>PLAYING</code> and a return value of <code>ASYNC</code> until they receive the
 first buffer.</p>
 <p>For audio and video to be played in sync, both sinks must compensate for the
 latency of its source but must also use exactly the same latency correction.</p>
 <p>Suppose asrc has a latency of 20ms and vsrc a latency of 33ms, the total
 latency in the pipeline has to be at least 33ms. This also means that the
-pipeline must have at least a 33 - 20 = 13ms buffering on the audio stream or
+pipeline must have at least a <code>33 - 20 = 13ms</code> buffering on the audio stream or
 else the audio src will underrun while the audiosink waits for the previous
 sample to play.</p>
 <h3 id="example-3">Example 3</h3>
@@ -315,13 +315,13 @@ connected to live sinks (vsink, sink).</p>
 '--------------------------'
 </code></pre>
 <p>The state changes happen in the same way as example 1. Except sink will be
-able to preroll (commit its state to PAUSED).</p>
+able to preroll (commit its state to <code>PAUSED</code>).</p>
 <p>In this case sink will have no latency but vsink will. The total latency
 should be that of vsink.</p>
 <p>Note that because of the presence of a live source (vsrc), the pipeline can be
 set to playing before the sink is able to preroll. Without compensation for the
 live source, this might lead to synchronisation problems because the latency
-should be configured in the element before it can go to PLAYING.</p>
+should be configured in the element before it can go to <code>PLAYING</code>.</p>
 <h3 id="example-4">Example 4</h3>
 <p>An example of the combination of a non-live and a live source. The non-live
 source is connected to a live sink and the live source to a non-live sink.</p>
@@ -338,7 +338,7 @@ source is connected to a live sink and the live source to a non-live sink.</p>
 '--------------------------'
 </code></pre>
 <p>The state changes happen in the same way as example 3. Sink will be
-able to preroll (commit its state to PAUSED). files will not be able to
+able to preroll (commit its state to <code>PAUSED</code>). files will not be able to
 preroll.</p>
 <p>sink will have no latency since it is not connected to a live source. files
 does not do synchronisation so it does not care about latency.</p>
@@ -349,7 +349,7 @@ prerolled.</p>
 <h2 id="state-changes">State Changes</h2>
 <p>A sink is never set to <code>PLAYING</code> before it is prerolled. In order to do
 this, the pipeline (at the <code>GstBin</code> level) keeps track of all elements
-that require preroll (the ones that return ASYNC from the state change).
+that require preroll (the ones that return <code>ASYNC</code> from the state change).
 These elements posted an <code>ASYNC_START</code> message without a matching
 <code>ASYNC_DONE</code> one.</p>
 <p>The pipeline will not change the state of the elements that are still
@@ -369,10 +369,10 @@ currently used for going from <code>PAUSED→PLAYING</code> in a non-live pipeli
 <p>The pipeline latency is queried with the <code>LATENCY</code> query.</p>
 <ul>
 <li>
-<p><strong><code>live</code></strong> <code>G_TYPE_BOOLEAN</code> (default FALSE): - if a live element is found upstream</p>
+<p><strong><code>live</code></strong> <code>G_TYPE_BOOLEAN</code> (default <code>FALSE</code>): - if a live element is found upstream</p>
 </li>
 <li>
-<p><strong><code>min-latency</code></strong> <code>G_TYPE_UINT64</code> (default 0, must not be NONE): - the minimum
+<p><strong><code>min-latency</code></strong> <code>G_TYPE_UINT64</code> (default 0, must not be <code>NONE</code>): - the minimum
 latency in the pipeline, meaning the minimum time downstream elements
 synchronizing to the clock have to wait until they can be sure all data
 for the current running time has been received.</p>
@@ -391,7 +391,7 @@ current element:</p>
 </code></pre>
 <ul>
 <li>
-<strong><code>max-latency</code></strong> <code>G_TYPE_UINT64</code> (default 0, NONE meaning infinity): - the
+<strong><code>max-latency</code></strong> <code>G_TYPE_UINT64</code> (default 0, <code>NONE</code> meaning infinity): - the
 maximum latency in the pipeline, meaning the maximum time an element
 synchronizing to the clock is allowed to wait for receiving all data for the
 current running time. Waiting for a longer time will result in data loss,
@@ -437,7 +437,7 @@ overridden to correctly handle leaky buffering.</p>
 <p>If the element has multiple sinkpads, the maximum upstream latency is the
 minimum of all live upstream maximum latencies.</p>
 <h2 id="event">Event</h2>
-<p>The latency in the pipeline is configured with the LATENCY event, which
+<p>The latency in the pipeline is configured with the <code>LATENCY</code> event, which
 contains the following fields:</p>
 <ul>
 <li>
@@ -453,13 +453,14 @@ the global latency as follows:</p>
 <li>sources set their minimum and maximum latency</li>
 <li>other elements add their own values as described above</li>
 <li>latency = MAX (all min latencies)</li>
-<li>if MIN (all max latencies) &lt; latency, we have an impossible
+<li>
+<code>if MIN (all max latencies) &lt; latency</code>, we have an impossible
 situation and we must generate an error indicating that this
 pipeline cannot be played. This usually means that there is not
 enough buffering in some chain of the pipeline. A queue can be added
 to those chains.</li>
 </ul>
-<p>The sinks gather this information with a LATENCY query upstream.
+<p>The sinks gather this information with a <code>LATENCY</code> query upstream.
 Intermediate elements pass the query upstream and add the amount of
 latency they add to the result.</p>
 <pre><code>ex1: sink1: [20 - 20] sink2: [33 - 40]
@@ -472,21 +473,21 @@ ex2: sink1: [20 - 50] sink2: [33 - 40]
     MAX (20, 33) = 33
     MIN (50, 40) = 40 &gt;= 33 -&gt; latency = 33
 </code></pre>
-<p>The latency is set on the pipeline by sending a LATENCY event to the
+<p>The latency is set on the pipeline by sending a <code>LATENCY</code> event to the
 sinks in the pipeline. This event configures the total latency on the
-sinks. The sink forwards this LATENCY event upstream so that
+sinks. The sink forwards this <code>LATENCY</code> event upstream so that
 intermediate elements can configure themselves as well.</p>
 <p>After this step, the pipeline continues setting the pending state on its
 elements.</p>
-<p>A sink adds the latency value, received in the LATENCY event, to the
+<p>A sink adds the latency value, received in the <code>LATENCY</code> event, to the
 times used for synchronizing against the clock. This will effectively
 delay the rendering of the buffer with the required latency. Since this
 delay is the same for all sinks, all sinks will render data relatively
 synchronised.</p>
 <h2 id="flushing-a-playing-pipeline">Flushing a playing pipeline</h2>
-<p>We can implement resynchronisation after an uncontrolled FLUSH in (part
+<p>We can implement resynchronisation after an uncontrolled <code>FLUSH</code> in (part
 of) a pipeline in the same way. Indeed, when a flush is performed on a
-PLAYING live element, a new base time must be distributed to this
+<code>PLAYING</code> live element, a new base time must be distributed to this
 element.</p>
 <p>A flush in a pipeline can happen in the following cases:</p>
 <ul>

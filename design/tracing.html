@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/tracing.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/tracing.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -248,23 +248,21 @@ tool that processes the log.</p>
 a message, a query or a measurement. Every tracer should describe the
 data format. This way tools that process tracer logs can show the data
 in a meaningful way without having to know about the tracer plugin.</p>
-<p>One way would be to introspect the data from the plugin. This has the
-disadvantage that the postprocessing app needs to load the plugins or
-talk to the gstreamer registry. An alternative is to also log the format
-description into the log. Right now we’re logging several nested
-<code>GstStructure</code> from the <code>tracer_class_init()</code> function (except in the
-log tracer).</p>
-<pre><code>gst_tracer_record_new ("thread-rusage.class",
+<p>Tracers can use <code>gst_tracer_record_new</code> in their <code>tracer_class_init()</code>
+to describe their format:</p>
+<pre><code class="language-c">fmt = gst_tracer_record_new ("thread-rusage.class",
     // value in the log record (order does not matter)
     // *thread-id* is a *key* to related the record to something as indicated
-    // by *scope* substructure "thread-id",
-    GST_TYPE_STRUCTURE, gst_structure_new ("scope", "type",
-        G_TYPE_GTYPE, G_TYPE_GUINT64, "related-to",
-        GST_TYPE_TRACER_VALUE_SCOPE, GST_TRACER_VALUE_SCOPE_THREAD,
+    // by *scope* substructure
+    "thread-id", GST_TYPE_STRUCTURE, gst_structure_new ("scope",
+        "type", G_TYPE_GTYPE, G_TYPE_GUINT64,
+        "related-to", GST_TYPE_TRACER_VALUE_SCOPE, GST_TRACER_VALUE_SCOPE_THREAD,
         NULL),
-        // next value in the record // *average-cpuload* is a measurement as indicated by the *value*
-        // substructure "average-cpuload",
-    GST_TYPE_STRUCTURE, gst_structure_new ("value", // value type
+    // next value in the record
+    // *average-cpuload* is a measurement as indicated by the *value*
+    // substructure
+    "average-cpuload", GST_TYPE_STRUCTURE, gst_structure_new ("value",
+        // value type
         "type", G_TYPE_GTYPE, G_TYPE_UINT,
         // human readable description, that can be used as a graph label
         "description", G_TYPE_STRING, "average cpu usage per thread",
@@ -272,26 +270,64 @@ log tracer).</p>
         // flags { aggregated, windowed, cumulative, … }
         "flags", GST_TYPE_TRACER_VALUE_FLAGS, GST_TRACER_VALUE_FLAGS_AGGREGATED,
         // value range
-        "min", G_TYPE_UINT, 0, "max", G_TYPE_UINT, 100, NULL),
-    … NULL);
+        "min", G_TYPE_UINT, 0,
+        "max", G_TYPE_UINT, 100,
+        NULL),
+    …
+    NULL);
+</code></pre>
+<p>Later tracers can use the <code>GstTracerRecord</code> instance to log values efficiently:</p>
+<pre><code class="language-c">gst_tracer_record_log (fmt, (guint64) (guintptr) thread_id, avg_cpuload);
+</code></pre>
+<p>Below a few more example for parts of tracer classes:</p>
+<p>An optional value. Since the PTS can be GST_CLOCK_TIME_NONE and that is (-1),
+we don't want to log this.</p>
+<pre><code class="language-c">"buffer-pts", GST_TYPE_STRUCTURE, gst_structure_new ("value",
+    "type", G_TYPE_GTYPE, G_TYPE_UINT64,
+    "description", G_TYPE_STRING, "presentation timestamp of the buffer in ns",
+    "flags", GST_TYPE_TRACER_VALUE_FLAGS, GST_TRACER_VALUE_FLAGS_OPTIONAL,
+    "min", G_TYPE_UINT64, G_GUINT64_CONSTANT (0),
+    "max", G_TYPE_UINT64, G_MAXUINT64,
+    NULL),
+</code></pre>
+<p>In the tracer code an optional value is logged using a boolean + the value,
+where the boolean indicated the presence:</p>
+<pre><code class="language-c">GstClockTime pts = GST_BUFFER_PTS (buf);
+
+gst_tracer_record_log (fmt, ..., GST_CLOCK_TIME_IS_VALID (pts), pts, ...);
+
 </code></pre>
 <p>A few ideas that are not yet in the above spec:</p>
 <ul>
-<li>it would be nice to describe the unit of values
+<li>
+<p>it would be nice to describe the unit of values</p>
 <ul>
 <li>putting it into the description is not flexible though, e.g. time
 would be a guint64 but a ui would reformat it to e.g. h:m:s.ms</li>
 <li>other units are e.g.: percent, per-mille, or kbit/s</li>
 </ul>
 </li>
-<li>we’d like to have some metadata on scopes
+<li>
+<p>we’d like to have some metadata on scopes</p>
 <ul>
 <li>e.g. we’d like to log the thread-names, so that a UI can show
 that instead of thread-ids</li>
+<li>ordering: e.g. in the latency tracer we'd like to order by 'sink'
+and then by 'src'</li>
+</ul>
+</li>
+<li>
+<p>unique instance ids</p>
+<ul>
 <li>the stats tracer logs <em>new-element</em> and <em>new-pad</em> messages</li>
-<li>they add a unique <em>ix</em> to each instance as the memory ptr can be
-reused for new instances, the data is attached to the objects as qdata</li>
-<li>the latency tracer would like to also reference this metadata</li>
+<li>they add a unique <em>ix</em> to each instance as the memory ptr or the object
+name can be reused for new instances, the data is attached to the
+objects as qdata</li>
+<li>the latency tracer would like to also reference this metadata
+(right now, it relies on unique element names)</li>
+<li>the relationship between a scope 'element-ix' ('related-to'=_ELEMENT)
+and an earlier message 'new-element' that has scope 'ix'
+('related-to'=_ELEMENT) and value 'name' is not obvious</li>
 </ul>
 </li>
 </ul>
@@ -435,7 +471,7 @@ little driver * <a href="https://github.com/dkogan/feedgnuplot">https://github.c
 </li>
 <li>
 <p>need to be careful when people to <code>GST_DEBUG_CHANNEL=stderr</code> and
-GST_TRACE_CHANNEL=stderr (use a shared channel, but what about the
+<code>GST_TRACE_CHANNEL=stderr</code> (use a shared channel, but what about the
 formats?)</p>
 </li>
 <li>
@@ -465,8 +501,8 @@ trace log</p>
 </li>
 <li>
 <p>we could maintain a list of log functions, where
-gst_tracer_log_trace() is the default one. This way e.g.
-gst-validate could consume the traces directly.</p>
+<code>gst_tracer_log_trace()</code> is the default one. This way e.g.
+<code>gst-validate</code> could consume the traces directly.</p>
 </li>
 <li>
 <p>when hooking into a timer, should we just have some predefined

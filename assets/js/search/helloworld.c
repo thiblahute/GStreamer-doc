@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "helloworld.c", "urls": [{"url": "application-development/basics/helloworld.html#compiling-and-running-helloworldc", "context": {"gi-language": ["default"]}}, {"url": "application-development/basics/helloworld.html#page-description", "context": {"gi-language": ["default"]}}]});
+urls_downloaded_cb({"token": "helloworld.c", "urls": [{"url": "application-development/basics/helloworld.html#compiling-and-running-helloworldc", "context": {"gi-language": ["default"]}}]});

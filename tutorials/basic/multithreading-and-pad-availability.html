@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/multithreading-and-pad-availability.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/multithreading-and-pad-availability.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -191,10 +191,10 @@ pad and no initial source pads: they need to be requested and then
 number of times. The disadvantage is that linking elements with Request
 Pads is not as automatic, as linking Always Pads, as the walkthrough for
 this example will show.</p>
-<p>Also, to request (or release) pads in the PLAYING or PAUSED states, you
+<p>Also, to request (or release) pads in the <code>PLAYING</code> or <code>PAUSED</code> states, you
 need to take additional cautions (Pad blocking) which are not described
-in this tutorial. It is safe to request (or release) pads in the NULL or
-READY states, though.</p>
+in this tutorial. It is safe to request (or release) pads in the <code>NULL</code> or
+<code>READY</code> states, though.</p>
 <p>Without further delay, let's see the code.</p>
 <h2 id="simple-multithreaded-example">Simple multithreaded example</h2>
 <p>Copy this code into a text file named <code>basic-tutorial-7.c</code> (or find it
@@ -207,7 +207,6 @@ int main(int argc, char *argv[]) {
   GstElement *video_queue, *visual, *video_convert, *video_sink;
   GstBus *bus;
   GstMessage *msg;
-  GstPadTemplate *tee_src_pad_template;
   GstPad *tee_audio_pad, *tee_video_pad;
   GstPad *queue_audio_pad, *queue_video_pad;
 
@@ -251,11 +250,10 @@ int main(int argc, char *argv[]) {
   }
 
   /* Manually link the Tee, which has "Request" pads */
-  tee_src_pad_template = gst_element_class_get_pad_template (GST_ELEMENT_GET_CLASS (tee), "src_%d");
-  tee_audio_pad = gst_element_request_pad (tee, tee_src_pad_template, NULL, NULL);
+  tee_audio_pad = gst_element_get_request_pad (tee, "src_%u");
   g_print ("Obtained request pad %s for audio branch.\n", gst_pad_get_name (tee_audio_pad));
   queue_audio_pad = gst_element_get_static_pad (audio_queue, "sink");
-  tee_video_pad = gst_element_request_pad (tee, tee_src_pad_template, NULL, NULL);
+  tee_video_pad = gst_element_get_request_pad (tee, "src_%u");
   g_print ("Obtained request pad %s for video branch.\n", gst_pad_get_name (tee_video_pad));
   queue_video_pad = gst_element_get_static_pad (video_queue, "sink");
   if (gst_pad_link (tee_audio_pad, queue_audio_pad) != GST_PAD_LINK_OK ||
@@ -355,11 +353,10 @@ comment says).</p>
 <code>gst_element_link_many()</code> can actually link elements with Request Pads. It internally requests the Pads so you do not have worry about the elements being linked having Always or Request Pads. Strange as it might seem, this is actually inconvenient, because you still need to release the requested Pads afterwards, and, if the Pad was requested automatically by <code>gst_element_link_many()</code>, it is easy to forget. Stay out of trouble by always requesting Request Pads manually, as shown in the next code block.</p>
 </blockquote>
 <pre><code class="language-c">/* Manually link the Tee, which has "Request" pads */
-tee_src_pad_template = gst_element_class_get_pad_template (GST_ELEMENT_GET_CLASS (tee), "src_%d");
-tee_audio_pad = gst_element_request_pad (tee, tee_src_pad_template, NULL, NULL);
+tee_audio_pad = gst_element_get_request_pad (tee, "src_%u");
 g_print ("Obtained request pad %s for audio branch.\n", gst_pad_get_name (tee_audio_pad));
 queue_audio_pad = gst_element_get_static_pad (audio_queue, "sink");
-tee_video_pad = gst_element_request_pad (tee, tee_src_pad_template, NULL, NULL);
+tee_video_pad = gst_element_get_request_pad (tee, "src_%u");
 g_print ("Obtained request pad %s for video branch.\n", gst_pad_get_name (tee_video_pad));
 queue_video_pad = gst_element_get_static_pad (video_queue, "sink");
 if (gst_pad_link (tee_audio_pad, queue_audio_pad) != GST_PAD_LINK_OK ||
@@ -373,14 +370,12 @@ gst_object_unref (queue_video_pad);
 </code></pre>
 <p>To link Request Pads, they need to be obtained by “requesting” them to
 the element. An element might be able to produce different kinds of
-Request Pads, so, when requesting them, the desired Pad Template must be
-provided. Pad templates are obtained with
-<code>gst_element_class_get_pad_template()</code> and are identified by their name.
+Request Pads, so, when requesting them, the desired Pad Template name must be
+provided.
 In the documentation for the <code>tee</code> element we see that it has two pad
-templates named “sink” (for its sink Pads) and “src_%d” (for the Request
-Pads).</p>
-<p>Once we have the Pad template, we request two Pads from the tee (for the
-audio and video branches) with <code>gst_element_request_pad()</code>.</p>
+templates named “sink” (for its sink Pads) and “src_%u” (for the Request
+Pads). We request two Pads from the tee (for the
+audio and video branches) with <code>gst_element_get_request_pad()</code>.</p>
 <p>We then obtain the Pads from the downstream elements to which these
 Request Pads need to be linked. These are normal Always Pads, so we
 obtain them with <code>gst_element_get_static_pad()</code>.</p>
@@ -409,7 +404,7 @@ it still needs to be unreferenced (freed) with <code>gst_object_unref()</code>.<
 </li>
 <li>
 <p>What is a Request Pad and how to link elements with request pads,
-with <code>gst_element_class_get_pad_template()</code>, <code>gst_element_request_pad()</code>, <code>gst_pad_link()</code> and
+with <code>gst_element_get_request_pad()</code>, <code>gst_pad_link()</code> and
 <code>gst_element_release_request_pad()</code>.</p>
 </li>
 <li>

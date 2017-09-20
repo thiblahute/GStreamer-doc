@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/toolkit-integration.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/toolkit-integration.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -172,7 +172,7 @@ rendering.</p>
 <blockquote>
 <p><img src="tutorials/basic/images/icons/emoticons/information.svg" alt="Information" id="information">
 <strong>GObject interfaces</strong></p>
-<p>A GObject <em>interface</em> (which GStreamer uses) is a set of functions that an element can implement. If it does, then it is said to support that particular interface. For example, video sinks usually create their own windows to display video, but, if they are also capable of rendering to an external window, they can choose to implement the <code>GstVideoOverlay</code> interface and provide functions to specify this external window. From the application developer point of view, if a certain interface is supported, you can use it and forget about which kind of element is implementing it. Moreover, if you are using <code>playbin</code>, it will automatically expose some of the interfaces supported by its internal elements: You can use your interface functions directly on <code>playbin</code> without knowing who is implementing them!</p>
+<p>A <code>GObject</code> <em>interface</em> (which GStreamer uses) is a set of functions that an element can implement. If it does, then it is said to support that particular interface. For example, video sinks usually create their own windows to display video, but, if they are also capable of rendering to an external window, they can choose to implement the <code>GstVideoOverlay</code> interface and provide functions to specify this external window. From the application developer point of view, if a certain interface is supported, you can use it and forget about which kind of element is implementing it. Moreover, if you are using <code>playbin</code>, it will automatically expose some of the interfaces supported by its internal elements: You can use your interface functions directly on <code>playbin</code> without knowing who is implementing them!</p>
 </blockquote>
 <p>Another issue is that GUI toolkits usually only allow manipulation of
 the graphical “widgets” through the main (or application) thread,
@@ -307,13 +307,13 @@ static void create_ui (CustomData *data) {
   g_signal_connect (video_window, "realize", G_CALLBACK (realize_cb), data);
   g_signal_connect (video_window, "draw", G_CALLBACK (draw_cb), data);
 
-  play_button = gtk_button_new_from_stock (GTK_STOCK_MEDIA_PLAY);
+  play_button = gtk_button_new_from_icon_name ("media-playback-start", GTK_ICON_SIZE_SMALL_TOOLBAR);
   g_signal_connect (G_OBJECT (play_button), "clicked", G_CALLBACK (play_cb), data);
 
-  pause_button = gtk_button_new_from_stock (GTK_STOCK_MEDIA_PAUSE);
+  pause_button = gtk_button_new_from_icon_name ("media-playback-pause", GTK_ICON_SIZE_SMALL_TOOLBAR);
   g_signal_connect (G_OBJECT (pause_button), "clicked", G_CALLBACK (pause_cb), data);
 
-  stop_button = gtk_button_new_from_stock (GTK_STOCK_MEDIA_STOP);
+  stop_button = gtk_button_new_from_icon_name ("media-playback-stop", GTK_ICON_SIZE_SMALL_TOOLBAR);
   g_signal_connect (G_OBJECT (stop_button), "clicked", G_CALLBACK (stop_cb), data);
 
   data-&gt;slider = gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, 0, 100, 1);
@@ -579,7 +579,7 @@ int main(int argc, char *argv[]) {
 <p><img src="tutorials/basic/images/icons/emoticons/information.svg" alt="Information" id="information1">
 Need help?</p>
 <p>If you need help to compile this code, refer to the <strong>Building the tutorials</strong>  section for your platform: <a href="installing/on-linux.html#InstallingonLinux-Build">Linux</a>, <a href="installing/on-mac-osx.html#InstallingonMacOSX-Build">Mac OS X</a> or <a href="installing/on-windows.html#InstallingonWindows-Build">Windows</a>, or use this specific command on Linux:</p>
-<p><code>gcc basic-tutorial-5.c -o basic-tutorial-5 `pkg-config --cflags --libs gstreamer-interfaces-1.0 gtk+-3.0 gstreamer-1.0</code></p>
+<p><code>gcc basic-tutorial-5.c -o basic-tutorial-5 `pkg-config --cflags --libs gstreamer-video-1.0 gtk+-3.0 gstreamer-1.0</code></p>
 <p>If you need help to run this code, refer to the <strong>Running the tutorials</strong> section for your platform: <a href="installing/on-linux.html#InstallingonLinux-Run">Linux</a>, <a href="installing/on-mac-osx.html#InstallingonMacOSX-Run">Mac OS X</a> or <a href="installing/on-windows.html#InstallingonWindows-Run">Windows</a>.</p>
 <p>This tutorial opens a GTK+ window and displays a movie, with accompanying audio. The media is fetched from the Internet, so the window might take a few seconds to appear, depending on your connection speed. The Window has some GTK+ buttons to Pause, Stop and Play the movie, and a slider to show the current position of the stream, which can be dragged to change it. Also, information about the stream is shown on a column at the right edge of the window.</p>
 <p>Bear in mind that there is no latency management (buffering), so on slow connections, the movie might stop after a few seconds. See how <a href="tutorials/basic/streaming.html">Basic tutorial 12: Streaming</a> solves this issue.</p>
@@ -750,23 +750,20 @@ static void delete_event_cb (GtkWidget *widget, GdkEvent *event, CustomData *dat
   gtk_main_quit ();
 }
 </code></pre>
-<p>gtk_main_quit() will eventually make the call to to gtk_main_run()
+<p><code>gtk_main_quit()</code> will eventually make the call to to <code>gtk_main_run()</code>
 in <code>main</code> to terminate, which, in this case, finishes the program. Here,
 we call it when the main window is closed, after stopping the pipeline
 (just for the sake of tidiness).</p>
 <pre><code class="language-c">/* This function is called everytime the video window needs to be redrawn (due to damage/exposure,
  * rescaling, etc). GStreamer takes care of this in the PAUSED and PLAYING states, otherwise,
  * we simply draw a black rectangle to avoid garbage showing up. */
-static gboolean expose_cb (GtkWidget *widget, GdkEventExpose *event, CustomData *data) {
+static gboolean draw_cb (GtkWidget *widget, cairo_t *cr, CustomData *data) {
   if (data-&gt;state &lt; GST_STATE_PAUSED) {
     GtkAllocation allocation;
-    GdkWindow *window = gtk_widget_get_window (widget);
-    cairo_t *cr;
 
     /* Cairo is a 2D graphics library which we use here to clean the video window.
      * It is used by GStreamer for other reasons, so it will always be available to us. */
     gtk_widget_get_allocation (widget, &amp;allocation);
-    cr = gdk_cairo_create (window);
     cairo_set_source_rgb (cr, 0, 0, 0);
     cairo_rectangle (cr, 0, 0, allocation.width, allocation.height);
     cairo_fill (cr);
@@ -844,8 +841,8 @@ the slider. Since we do not want seeks happening unless the user
 requested them, we disable the <code>value-changed</code> signal emission during
 this operation with <code>g_signal_handler_block()</code> and
 <code>g_signal_handler_unblock()</code>.</p>
-<p>Returning TRUE from this function will keep it called in the future. If
-we return FALSE, the timer will be
+<p>Returning <code>TRUE</code> from this function will keep it called in the future. If
+we return <code>FALSE</code>, the timer will be
 removed.</p>
 <pre><code class="language-c">/* This function is called when new metadata is discovered in the stream */
 static void tags_cb (GstElement *playbin, gint stream, CustomData *data) {
@@ -873,7 +870,7 @@ go through the bus unaffected by GStreamer. The list of types can be
 found in the <code>GstMessageType</code> documentation.</p>
 <p>Messages can deliver additional information through their embedded
 <code>GstStructure</code>, which is a very flexible data container. Here, we create
-a new structure with <code>gst_structure_new</code>, and name it <code>tags-changed</code>, to
+a new structure with <code>gst_structure_new()</code>, and name it <code>tags-changed</code>, to
 avoid confusion in case we wanted to send other application messages.</p>
 <p>Later, once in the main thread, the bus will receive this message and
 emit the <code>message::application</code> signal, which we have associated to the

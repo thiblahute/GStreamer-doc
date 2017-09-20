@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/time-management.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/time-management.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -135,14 +135,10 @@ $('body').removeClass('no-script');
 <p>This tutorial shows how to use GStreamer time-related facilities. In
 particular:</p>
 <ul>
-<li>
-<p>How to query the pipeline for information like stream position or
-duration.</p>
-</li>
-<li>
-<p>How to seek (jump) to a different position (time instant) inside the
-stream.</p>
-</li>
+<li>How to query the pipeline for information like stream position or
+duration.</li>
+<li>How to seek (jump) to a different position (time) inside the
+stream.</li>
 </ul>
 <h2 id="introduction">Introduction</h2>
 <p><code>GstQuery</code> is a mechanism that allows asking an element or pad for a
@@ -151,11 +147,11 @@ allowed (some sources, like live streams, do not allow seeking). If it
 is allowed, then, once the movie has been running for ten seconds, we
 skip to a different position using a seek.</p>
 <p>In the previous tutorials, once we had the pipeline setup and running,
-our main function just sat and waited to receive an ERROR or an EOS
-through the bus. Here we modify this function to periodically wake up
+our main function just sat and waited to receive an <code>ERROR</code> or an <code>EOS</code>
+through the bus. Here, we modify this function to periodically wake up
 and query the pipeline for the stream position, so we can print it on
-screen. This is similar to what a media player would do, updating the
-User Interface on a periodic basis.</p>
+the screen. This is similar to what a media player would do, updating the
+user Interface on a periodic basis.</p>
 <p>Finally, the stream duration is queried and updated whenever it changes.</p>
 <h2 id="seeking-example">Seeking example</h2>
 <p>Copy this code into a text file named <code>basic-tutorial-4.c</code> (or find it
@@ -328,7 +324,7 @@ Need help?</p>
 <p>Required libraries: <code>gstreamer-1.0</code></p>
 </blockquote>
 <h2 id="walkthrough">Walkthrough</h2>
-<pre><code>/* Structure to contain all our information, so we can pass it around */
+<pre><code class="language-c">/* Structure to contain all our information, so we can pass it around */
 typedef struct _CustomData {
   GstElement *playbin;  /* Our one and only element */
   gboolean playing;      /* Are we in the PLAYING state? */
@@ -345,47 +341,48 @@ static void handle_message (CustomData *data, GstMessage *msg);
 can pass it around to other functions. In particular, in this example we
 move the message handling code to its own function
 <code>handle_message</code> because it is growing a bit too big.</p>
-<p>We would then build a pipeline composed of a single element, a
+<p>We then build a pipeline composed of a single element, a
 <code>playbin</code>, which we already saw in <a href="tutorials/basic/hello-world.html">Basic tutorial 1: Hello
 world!</a>. However,
 <code>playbin</code> is in itself a pipeline, and in this case it is the only
-element in the pipeline, so we use directly the <code>playbin</code> element. We
+element in the pipeline, so we directly use the <code>playbin</code> element. We
 will skip the details: the URI of the clip is given to <code>playbin</code> via
 the URI property and the pipeline is set to the playing state.</p>
-<pre><code>msg = gst_bus_timed_pop_filtered (bus, 100 * GST_MSECOND,
+<pre><code class="language-c">msg = gst_bus_timed_pop_filtered (bus, 100 * GST_MSECOND,
     GST_MESSAGE_STATE_CHANGED | GST_MESSAGE_ERROR | GST_MESSAGE_EOS | GST_MESSAGE_DURATION);
 </code></pre>
 <p>Previously we did not provide a timeout to
 <code>gst_bus_timed_pop_filtered()</code>, meaning that it didn't return until a
 message was received. Now we use a timeout of 100 milliseconds, so, if
-no message is received, 10 times per second the function will return
-with a NULL instead of a <code>GstMessage</code>. We are going to use this to
-update our “UI”. Note that the timeout period is specified in
-nanoseconds, so usage of the <code>GST_SECOND</code> or <code>GST_MSECOND</code> macros is
-highly recommended.</p>
+no message is received during one tenth of a second, the function will return
+<code>NULL</code>. We are going to use this logic to update our “UI”.</p>
+<p>Note that the desired timeout must be specified as a <code>GstClockTime</code>, hence,
+in nanoseconds. Numbers expressing different time units then, should be
+multiplied by macros like <code>GST_SECOND</code> or <code>GST_MSECOND</code>. This also makes
+your code more readable.</p>
 <p>If we got a message, we process it in the <code>handle_message``</code>function
 (next subsection), otherwise:</p>
-<h3 id="user-interface-resfreshing">User interface resfreshing</h3>
-<pre><code>/* We got no message, this means the timeout expired */
+<h3 id="user-interface-refreshing">User interface refreshing</h3>
+<pre><code class="language-c">/* We got no message, this means the timeout expired */
 if (data.playing) {
 </code></pre>
-<p>First off, if we are not in the PLAYING state, we do not want to do
-anything here, since most queries would fail. Otherwise, it is time to
-refresh the screen.</p>
+<p>If the pipeline is in <code>PLAYING</code> state, it is time to refresh the screen.
+We don't want to do anything if we are not in <code>PLAYING</code> state, because
+most queries would fail.</p>
 <p>We get here approximately 10 times per second, a good enough refresh
 rate for our UI. We are going to print on screen the current media
 position, which we can learn be querying the pipeline. This involves a
 few steps that will be shown in the next subsection, but, since position
 and duration are common enough queries, <code>GstElement</code> offers easier,
 ready-made alternatives:</p>
-<pre><code>/* Query the current position of the stream */
+<pre><code class="language-c">/* Query the current position of the stream */
 if (!gst_element_query_position (data.pipeline, GST_FORMAT_TIME, &amp;current)) {
   g_printerr ("Could not query current position.\n");
 }
 </code></pre>
 <p><code>gst_element_query_position()</code> hides the management of the query object
 and directly provides us with the result.</p>
-<pre><code>/* If we didn't know it yet, query the stream duration */
+<pre><code class="language-c">/* If we didn't know it yet, query the stream duration */
 if (!GST_CLOCK_TIME_IS_VALID (data.duration)) {
   if (!gst_element_query_duration (data.pipeline, GST_FORMAT_TIME, &amp;data.duration)) {
      g_printerr ("Could not query current duration.\n");
@@ -394,14 +391,13 @@ if (!GST_CLOCK_TIME_IS_VALID (data.duration)) {
 </code></pre>
 <p>Now is a good moment to know the length of the stream, with
 another <code>GstElement</code> helper function: <code>gst_element_query_duration()</code></p>
-<pre><code>/* Print current position and total duration */
+<pre><code class="language-c">/* Print current position and total duration */
 g_print ("Position %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT "\r",
     GST_TIME_ARGS (current), GST_TIME_ARGS (data.duration));
 </code></pre>
 <p>Note the usage of the <code>GST_TIME_FORMAT</code> and <code>GST_TIME_ARGS</code> macros to
-provide user-friendly representation of GStreamer
-times.</p>
-<pre><code>/* If seeking is enabled, we have not done it yet, and the time is right, seek */
+provide a user-friendly representation of GStreamer times.</p>
+<pre><code class="language-c">/* If seeking is enabled, we have not done it yet, and the time is right, seek */
 if (data.seek_enabled &amp;&amp; !data.seek_done &amp;&amp; current &gt; 10 * GST_SECOND) {
   g_print ("\nReached 10s, performing seek...\n");
   gst_element_seek_simple (data.pipeline, GST_FORMAT_TIME,
@@ -415,22 +411,21 @@ intricacies of seeking are hidden in this method, which is a good
 thing!</p>
 <p>Let's review the parameters:</p>
 <p><code>GST_FORMAT_TIME</code> indicates that we are specifying the destination in
-time, as opposite to bytes (and other more obscure mechanisms).</p>
-<p>Then come the GstSeekFlags, let's review the most common:</p>
+time units. Other seek-formats use different units.</p>
+<p>Then come the <code>GstSeekFlags</code>, let's review the most common:</p>
 <p><code>GST_SEEK_FLAG_FLUSH</code>: This discards all data currently in the pipeline
 before doing the seek. Might pause a bit while the pipeline is refilled
 and the new data starts to show up, but greatly increases the
 “responsiveness” of the application. If this flag is not provided,
 “stale” data might be shown for a while until the new position appears
 at the end of the pipeline.</p>
-<p><code>GST_SEEK_FLAG_KEY_UNIT</code>: Most encoded video streams cannot seek to
-arbitrary positions, only to certain frames called Key Frames. When this
+<p><code>GST_SEEK_FLAG_KEY_UNIT</code>: With most encoded video streams, seeking to
+arbitrary positions is not possible but only to certain frames called Key Frames. When this
 flag is used, the seek will actually move to the closest key frame and
 start producing data straight away. If this flag is not used, the
 pipeline will move internally to the closest key frame (it has no other
 alternative) but data will not be shown until it reaches the requested
-position. Not providing the flag is more accurate, but might take longer
-to react.</p>
+position. This last alternative is more accurate, but might take longer.</p>
 <p><code>GST_SEEK_FLAG_ACCURATE</code>: Some media clips do not provide enough
 indexing information, meaning that seeking to arbitrary positions is
 time-consuming. In these cases, GStreamer usually estimates the position
@@ -438,14 +433,14 @@ to seek to, and usually works just fine. If this precision is not good
 enough for your case (you see seeks not going to the exact time you
 asked for), then provide this flag. Be warned that it might take longer
 to calculate the seeking position (very long, on some files).</p>
-<p>And finally we provide the position to seek to. Since we asked
-for <code>GST_FORMAT_TIME</code> , this position is in nanoseconds, so we use
-the <code>GST_SECOND</code> macro for simplicity.</p>
+<p>Finally, we provide the position to seek to. Since we asked
+for <code>GST_FORMAT_TIME</code>, the value must be in nanoseconds so we express
+the time in seconds, for simplicity, and then multiply by <code>GST_SECOND</code>.</p>
 <h3 id="message-pump">Message Pump</h3>
 <p>The <code>handle_message</code> function processes all messages received through
-the pipeline's bus. ERROR and EOS handling is the same as in previous
+the pipeline's bus. <code>ERROR</code> and <code>EOS</code> handling is the same as in previous
 tutorials, so we skip to the interesting part:</p>
-<pre><code>case GST_MESSAGE_DURATION:
+<pre><code class="language-c">case GST_MESSAGE_DURATION:
   /* The duration has changed, mark the current one as invalid */
   data-&gt;duration = GST_CLOCK_TIME_NONE;
   break;
@@ -453,7 +448,7 @@ tutorials, so we skip to the interesting part:</p>
 <p>This message is posted on the bus whenever the duration of the stream
 changes. Here we simply mark the current duration as invalid, so it gets
 re-queried later.</p>
-<pre><code>case GST_MESSAGE_STATE_CHANGED: {
+<pre><code class="language-c">case GST_MESSAGE_STATE_CHANGED: {
   GstState old_state, new_state, pending_state;
   gst_message_parse_state_changed (msg, &amp;old_state, &amp;new_state, &amp;pending_state);
   if (GST_MESSAGE_SRC (msg) == GST_OBJECT (data-&gt;pipeline)) {
@@ -464,13 +459,12 @@ re-queried later.</p>
     data-&gt;playing = (new_state == GST_STATE_PLAYING);
 </code></pre>
 <p>Seeks and time queries generally only get a valid reply when in the
-PAUSED or PLAYING state, since all elements have had a chance to
-receive information and configure themselves. Here we take note of
-whether we are in the PLAYING state or not with the <code>playing</code>
-variable.</p>
-<p>Also, if we have just entered the PLAYING state, we do our first query.
+<code>PAUSED</code> or <code>PLAYING</code> state, since all elements have had a chance to
+receive information and configure themselves. Here, we use the <code>playing</code>
+variable to keep track of whether the pipeline is in <code>PLAYING</code> state.
+Also, if we have just entered the <code>PLAYING</code> state, we do our first query.
 We ask the pipeline if seeking is allowed on this stream:</p>
-<pre><code>if (data-&gt;playing) {
+<pre><code class="language-c">if (data-&gt;playing) {
   /* We just moved to PLAYING. Check if seeking is possible */
   GstQuery *query;
   gint64 start, end;

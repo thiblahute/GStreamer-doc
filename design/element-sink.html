@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/element-sink.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['c', 'python', 'javascript']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="design/element-sink.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -147,20 +147,20 @@ $('body').removeClass('no-script');
 <p>Sinks are harder to construct than other element types as they are
 treated specially by the GStreamer core.</p>
 <h2 id="state-changes">state changes</h2>
-<p>A sink always returns ASYNC from the state change to PAUSED, this
-includes a state change from READY→PAUSED and PLAYING→PAUSED. The reason
+<p>A sink always returns <code>ASYNC</code> from the state change to <code>PAUSED</code>, this
+includes a state change from <code>READY→PAUSED</code> and <code>PLAYING→PAUSED</code>. The reason
 for this is that this way we can detect when the first buffer or event
 arrives in the sink when the state change completes.</p>
-<p>A sink should block on the first EOS event or buffer received in the
-READY→PAUSED state before commiting the state to PAUSED.</p>
-<p>FLUSHING events have to be handled out of sync with the buffer flow and
+<p>A sink should block on the first <code>EOS</code> event or buffer received in the
+<code>READY→PAUSED</code> state before commiting the state to <code>PAUSED</code>.</p>
+<p><code>FLUSHING</code> events have to be handled out of sync with the buffer flow and
 take no part in the preroll procedure.</p>
-<p>Events other than EOS do not complete the preroll stage.</p>
+<p>Events other than <code>EOS</code> do not complete the preroll stage.</p>
 <h2 id="sink-overview">sink overview</h2>
 <ul>
 <li>TODO: <code>PREROLL_LOCK</code> can be removed and we can safely use the <code>STREAM_LOCK</code>.</li>
 </ul>
-<pre><code>  # Commit the state. We return TRUE if we can continue
+<pre><code class="language-c">  # Commit the state. We return TRUE if we can continue
   # streaming, FALSE in the case we go to a READY or NULL state.
   # if we go to PLAYING, we don't need to block on preroll.
   commit
@@ -414,7 +414,6 @@ take no part in the preroll procedure.</p>
         ret = OK
         PREROLL_UNLOCK
         break
-```
 </code></pre>
 
     </div>
