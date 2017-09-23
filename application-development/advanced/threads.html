@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="application-development/advanced/threads.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="application-development/advanced/threads.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'python', 'c']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -157,13 +157,13 @@ threads, or <code>GstTask</code> objects, are created from a <code>GstTaskPool</
 element needs to make a streaming thread. In the next section we see how
 we can receive notifications of the tasks and pools.</p>
 <h2 id="configuring-threads-in-gstreamer">Configuring Threads in GStreamer</h2>
-<p>A STREAM_STATUS message is posted on the bus to inform you about the
+<p>A <code>STREAM_STATUS</code> message is posted on the bus to inform you about the
 status of the streaming threads. You will get the following information
 from the message:</p>
 <ul>
 <li>
 <p>When a new thread is about to be created, you will be notified of
-this with a GST_STREAM_STATUS_TYPE_CREATE type. It is then
+this with a <code>GST_STREAM_STATUS_TYPE_CREATE</code> type. It is then
 possible to configure a <code>GstTaskPool</code> in the <code>GstTask</code>. The custom
 taskpool will provide custom threads for the task to implement the
 streaming threads.</p>
@@ -185,10 +185,10 @@ application.</p>
 </ul>
 <p>We will now look at some examples in the next sections.</p>
 <h3 id="boost-priority-of-a-thread">Boost priority of a thread</h3>
-<pre><code>        .----------.    .----------.
-        | faksesrc |    | fakesink |
-        |         src-&gt;sink        |
-        '----------'    '----------'
+<pre><code>.----------.    .----------.
+| faksesrc |    | fakesink |
+|         src-&gt;sink        |
+'----------'    '----------'
 
 </code></pre>
 <p>Let's look at the simple pipeline above. We would like to boost the
@@ -198,13 +198,13 @@ the peer fakesink. The flow for changing the priority would go like
 this:</p>
 <ul>
 <li>
-<p>When going from READY to PAUSED state, fakesrc will require a
+<p>When going from <code>READY</code> to <code>PAUSED</code> state, fakesrc will require a
 streaming thread for pushing data into the fakesink. It will post a
-STREAM_STATUS message indicating its requirement for a streaming
+<code>STREAM_STATUS</code> message indicating its requirement for a streaming
 thread.</p>
 </li>
 <li>
-<p>The application will react to the STREAM_STATUS messages with a
+<p>The application will react to the <code>STREAM_STATUS</code> messages with a
 sync bus handler. It will then configure a custom <code>GstTaskPool</code> on
 the <code>GstTask</code> inside the message. The custom taskpool is responsible
 for creating the threads. In this example we will make a thread with
@@ -212,13 +212,13 @@ a higher priority.</p>
 </li>
 <li>
 <p>Alternatively, since the sync message is called in the thread
-context, you can use thread ENTER/LEAVE notifications to change the
+context, you can use thread <code>ENTER</code>/<code>LEAVE</code> notifications to change the
 priority or scheduling pollicy of the current thread.</p>
 </li>
 </ul>
 <p>In a first step we need to implement a custom <code>GstTaskPool</code> that we can
 configure on the task. Below is the implementation of a <code>GstTaskPool</code>
-subclass that uses pthreads to create a SCHED_RR real-time thread. Note
+subclass that uses pthreads to create a <code>SCHED_RR</code> real-time thread. Note
 that creating real-time threads might require extra priveleges.</p>
 <pre><code class="language-c">#include &lt;pthread.h&gt;
 
@@ -312,9 +312,6 @@ test_rt_pool_new (void)
 
   return pool;
 }
-
-
-
 </code></pre>
 <p>The important function to implement when writing an taskpool is the
 “push” function. The implementation should start a thread that calls
@@ -322,11 +319,9 @@ the given function. More involved implementations might want to keep
 some threads around in a pool because creating and destroying threads is
 not always the fastest operation.</p>
 <p>In a next step we need to actually configure the custom taskpool when
-the fakesrc needs it. For this we intercept the STREAM_STATUS messages
+the fakesrc needs it. For this we intercept the <code>STREAM_STATUS</code> messages
 with a sync handler.</p>
-<pre><code class="language-c">
-
-static GMainLoop* loop;
+<pre><code class="language-c">static GMainLoop* loop;
 
 static void
 on_stream_status (GstBus     *bus,
@@ -438,15 +433,12 @@ main (int argc, char *argv[])
 
   return 0;
 }
-
-
-
 </code></pre>
 <p>Note that this program likely needs root permissions in order to create
 real-time threads. When the thread can't be created, the state change
 function will fail, which we catch in the application above.</p>
 <p>When there are multiple threads in the pipeline, you will receive
-multiple STREAM_STATUS messages. You should use the owner of the
+multiple <code>STREAM_STATUS</code> messages. You should use the owner of the
 message, which is likely the pad or the element that starts the thread,
 to figure out what the function of this thread is in the context of the
 application.</p>

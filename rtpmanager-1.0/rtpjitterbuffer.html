@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="gst-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="rtpmanager-1.0" data-hotdoc-ref="rtpjitterbuffer.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
+<div data-extension="gst-extension" data-hotdoc-in-toplevel="False" data-hotdoc-project="rtpmanager-1.0" data-hotdoc-ref="rtpjitterbuffer.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'python', 'c']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -135,11 +135,11 @@ $('body').removeClass('no-script');
 from a network source.</p>
 <p>The element needs the clock-rate of the RTP payload in order to estimate the
 delay. This information is obtained either from the caps on the sink pad or,
-when no caps are present, from the <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer::request-pt-map">GstRtpJitterBuffer::request-pt-map</a> signal.
-To clear the previous pt-map use the <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer::clear-pt-map">GstRtpJitterBuffer::clear-pt-map</a> signal.</p>
+when no caps are present, from the <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer::request-pt-map">request-pt-map</a> signal.
+To clear the previous pt-map use the <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer::clear-pt-map">clear-pt-map</a> signal.</p>
 <p>The rtpjitterbuffer will wait for missing packets up to a configurable time
-limit using the <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:latency">GstRtpJitterBuffer:latency</a> property. Packets arriving too
-late are considered to be lost packets. If the <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:do-lost">GstRtpJitterBuffer:do-lost</a>
+limit using the <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:latency">latency</a> property. Packets arriving too
+late are considered to be lost packets. If the <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:do-lost">do-lost</a>
 property is set, lost packets will result in a custom serialized downstream
 event of name GstRTPPacketLost. The lost packet events are usually used by a
 depayloader or other element to create concealment data or some other logic
@@ -148,7 +148,7 @@ to gracefully handle the missing packets.</p>
 buffer and the rtptime inside the RTP packet to create a PTS on the outgoing
 buffer.</p>
 <p>The jitterbuffer can also be configured to send early retransmission events
-upstream by setting the <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:do-retransmission">GstRtpJitterBuffer:do-retransmission</a> property. In
+upstream by setting the <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:do-retransmission">do-retransmission</a> property. In
 this mode, the jitterbuffer tries to estimate when a packet should arrive and
 sends a custom upstream event named GstRTPRetransmissionRequest when the
 packet is considered late. The initial expected packet arrival time is
@@ -156,7 +156,7 @@ calculated as follows:</p>
 <ul>
 <li>
 <p>If seqnum N arrived at time T, seqnum N+1 is expected to arrive at
-T + packet-spacing + <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-delay">GstRtpJitterBuffer:rtx-delay</a>. The packet spacing is
+T + packet-spacing + <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-delay">rtx-delay</a>. The packet spacing is
 calculated from the DTS (or PTS is no DTS) of two consecutive RTP
 packets with different rtptime.</p>
 </li>
@@ -167,7 +167,7 @@ previously scheduled timeout is overwritten.</p>
 </li>
 <li>
 <p>If seqnum N arrived, all seqnum older than
-N - <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-delay-reorder">GstRtpJitterBuffer:rtx-delay-reorder</a> are considered late
+N - <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-delay-reorder">rtx-delay-reorder</a> are considered late
 immediately. This is to request fast feedback for abonormally reorder
 packets before any of the previous timeouts is triggered.</p>
 </li>
@@ -175,14 +175,14 @@ packets before any of the previous timeouts is triggered.</p>
 <p>A late packet triggers the GstRTPRetransmissionRequest custom upstream
 event. After the initial timeout expires and the retransmission event is
 sent, the timeout is scheduled for
-T + <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-retry-timeout">GstRtpJitterBuffer:rtx-retry-timeout</a>. If the missing packet did not
-arrive after <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-retry-timeout">GstRtpJitterBuffer:rtx-retry-timeout</a>, a new
+T + <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-retry-timeout">rtx-retry-timeout</a>. If the missing packet did not
+arrive after <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-retry-timeout">rtx-retry-timeout</a>, a new
 GstRTPRetransmissionRequest is sent upstream and the timeout is rescheduled
-again for T + <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-retry-timeout">GstRtpJitterBuffer:rtx-retry-timeout</a>. This repeats until
-<a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-retry-period">GstRtpJitterBuffer:rtx-retry-period</a> elapsed, at which point no further
+again for T + <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-retry-timeout">rtx-retry-timeout</a>. This repeats until
+<a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:rtx-retry-period">rtx-retry-period</a> elapsed, at which point no further
 retransmission requests are sent and the regular logic is performed to
 schedule a lost packet as discussed above.</p>
-<p>This element acts as a live element and so adds <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:latency">GstRtpJitterBuffer:latency</a>
+<p>This element acts as a live element and so adds <a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer:latency">latency</a>
 to the pipeline.</p>
 <p>This element will automatically be used inside rtpbin.</p>
 <h2 id="example-pipelines">Example pipelines</h2>
@@ -204,11 +204,11 @@ out-of-order RTP packets.</p>
         <div class="hierarchy_container">
             <div class="hierarchy_details">
 <pre>
-<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a>
-    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
-        <span class="lineart">╰──</span><a title="GstObject" href="libgstreamer-1.0/gstobject.html#GstObject">GstObject</a>
-            <span class="lineart">╰──</span><a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement">GstElement</a>
-                <span class="lineart">╰──</span>rtpjitterbuffer (not introspectable)
+<a title="GObject" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-href-javascript="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-title-javascript="GObject.Object" data-gi-href-python="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct" data-gi-title-python="GObject.Object">GObject</a>
+    <span class="lineart">╰──</span><a title="GInitiallyUnowned" href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-href-javascript="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-title-javascript="GObject.InitiallyUnowned" data-gi-href-python="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned" data-gi-title-python="GObject.InitiallyUnowned">GInitiallyUnowned</a>
+        <span class="lineart">╰──</span><a title="GstObject" href="libgstreamer-1.0/gstobject.html#GstObject" data-gi-href-javascript="libgstreamer-1.0/gstobject.html#GstObject" data-gi-title-javascript="Gst.Object" data-gi-href-python="libgstreamer-1.0/gstobject.html#GstObject" data-gi-title-python="Gst.Object">GstObject</a>
+            <span class="lineart">╰──</span><a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-javascript="Gst.Element" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element">GstElement</a>
+                <span class="lineart">╰──</span>rtpjitterbuffer
 </pre>
 
 </div>
@@ -302,25 +302,25 @@ out-of-order RTP packets.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer::clear-pt-map">
-	<span><code>GstRtpJitterBuffer::clear-pt-map</code></span>
+	<span><code>clear-pt-map</code></span>
 </h3>
 
 
 
 
 <pre class="c-prototype">
-GstRtpJitterBuffer::clear_pt_map_callback (<a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement">GstElement</a> <span class="pointer-token">*</span> buffer,
-                                           <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> udata)</pre>
+clear_pt_map_callback (<a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-javascript="Gst.Element" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element">GstElement</a> <span class="pointer-token">*</span> buffer,
+                       <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" data-gi-title-javascript="Object" data-gi-href-python="https://docs.python.org/3/library/functions.html#object" data-gi-title-python="object">gpointer</a> udata)</pre>
 <pre class="python-prototype">
-def GstRtpJitterBuffer::clear_pt_map_callback (buffer, udata):
+def clear_pt_map_callback (buffer, udata):
     #python callback for the 'clear-pt-map' signal</pre>
 <pre class="javascript-prototype">
-function GstRtpJitterBuffer::clear_pt_map_callback(buffer: <a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement">GstElement</a> <span class="pointer-token">*</span> buffer, udata: <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> udata): {
+function clear_pt_map_callback(buffer: <a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-javascript="Gst.Element" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element">GstElement</a> <span class="pointer-token">*</span> buffer, udata: <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" data-gi-title-javascript="Object" data-gi-href-python="https://docs.python.org/3/library/functions.html#object" data-gi-title-python="object">gpointer</a> udata): {
     // javascript callback for the 'clear-pt-map' signal
 }</pre>
 
 <p>Invalidate the clock-rate as obtained with the
-<a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer::request-pt-map">GstRtpJitterBuffer::request-pt-map</a> signal.</p>
+<a href="rtpmanager-1.0/rtpjitterbuffer.html#GstRtpJitterBuffer::request-pt-map">request-pt-map</a> signal.</p>
 
 
 
@@ -361,21 +361,21 @@ function GstRtpJitterBuffer::clear_pt_map_callback(buffer: <a title="GstElement"
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer::handle-sync">
-	<span><code>GstRtpJitterBuffer::handle-sync</code></span>
+	<span><code>handle-sync</code></span>
 </h3>
 
 
 
 
 <pre class="c-prototype">
-GstRtpJitterBuffer::handle_sync_callback (<a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement">GstElement</a> <span class="pointer-token">*</span> buffer,
-                                          <a title="GstStructure" href="libgstreamer-1.0/gststructure.html#GstStructure">GstStructure</a> <span class="pointer-token">*</span> struct,
-                                          <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> udata)</pre>
+handle_sync_callback (<a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-javascript="Gst.Element" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element">GstElement</a> <span class="pointer-token">*</span> buffer,
+                      <a title="GstStructure" href="libgstreamer-1.0/gststructure.html#GstStructure" data-gi-href-javascript="libgstreamer-1.0/gststructure.html#GstStructure" data-gi-title-javascript="Gst.Structure" data-gi-href-python="libgstreamer-1.0/gststructure.html#GstStructure" data-gi-title-python="Gst.Structure">GstStructure</a> <span class="pointer-token">*</span> struct,
+                      <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" data-gi-title-javascript="Object" data-gi-href-python="https://docs.python.org/3/library/functions.html#object" data-gi-title-python="object">gpointer</a> udata)</pre>
 <pre class="python-prototype">
-def GstRtpJitterBuffer::handle_sync_callback (buffer, struct, udata):
+def handle_sync_callback (buffer, struct, udata):
     #python callback for the 'handle-sync' signal</pre>
 <pre class="javascript-prototype">
-function GstRtpJitterBuffer::handle_sync_callback(buffer: <a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement">GstElement</a> <span class="pointer-token">*</span> buffer, struct: <a title="GstStructure" href="libgstreamer-1.0/gststructure.html#GstStructure">GstStructure</a> <span class="pointer-token">*</span> struct, udata: <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> udata): {
+function handle_sync_callback(buffer: <a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-javascript="Gst.Element" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element">GstElement</a> <span class="pointer-token">*</span> buffer, struct: <a title="GstStructure" href="libgstreamer-1.0/gststructure.html#GstStructure" data-gi-href-javascript="libgstreamer-1.0/gststructure.html#GstStructure" data-gi-title-javascript="Gst.Structure" data-gi-href-python="libgstreamer-1.0/gststructure.html#GstStructure" data-gi-title-python="Gst.Structure">GstStructure</a> <span class="pointer-token">*</span> struct, udata: <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" data-gi-title-javascript="Object" data-gi-href-python="https://docs.python.org/3/library/functions.html#object" data-gi-title-python="object">gpointer</a> udata): {
     // javascript callback for the 'handle-sync' signal
 }</pre>
 
@@ -430,20 +430,20 @@ function GstRtpJitterBuffer::handle_sync_callback(buffer: <a title="GstElement" 
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer::on-npt-stop">
-	<span><code>GstRtpJitterBuffer::on-npt-stop</code></span>
+	<span><code>on-npt-stop</code></span>
 </h3>
 
 
 
 
 <pre class="c-prototype">
-GstRtpJitterBuffer::on_npt_stop_callback (<a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement">GstElement</a> <span class="pointer-token">*</span> buffer,
-                                          <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> udata)</pre>
+on_npt_stop_callback (<a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-javascript="Gst.Element" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element">GstElement</a> <span class="pointer-token">*</span> buffer,
+                      <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" data-gi-title-javascript="Object" data-gi-href-python="https://docs.python.org/3/library/functions.html#object" data-gi-title-python="object">gpointer</a> udata)</pre>
 <pre class="python-prototype">
-def GstRtpJitterBuffer::on_npt_stop_callback (buffer, udata):
+def on_npt_stop_callback (buffer, udata):
     #python callback for the 'on-npt-stop' signal</pre>
 <pre class="javascript-prototype">
-function GstRtpJitterBuffer::on_npt_stop_callback(buffer: <a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement">GstElement</a> <span class="pointer-token">*</span> buffer, udata: <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> udata): {
+function on_npt_stop_callback(buffer: <a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-javascript="Gst.Element" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element">GstElement</a> <span class="pointer-token">*</span> buffer, udata: <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" data-gi-title-javascript="Object" data-gi-href-python="https://docs.python.org/3/library/functions.html#object" data-gi-title-python="object">gpointer</a> udata): {
     // javascript callback for the 'on-npt-stop' signal
 }</pre>
 
@@ -489,26 +489,26 @@ the npt-stop position.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer::request-pt-map">
-	<span><code>GstRtpJitterBuffer::request-pt-map</code></span>
+	<span><code>request-pt-map</code></span>
 </h3>
 
 
 
 
 <pre class="c-prototype">
-<a title="GstCaps" href="libgstreamer-1.0/gstcaps.html#GstCaps">GstCaps</a> <span class="pointer-token">*</span>
-GstRtpJitterBuffer::request_pt_map_callback (<a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement">GstElement</a> <span class="pointer-token">*</span> buffer,
-                                             <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> pt,
-                                             <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> udata)</pre>
+<a title="GstCaps" href="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-href-javascript="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-title-javascript="Gst.Caps" data-gi-href-python="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-title-python="Gst.Caps">GstCaps</a> <span class="pointer-token">*</span>
+request_pt_map_callback (<a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-javascript="Gst.Element" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element">GstElement</a> <span class="pointer-token">*</span> buffer,
+                         <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint</a> pt,
+                         <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" data-gi-title-javascript="Object" data-gi-href-python="https://docs.python.org/3/library/functions.html#object" data-gi-title-python="object">gpointer</a> udata)</pre>
 <pre class="python-prototype">
-def GstRtpJitterBuffer::request_pt_map_callback (buffer, pt, udata):
+def request_pt_map_callback (buffer, pt, udata):
     #python callback for the 'request-pt-map' signal</pre>
 <pre class="javascript-prototype">
-function GstRtpJitterBuffer::request_pt_map_callback(buffer: <a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement">GstElement</a> <span class="pointer-token">*</span> buffer, pt: <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a> pt, udata: <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> udata): {
+function request_pt_map_callback(buffer: <a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-javascript="Gst.Element" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element">GstElement</a> <span class="pointer-token">*</span> buffer, pt: <a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint</a> pt, udata: <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" data-gi-title-javascript="Object" data-gi-href-python="https://docs.python.org/3/library/functions.html#object" data-gi-title-python="object">gpointer</a> udata): {
     // javascript callback for the 'request-pt-map' signal
 }</pre>
 
-<p>Request the payload type as <a href="libgstreamer-1.0/gstcaps.html#GstCaps">GstCaps</a> for <em>pt</em>.</p>
+<p>Request the payload type as <a href="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-href-javascript="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-title-javascript="Gst.Caps" data-gi-href-python="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-title-python="Gst.Caps">GstCaps</a> for <em>pt</em>.</p>
 
 
 
@@ -550,7 +550,7 @@ function GstRtpJitterBuffer::request_pt_map_callback(buffer: <a title="GstElemen
 			<div>
 				<b>Returns</b>
 									(
-					<a title="GstCaps" href="libgstreamer-1.0/gstcaps.html#GstCaps">GstCaps</a> <span class="pointer-token">*</span>
+					<a title="GstCaps" href="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-href-javascript="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-title-javascript="Gst.Caps" data-gi-href-python="libgstreamer-1.0/gstcaps.html#GstCaps" data-gi-title-python="Gst.Caps">GstCaps</a> <span class="pointer-token">*</span>
 										)
 								–
 			</div>
@@ -572,23 +572,23 @@ function GstRtpJitterBuffer::request_pt_map_callback(buffer: <a title="GstElemen
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer::set-active">
-	<span><code>GstRtpJitterBuffer::set-active</code></span>
+	<span><code>set-active</code></span>
 </h3>
 
 
 
 
 <pre class="c-prototype">
-<a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a>
-GstRtpJitterBuffer::set_active_callback (<a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement">GstElement</a> <span class="pointer-token">*</span> buffer,
-                                         <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a> param_1,
-                                         <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> param_2,
-                                         <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> udata)</pre>
+<a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a>
+set_active_callback (<a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-javascript="Gst.Element" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element">GstElement</a> <span class="pointer-token">*</span> buffer,
+                     <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#bool" data-gi-title-python="bool">gboolean</a> param_1,
+                     <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a> param_2,
+                     <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" data-gi-title-javascript="Object" data-gi-href-python="https://docs.python.org/3/library/functions.html#object" data-gi-title-python="object">gpointer</a> udata)</pre>
 <pre class="python-prototype">
-def GstRtpJitterBuffer::set_active_callback (buffer, param_1, param_2, udata):
+def set_active_callback (buffer, param_1, param_2, udata):
     #python callback for the 'set-active' signal</pre>
 <pre class="javascript-prototype">
-function GstRtpJitterBuffer::set_active_callback(buffer: <a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement">GstElement</a> <span class="pointer-token">*</span> buffer, param_1: <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a> param_1, param_2: <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> param_2, udata: <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer">gpointer</a> udata): {
+function set_active_callback(buffer: <a title="GstElement" href="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-href-javascript="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-javascript="Gst.Element" data-gi-href-python="libgstreamer-1.0/gstelement-h.html#GstElement" data-gi-title-python="Gst.Element">GstElement</a> <span class="pointer-token">*</span> buffer, param_1: <a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#bool" data-gi-title-python="bool">gboolean</a> param_1, param_2: <a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a> param_2, udata: <a title="gpointer" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gpointer" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" data-gi-title-javascript="Object" data-gi-href-python="https://docs.python.org/3/library/functions.html#object" data-gi-title-python="object">gpointer</a> udata): {
     // javascript callback for the 'set-active' signal
 }</pre>
 
@@ -643,7 +643,7 @@ useful in buffering mode.</p>
 			<div>
 				<b>Returns</b>
 									(
-					<a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a>
+					<a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a>
 										)
 								–
 			</div>
@@ -668,12 +668,12 @@ useful in buffering mode.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:do-lost">
-	<span><code>GstRtpJitterBuffer:do-lost</code></span>
+	<span><code>do-lost</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:do-lost” <span class="type"><a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a></span>
+“do-lost” <span class="type"><a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#bool" data-gi-title-python="bool">gboolean</a></span>
 </pre>
 
 <p>Send out a GstRTPPacketLost event downstream when a packet is considered
@@ -705,12 +705,12 @@ lost.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:do-retransmission">
-	<span><code>GstRtpJitterBuffer:do-retransmission</code></span>
+	<span><code>do-retransmission</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:do-retransmission” <span class="type"><a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a></span>
+“do-retransmission” <span class="type"><a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#bool" data-gi-title-python="bool">gboolean</a></span>
 </pre>
 
 <p>Send out a GstRTPRetransmission event upstream when a packet is considered
@@ -742,12 +742,12 @@ late and should be retransmitted.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:drop-on-latency">
-	<span><code>GstRtpJitterBuffer:drop-on-latency</code></span>
+	<span><code>drop-on-latency</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:drop-on-latency” <span class="type"><a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a></span>
+“drop-on-latency” <span class="type"><a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#bool" data-gi-title-python="bool">gboolean</a></span>
 </pre>
 
 <p>Drop oldest buffers when the queue is completely filled.</p>
@@ -778,12 +778,12 @@ late and should be retransmitted.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:faststart-min-packets">
-	<span><code>faststart-min-packets (not introspectable)</code></span>
+	<span><code>faststart-min-packets</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“faststart-min-packets (not introspectable)” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+“faststart-min-packets” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint</a></span>
 </pre>
 
 <p>The number of consecutive packets needed to start (set to 0 to
@@ -816,12 +816,12 @@ latency has elapsed)</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:latency">
-	<span><code>GstRtpJitterBuffer:latency</code></span>
+	<span><code>latency</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:latency” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+“latency” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint</a></span>
 </pre>
 
 <p>The maximum latency of the jitterbuffer. Packets will be kept in the buffer
@@ -853,12 +853,12 @@ for at most this time.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:max-dropout-time">
-	<span><code>GstRtpJitterBuffer:max-dropout-time</code></span>
+	<span><code>max-dropout-time</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:max-dropout-time” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+“max-dropout-time” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint</a></span>
 </pre>
 
 <p>The maximum time (milliseconds) of missing packets tolerated.</p>
@@ -889,12 +889,12 @@ for at most this time.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:max-misorder-time">
-	<span><code>GstRtpJitterBuffer:max-misorder-time</code></span>
+	<span><code>max-misorder-time</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:max-misorder-time” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+“max-misorder-time” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint</a></span>
 </pre>
 
 <p>The maximum time (milliseconds) of misordered packets tolerated.</p>
@@ -925,12 +925,12 @@ for at most this time.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:max-rtcp-rtp-time-diff">
-	<span><code>GstRtpJitterBuffer:max-rtcp-rtp-time-diff</code></span>
+	<span><code>max-rtcp-rtp-time-diff</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:max-rtcp-rtp-time-diff” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“max-rtcp-rtp-time-diff” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">gint</a></span>
 </pre>
 
 <p>The maximum amount of time in ms that the RTP time in the RTCP SRs
@@ -957,18 +957,55 @@ is allowed to be ahead of the last RTP packet we received. Use
 
             
 
+<div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpJitterBuffer:max-ts-offset-adjustment">
+	
+
+
+
+<h3 data-hotdoc-id="GstRtpJitterBuffer:max-ts-offset-adjustment">
+	<span><code>max-ts-offset-adjustment</code></span>
+</h3>
+
+
+<pre class="property_signature">
+“max-ts-offset-adjustment” <span class="type"><a title="guint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a></span>
+</pre>
+
+<p>The maximum number of nanoseconds per frame that time offset may be
+adjusted with. This is used to avoid sudden large changes to time stamps.</p>
+
+
+<p>
+	Flags :	
+	
+		
+				Read
+			
+				/		
+				Write
+			
+</p>
+<p>
+	Default value :	0
+</p>
+
+
+</div>
+
+            
+
 <div class="base_symbol_container" data-hotdoc-tags="" id="GstRtpJitterBuffer:mode">
 	
 
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:mode">
-	<span><code>GstRtpJitterBuffer:mode</code></span>
+	<span><code>mode</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:mode” <span class="type"><a title="RTPJitterBufferMode (not introspectable)" href="rtpmanager-1.0/rtpjitterbuffer.html#RTPJitterBufferMode">RTPJitterBufferMode (not introspectable)</a></span>
+“mode” <span class="type"><a title="RTPJitterBufferMode" href="rtpmanager-1.0/rtpjitterbuffer.html#RTPJitterBufferMode">RTPJitterBufferMode</a></span>
 </pre>
 
 <p>Control the buffering and timestamping mode used by the jitterbuffer.</p>
@@ -999,12 +1036,12 @@ is allowed to be ahead of the last RTP packet we received. Use
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:name">
-	<span><code>name (not introspectable)</code></span>
+	<span><code>name</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“name (not introspectable)” <span class="type"><a title="gchararray" href="https://developer.gnome.org/gobject/unstable/gobject-Standard-Parameter-and-Value-Types.html#gchararray">gchararray</a></span>
+“name” <span class="type"><a title="gchararray" href="https://developer.gnome.org/gobject/unstable/gobject-Standard-Parameter-and-Value-Types.html#gchararray" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" data-gi-title-javascript="String" data-gi-href-python="https://docs.python.org/3/library/functions.html#func-str" data-gi-title-python="str">gchararray</a></span>
 </pre>
 
 <p>The name of the object</p>
@@ -1038,12 +1075,12 @@ is allowed to be ahead of the last RTP packet we received. Use
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:parent">
-	<span><code>parent (not introspectable)</code></span>
+	<span><code>parent</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“parent (not introspectable)” <span class="type"><a title="GstObject" href="libgstreamer-1.0/gstobject.html#GstObject">GstObject</a> <span class="pointer-token">*</span></span>
+“parent” <span class="type"><a title="GstObject" href="libgstreamer-1.0/gstobject.html#GstObject" data-gi-href-javascript="libgstreamer-1.0/gstobject.html#GstObject" data-gi-title-javascript="Gst.Object" data-gi-href-python="libgstreamer-1.0/gstobject.html#GstObject" data-gi-title-python="Gst.Object">GstObject</a> <span class="pointer-token">*</span></span>
 </pre>
 
 <p>The parent of the object</p>
@@ -1071,12 +1108,12 @@ is allowed to be ahead of the last RTP packet we received. Use
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:percent">
-	<span><code>GstRtpJitterBuffer:percent</code></span>
+	<span><code>percent</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:percent” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“percent” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">gint</a></span>
 </pre>
 
 <p>The percent of the jitterbuffer that is filled.</p>
@@ -1104,12 +1141,12 @@ is allowed to be ahead of the last RTP packet we received. Use
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:rfc7273-sync">
-	<span><code>GstRtpJitterBuffer:rfc7273-sync</code></span>
+	<span><code>rfc7273-sync</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:rfc7273-sync” <span class="type"><a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a></span>
+“rfc7273-sync” <span class="type"><a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#bool" data-gi-title-python="bool">gboolean</a></span>
 </pre>
 
 <p>Synchronize received streams to the RFC7273 clock (requires clock and offset to be provided)</p>
@@ -1140,12 +1177,12 @@ is allowed to be ahead of the last RTP packet we received. Use
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:rtx-deadline">
-	<span><code>GstRtpJitterBuffer:rtx-deadline</code></span>
+	<span><code>rtx-deadline</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:rtx-deadline” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“rtx-deadline” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">gint</a></span>
 </pre>
 
 <p>The deadline for a valid RTX request in ms.</p>
@@ -1178,12 +1215,12 @@ When -1 is used, the size of the jitterbuffer will be used.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:rtx-delay">
-	<span><code>GstRtpJitterBuffer:rtx-delay</code></span>
+	<span><code>rtx-delay</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:rtx-delay” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“rtx-delay” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">gint</a></span>
 </pre>
 
 <p>When a packet did not arrive at the expected time, wait this extra amount
@@ -1216,12 +1253,12 @@ of time before sending a retransmission event.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:rtx-delay-reorder">
-	<span><code>GstRtpJitterBuffer:rtx-delay-reorder</code></span>
+	<span><code>rtx-delay-reorder</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:rtx-delay-reorder” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“rtx-delay-reorder” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">gint</a></span>
 </pre>
 
 <p>Assume that a retransmission event should be sent when we see
@@ -1256,12 +1293,12 @@ retransmission event (Since 1.10).</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:rtx-max-retries">
-	<span><code>GstRtpJitterBuffer:rtx-max-retries</code></span>
+	<span><code>rtx-max-retries</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:rtx-max-retries” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“rtx-max-retries” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">gint</a></span>
 </pre>
 
 <p>The maximum number of retries to request a retransmission.</p>
@@ -1294,12 +1331,12 @@ When -1 is used, the number of retransmission request will not be limited.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:rtx-min-delay">
-	<span><code>GstRtpJitterBuffer:rtx-min-delay</code></span>
+	<span><code>rtx-min-delay</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:rtx-min-delay” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+“rtx-min-delay” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint</a></span>
 </pre>
 
 <p>When a packet did not arrive at the expected time, wait at least this extra amount
@@ -1331,12 +1368,12 @@ of time before sending a retransmission event.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:rtx-min-retry-timeout">
-	<span><code>GstRtpJitterBuffer:rtx-min-retry-timeout</code></span>
+	<span><code>rtx-min-retry-timeout</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:rtx-min-retry-timeout” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“rtx-min-retry-timeout” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">gint</a></span>
 </pre>
 
 <p>Minimum timeout between sending a transmission event in ms (-1 automatic)</p>
@@ -1367,12 +1404,12 @@ of time before sending a retransmission event.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:rtx-next-seqnum">
-	<span><code>GstRtpJitterBuffer:rtx-next-seqnum</code></span>
+	<span><code>rtx-next-seqnum</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:rtx-next-seqnum” <span class="type"><a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean">gboolean</a></span>
+“rtx-next-seqnum” <span class="type"><a title="gboolean" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gboolean" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#bool" data-gi-title-python="bool">gboolean</a></span>
 </pre>
 
 <p>Estimate when the next packet should arrive and schedule a retransmission
@@ -1407,12 +1444,12 @@ The expected time is calculated using the dts of N and the packet spacing.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:rtx-retry-period">
-	<span><code>GstRtpJitterBuffer:rtx-retry-period</code></span>
+	<span><code>rtx-retry-period</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:rtx-retry-period” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“rtx-retry-period” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">gint</a></span>
 </pre>
 
 <p>The amount of time to try to get a retransmission.</p>
@@ -1445,12 +1482,12 @@ latency and the observed round trip time.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:rtx-retry-timeout">
-	<span><code>GstRtpJitterBuffer:rtx-retry-timeout</code></span>
+	<span><code>rtx-retry-timeout</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:rtx-retry-timeout” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint">gint</a></span>
+“rtx-retry-timeout” <span class="type"><a title="gint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">gint</a></span>
 </pre>
 
 <p>Retry sending a transmission event after this timeout in ms (-1 automatic)</p>
@@ -1481,12 +1518,12 @@ latency and the observed round trip time.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:rtx-stats-timeout">
-	<span><code>GstRtpJitterBuffer:rtx-stats-timeout</code></span>
+	<span><code>rtx-stats-timeout</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:rtx-stats-timeout” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint">guint</a></span>
+“rtx-stats-timeout” <span class="type"><a title="guint" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint</a></span>
 </pre>
 
 <p>The time to wait for a retransmitted packet after it has been considered lost in order to collect statistics (ms)</p>
@@ -1517,33 +1554,33 @@ latency and the observed round trip time.</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:stats">
-	<span><code>GstRtpJitterBuffer:stats</code></span>
+	<span><code>stats</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:stats” <span class="type"><a title="GstStructure" href="libgstreamer-1.0/gststructure.html#GstStructure">GstStructure</a> <span class="pointer-token">*</span></span>
+“stats” <span class="type"><a title="GstStructure" href="libgstreamer-1.0/gststructure.html#GstStructure" data-gi-href-javascript="libgstreamer-1.0/gststructure.html#GstStructure" data-gi-title-javascript="Gst.Structure" data-gi-href-python="libgstreamer-1.0/gststructure.html#GstStructure" data-gi-title-python="Gst.Structure">GstStructure</a> <span class="pointer-token">*</span></span>
 </pre>
 
 <p>Various jitterbuffer statistics. This property returns a GstStructure
 with name application/x-rtp-jitterbuffer-stats with the following fields:</p>
 <ul>
 <li>
-<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <code>num-pushed</code>: the number of packets pushed out.</li>
+<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a> <code>num-pushed</code>: the number of packets pushed out.</li>
 <li>
-<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <code>num-lost</code>: the number of packets considered lost.</li>
+<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a> <code>num-lost</code>: the number of packets considered lost.</li>
 <li>
-<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <code>num-late</code>: the number of packets arriving too late.</li>
+<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a> <code>num-late</code>: the number of packets arriving too late.</li>
 <li>
-<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <code>num-duplicates</code>: the number of duplicate packets.</li>
+<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a> <code>num-duplicates</code>: the number of duplicate packets.</li>
 <li>
-<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <code>rtx-count</code>: the number of retransmissions requested.</li>
+<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a> <code>rtx-count</code>: the number of retransmissions requested.</li>
 <li>
-<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <code>rtx-success-count</code>: the number of successful retransmissions.</li>
+<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a> <code>rtx-success-count</code>: the number of successful retransmissions.</li>
 <li>
-<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble">gdouble</a> <code>rtx-per-packet</code>: average number of RTX per packet.</li>
+<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gdouble" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#float" data-gi-title-python="float">gdouble</a> <code>rtx-per-packet</code>: average number of RTX per packet.</li>
 <li>
-<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64">guint64</a> <code>rtx-rtt</code>: average round trip time per RTX.</li>
+<a href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#guint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">guint64</a> <code>rtx-rtt</code>: average round trip time per RTX.</li>
 </ul>
 
 
@@ -1569,12 +1606,12 @@ with name application/x-rtp-jitterbuffer-stats with the following fields:</p>
 
 
 <h3 data-hotdoc-id="GstRtpJitterBuffer:ts-offset">
-	<span><code>GstRtpJitterBuffer:ts-offset</code></span>
+	<span><code>ts-offset</code></span>
 </h3>
 
 
 <pre class="property_signature">
-“GstRtpJitterBuffer:ts-offset” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64">gint64</a></span>
+“ts-offset” <span class="type"><a title="gint64" href="https://developer.gnome.org/glib/unstable/glib-Basic-Types.html#gint64" data-gi-href-javascript="https://developer.mozilla.org/en-US/docs/Glossary/Number" data-gi-title-javascript="Number" data-gi-href-python="https://docs.python.org/3/library/functions.html#int" data-gi-title-python="int">gint64</a></span>
 </pre>
 
 <p>Adjust GStreamer output buffer timestamps in the jitterbuffer with offset.
@@ -1605,7 +1642,7 @@ This is mainly used to ensure interstream synchronisation.</p>
 
 
 <h3 data-hotdoc-id="RTPJitterBufferMode">
-	<span><code>RTPJitterBufferMode (not introspectable)</code></span>
+	<span><code>RTPJitterBufferMode</code></span>
 </h3>
 
 

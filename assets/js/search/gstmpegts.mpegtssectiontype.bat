@@ -1,1 +1,1 @@
-urls_downloaded_cb({"token": "gstmpegts.mpegtssectiontype.bat", "urls": [{"url": "gst-plugins-bad-mpegts-1.0/gstmpegtssection.html#gst_mpegts_section_get_bat", "context": {"gi-language": ["javascript", "c", "python"]}}]});
+urls_downloaded_cb({"token": "gstmpegts.mpegtssectiontype.bat", "urls": [{"url": "gst-plugins-bad-mpegts-1.0/gstmpegtssection.html#gst_mpegts_section_get_bat", "context": {"gi-language": ["javascript", "python"]}}]});

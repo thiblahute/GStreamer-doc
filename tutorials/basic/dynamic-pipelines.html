@@ -119,7 +119,7 @@ $('body').removeClass('no-script');
 </nav>
 
 <main>
-<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/dynamic-pipelines.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'c', 'python']">
+<div data-extension="core" data-hotdoc-in-toplevel="True" data-hotdoc-project="GStreamer-1.0" data-hotdoc-ref="tutorials/basic/dynamic-pipelines.html" class="page_container" id="page-wrapper" data-hotdoc-meta-gi-languages="['javascript', 'python', 'c']">
 <script src="assets/js/utils.js"></script>
 
 <div class="panel panel-collapse oc-collapsed" id="sidenav" data-hotdoc-role="navigation">
@@ -324,7 +324,7 @@ static void pad_added_handler (GstElement *src, GstPad *new_pad, CustomData *dat
   }
 
   /* Check the new pad's type */
-  new_pad_caps = gst_pad_query_caps (new_pad, NULL);
+  new_pad_caps = gst_pad_get_current_caps (new_pad);
   new_pad_struct = gst_caps_get_structure (new_pad_caps, 0);
   new_pad_type = gst_structure_get_name (new_pad_struct);
   if (!g_str_has_prefix (new_pad_type, "audio/x-raw")) {
@@ -460,7 +460,7 @@ if (gst_pad_is_linked (sink_pad)) {
 this callback will be called. These lines of code will prevent us from
 trying to link to a new pad once we are already linked.</p>
 <pre><code class="language-c">/* Check the new pad's type */
-new_pad_caps = gst_pad_query_caps (new_pad, NULL);
+new_pad_caps = gst_pad_get_current_caps (new_pad, NULL);
 new_pad_struct = gst_caps_get_structure (new_pad_caps, 0);
 new_pad_type = gst_structure_get_name (new_pad_struct);
 if (!g_str_has_prefix (new_pad_type, "audio/x-raw")) {
@@ -473,10 +473,14 @@ because we are only interested in pads producing audio. We have
 previously created a piece of pipeline which deals with audio (an
 <code>audioconvert</code> linked with an <code>autoaudiosink</code>), and we will not be able
 to link it to a pad producing video, for example.</p>
-<p><code>gst_pad_query_caps()</code> retrieves the <em>capabilities</em> of the pad (this is,
-the kind of data it supports), wrapped in a <code>GstCaps</code> structure. A pad
-can offer many capabilities, and hence <code>GstCaps</code> can contain many
-<code>GstStructure</code>, each representing a different capability.</p>
+<p><code>gst_pad_get_current_caps()</code> retrieves the current <em>capabilities</em> of the pad
+(that is, the kind of data it currently outputs), wrapped in a <code>GstCaps</code>
+structure. All possible caps a pad can support can be queried with
+<code>gst_pad_query_caps()</code>. A pad can offer many capabilities, and hence <code>GstCaps</code>
+can contain many <code>GstStructure</code>, each representing a different capability. The
+current caps on a pad will always have a single <code>GstStructure</code> and represent a
+single media format, or if there are no current caps yet <code>NULL</code> will be
+returned.</p>
 <p>Since, in this case, we know that the pad we want only had one
 capability (audio), we retrieve the first <code>GstStructure</code> with
 <code>gst_caps_get_structure()</code>.</p>
